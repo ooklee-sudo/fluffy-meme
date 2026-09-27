@@ -85,19 +85,33 @@ def batches(data, bs, shuffle=False, seed=0):
 
 
 # ---------------------------------------------------------------- models
-def load_model(name, args, device, dtype):
+def load_model(name, revision, device, dtype):
+    import transformers
     from transformers import AutoModelForCausalLM
-    return AutoModelForCausalLM.from_pretrained(name, torch_dtype=dtype).to(device)
+    major, minor = (int(x) for x in transformers.__version__.split(".")[:2])
+    kw = {"dtype": dtype} if (major, minor) >= (4, 56) else {"torch_dtype": dtype}
+    return AutoModelForCausalLM.from_pretrained(name, revision=revision, **kw).to(device)
+
+
+def tiny_config(arch, vocab):
+    import transformers as T
+    common = dict(vocab_size=vocab, hidden_size=64, intermediate_size=128, num_hidden_layers=2,
+                  num_attention_heads=4, max_position_embeddings=64)
+    if arch == "llama":
+        return T.LlamaConfig(num_key_value_heads=4, **common)
+    if arch == "qwen2":
+        return T.Qwen2Config(num_key_value_heads=4, tie_word_embeddings=True, **common)
+    if arch == "gpt_neox":
+        return T.GPTNeoXConfig(use_parallel_residual=True, **common)
+    raise ValueError(arch)
 
 
 def tiny_pair(args, device):
-    """Random tiny Llama source and an 'upgraded' target = source + drift (scenario S1)."""
-    from transformers import LlamaConfig, LlamaForCausalLM
+    """Random tiny source and an 'upgraded' target = source + drift (scenario S1)."""
+    from transformers import AutoModelForCausalLM
     torch.manual_seed(0)
-    cfg = LlamaConfig(vocab_size=args.tiny_vocab, hidden_size=64, intermediate_size=128,
-                      num_hidden_layers=2, num_attention_heads=4, num_key_value_heads=4,
-                      max_position_embeddings=64)
-    src = LlamaForCausalLM(cfg).to(device)
+    cfg = tiny_config(args.tiny_arch, args.tiny_vocab)
+    src = AutoModelForCausalLM.from_config(cfg).to(device)
     # give the source some competence so the task is learnable by a small adapter
     opt = torch.optim.AdamW(src.parameters(), lr=3e-3)
     rng = random.Random(1)
@@ -105,7 +119,7 @@ def tiny_pair(args, device):
         seq = torch.tensor([[rng.randrange(4, args.tiny_vocab) for _ in range(24)] for _ in range(32)], device=device)
         loss = src(input_ids=seq, labels=seq).loss
         opt.zero_grad(); loss.backward(); opt.step()
-    tgt = LlamaForCausalLM(cfg).to(device)
+    tgt = AutoModelForCausalLM.from_config(cfg).to(device)
     tgt.load_state_dict(src.state_dict())
     with torch.no_grad():
         for n, p in tgt.named_parameters():
@@ -114,15 +128,37 @@ def tiny_pair(args, device):
     return src, tgt
 
 
+def auto_target_modules(model):
+    """Leaf nn.Linear names inside the decoder layers (q_proj..down_proj, query_key_value..dense_4h_to_h)."""
+    names = {n.split(".")[-1] for n, m in model.named_modules()
+             if isinstance(m, torch.nn.Linear) and layer_index(n) >= 0}
+    return sorted(names)
+
+
 def add_lora(model, args):
+    targets = auto_target_modules(model) if args.target_modules == ["auto"] else args.target_modules
     cfg = LoraConfig(r=args.rank, lora_alpha=args.lora_alpha, lora_dropout=0.0,
-                     target_modules=args.target_modules, bias="none", task_type="CAUSAL_LM")
+                     target_modules=targets, bias="none", task_type="CAUSAL_LM")
     return get_peft_model(model, cfg)
 
 
 def lora_modules(pm):
-    """{name: module} for every LoRA-wrapped linear, in forward order."""
+    """{name: module} for every LoRA-wrapped linear."""
     return {n: m for n, m in pm.named_modules() if hasattr(m, "lora_A") and "default" in m.lora_A}
+
+
+@torch.no_grad()
+def forward_order(pm, mods, device):
+    """Module names sorted by the order in which a forward pass calls them."""
+    seen, hs = [], []
+    for n, m in mods.items():
+        hs.append(m.register_forward_hook(lambda mod, i, o, n=n: seen.append(n) if n not in seen else None))
+    try:
+        pm(input_ids=torch.ones((1, 4), dtype=torch.long, device=device))
+    finally:
+        for h in hs:
+            h.remove()
+    return seen
 
 
 def layer_index(name):
@@ -221,7 +257,8 @@ def capture(pm, mods, layer, ids, att, stop_name):
 def act_transfer(src_pm, tgt_pm, calib, args, device, pad_id):
     """Sequential ACT (eq. A.2) on every LoRA module; returns per-module chosen alpha and drift."""
     src_mods, tgt_mods = lora_modules(src_pm), lora_modules(tgt_pm)
-    names = list(tgt_mods)
+    names = forward_order(tgt_pm, tgt_mods, device)
+    acc = device if device.type == "cuda" else torch.device("cpu")  # MPS has no float64
     layers = sorted({layer_index(n) for n in names})
     n_fit = int(0.8 * len(calib))
     fit, val = calib[:n_fit], calib[n_fit:]
@@ -236,7 +273,7 @@ def act_transfer(src_pm, tgt_pm, calib, args, device, pad_id):
                 xs = capture(src_pm, src_mods, l, ids, att, stop)
                 xt = capture(tgt_pm, tgt_mods, l, ids, att, stop)
                 for n in lnames:
-                    s, t = xs[n].double(), xt[n].double()
+                    s, t = xs[n].to(acc).double(), xt[n].to(acc).double()
                     G[n]["tt_" + split] = G[n]["tt_" + split] + t.T @ t
                     G[n]["st_" + split] = G[n]["st_" + split] + s.T @ t
                     if split == "v":
@@ -245,12 +282,12 @@ def act_transfer(src_pm, tgt_pm, calib, args, device, pad_id):
                     G[n]["sn"] += s.pow(2).sum().item()
         for n in lnames:
             m = tgt_mods[n]
-            A_s = src_mods[n].lora_A["default"].weight.double()  # r x d_in
-            B = m.lora_B["default"].weight.double()              # d_out x r
+            A_s = src_mods[n].lora_A["default"].weight.to(acc).double()  # r x d_in
+            B = m.lora_B["default"].weight.to(acc).double()              # d_out x r
             BtB = B.T @ B
             g = G[n]
             d = A_s.shape[1]
-            eye = torch.eye(d, dtype=torch.float64, device=device)
+            eye = torch.eye(d, dtype=torch.float64, device=acc)
 
             def solve(Gtt, Gst, alpha):
                 lam = alpha * torch.trace(Gtt) / d
@@ -264,7 +301,8 @@ def act_transfer(src_pm, tgt_pm, calib, args, device, pad_id):
             errs = [val_err(solve(g["tt_f"], g["st_f"], a)) for a in ALPHAS]
             best = ALPHAS[min(range(len(ALPHAS)), key=errs.__getitem__)]
             A_new = solve(g["tt_f"] + g["tt_v"], g["st_f"] + g["st_v"], best)
-            m.lora_A["default"].weight.copy_(A_new.to(m.lora_A["default"].weight.dtype))
+            w = m.lora_A["default"].weight
+            w.copy_(A_new.to(device=w.device, dtype=w.dtype))
             info[n] = {"alpha": best, "drift": math.sqrt(g["dn"] / max(g["sn"], 1e-12))}
         print(f"  ACT layer {l}: alphas " + ", ".join(f"{info[n]['alpha']:.0e}" for n in lnames))
     return info
@@ -287,23 +325,40 @@ def main():
     ap.add_argument("--max-len", type=int, default=512)
     ap.add_argument("--rank", type=int, default=8)
     ap.add_argument("--lora-alpha", type=int, default=16)
-    ap.add_argument("--target-modules", nargs="+",
-                    default=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
+    ap.add_argument("--source-revision", default=None, help="branch/tag/commit, e.g. step100000 for Pythia")
+    ap.add_argument("--target-revision", default=None)
+    ap.add_argument("--target-modules", nargs="+", default=["auto"],
+                    help="'auto' = every linear inside the decoder layers")
+    ap.add_argument("--preset", choices=["gpu", "cpu"], default=None,
+                    help="cpu = smaller run sized for a laptop/desktop CPU")
+    ap.add_argument("--threads", type=int, default=None, help="torch CPU threads")
     ap.add_argument("--steps", type=int, default=1000)
     ap.add_argument("--bs", type=int, default=8)
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--gen-eval", type=int, default=0, help="also score generation EM on this many eval rows")
     ap.add_argument("--gen-max-new", type=int, default=256)
-    ap.add_argument("--gpu-price", type=float, default=2.0, help="$ per GPU hour, for the cost report")
+    ap.add_argument("--gpu-price", type=float, default=2.0, help="$ per compute hour, for the cost report")
     ap.add_argument("--out", default="results/act_llama.json")
     ap.add_argument("--tiny", action="store_true", help="CPU smoke test with random tiny models")
+    ap.add_argument("--tiny-arch", choices=["llama", "qwen2", "gpt_neox"], default="llama")
     ap.add_argument("--tiny-vocab", type=int, default=64)
     ap.add_argument("--tiny-drift", type=float, default=0.3)
     ap.add_argument("--tiny-pretrain", type=int, default=200)
+    pre, _ = ap.parse_known_args()
+    if pre.preset == "cpu":  # explicit flags on the command line still win
+        ap.set_defaults(n_train=500, n_eval=200, n_cal=128, max_len=256, steps=300, bs=4, lr=5e-4)
     args = ap.parse_args()
+    if args.threads:
+        torch.set_num_threads(args.threads)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available() and args.preset != "cpu":
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    dtype = torch.bfloat16 if device.type == "cuda" and torch.cuda.is_bf16_supported() else \
+        torch.float16 if device.type == "cuda" else torch.float32
     if args.tiny:
         args.n_train, args.n_eval, args.n_cal = min(args.n_train, 512), min(args.n_eval, 128), min(args.n_cal, 128)
         args.steps, args.bs, args.lr, args.rank = min(args.steps, 300), 32, 3e-3, 4
@@ -312,11 +367,17 @@ def main():
         tok, pad_id = None, 0
     else:
         from transformers import AutoTokenizer
-        tok = AutoTokenizer.from_pretrained(args.source)
+        tok = AutoTokenizer.from_pretrained(args.source, revision=args.source_revision)
+        tok_t = AutoTokenizer.from_pretrained(args.target, revision=args.target_revision)
+        vs, vt = tok.get_vocab(), tok_t.get_vocab()
+        if any(vt.get(k) != i for k, i in vs.items()):
+            raise SystemExit("source and target tokenizers differ: ACT needs a shared tokenizer (Appendix A.1)")
         tok.pad_token = tok.pad_token or tok.eos_token
         pad_id = tok.pad_token_id
-        src, tgt = load_model(args.source, args, device, dtype), load_model(args.target, args, device, dtype)
-        args.pair_name = args.pair_name or f"{args.source}->{args.target}"
+        src = load_model(args.source, args.source_revision, device, dtype)
+        tgt = load_model(args.target, args.target_revision, device, dtype)
+        tag = lambda m, r: m + (f"@{r}" if r else "")
+        args.pair_name = args.pair_name or f"{tag(args.source, args.source_revision)}->{tag(args.target, args.target_revision)}"
     train, evals, calib = load_examples(args, tok)
     print(f"device={device} train={len(train)} eval={len(evals)} calib={len(calib)}")
 
@@ -364,7 +425,7 @@ def main():
     res["C_A_over_C_N"] = res["time_act_s"] / res["time_retrain_s"]
     res["cost_usd"] = {k: res[f"time_{k}_s"] / 3600 * args.gpu_price for k in ("retrain", "act")}
     print(f"\nR_C={R_C:.4f}  R_A={R_A:.4f}  (NLL-based)   "
-          f"C_A/C_N={res['C_A_over_C_N']:.3f} (GPU time only; add data and revalidation labor to C_N)")
+          f"C_A/C_N={res['C_A_over_C_N']:.3f} (compute time only; add data and revalidation labor to C_N)")
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     json.dump(res, open(args.out, "w"), indent=2, default=float)

@@ -128,22 +128,24 @@ def mc_check(R: float, p: Params, v0: float, n: int = 200_000, dt: float = 1 / 3
 def table_62(recov, p: Params):
     print("\n== Section 6.2: expected cost by policy ==")
     print(f"beta = {beta(p):.2f}, beta/(beta-1) = {beta(p) / (beta(p) - 1):.2f}")
-    hdr = f"{'drift':>6} {'R_C':>6} {'R_A':>6} {'v*_C':>8} {'v*_A':>8} {'copy opt':>12} {'ACT opt':>20} {'retrain opt':>12} {'Gamma':>6}"
+    w = max(6, *(len(n) for n in recov))
+    hdr = f"{'drift':>{w}} {'R_C':>6} {'R_A':>6} {'v*_C':>8} {'v*_A':>8} {'copy opt':>12} {'ACT opt':>20} {'retrain opt':>12} {'Gamma':>6}"
     print(hdr)
     rows = []
     for name, (R_C, R_A) in recov.items():
         reg = act_region(R_C, R_A, p)
         G = gamma(R_A, R_C, p)
         lo, hi = reg if reg else (float("nan"), float("nan"))
-        print(f"{name:>6} {R_C:6.3f} {R_A:6.3f} {v_star(R_C, p):8.2f} {v_star(R_A, p):8.2f} "
-              f"{'v < %.2f' % lo:>12} {'%.2f <= v < %.2f' % (lo, hi):>20} {'v >= %.2f' % hi:>12} {G:6.2f}")
+        cols = (f"{'v < %.2f' % lo:>12} {'%.2f <= v < %.2f' % (lo, hi):>20} {'v >= %.2f' % hi:>12}" if reg else
+                f"{'-':>12} {'never (C_A >= Gamma)':>20} {'v >= %.2f' % v_star(R_C, p):>12}")
+        print(f"{name:>{w}} {R_C:6.3f} {R_A:6.3f} {v_star(R_C, p):8.2f} {v_star(R_A, p):8.2f} {cols} {G:6.2f}")
         rows.append(dict(drift=name, R_C=R_C, R_A=R_A, v_star_copy=v_star(R_C, p),
                          v_star_act=v_star(R_A, p), act_lo=lo, act_hi=hi, gamma=G))
     return rows
 
 
-def table_63(R_C, R_A, p: Params):
-    print("\n== Section 6.3: effect of upgrade frequency (drift 0.8) ==")
+def table_63(R_C, R_A, p: Params, label="0.8"):
+    print(f"\n== Section 6.3: effect of upgrade frequency (drift {label}) ==")
     print(f"{'mu':>5} {'months':>7} {'v*_C':>8} {'v*_A':>8}")
     for mu in (0.5, 1, 2, 4):
         q = replace(p, mu=mu)
@@ -186,17 +188,21 @@ def main():
     a = ap.parse_args()
     p = Params(a.rho, a.mu, a.g, a.sigma, a.C_N, a.C_A)
 
-    recov = {"0.8": (0.534, 0.758), "0.3": (0.944, 0.969)}  # Section 5.2 toy values
+    recov = {"0.8": (0.489319, 0.691576), "0.3": (0.955040, 0.974928)}  # Section 5.2 toy values (act_toy.py)
     if a.recovery:
         d = json.load(open(a.recovery))
-        recov = {str(r["drift"]): (r["R_C"], r["R_A"]) for r in d["recovery"]}
+        clip = lambda R: min(R, 0.999)  # measured R can reach or exceed 1 (noise); the model needs R < 1
+        recov = {str(r["drift"]): (clip(r["R_C"]), clip(r["R_A"])) for r in d["recovery"]}
+        if any(max(r["R_C"], r["R_A"]) >= 0.999 for r in d["recovery"]):
+            print("note: recovery >= 0.999 clipped to 0.999")
         if "C_A_over_C_N" in d:
             p = replace(p, C_A=d["C_A_over_C_N"] * p.C_N)
             print(f"using measured C_A/C_N = {p.C_A / p.C_N:.3f}")
 
     rows = table_62(recov, p)
-    R_C, R_A = recov.get("0.8", next(iter(recov.values())))
-    table_63(R_C, R_A, p)
+    label = "0.8" if "0.8" in recov else next(iter(recov))
+    R_C, R_A = recov[label]
+    table_63(R_C, R_A, p, label)
 
     if a.mc:
         print("\n== Monte Carlo check of Proposition 1 (copy, drift 0.8) ==")
