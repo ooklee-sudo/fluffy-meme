@@ -1,0 +1,125 @@
+{
+  "pair": "tiny-0.3",
+  "args": {
+    "source": "meta-llama/Llama-3.2-1B",
+    "target": "meta-llama/Llama-3.2-1B-Instruct",
+    "pair_name": "tiny-0.3",
+    "dataset": "openai/gsm8k",
+    "dataset_config": "main",
+    "eval_split": "test",
+    "prompt_template": "Question: {question}\nAnswer:",
+    "response_field": "answer",
+    "n_train": 512,
+    "n_eval": 128,
+    "n_cal": 128,
+    "max_len": 512,
+    "rank": 4,
+    "lora_alpha": 16,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "steps": 300,
+    "bs": 32,
+    "lr": 0.003,
+    "gen_eval": 0,
+    "gen_max_new": 256,
+    "gpu_price": 2.0,
+    "out": "results/act_llama_tiny.json",
+    "tiny": true,
+    "tiny_vocab": 64,
+    "tiny_drift": 0.3,
+    "tiny_pretrain": 200
+  },
+  "time_train_source_s": 41.7347149848938,
+  "time_retrain_s": 211.19313097000122,
+  "none": {
+    "nll": 4.627115811434659
+  },
+  "retrain": {
+    "nll": 3.7339227849786933
+  },
+  "copy": {
+    "nll": 3.7248677201704545
+  },
+  "act_info": {
+    "base_model.model.model.layers.0.self_attn.q_proj": {
+      "alpha": 0.03162277660168379,
+      "drift": 0.0
+    },
+    "base_model.model.model.layers.0.self_attn.k_proj": {
+      "alpha": 0.0031622776601683794,
+      "drift": 0.0
+    },
+    "base_model.model.model.layers.0.self_attn.v_proj": {
+      "alpha": 100.0,
+      "drift": 0.0
+    },
+    "base_model.model.model.layers.0.self_attn.o_proj": {
+      "alpha": 0.01,
+      "drift": 0.14684621511095705
+    },
+    "base_model.model.model.layers.0.mlp.gate_proj": {
+      "alpha": 0.001,
+      "drift": 0.08181468302738885
+    },
+    "base_model.model.model.layers.0.mlp.up_proj": {
+      "alpha": 0.001,
+      "drift": 0.08181468302738885
+    },
+    "base_model.model.model.layers.0.mlp.down_proj": {
+      "alpha": 0.001,
+      "drift": 0.03292117178376091
+    },
+    "base_model.model.model.layers.1.self_attn.q_proj": {
+      "alpha": 0.001,
+      "drift": 0.10910093698739402
+    },
+    "base_model.model.model.layers.1.self_attn.k_proj": {
+      "alpha": 0.001,
+      "drift": 0.10910093698739402
+    },
+    "base_model.model.model.layers.1.self_attn.v_proj": {
+      "alpha": 0.001,
+      "drift": 0.10910093698739402
+    },
+    "base_model.model.model.layers.1.self_attn.o_proj": {
+      "alpha": 0.001,
+      "drift": 0.058303979397442175
+    },
+    "base_model.model.model.layers.1.mlp.gate_proj": {
+      "alpha": 0.001,
+      "drift": 0.09319383105266345
+    },
+    "base_model.model.model.layers.1.mlp.up_proj": {
+      "alpha": 0.001,
+      "drift": 0.09319383105266345
+    },
+    "base_model.model.model.layers.1.mlp.down_proj": {
+      "alpha": 0.001,
+      "drift": 0.07181080215244828
+    }
+  },
+  "time_act_s": 2.7848334312438965,
+  "act": {
+    "nll": 3.747762506658381
+  },
+  "recovery": [
+    {
+      "drift": "tiny-0.3",
+      "metric": "nll",
+      "R_C": 1.0101378588278591,
+      "R_A": 0.9845053406489288
+    }
+  ],
+  "C_A_over_C_N": 0.013186193217806246,
+  "cost_usd": {
+    "retrain": 0.11732951720555623,
+    "act": 0.001547129684024387
+  }
+}
