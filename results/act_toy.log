@@ -1,0 +1,30 @@
+
+== B.2 Recovery R (mean +- sd over 5 seeds) ==
+ drift             copy              act        act_indep         act_full
+   0.0    1.000 +- 0.000    1.000 +- 0.000    1.000 +- 0.000    1.000 +- 0.000
+   0.1    0.996 +- 0.000    0.998 +- 0.000    0.998 +- 0.000    0.972 +- 0.002
+   0.2    0.982 +- 0.002    0.990 +- 0.001    0.990 +- 0.001    0.858 +- 0.006
+   0.3    0.955 +- 0.004    0.975 +- 0.002    0.975 +- 0.002    0.576 +- 0.023
+   0.5    0.846 +- 0.011    0.910 +- 0.009    0.909 +- 0.008   -0.323 +- 0.058
+   0.8    0.489 +- 0.037    0.692 +- 0.037    0.689 +- 0.035   -2.604 +- 0.239
+ACT > copy (seeds): {0.0: 0, 0.1: 5, 0.2: 5, 0.3: 5, 0.5: 5, 0.8: 5}
+
+== Calibration size (s = 0.3) ==
+n=    8: R_A=0.9564  beats copy on 4/5 seeds
+n=   16: R_A=0.9589  beats copy on 4/5 seeds
+n=   32: R_A=0.9666  beats copy on 5/5 seeds
+n=   64: R_A=0.9685  beats copy on 5/5 seeds
+n=  256: R_A=0.9756  beats copy on 5/5 seeds
+n= 1024: R_A=0.9773  beats copy on 5/5 seeds
+
+== Fixed alpha sweep (s = 0.3) ==
+alpha=   0.001: R_A=0.9751
+alpha=     0.1: R_A=0.9759
+alpha=      10: R_A=0.9621
+alpha=    1000: R_A=0.9551
+alpha=  100000: R_A=0.9550
+copy: 0.9550
+
+== B.3 Spearman(log alpha_l, activation drift) over 75 layers: rho=-0.30, p=0.01
+
+saved results/act_toy.json  (749s)
