@@ -13,7 +13,7 @@
 ```bash
 pip install -r requirements.txt
 export AITX_USER_AGENT="Hong Gildong gildong@university.ac.kr"   # SEC는 연락처 없는 요청을 막습니다
-python -m unittest discover -s tests      # 오프라인 테스트 33개
+python -m unittest discover -s tests      # 오프라인 테스트 34개
 ```
 
 ## 실행 순서
@@ -34,7 +34,8 @@ python -m unittest discover -s tests      # 오프라인 테스트 33개
    제외 규칙 R4는 SIC 코드만으로 적용합니다: 컴퓨터·사무기기(357x), 반도체 등 전자부품(367x), 소프트웨어·데이터 처리(737x).
    사람의 판단이 들어가지 않아 코더 간·코더 내 신뢰도를 보고할 필요가 없습니다. 대신 거친 규칙이라
    B 유형(생성형 AI 내장 소프트웨어 판매)도 737x이면 함께 빠지고, 737x 밖의 공급기업(예: 5961 Amazon, 6798 Equinix)은 남습니다.
-   범위를 바꾸려면 `panel.py`의 `SUPPLIER_SIC`를 고치세요.
+   강건성 점검: `build --supplier-sic narrow|broad|none`으로 범위를 바꿔 실행하면 `events_<source>_<범위>.csv`가 따로 저장됩니다
+   (narrow = 737x만, broad = 기본 + 366x·481x·489x·5045, none = R4 미적용). 범위 정의는 `panel.py`의 `SUPPLIER_SIC_SPECS`에 있습니다.
 
 5. **채용공고 (선택이지만 권장)**
    - `python -m aitx.cli cc-guess`: 기업명으로 Greenhouse, Lever, Ashby 주소를 추측해 `ats_candidates.csv`를 만듭니다. 추측이므로 반드시 실제 채용 페이지와 대조하세요.

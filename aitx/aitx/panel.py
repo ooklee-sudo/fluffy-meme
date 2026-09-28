@@ -46,13 +46,21 @@ def build_events(signals, censor):
 # computer and office equipment (357x), electronic components incl. semiconductors (367x),
 # computer programming, data processing, and software (737x)
 SUPPLIER_SIC = [(3570, 3579), (3670, 3679), (7370, 7379)]
+# alternative ranges for robustness checks (build --supplier-sic NAME)
+SUPPLIER_SIC_SPECS = {
+    "baseline": SUPPLIER_SIC,
+    "narrow": [(7370, 7379)],                                    # software and data processing only
+    "broad": SUPPLIER_SIC + [(3660, 3669), (4810, 4819), (4890, 4899), (5045, 5045)],  # + telecom, IT wholesale
+    "none": [],                                                  # R4 off
+}
 
 
-def is_supplier_sic(sic):
-    return sic.apply(lambda v: pd.notna(v) and any(lo <= v <= hi for lo, hi in SUPPLIER_SIC))
+def is_supplier_sic(sic, ranges=None):
+    ranges = SUPPLIER_SIC if ranges is None else ranges
+    return sic.apply(lambda v: pd.notna(v) and any(lo <= v <= hi for lo, hi in ranges))
 
 
-def apply_exclusions(events, firms, min_assets):
+def apply_exclusions(events, firms, min_assets, supplier_sic=None):
     """Rules: R1 SIC 6770, R2 no base-year assets, R3 assets < min, R4 supplier SIC (SUPPLIER_SIC)."""
     e = events.merge(firms, on="cik", how="left")
     reason = pd.Series("", index=e.index)
@@ -61,8 +69,8 @@ def apply_exclusions(events, firms, min_assets):
     reason[m] = "R2 no base-year financial statements"
     m = (reason == "") & (e["assets_base"] < min_assets)
     reason[m] = "R3 assets below threshold"
-    m = (reason == "") & is_supplier_sic(e["sic"])
-    reason[m] = "R4 supplier industry (SIC 357x, 367x, 737x)"
+    m = (reason == "") & is_supplier_sic(e["sic"], supplier_sic)
+    reason[m] = "R4 supplier industry (SIC)"
     e["exclusion"] = reason
     return e
 

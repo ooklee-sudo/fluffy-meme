@@ -197,8 +197,9 @@ def cmd_build(cfg, args):
     for c in ("rag", "ft", "ai"):
         signals[c] = signals[c].astype(str).str.lower().isin(["true", "1"])
     ev = panel.build_events(signals, cfg.end_date)
-    ev = panel.apply_exclusions(ev, firms, cfg.min_assets_usd)
-    tag = args.source
+    ev = panel.apply_exclusions(ev, firms, cfg.min_assets_usd,
+                                panel.SUPPLIER_SIC_SPECS[args.supplier_sic])
+    tag = args.source if args.supplier_sic == "baseline" else f"{args.source}_{args.supplier_sic}"
     ev.to_csv(_p(cfg, f"events_{tag}.csv"), index=False)
     risk = ev[(ev["status"] == "at_risk") & (ev["exclusion"] == "")]
     fm = panel.firm_month_panel(risk, signals, totals)
@@ -224,6 +225,8 @@ def main(argv=None):
     b.add_argument("--source", choices=["edgar", "postings"], default="edgar")
     b.add_argument("--min-text", type=int, default=200,
                    help="drop postings with less extracted text (JS-rendered pages)")
+    b.add_argument("--supplier-sic", choices=sorted(panel.SUPPLIER_SIC_SPECS), default="baseline",
+                   help="SIC ranges for exclusion rule R4 (robustness checks)")
     args = ap.parse_args(argv)
     cfg = Config()
     {"edgar-search": cmd_edgar_search, "edgar-verify": cmd_edgar_verify,

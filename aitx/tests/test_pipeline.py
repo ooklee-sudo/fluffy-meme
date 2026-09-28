@@ -287,6 +287,17 @@ class TestPanel(unittest.TestCase):
         self.assertTrue(e.loc[3, "exclusion"].startswith("R2"))
         self.assertTrue(e.loc[4, "exclusion"].startswith("R3"))
 
+    def test_supplier_sic_specs(self):
+        ev = panel.build_events(toy_signals(), "2024-12-31")
+        firms = pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [7372, 3663, 6311, 3674],
+                              "assets_base": [5e9, 5e9, 5e9, 5e9]})
+        r4 = {k: set(panel.apply_exclusions(ev, firms, 10e6, spec).query("exclusion != ''")["cik"])
+              for k, spec in panel.SUPPLIER_SIC_SPECS.items()}
+        self.assertEqual(r4["none"], set())
+        self.assertEqual(r4["narrow"], {1})
+        self.assertEqual(r4["baseline"], {1, 4})
+        self.assertEqual(r4["broad"], {1, 2, 4})
+
     def test_firm_month(self):
         s = toy_signals()
         ev = panel.build_events(s, "2024-12-31")
@@ -323,7 +334,7 @@ class TestBuildCLI(unittest.TestCase):
                           "assets_base": [5e9, 1e9, 1e9, 1e9]}).to_csv(os.path.join(d, "firms.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
-            class A: source = "postings"; min_text = 200
+            class A: source = "postings"; min_text = 200; supplier_sic = "baseline"
             cli.cmd_build(cfg, A)
             ev = pd.read_csv(os.path.join(d, "events_postings.csv"))
             fm = pd.read_csv(os.path.join(d, "firm_month_postings.csv"))
@@ -349,7 +360,7 @@ class TestBuildEdgar(unittest.TestCase):
                           "assets_base": [5e9, 1e9, 1e9, 1e9]}).to_csv(os.path.join(d, "firms.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
-            class A: source = "edgar"; min_text = 200
+            class A: source = "edgar"; min_text = 200; supplier_sic = "baseline"
             cli.cmd_build(cfg, A)
             ev = pd.read_csv(os.path.join(d, "events_edgar.csv")).set_index("cik")
             self.assertTrue(str(ev.loc[2, "exclusion"]).startswith("R4"))
@@ -375,7 +386,7 @@ class TestBuildEdgar(unittest.TestCase):
                 os.path.join(d, "firms.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
-            class A: source = "edgar"; min_text = 200
+            class A: source = "edgar"; min_text = 200; supplier_sic = "baseline"
             cli.cmd_build(cfg, A)
             fm = pd.read_csv(os.path.join(d, "firm_month_edgar.csv"))
             self.assertLessEqual(fm["S_share"].max(), 1.0)
