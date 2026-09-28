@@ -219,6 +219,12 @@ class TestCommonCrawl(unittest.TestCase):
                          [f"https://boards.greenhouse.io/acme/jobs/{i}" for i in range(5)])
         self.assertEqual(cc.cdx_query(FakeClient(h), "files:CC-MAIN-2024-10", "boards.greenhouse.io/nope/*"), [])
 
+    def test_index_file_errors_raise(self):
+        """A server error must not be read as an empty index (silent zero captures)."""
+        c = FakeClient(lambda u, p, h: (403, b"SlowDown"))
+        with self.assertRaises(RuntimeError):
+            cc.cdx_query(c, "files:CC-MAIN-2024-10", "boards.greenhouse.io/acme/*")
+
     def test_cdx_falls_back_to_files(self):
         def h(url, p, hd):
             if "index.commoncrawl.org" in url:

@@ -96,7 +96,11 @@ def surt_prefix(url_pattern):
 
 def _idx_range(client, idx_url, pos, n):
     st, raw = client.get(idx_url, headers={"Range": f"bytes={pos}-{pos + n - 1}"}, ok_status=(200, 206))
-    return raw if st in (200, 206) else b""     # 416 past the end of the file
+    if st == 416:                               # past the end of the file
+        return b""
+    if st not in (200, 206):                    # any other failure must not pass for end of file
+        raise RuntimeError(f"HTTP {st} reading {idx_url} at {pos}")
+    return raw
 
 
 def _cdx_query_files(client, crawl_id, url_pattern, max_size=1 << 31):
@@ -151,7 +155,7 @@ def _cdx_query_files(client, crawl_id, url_pattern, max_size=1 << 31):
         st, raw = client.get(base + name, headers={"Range": f"bytes={off}-{off + ln - 1}"},
                              ok_status=(200, 206))
         if st not in (200, 206):
-            continue
+            raise RuntimeError(f"HTTP {st} reading {base + name} at {off}")
         for line in gzip.decompress(raw).decode("utf-8", "replace").splitlines():
             key, _, rest = line.partition(" ")
             if not key.startswith(prefix):

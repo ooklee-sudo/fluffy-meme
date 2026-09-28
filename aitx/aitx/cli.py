@@ -149,7 +149,11 @@ def cmd_cc_inventory(cfg, args):
         missing = [a for a in cc.INVENTORY_PATTERNS if (crawl_id, a) not in done]
         if not missing:
             continue
-        rows = list(cc.inventory(client, crawl_id, missing))
+        try:
+            rows = list(cc.inventory(client, crawl_id, missing))
+        except RuntimeError as e:   # server trouble: skip this crawl; a rerun picks it up
+            print(f"{crawl_id}: skipped ({e})")
+            continue
         _append_csv(pd.DataFrame(rows, columns=["url", "timestamp", "filename", "offset", "length", "mime",
                                                 "ats", "slug", "crawl"]), out_path)
         print(f"{crawl_id}: {len(rows)} job-page captures ({', '.join(missing)})")
