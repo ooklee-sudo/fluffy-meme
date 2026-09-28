@@ -113,8 +113,11 @@ def _cdx_query_files(client, crawl_id, url_pattern, max_size=1 << 31):
     base = f"{DATA}cc-index/collections/{crawl_id}/indexes/"
     idx_url = base + "cluster.idx"
     prefix = surt_prefix(url_pattern)
-    # lo: byte offset whose next full line sorts before the prefix (or 0)
-    lo, hi = 0, max_size
+    # lo: byte offset whose next full line sorts before the prefix (or 0). Probe only inside the
+    # file: the data server answers out-of-range reads with 403, which is indistinguishable from
+    # a real refusal.
+    size = client.size(idx_url) if hasattr(client, "size") else max_size
+    lo, hi = 0, size
     while hi - lo > 4096:
         mid = (lo + hi) // 2
         lines = _idx_range(client, idx_url, mid, 4096).split(b"\n")

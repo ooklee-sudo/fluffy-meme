@@ -27,6 +27,32 @@ class Client:
         key = repr((url, sorted((params or {}).items()), sorted((headers or {}).items())))
         return os.path.join(self.cache_dir, hashlib.sha1(key.encode()).hexdigest())
 
+    def size(self, url):
+        """Content length from a HEAD request (cached)."""
+        path = self._cache_path(url, {"_method": "HEAD"}, None) if self.cache_dir else None
+        if path and os.path.exists(path):
+            with open(path) as f:
+                return int(f.read())
+        delay = 2.0
+        for attempt in range(self.max_retries):
+            self._wait()
+            try:
+                r = self.s.head(url, timeout=60, allow_redirects=True)
+            except requests.RequestException:
+                time.sleep(delay); delay *= 2
+                continue
+            if r.status_code in (429, 500, 502, 503, 504):
+                time.sleep(delay); delay *= 2
+                continue
+            if r.status_code != 200 or "Content-Length" not in r.headers:
+                raise RuntimeError(f"HEAD {url}: HTTP {r.status_code}")
+            n = int(r.headers["Content-Length"])
+            if path:
+                with open(path, "w") as f:
+                    f.write(str(n))
+            return n
+        raise RuntimeError(f"Giving up after {self.max_retries} attempts: HEAD {url}")
+
     def get(self, url, params=None, headers=None, ok_status=(200,), cache=True):
         """Return (status, bytes). Cached only for successful responses."""
         path = self._cache_path(url, params, headers) if (self.cache_dir and cache) else None
