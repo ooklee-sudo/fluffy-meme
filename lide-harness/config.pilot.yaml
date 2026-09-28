@@ -1,0 +1,26 @@
+# Low-cost pilot: calibrates token usage and effect sizes before the full design.
+# Episodes = 2 environments x 3 valences x repetitions x models (Study 2 off).
+seed: 2026
+repetitions: 5
+workers: 2
+environments: [coding, ops]
+models:
+  - name: claude-haiku-4-5-20251001
+    provider: anthropic
+    family: claude
+    generation: "4.5"
+    size: small
+generation: {temperature: 1.0, max_tokens: 2048}
+episode: {max_live_actions: 12, max_turns: 20}
+study1:
+  enabled: true
+  valence: [success4, neutral, fail8]   # the H1 and H2 contrasts only
+  scarcity: [none]
+  record: [full]
+  summary_valences: []
+  feedback_valences: []
+study2: {enabled: false}
+output: {dir: results_pilot, save_transcripts: true}
+estimate: {input_tokens_per_episode: 60000, output_tokens_per_episode: 4000}
+pricing:
+  claude-haiku-4-5-20251001: {input_per_mtok: 0, output_per_mtok: 0}   # fill in current prices
