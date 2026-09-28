@@ -390,5 +390,29 @@ class TestBuildEdgar(unittest.TestCase):
             self.assertEqual(fm.loc[fm["month"] == "2024-02", "cum_rag"].item(), 1)
 
 
+
+class TestCoding(unittest.TestCase):
+    def test_recode_sample_is_fixed_20_percent(self):
+        from aitx import cli
+        flags = cli.recode_sample(35)
+        self.assertEqual(sum(flags), 7)
+        self.assertEqual(flags, cli.recode_sample(35))
+
+    def test_kappa(self):
+        from aitx import cli
+        self.assertAlmostEqual(cli.cohen_kappa("AABB", "AABB"), 1.0)
+        self.assertAlmostEqual(cli.cohen_kappa("AABB", "ABAB"), 0.0)
+        self.assertAlmostEqual(cli.cohen_kappa("AAAB", "AABB"), 0.5)
+
+    def test_kappa_command(self):
+        from aitx import cli
+        with tempfile.TemporaryDirectory() as d:
+            pd.DataFrame({"cik": [1, 2, 3, 4, 5], "code": ["A", "B", "C", "A", "B"],
+                          "recode_sample": [1, 1, 1, 1, 0], "recode": ["A", "B", "C", "B", ""]}).to_csv(
+                os.path.join(d, "supplier_coding_sheet.csv"), index=False)
+            cfg = cli.Config(); cfg.data_dir = d
+            cli.cmd_kappa(cfg, None)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -13,7 +13,7 @@
 ```bash
 pip install -r requirements.txt
 export AITX_USER_AGENT="Hong Gildong gildong@university.ac.kr"   # SEC는 연락처 없는 요청을 막습니다
-python -m unittest discover -s tests      # 오프라인 테스트 33개
+python -m unittest discover -s tests      # 오프라인 테스트 37개
 ```
 
 ## 실행 순서
@@ -30,10 +30,11 @@ python -m unittest discover -s tests      # 오프라인 테스트 33개
 3. **`python -m aitx.cli firm-info`**
    기업별 SIC, 2022년 총자산, 공시 일자, 최근 10-K 사업 설명 발췌를 가져옵니다 → `firms.csv`, `filing_dates.csv`, `supplier_coding_sheet.csv`.
 
-4. **수작업: 공급기업 코딩**
-   `supplier_coding_sheet.csv`의 `item1_excerpt`를 읽고 코더 두 명이 `coder1`, `coder2`에 A/B/C/X를 적습니다. 불일치를 합의해 `supplier_final`에 확정합니다.
+4. **수작업: 공급기업 코딩 (코더 1명)**
+   `supplier_coding_sheet.csv`의 `item1_excerpt`를 읽고 `code`에 A/B/C/X를 적습니다.
    A = AI·데이터 인프라 공급(제외), B = 생성형 AI 내장 소프트웨어 판매, C = 비소프트웨어 사용기업, X = SPAC.
-   코더 간 일치도(Cohen's κ)를 논문에 보고하세요.
+   `recode_sample = 1`로 표시된 무작위 20% 기업은 2주 이상 지난 뒤 첫 분류를 보지 않고 `recode`에 다시 적습니다.
+   `python -m aitx.cli kappa`로 코더 내 일치도(Cohen's κ)를 계산해 논문에 보고하고, 최종 분류를 `supplier_final`에 적습니다.
 
 5. **채용공고 (선택이지만 권장)**
    - `python -m aitx.cli cc-guess`: 기업명으로 Greenhouse, Lever, Ashby 주소를 추측해 `ats_candidates.csv`를 만듭니다. 추측이므로 반드시 실제 채용 페이지와 대조하세요.
