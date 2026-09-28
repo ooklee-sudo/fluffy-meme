@@ -90,16 +90,29 @@ AI_RULES = [
     ("genai", re.compile(r"\bgenerative (AI|artificial intelligence)\b", _F), None),
 ]
 
+# negation in the same sentence shortly before an FT term: 'without needing to train or
+# fine-tune', 'prohibit the training, retraining, or fine-tuning', 'no LLM training or fine-tuning'
+FT_NEGATION = re.compile(r"\b(without|not|no|never|nor|prohibit\w*|restrict\w*|refrain\w*)\b", _F)
+NEG_WINDOW = 60
+
 WINDOW = 150  # characters on each side for context checks and snippets
 
 
-def _apply(rules, text, exclude=None):
+def _negated(text, start, negation):
+    before = text[max(0, start - NEG_WINDOW):start]
+    before = re.split(r"[.;:!?]\s", before)[-1]   # same sentence only
+    return bool(negation.search(before))
+
+
+def _apply(rules, text, exclude=None, negation=None):
     hits = []
     for name, pat, ctx in rules:
         for m in pat.finditer(text):
             lo, hi = max(0, m.start() - WINDOW), min(len(text), m.end() + WINDOW)
             window = text[lo:hi]
             if exclude is not None and exclude.search(window):
+                continue
+            if negation is not None and _negated(text, m.start(), negation):
                 continue
             if ctx is not None:
                 # context word must appear in the window other than the match itself
@@ -114,7 +127,7 @@ def classify(text):
     """Return dict with booleans rag/ft/ai, matched rule names and one snippet each."""
     text = text or ""
     rag = _apply(RAG_RULES, text, RAG_EXCLUDE)
-    ft = _apply(FT_RULES, text)
+    ft = _apply(FT_RULES, text, negation=FT_NEGATION)
     ai = _apply(AI_RULES, text)
     return {
         "rag": bool(rag), "ft": bool(ft), "ai": bool(ai) or bool(rag) or bool(ft),

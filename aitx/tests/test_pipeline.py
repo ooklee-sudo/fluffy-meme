@@ -44,6 +44,14 @@ class TestKeywords(unittest.TestCase):
         self.assertFalse(kw.classify("We continue to fine-tune our business model.")["ft"])
         self.assertFalse(kw.classify("We fine-tuned our forecasting models.")["ft"])
 
+    def test_fine_tune_negated(self):
+        for s in ["RAG lets them ground LLMs on their data without needing to train or fine-tune models.",
+                  "Inputs may not be used for the training, retraining, or fine-tuning of AI models.",
+                  "Clients prohibit the training, retraining, or fine-tuning of language models on their data.",
+                  "There is no large language model training or fine-tuning with client data."]:
+            self.assertFalse(kw.classify(s)["ft"], s)
+        self.assertTrue(kw.classify("We are not a bank. We fine-tune open-source models such as Llama.")["ft"])
+
     def test_lora_not_lorawan(self):
         self.assertFalse(kw.classify("Sensors connect over LoRaWAN networks.")["ft"])
         self.assertTrue(kw.classify("We adapt the model with LoRA adapters.")["ft"])
