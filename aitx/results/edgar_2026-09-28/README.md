@@ -11,6 +11,7 @@ the manuscript ("Preliminary evidence from the EDGAR measure", Table 2a).
 | `edgar_docs.csv` | rule check with the negation rule (used for the panel) |
 | `firms.csv` | SIC and fiscal 2022 total assets |
 | `events_edgar.csv`, `firm_month_edgar.csv` | risk set and firm-month panel (R1–R4 applied; R4 by SIC 357x, 367x, 737x) |
+| `events_edgar_{narrow,broad,none}.csv`, `firm_month_edgar_{...}.csv` | same under alternative R4 SIC ranges (`build --supplier-sic`) |
 | `summarize.py` → `summary.json` | every number quoted in the manuscript |
 
 No step uses hand coding: signals come from the rules in `aitx/keywords.py`, and supplier exclusion (R4)

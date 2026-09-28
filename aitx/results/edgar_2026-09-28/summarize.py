@@ -56,5 +56,14 @@ for k in ("rag", "ft"):
     S[f"{k}_firms_supplier_sic"] = int(is_supplier_sic(c.sic).sum())
 S["excl_R4"] = int(risk.exclusion.str.startswith("R4").sum())
 S["events_removed_by_R4"] = risk[risk.exclusion.str.startswith("R4") & (risk.event == 1)]["name"].tolist()
+# robustness: R4 under alternative SIC ranges (build --supplier-sic NAME)
+S["sic_specs"] = {}
+for spec, fname in [("none", "events_edgar_none"), ("narrow", "events_edgar_narrow"),
+                    ("baseline", "events_edgar"), ("broad", "events_edgar_broad")]:
+    e = pd.read_csv(f"{D}/{fname}.csv")
+    e["exclusion"] = e["exclusion"].fillna("")
+    r = e[(e.status == "at_risk") & (e.exclusion == "")]
+    S["sic_specs"][spec] = {"firms": len(r), "events": int(r.event.sum()),
+                            "event_firms": sorted(r.loc[r.event == 1, "name"].tolist())}
 print(json.dumps(S, indent=1, default=str))
 json.dump(S, open(os.path.join(D, "summary.json"), "w"), indent=1, default=str)
