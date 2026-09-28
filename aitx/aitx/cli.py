@@ -107,7 +107,9 @@ def cmd_firm_info(cfg, args):
 # ------------------------------------------------------------------ Common Crawl
 def _cc_client(cfg, rps=None):
     ua = cfg.user_agent or "aitx-research-pipeline"
-    return Client(ua, rps or cfg.cc_rps, os.path.join(cfg.cache_dir, "cc"))
+    # data.commoncrawl.org throttles with 403 (not 429): retry it with long back-off
+    return Client(ua, rps or cfg.cc_rps, os.path.join(cfg.cache_dir, "cc"), max_retries=6,
+                  retry_status=(403, 429, 500, 502, 503, 504), first_delay=15.0)
 
 
 WIKI = "https://en.wikipedia.org/wiki/"

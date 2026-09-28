@@ -7,13 +7,16 @@ import requests
 
 
 class Client:
-    def __init__(self, user_agent, rps, cache_dir=None, session=None, max_retries=5):
+    def __init__(self, user_agent, rps, cache_dir=None, session=None, max_retries=5,
+                 retry_status=(429, 500, 502, 503, 504), first_delay=2.0):
         self.s = session or requests.Session()
         self.s.headers.update({"User-Agent": user_agent, "Accept-Encoding": "gzip, deflate"})
         self.min_gap = 1.0 / rps
         self._last = 0.0
         self.cache_dir = cache_dir
         self.max_retries = max_retries
+        self.retry_status = tuple(retry_status)
+        self.first_delay = first_delay
         if cache_dir:
             os.makedirs(cache_dir, exist_ok=True)
 
@@ -33,7 +36,7 @@ class Client:
         if path and os.path.exists(path):
             with open(path) as f:
                 return int(f.read())
-        delay = 2.0
+        delay = self.first_delay
         for attempt in range(self.max_retries):
             self._wait()
             try:
@@ -41,7 +44,7 @@ class Client:
             except requests.RequestException:
                 time.sleep(delay); delay *= 2
                 continue
-            if r.status_code in (429, 500, 502, 503, 504):
+            if r.status_code in self.retry_status:
                 time.sleep(delay); delay *= 2
                 continue
             if r.status_code != 200 or "Content-Length" not in r.headers:
@@ -59,7 +62,7 @@ class Client:
         if path and os.path.exists(path):
             with open(path, "rb") as f:
                 return 200, f.read()
-        delay = 2.0
+        delay = self.first_delay
         for attempt in range(self.max_retries):
             self._wait()
             try:
@@ -67,7 +70,7 @@ class Client:
             except requests.RequestException:
                 time.sleep(delay); delay *= 2
                 continue
-            if r.status_code in (429, 500, 502, 503, 504):
+            if r.status_code in self.retry_status:
                 time.sleep(delay); delay *= 2
                 continue
             if r.status_code in ok_status and path:
