@@ -15,6 +15,7 @@ class Config:
     forms: tuple = ("10-K", "10-Q", "8-K")
     sec_rps: float = 8.0              # SEC fair-access limit is 10 requests/second
     cc_rps: float = 1.0               # be gentle with the Common Crawl index server
+    cc_data_rps: float = 4.0          # data.commoncrawl.org (index files and WARC ranges)
     data_dir: str = "data"
     cache_dir: str = field(default_factory=lambda: os.path.join("data", "cache"))
 

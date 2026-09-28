@@ -394,5 +394,42 @@ class TestBuildEdgar(unittest.TestCase):
 
 
 
+
+class TestInventory(unittest.TestCase):
+    def test_board_slug(self):
+        self.assertEqual(cc.board_slug("https://boards.greenhouse.io/Acme/jobs/1?x=y"), "acme")
+        self.assertEqual(cc.board_slug("https://jobs.lever.co/acme-corp/0f8c2d3e-aaaa-bbbb-cccc-000000000000"),
+                         "acme-corp")
+        self.assertEqual(cc.slug_candidates("Rocket Companies, Inc.", first_word=False),
+                         ["rocketcompanies", "rocket-companies"])
+
+    def test_inventory_keeps_detail_html_only(self):
+        rows = [{"url": "https://boards.greenhouse.io/acme/jobs/123", "timestamp": "20240101000000",
+                 "filename": "f", "offset": "0", "length": "9", "mime": "text/html"},
+                {"url": "https://boards.greenhouse.io/acme", "timestamp": "20240101000000",
+                 "filename": "f", "offset": "0", "length": "9", "mime": "text/html"}]
+        orig = cc._cdx_query_files
+        cc._cdx_query_files = lambda client, crawl, pat: rows if pat.startswith("boards.greenhouse") else []
+        try:
+            out = list(cc.inventory(None, "CC-MAIN-2024-10"))
+        finally:
+            cc._cdx_query_files = orig
+        self.assertEqual([(r["ats"], r["slug"], r["crawl"]) for r in out], [("greenhouse", "acme", "CC-MAIN-2024-10")])
+
+    def test_cc_match_rule(self):
+        from aitx import cli
+        with tempfile.TemporaryDirectory() as d:
+            pd.DataFrame({"cik": [1, 2, 3], "ticker": ["AC", "AC2", "BE"],
+                          "name": ["Acme Corp", "Acme, Inc.", "Beta Widgets Inc."]}).to_csv(
+                os.path.join(d, "universe.csv"), index=False)
+            pd.DataFrame({"ats": ["greenhouse", "lever", "lever"], "slug": ["acme", "betawidgets", "beta"],
+                          "url": ["u1", "u2", "u3"]}).to_csv(os.path.join(d, "cc_inventory.csv"), index=False)
+            cfg = cli.Config(); cfg.data_dir = d
+            cli.cmd_cc_match(cfg, None)
+            m = pd.read_csv(os.path.join(d, "ats_map.csv"))
+            # 'acme' is claimed by two firms -> dropped; 'beta' (first word only) is not a candidate
+            self.assertEqual(m[["cik", "ats", "slug"]].values.tolist(), [[3, "lever", "betawidgets"]])
+
+
 if __name__ == "__main__":
     unittest.main()

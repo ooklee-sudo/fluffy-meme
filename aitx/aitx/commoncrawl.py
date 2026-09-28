@@ -294,12 +294,40 @@ def canonical_job_url(url):
     return (p.netloc.lower() + p.path.rstrip("/")).replace("job-boards.greenhouse.io", "boards.greenhouse.io")
 
 
-def slug_candidates(name):
+# whole-host prefixes for a bulk inventory of every board on the three hosted ATSs
+INVENTORY_PATTERNS = {
+    "greenhouse": ["boards.greenhouse.io/*", "job-boards.greenhouse.io/*"],
+    "lever": ["jobs.lever.co/*"],
+    "ashby": ["jobs.ashbyhq.com/*"],
+}
+
+
+def board_slug(url):
+    """'https://boards.greenhouse.io/Acme/jobs/1' -> 'acme'."""
+    parts = urlsplit(url).path.strip("/").split("/")
+    return parts[0].lower() if parts and parts[0] else ""
+
+
+def inventory(client, crawl_id):
+    """Every job-detail HTML capture on Greenhouse, Lever, and Ashby in one crawl.
+
+    Reads the index files directly: each host spans only a few dozen cdx blocks per crawl, so one
+    pass is far cheaper than a query per firm.
+    """
+    for ats, pats in INVENTORY_PATTERNS.items():
+        for pat in pats:
+            for row in _cdx_query_files(client, crawl_id, pat):
+                if not DETAIL[ats].search(row["url"]) or "html" not in (row.get("mime") or "html"):
+                    continue
+                yield {**row, "ats": ats, "slug": board_slug(row["url"]), "crawl": crawl_id}
+
+
+def slug_candidates(name, first_word=True):
     """Guess ATS slugs from a company name, e.g. 'Rocket Companies, Inc.' -> rocketcompanies, rocket."""
     n = re.sub(r"\(.*?\)", " ", name.lower())
     n = re.sub(r"\b(inc|corp|corporation|co|company|ltd|plc|holdings|group|the|llc|n\.v|s\.a)\b\.?", " ", n)
     words = re.findall(r"[a-z0-9]+", n)
     if not words:
         return []
-    c = ["".join(words), "-".join(words), words[0]]
+    c = ["".join(words), "-".join(words)] + ([words[0]] if first_word else [])
     return list(dict.fromkeys(c))

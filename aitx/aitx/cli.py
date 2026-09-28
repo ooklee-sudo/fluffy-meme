@@ -3,6 +3,9 @@
     python -m aitx.cli edgar-search
     python -m aitx.cli edgar-verify [--limit N]
     python -m aitx.cli firm-info
+    python -m aitx.cli sp1500
+    python -m aitx.cli cc-inventory
+    python -m aitx.cli cc-match
     python -m aitx.cli cc-guess
     python -m aitx.cli cc-collect --ats-map data/ats_map.csv
     python -m aitx.cli build --source edgar|postings
@@ -102,9 +105,72 @@ def cmd_firm_info(cfg, args):
 
 
 # ------------------------------------------------------------------ Common Crawl
-def _cc_client(cfg):
+def _cc_client(cfg, rps=None):
     ua = cfg.user_agent or "aitx-research-pipeline"
-    return Client(ua, cfg.cc_rps, os.path.join(cfg.cache_dir, "cc"))
+    return Client(ua, rps or cfg.cc_rps, os.path.join(cfg.cache_dir, "cc"))
+
+
+WIKI = "https://en.wikipedia.org/wiki/"
+
+
+def cmd_sp1500(cfg, args):
+    """Current S&P 500, 400, and 600 constituents (Wikipedia), with CIKs from SEC company_tickers.json."""
+    import io
+    import json
+    client = _sec_client(cfg)
+    wiki = Client(cfg.user_agent, 1.0, os.path.join(cfg.cache_dir, "wiki"))
+    frames = []
+    for idx, page in (("S&P 500", "List_of_S%26P_500_companies"), ("S&P 400", "List_of_S%26P_400_companies"),
+                      ("S&P 600", "List_of_S%26P_600_companies")):
+        st, body = wiki.get(WIKI + page)
+        t = pd.read_html(io.StringIO(body.decode("utf-8")))[0]
+        frames.append(pd.DataFrame({"ticker": t["Symbol"].astype(str), "name": t["Security"],
+                                    "gics_sector": t["GICS Sector"], "index": idx}))
+    u = pd.concat(frames, ignore_index=True)
+    st, body = client.get("https://www.sec.gov/files/company_tickers.json")
+    sec_t = pd.DataFrame(json.loads(body).values())
+    sec_t["ticker"] = sec_t["ticker"].str.upper()
+    u["ticker"] = u["ticker"].str.upper().str.replace(".", "-", regex=False)
+    u = u.merge(sec_t[["ticker", "cik_str"]].rename(columns={"cik_str": "cik"}), on="ticker", how="left")
+    u.to_csv(_p(cfg, "universe.csv"), index=False)
+    print(f"universe.csv: {len(u)} constituents, {u['cik'].notna().sum()} with CIK")
+
+
+def cmd_cc_inventory(cfg, args):
+    """Bulk list of job-detail captures on Greenhouse, Lever, and Ashby for every crawl in the window."""
+    client = _cc_client(cfg, cfg.cc_data_rps)
+    crawls = cc.crawls_between(client, cfg.start_date, cfg.end_date)
+    out_path = _p(cfg, "cc_inventory.csv")
+    done = set(pd.read_csv(out_path, usecols=["crawl"])["crawl"]) if os.path.exists(out_path) else set()
+    for crawl_id, _ in crawls:
+        if crawl_id in done:
+            continue
+        rows = list(cc.inventory(client, crawl_id))
+        _append_csv(pd.DataFrame(rows, columns=["url", "timestamp", "filename", "offset", "length", "mime",
+                                                "ats", "slug", "crawl"]), out_path)
+        print(f"{crawl_id}: {len(rows)} job-page captures")
+
+
+def cmd_cc_match(cfg, args):
+    """Link firms to ATS boards by rule: a board matches if its slug is the firm's full cleaned name
+    (joined or hyphenated) and no other firm claims the same slug. No hand checking."""
+    firms = pd.read_csv(_p(cfg, "universe.csv") if os.path.exists(_p(cfg, "universe.csv")) else _p(cfg, "firms.csv"))
+    firms = firms.dropna(subset=["cik"])
+    inv = pd.read_csv(_p(cfg, "cc_inventory.csv"), usecols=["ats", "slug", "url"])
+    counts = inv.groupby(["ats", "slug"]).size()
+    rows = []
+    for f in firms.itertuples():
+        for slug in cc.slug_candidates(str(f.name), first_word=False):
+            for ats in cc.INVENTORY_PATTERNS:
+                if (ats, slug) in counts.index:
+                    rows.append({"cik": int(f.cik), "name": f.name, "ats": ats, "slug": slug,
+                                 "captures": int(counts[(ats, slug)])})
+    m = pd.DataFrame(rows, columns=["cik", "name", "ats", "slug", "captures"]).drop_duplicates(["cik", "ats", "slug"])
+    shared = m.groupby(["ats", "slug"])["cik"].transform("nunique") > 1
+    m = m[~shared]
+    m.to_csv(_p(cfg, "ats_map.csv"), index=False)
+    print(f"ats_map.csv: {m['cik'].nunique()} firms matched to {len(m)} boards "
+          f"({int(shared.sum())} ambiguous slugs dropped)")
 
 
 def cmd_cc_guess(cfg, args):
@@ -130,9 +196,11 @@ def cmd_cc_guess(cfg, args):
 
 
 def cmd_cc_collect(cfg, args):
-    client = _cc_client(cfg)
+    inv_path = _p(cfg, "cc_inventory.csv")
+    inv = pd.read_csv(inv_path, dtype=str) if os.path.exists(inv_path) else None
+    client = _cc_client(cfg, cfg.cc_data_rps if inv is not None else None)
     amap = pd.read_csv(args.ats_map)
-    crawls = cc.crawls_between(client, cfg.start_date, cfg.end_date)
+    crawls = [] if inv is not None else cc.crawls_between(client, cfg.start_date, cfg.end_date)
     out_path = _p(cfg, "postings.csv")
     seen = set()
     if os.path.exists(out_path):
@@ -140,6 +208,11 @@ def cmd_cc_collect(cfg, args):
     for f in amap.itertuples():
         # 1) earliest capture of every job-detail URL across crawls
         first = {}
+        if inv is not None:     # bulk inventory from cc-inventory
+            for row in inv[(inv["ats"] == f.ats) & (inv["slug"] == f.slug)].to_dict("records"):
+                key = cc.canonical_job_url(row["url"])
+                if key not in first or row["timestamp"] < first[key]["timestamp"]:
+                    first[key] = row
         for crawl_id, api in crawls:
             for pat in cc.ATS_PATTERNS[f.ats]:
                 for row in cc.cdx_query(client, api, pat.format(slug=f.slug)):
@@ -219,6 +292,9 @@ def main(argv=None):
     sub.add_parser("edgar-search")
     v = sub.add_parser("edgar-verify"); v.add_argument("--limit", type=int, default=0)
     sub.add_parser("firm-info")
+    sub.add_parser("sp1500")
+    sub.add_parser("cc-inventory")
+    sub.add_parser("cc-match")
     sub.add_parser("cc-guess")
     c = sub.add_parser("cc-collect"); c.add_argument("--ats-map", default="data/ats_map.csv")
     b = sub.add_parser("build")
@@ -230,7 +306,8 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = Config()
     {"edgar-search": cmd_edgar_search, "edgar-verify": cmd_edgar_verify,
-     "firm-info": cmd_firm_info, "cc-guess": cmd_cc_guess, "cc-collect": cmd_cc_collect,
+     "firm-info": cmd_firm_info, "sp1500": cmd_sp1500, "cc-inventory": cmd_cc_inventory,
+     "cc-match": cmd_cc_match, "cc-guess": cmd_cc_guess, "cc-collect": cmd_cc_collect,
      "build": cmd_build}[args.cmd](cfg, args)
 
 
