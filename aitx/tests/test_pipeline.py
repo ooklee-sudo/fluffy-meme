@@ -403,6 +403,13 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(cc.slug_candidates("Rocket Companies, Inc.", first_word=False),
                          ["rocketcompanies", "rocket-companies"])
 
+    def test_workday_icims(self):
+        self.assertEqual(cc.surt_prefix("*.myworkdayjobs.com"), "com,myworkdayjobs,")
+        self.assertEqual(cc.board_slug("https://aig.wd1.myworkdayjobs.com/aig/job/NY/Data-Scientist_R1", "workday"), "aig")
+        self.assertEqual(cc.board_slug("https://careers-acme.icims.com/jobs/123/x/job", "icims"), "acme")
+        self.assertTrue(cc.tech_title("https://w.wd5.myworkdayjobs.com/en-US/Ext/job/Bentonville-AR/Senior-Data-Scientist_R-1"))
+        self.assertFalse(cc.tech_title("https://w.wd5.myworkdayjobs.com/en-US/Ext/job/Arab-AL/Baker-and-Packager-Associate_R-2"))
+
     def test_inventory_keeps_detail_html_only(self):
         rows = [{"url": "https://boards.greenhouse.io/acme/jobs/123", "timestamp": "20240101000000",
                  "filename": "f", "offset": "0", "length": "9", "mime": "text/html"},

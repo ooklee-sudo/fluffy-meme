@@ -141,14 +141,18 @@ def cmd_cc_inventory(cfg, args):
     client = _cc_client(cfg, cfg.cc_data_rps)
     crawls = cc.crawls_between(client, cfg.start_date, cfg.end_date)
     out_path = _p(cfg, "cc_inventory.csv")
-    done = set(pd.read_csv(out_path, usecols=["crawl"])["crawl"]) if os.path.exists(out_path) else set()
+    done = set()
+    if os.path.exists(out_path):
+        prev = pd.read_csv(out_path, usecols=["crawl", "ats"])
+        done = set(zip(prev["crawl"], prev["ats"]))
     for crawl_id, _ in crawls:
-        if crawl_id in done:
+        missing = [a for a in cc.INVENTORY_PATTERNS if (crawl_id, a) not in done]
+        if not missing:
             continue
-        rows = list(cc.inventory(client, crawl_id))
+        rows = list(cc.inventory(client, crawl_id, missing))
         _append_csv(pd.DataFrame(rows, columns=["url", "timestamp", "filename", "offset", "length", "mime",
                                                 "ats", "slug", "crawl"]), out_path)
-        print(f"{crawl_id}: {len(rows)} job-page captures")
+        print(f"{crawl_id}: {len(rows)} job-page captures ({', '.join(missing)})")
 
 
 def cmd_cc_match(cfg, args):
@@ -228,15 +232,21 @@ def cmd_cc_collect(cfg, args):
         # 2) fetch and classify
         batch = []
         for k, row in todo:
+            first_seen = datetime.strptime(row["timestamp"][:8], "%Y%m%d").date().isoformat()
+            if f.ats in cc.TITLE_IN_URL and not cc.tech_title(row["url"]):
+                # non-technology title: counted in the denominator, not fetched, no RAG/FT signal
+                batch.append({"cik": f.cik, "job_key": k, "url": row["url"], "first_seen": first_seen,
+                              "date_posted": "", "date": first_seen, "title": "", "text_len": 0,
+                              "jsonld": False, "skipped": 1, **kw.classify("")})
+                continue
             html = cc.fetch_capture(client, row)
             p = cc.extract_posting(html)
-            first_seen = datetime.strptime(row["timestamp"][:8], "%Y%m%d").date().isoformat()
             dp = p["date_posted"]
             date = dp if (dp and "2015-01-01" <= dp <= first_seen) else first_seen
             res = kw.classify(p["title"] + " " + p["text"])
             batch.append({"cik": f.cik, "job_key": k, "url": row["url"], "first_seen": first_seen,
                           "date_posted": dp, "date": date, "title": p["title"],
-                          "text_len": p["text_len"], "jsonld": p["jsonld"], **res})
+                          "text_len": p["text_len"], "jsonld": p["jsonld"], "skipped": 0, **res})
             if len(batch) >= 100:
                 _append_csv(pd.DataFrame(batch), out_path); batch = []
         if batch:
@@ -261,7 +271,8 @@ def cmd_build(cfg, args):
         ai_docs = ai_docs[["cik", "date"]]
     else:
         post = pd.read_csv(_p(cfg, "postings.csv"))
-        post = post[post["text_len"] >= args.min_text]
+        skipped = post["skipped"] == 1 if "skipped" in post else False
+        post = post[(post["text_len"] >= args.min_text) | skipped]
         signals = post.rename(columns={"job_key": "doc_id"})[["cik", "date", "doc_id", "rag", "ft", "ai"]]
         totals = post[["cik", "date"]]
         ai_docs = post.loc[post["ai"], ["cik", "date"]]

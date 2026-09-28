@@ -82,10 +82,13 @@ def _crawls_from_files(client, start, end):
 
 
 def surt_prefix(url_pattern):
-    """'boards.greenhouse.io/acme/jobs/*' -> 'io,greenhouse,boards)/acme/jobs/' (CDX sort key)."""
+    """'boards.greenhouse.io/acme/jobs/*' -> 'io,greenhouse,boards)/acme/jobs/' (CDX sort key).
+    A leading '*.' matches every subdomain: '*.myworkdayjobs.com' -> 'com,myworkdayjobs,'."""
     pat = url_pattern.rstrip("*").lower()
     host, slash, path = pat.partition("/")
     host = host.split(":")[0]
+    if host.startswith("*."):
+        return ",".join(reversed(host[2:].split("."))) + ","
     if host.startswith("www."):
         host = host[4:]
     return ",".join(reversed(host.split("."))) + ")" + slash + path
@@ -299,27 +302,50 @@ INVENTORY_PATTERNS = {
     "greenhouse": ["boards.greenhouse.io/*", "job-boards.greenhouse.io/*"],
     "lever": ["jobs.lever.co/*"],
     "ashby": ["jobs.ashbyhq.com/*"],
+    "workday": ["*.myworkdayjobs.com"],
+    "icims": ["*.icims.com"],
+    "smartrecruiters": ["jobs.smartrecruiters.com/*"],
 }
+# job titles appear in the URL only on these ATSs; others are always fetched
+TITLE_IN_URL = {"workday", "icims", "smartrecruiters"}
+TECH_TITLE = re.compile(
+    r"engineer|develop|software|data|scien|machine|learning|\bai\b|\bml\b|artificial|analytic|architect|"
+    r"\bllm|\bnlp\b|research|platform|cloud|devops|\bit\b|information|technolog|cyber|product.manager|"
+    r"programm|automation|genai|intelligence", re.I)
 
 
-def board_slug(url):
-    """'https://boards.greenhouse.io/Acme/jobs/1' -> 'acme'."""
-    parts = urlsplit(url).path.strip("/").split("/")
+def board_slug(url, ats=None):
+    """Board id: 'https://boards.greenhouse.io/Acme/jobs/1' -> 'acme';
+    Workday/iCIMS use the host: 'aig.wd1.myworkdayjobs.com' -> 'aig', 'careers-acme.icims.com' -> 'acme'."""
+    p = urlsplit(url)
+    if ats in ("workday", "icims"):
+        label = p.netloc.lower().split(":")[0].split(".")[0]
+        return re.sub(r"^(?:us|uk|global|external)?-?(?:careers|jobs)-", "", label) if ats == "icims" else label
+    parts = p.path.strip("/").split("/")
     return parts[0].lower() if parts and parts[0] else ""
 
 
-def inventory(client, crawl_id):
+def tech_title(url):
+    """True if the job title embedded in the URL looks like a technology role."""
+    seg = [s for s in urlsplit(url).path.split("/") if s]
+    hint = " ".join(seg[-2:]).replace("-", " ").replace("_", " ")
+    return bool(TECH_TITLE.search(hint))
+
+
+def inventory(client, crawl_id, ats_list=None):
     """Every job-detail HTML capture on Greenhouse, Lever, and Ashby in one crawl.
 
     Reads the index files directly: each host spans only a few dozen cdx blocks per crawl, so one
     pass is far cheaper than a query per firm.
     """
     for ats, pats in INVENTORY_PATTERNS.items():
+        if ats_list is not None and ats not in ats_list:
+            continue
         for pat in pats:
             for row in _cdx_query_files(client, crawl_id, pat):
                 if not DETAIL[ats].search(row["url"]) or "html" not in (row.get("mime") or "html"):
                     continue
-                yield {**row, "ats": ats, "slug": board_slug(row["url"]), "crawl": crawl_id}
+                yield {**row, "ats": ats, "slug": board_slug(row["url"], ats), "crawl": crawl_id}
 
 
 def slug_candidates(name, first_word=True):
