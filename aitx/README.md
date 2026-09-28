@@ -13,7 +13,7 @@
 ```bash
 pip install -r requirements.txt
 export AITX_USER_AGENT="Hong Gildong gildong@university.ac.kr"   # SEC는 연락처 없는 요청을 막습니다
-python -m unittest discover -s tests      # 오프라인 테스트 27개
+python -m unittest discover -s tests      # 오프라인 테스트 33개
 ```
 
 ## 실행 순서
@@ -56,7 +56,8 @@ fit <- coxph(Surv(start, stop, event) ~ scale(S_share) + scale(ind_sigma) + scal
 
 ## 알아둘 한계
 
-- **서버 호출은 검증되지 않았습니다.** 코드는 인터넷이 막힌 환경에서 작성해, 처리 로직만 가짜 응답으로 테스트했습니다. EDGAR 전문 검색(efts.sec.gov)은 공식 문서가 없는 내부 API라 응답 형식이 바뀔 수 있으니, 첫 실행에서 `edgar_hits.csv`의 열이 채워졌는지 확인하세요.
+- **서버 호출 점검 결과 (2026-09-28).** EDGAR 전문 검색·문서 내려받기, Common Crawl 인덱스 파일·WARC 조회를 실제 서버에 연결해 확인했습니다. EDGAR 전문 검색(efts.sec.gov)은 공식 문서가 없는 내부 API라 가끔 `500 Internal server error`를 돌려주는데, 클라이언트가 자동으로 다시 시도합니다. 응답 형식은 바뀔 수 있으니 실행 때마다 `edgar_hits.csv`의 열이 채워졌는지 확인하세요.
+- **Common Crawl 인덱스 서버가 자주 끊깁니다.** index.commoncrawl.org는 일부 클라우드 망에서 연결을 끊거나 502를 돌려줍니다. 그러면 `data.commoncrawl.org`에 있는 인덱스 파일(cluster.idx, cdx-*.gz)을 범위 요청으로 직접 읽도록 자동 전환합니다. 결과는 같지만 조회 한 번에 요청이 20회가량 필요해 느립니다(`data/cache/`에 저장되므로 같은 조회는 다시 받지 않습니다).
 - **Common Crawl의 날짜는 근사치입니다.** 크롤은 한두 달 간격으로 일부 페이지만 수집합니다. JSON-LD에 게시일(datePosted)이 있으면 그것을 쓰고, 없으면 처음 수집된 날짜를 씁니다. 그래서 실제 게시일보다 늦게 잡힐 수 있습니다.
 - **Workday 등은 본문이 비어 있을 수 있습니다.** 자바스크립트로 그리는 채용 페이지는 본문이 거의 비어 있어서, `--min-text` 기준(기본 200자) 아래로 떨어지면 빠집니다. `postings.csv`의 `text_len`, `jsonld`로 기업별 수집 상태를 점검하세요.
 - **정밀도를 직접 점검하세요.** 무작위 100개 문서의 snippet을 읽고 규칙 정밀도를 보고하는 것을 권합니다. 오탐이 보이면 `keywords.py`에 규칙을 추가하면 됩니다.

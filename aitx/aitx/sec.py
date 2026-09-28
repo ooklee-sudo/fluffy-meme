@@ -21,6 +21,12 @@ def _months(start, end):
     return out
 
 
+def clean_name(display_name):
+    """'Couchbase, Inc.  (BASE)  (CIK 0001845022)' -> 'Couchbase, Inc.'"""
+    n = re.sub(r"\s*\(CIK \d+\)\s*$", "", display_name)
+    return re.sub(r"\s*\([A-Z0-9.\-, ]+\)\s*$", "", n).strip()
+
+
 def parse_efts_hit(hit, phrase):
     """Flatten one EFTS hit. One row per CIK (multi-filer documents list several)."""
     src = hit.get("_source", {})
@@ -32,7 +38,7 @@ def parse_efts_hit(hit, phrase):
     for i, cik in enumerate(src.get("ciks") or []):
         rows.append({
             "cik": int(cik),
-            "name": names[i] if i < len(names) else "",
+            "name": clean_name(names[i]) if i < len(names) else "",
             "sic": int(sics[i]) if i < len(sics) and str(sics[i]).isdigit() else None,
             "form": src.get("form") or (src.get("root_forms") or [""])[0],
             "file_date": src.get("file_date"),
@@ -60,6 +66,8 @@ def efts_search(client, phrase, start, end, forms):
             windows = _months(s, e)
             if len(windows) > 1:
                 return [r for a, b in windows for r in run(a, b)]
+        if total >= EFTS_CAP:
+            print(f"WARNING: {phrase!r} {s}..{e} has {EFTS_CAP}+ hits; only the first {EFTS_CAP} kept")
         rows = [r for h in first["hits"]["hits"] for r in parse_efts_hit(h, phrase)]
         for frm in range(PAGE, min(total, EFTS_CAP), PAGE):
             data = page(frm, s, e)

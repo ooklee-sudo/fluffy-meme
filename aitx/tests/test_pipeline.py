@@ -41,6 +41,8 @@ class TestKeywords(unittest.TestCase):
     def test_fine_tune_needs_model_context(self):
         self.assertTrue(kw.classify("We fine-tuned an open-weight language model on claims data.")["ft"])
         self.assertFalse(kw.classify("We continue to fine-tune our pricing strategy.")["ft"])
+        self.assertFalse(kw.classify("We continue to fine-tune our business model.")["ft"])
+        self.assertFalse(kw.classify("We fine-tuned our forecasting models.")["ft"])
 
     def test_lora_not_lorawan(self):
         self.assertFalse(kw.classify("Sensors connect over LoRaWAN networks.")["ft"])
@@ -71,6 +73,12 @@ class TestSEC(unittest.TestCase):
         self.assertEqual([r["cik"] for r in rows], [1, 2])
         self.assertEqual(rows[0]["sic"], 7372); self.assertIsNone(rows[1]["sic"])
         self.assertEqual(rows[0]["filename"], "a.htm")
+
+    def test_clean_name(self):
+        self.assertEqual(sec.clean_name("Couchbase, Inc.  (BASE)  (CIK 0001845022)"), "Couchbase, Inc.")
+        self.assertEqual(sec.clean_name("DHC Acquisition Corp.  (BNAI, BNAIW)  (CIK 0001838163)"),
+                         "DHC Acquisition Corp.")
+        self.assertEqual(sec.clean_name("PRIVATE FILER (CIK 0000000001)"), "PRIVATE FILER")
 
     def test_pagination(self):
         def h(url, p, hd):
@@ -177,6 +185,58 @@ class TestCommonCrawl(unittest.TestCase):
         out = cc.crawls_between(FakeClient(lambda u, p, h: (200, info.encode())), "2023-01-01", "2026-09-29")
         self.assertEqual(out, [("CC-MAIN-2024-10", "b")])
 
+    def test_surt_prefix(self):
+        self.assertEqual(cc.surt_prefix("boards.greenhouse.io/acme/jobs/*"), "io,greenhouse,boards)/acme/jobs/")
+        self.assertEqual(cc.surt_prefix("www.Acme.com/Careers/*"), "com,acme)/careers/")
+        self.assertEqual(cc.surt_prefix("aig.wd1.myworkdayjobs.com/*"), "com,myworkdayjobs,wd1,aig)/")
+
+    def test_cdx_from_index_files(self):
+        """Binary search over a fake cluster.idx, then filter the matching cdx blocks."""
+        def cdx_line(key, url, status="200"):
+            return f"{key} 20240301000000 " + json.dumps(
+                {"url": url, "status": status, "mime": "text/html", "filename": "w.warc.gz",
+                 "offset": "0", "length": "9"})
+        other = [cdx_line(f"com,other{i:05d})/", f"https://other{i:05d}.com/") for i in range(4000)]
+        acme = [cdx_line(f"io,greenhouse,boards)/acme/jobs/{i}", f"https://boards.greenhouse.io/acme/jobs/{i}")
+                for i in range(5)] + [cdx_line("io,greenhouse,boards)/acme/jobs/9", "x", status="404")]
+        tail = [cdx_line(f"io,greenhouse,boards)/zeta/jobs/{i}", "z") for i in range(50)]
+        lines = sorted(other + acme + tail)
+        cdx, idx, off = b"", "", 0
+        for i in range(0, len(lines), 7):             # blocks of 7 lines, one gzip member each
+            blk = gzip.compress(("\n".join(lines[i:i + 7]) + "\n").encode())
+            idx += f"{lines[i].split(' ')[0]} 20240301000000\tcdx-00000.gz\t{off}\t{len(blk)}\t{i // 7}\n"
+            cdx, off = cdx + blk, off + len(blk)
+        files = {"cluster.idx": idx.encode(), "cdx-00000.gz": cdx}
+
+        def h(url, p, hd):
+            data = files[url.rsplit("/", 1)[1]]
+            a, b = map(int, hd["Range"][6:].split("-"))
+            return (206, data[a:b + 1]) if a < len(data) else (416, b"")
+        rows = cc.cdx_query(FakeClient(h), "files:CC-MAIN-2024-10", "boards.greenhouse.io/acme/jobs/*")
+        self.assertEqual(sorted(r["url"] for r in rows),
+                         [f"https://boards.greenhouse.io/acme/jobs/{i}" for i in range(5)])
+        self.assertEqual(cc.cdx_query(FakeClient(h), "files:CC-MAIN-2024-10", "boards.greenhouse.io/nope/*"), [])
+
+    def test_cdx_falls_back_to_files(self):
+        def h(url, p, hd):
+            if "index.commoncrawl.org" in url:
+                raise RuntimeError("giving up")
+            return 416, b""
+        try:
+            self.assertEqual(cc.cdx_query(FakeClient(h), "https://index.commoncrawl.org/CC-MAIN-2024-10-index",
+                                          "boards.greenhouse.io/acme/*"), [])
+        finally:
+            cc._index_down = False
+
+    def test_crawls_from_files(self):
+        page = b"<a>CC-MAIN-2022-49</a><a>CC-MAIN-2024-10</a><a>CC-MAIN-2024-10</a><a>CC-MAIN-2026-39</a>"
+
+        def h(url, p, hd):
+            return (500, b"") if "collinfo" in url else (200, page)
+        out = cc.crawls_between(FakeClient(h), "2023-01-01", "2026-09-29")
+        self.assertEqual(out, [("CC-MAIN-2024-10", "files:CC-MAIN-2024-10"),
+                               ("CC-MAIN-2026-39", "files:CC-MAIN-2026-39")])
+
     def test_helpers(self):
         self.assertEqual(cc.canonical_job_url("https://job-boards.greenhouse.io/acme/jobs/123/"),
                          "boards.greenhouse.io/acme/jobs/123")
@@ -270,9 +330,6 @@ class TestBuildCLI(unittest.TestCase):
             self.assertIn("ind_sigma", fm.columns)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class TestBuildEdgar(unittest.TestCase):
     def test_build_edgar(self):
@@ -298,3 +355,32 @@ class TestBuildEdgar(unittest.TestCase):
             self.assertTrue(str(ev.loc[2, "exclusion"]).startswith("R4"))
             fm = pd.read_csv(os.path.join(d, "firm_month_edgar.csv"))
             self.assertEqual(set(fm["cik"]), {1})
+
+    def test_build_edgar_counts_filings_not_documents(self):
+        """A filing whose main document and exhibit both mention RAG counts once in S."""
+        from aitx import cli
+        with tempfile.TemporaryDirectory() as d:
+            docs = pd.DataFrame({
+                "cik": [1, 1, 1, 1], "adsh": ["f1", "f1", "f2", "f3"],
+                "filename": ["main.htm", "ex99.htm", "main.htm", "main.htm"],
+                "date": ["2024-01-10", "2024-01-10", "2024-03-10", "2024-06-10"],
+                "rag": [True, True, True, False], "ft": [False, False, False, True], "ai": True})
+            docs["doc_id"] = docs["adsh"] + ":" + docs["filename"]
+            docs.to_csv(os.path.join(d, "edgar_docs.csv"), index=False)
+            pd.DataFrame({"cik": 1, "date": ["2024-01-10", "2024-03-10", "2024-06-10"]}).to_csv(
+                os.path.join(d, "filing_dates.csv"), index=False)
+            pd.DataFrame({"cik": [1], "adsh": ["f1"], "file_date": ["2024-01-10"], "sic": [7372],
+                          "kind": "ai"}).to_csv(os.path.join(d, "edgar_hits.csv"), index=False)
+            pd.DataFrame({"cik": [1], "sic": [7372], "assets_base": [5e9]}).to_csv(
+                os.path.join(d, "firms.csv"), index=False)
+            cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
+
+            class A: source = "edgar"; min_text = 200
+            cli.cmd_build(cfg, A)
+            fm = pd.read_csv(os.path.join(d, "firm_month_edgar.csv"))
+            self.assertLessEqual(fm["S_share"].max(), 1.0)
+            self.assertEqual(fm.loc[fm["month"] == "2024-02", "cum_rag"].item(), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

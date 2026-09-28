@@ -19,6 +19,7 @@ SEARCH_PHRASES = {
         "vector database",
         "vector search",
         "embedding model",
+        "RAG",                       # bare acronym; the regex layer drops 'RAG status' etc.
     ],
     "ft": [
         "fine-tuned model",
@@ -34,6 +35,11 @@ SEARCH_PHRASES = {
         "domain-specific language model",
         "reinforcement learning from human feedback",
         "train our own model",
+        # broad terms: high recall, the regex layer requires AI-model context
+        "fine-tuning",
+        "fine-tuned",
+        "fine-tune",
+        "LoRA",
     ],
     # generic generative-AI activity, used for industry drift and volatility
     "ai": [
@@ -48,9 +54,14 @@ AI_CONTEXT = re.compile(
     r"\b(LLMs?|large language models?|language models?|generative AI|gen ?AI|"
     r"foundation models?|GPT|Llama|embeddings?|retriev\w*|chatbots?|AI|"
     r"machine learning|neural|transformer)\b", _F)
-MODEL_CONTEXT = re.compile(
-    r"\b(models?|LLMs?|language models?|foundation models?|weights|GPT|Llama|"
-    r"Mistral|BERT|transformer|neural network)\b", _F)
+# AI-model words; bare "model" is not enough ("fine-tune our business model")
+FT_CONTEXT = re.compile(
+    r"\b(LLMs?|(large )?language models?|foundation models?|(AI|ML|machine learning|deep learning|"
+    r"generative|open[- ]weights?|open[- ]source|pre-?trained) models?|GPT|Llama|Mistral|"
+    r"BERT|transformers?|neural networks?|generative AI|gen ?AI|artificial intelligence)\b", _F)
+
+# 'LoRA' (capital A) is already AI-specific; only rule out stray acronym uses
+LORA_CONTEXT = re.compile(r"\b(models?|adapters?|fine[- ]?tun\w*|LLMs?|weights|rank)\b", _F)
 
 RAG_RULES = [
     ("rag_phrase", re.compile(r"\bretrieval[- ]augmented[- ]generation\b", _F), None),
@@ -62,8 +73,8 @@ RAG_RULES = [
 RAG_EXCLUDE = re.compile(r"\bred[\s,/-]+amber[\s,/-]+green\b", _F)
 
 FT_RULES = [
-    ("fine_tune", re.compile(r"\bfine[- ]?tun(e|ed|es|ing)\b", _F), MODEL_CONTEXT),
-    ("lora", re.compile(r"\bLoRA\b(?!WAN)"), MODEL_CONTEXT),
+    ("fine_tune", re.compile(r"\bfine[- ]?tun(e|ed|es|ing)\b", _F), FT_CONTEXT),
+    ("lora", re.compile(r"\bLoRA\b(?!WAN)"), LORA_CONTEXT),
     ("low_rank", re.compile(r"\blow[- ]rank adaptation\b", _F), None),
     ("peft", re.compile(r"\bPEFT\b|\bparameter[- ]efficient fine[- ]?tuning\b", _F), None),
     ("rlhf_dpo", re.compile(r"\bRLHF\b|\breinforcement learning from human feedback\b|"

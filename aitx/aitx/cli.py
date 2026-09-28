@@ -120,13 +120,16 @@ def cmd_cc_guess(cfg, args):
     """Try slug guesses on the most recent crawl for Greenhouse/Lever/Ashby. Manual check needed."""
     client = _cc_client(cfg)
     firms = pd.read_csv(_p(cfg, "firms.csv"))
-    crawl_id, api = cc.crawls_between(client, cfg.start_date, cfg.end_date)[-1]
+    crawls = cc.crawls_between(client, cfg.start_date, cfg.end_date)
+    if not crawls:
+        raise SystemExit("no Common Crawl crawls found in the study window")
+    crawl_id, api = crawls[-1]
     rows = []
     for f in firms.itertuples():
         for slug in cc.slug_candidates(f.name):
             for ats in ("greenhouse", "lever", "ashby"):
-                pat = cc.ATS_PATTERNS[ats][0].format(slug=slug)
-                n = len(cc.cdx_query(client, api, pat))
+                n = sum(len(cc.cdx_query(client, api, pat.format(slug=slug)))
+                        for pat in cc.ATS_PATTERNS[ats])
                 if n:
                     rows.append({"cik": f.cik, "name": f.name, "ats": ats, "slug": slug,
                                  "captures_in_" + crawl_id: n})
@@ -184,7 +187,11 @@ def cmd_build(cfg, args):
         firms = firms.merge(pd.read_csv(sheet)[["cik", "supplier_final"]], on="cik", how="left")
     if args.source == "edgar":
         docs = pd.read_csv(_p(cfg, "edgar_docs.csv"))
-        signals = docs[["cik", "date", "doc_id", "rag", "ft", "ai"]]
+        for c in ("rag", "ft", "ai"):
+            docs[c] = docs[c].astype(str).str.lower().isin(["true", "1"])
+        # one row per filing (main document + exhibits), matching the filing-level denominator
+        signals = (docs.groupby(["cik", "adsh", "date"], as_index=False)[["rag", "ft", "ai"]].any()
+                   .rename(columns={"adsh": "doc_id"}))
         totals = pd.read_csv(_p(cfg, "filing_dates.csv"))
         hits = pd.read_csv(_p(cfg, "edgar_hits.csv"))
         ai_docs = (hits[hits["kind"] == "ai"].drop_duplicates(["cik", "adsh"])
