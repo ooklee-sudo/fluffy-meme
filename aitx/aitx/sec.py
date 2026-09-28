@@ -128,27 +128,3 @@ def assets_in_year(client, cik, year):
     if not vals:
         return None
     return max(vals, key=lambda u: (u.get("filed", ""), u.get("end", "")))["val"]
-
-
-_ITEM1 = re.compile(r"item\s*1\s*[\.\-:–—]?\s*business", re.I)
-_ITEM1A = re.compile(r"item\s*1a\s*[\.\-:–—]?\s*risk\s*factors", re.I)
-
-
-def item1_text(text, max_chars=4000):
-    """Extract Item 1 (Business). Takes the longest start->1A span to skip the table of contents."""
-    best = ""
-    for m in _ITEM1.finditer(text):
-        end = _ITEM1A.search(text, m.end())
-        span = text[m.end(): end.start() if end else m.end() + 20000]
-        if len(span) > len(best):
-            best = span
-    return best.strip()[:max_chars]
-
-
-def latest_10k_url(client, cik):
-    rec = submissions(client, cik).get("filings", {}).get("recent", {})
-    for form, adsh, doc in zip(rec.get("form", []), rec.get("accessionNumber", []),
-                               rec.get("primaryDocument", [])):
-        if form == "10-K":
-            return document_url(cik, adsh, doc)
-    return None

@@ -3,7 +3,6 @@
     python -m aitx.cli edgar-search
     python -m aitx.cli edgar-verify [--limit N]
     python -m aitx.cli firm-info
-    python -m aitx.cli kappa
     python -m aitx.cli cc-guess
     python -m aitx.cli cc-collect --ats-map data/ats_map.csv
     python -m aitx.cli build --source edgar|postings
@@ -81,13 +80,13 @@ def cmd_edgar_verify(cfg, args):
 
 # ------------------------------------------------------------------ firm info
 def cmd_firm_info(cfg, args):
-    """Name, SIC, base-year assets, filing dates, and a 10-K Item 1 coding sheet."""
+    """Name, SIC, base-year assets, and filing dates."""
     client = _sec_client(cfg)
     docs = pd.read_csv(_p(cfg, "edgar_docs.csv"))
     ciks = sorted(docs.loc[docs["rag"] | docs["ft"], "cik"].unique())
     if os.path.exists(_p(cfg, "ats_map.csv")):
         ciks = sorted(set(ciks) | set(pd.read_csv(_p(cfg, "ats_map.csv"))["cik"]))
-    firms, dates, sheet = [], [], []
+    firms, dates = [], []
     for i, cik in enumerate(ciks, 1):
         sub = sec.submissions(client, cik)
         sic = sub.get("sic")
@@ -95,49 +94,11 @@ def cmd_firm_info(cfg, args):
                       "sic": int(sic) if str(sic).isdigit() else None,
                       "assets_base": sec.assets_in_year(client, cik, cfg.base_year)})
         dates += [{"cik": cik, "date": d} for d in sec.filing_dates(client, cik, cfg.forms)]
-        url = sec.latest_10k_url(client, cik)
-        item1 = sec.item1_text(sec.fetch_text(client, url)) if url else ""
-        sheet.append({"cik": cik, "name": sub.get("name", ""), "sic": sic, "item1_excerpt": item1,
-                      "code": "", "recode_sample": 0, "recode": "", "supplier_final": "", "notes": ""})
         if i % 25 == 0:
             print(f"firm info {i}/{len(ciks)}")
     pd.DataFrame(firms).to_csv(_p(cfg, "firms.csv"), index=False)
     pd.DataFrame(dates).to_csv(_p(cfg, "filing_dates.csv"), index=False)
-    sheet_path = _p(cfg, "supplier_coding_sheet.csv")
-    if os.path.exists(sheet_path):
-        print("supplier_coding_sheet.csv exists; not overwritten (it may hold coder input)")
-    else:
-        sheet = pd.DataFrame(sheet)
-        sheet["recode_sample"] = recode_sample(len(sheet))
-        sheet.to_csv(sheet_path, index=False)
     print(f"saved firms.csv, filing_dates.csv for {len(ciks)} firms")
-
-
-def recode_sample(n, share=0.2, seed=2026):
-    """0/1 flags marking a fixed random share of rows for the coder's blind second pass."""
-    k = max(1, round(n * share)) if n else 0
-    idx = pd.Series(range(n)).sample(k, random_state=seed)
-    return pd.Series(range(n)).isin(idx).astype(int).tolist()
-
-
-def cohen_kappa(a, b):
-    """Cohen's kappa for two lists of category labels (same length)."""
-    a, b = pd.Series(list(a), dtype=str), pd.Series(list(b), dtype=str)
-    po = (a == b).mean()
-    pe = sum(a.value_counts(normalize=True).get(c, 0) * b.value_counts(normalize=True).get(c, 0)
-             for c in set(a) | set(b))
-    return 1.0 if pe == 1 else (po - pe) / (1 - pe)
-
-
-def cmd_kappa(cfg, args):
-    """Intra-coder agreement between the first code and the blind recode."""
-    sheet = pd.read_csv(_p(cfg, "supplier_coding_sheet.csv"), dtype=str).fillna("")
-    s = sheet[(sheet["recode_sample"] == "1") & (sheet["code"] != "") & (sheet["recode"] != "")]
-    if s.empty:
-        raise SystemExit("no rows with both code and recode filled in")
-    agree = (s["code"].str.upper() == s["recode"].str.upper()).mean()
-    kappa = cohen_kappa(s["code"].str.upper(), s["recode"].str.upper())
-    print(f"n = {len(s)}, agreement = {agree:.1%}, Cohen's kappa = {kappa:.3f}")
 
 
 # ------------------------------------------------------------------ Common Crawl
@@ -212,9 +173,6 @@ def cmd_cc_collect(cfg, args):
 # ------------------------------------------------------------------ build
 def cmd_build(cfg, args):
     firms = pd.read_csv(_p(cfg, "firms.csv"))
-    sheet = _p(cfg, "supplier_coding_sheet.csv")
-    if os.path.exists(sheet):
-        firms = firms.merge(pd.read_csv(sheet)[["cik", "supplier_final"]], on="cik", how="left")
     if args.source == "edgar":
         docs = pd.read_csv(_p(cfg, "edgar_docs.csv"))
         for c in ("rag", "ft", "ai"):
@@ -260,7 +218,6 @@ def main(argv=None):
     sub.add_parser("edgar-search")
     v = sub.add_parser("edgar-verify"); v.add_argument("--limit", type=int, default=0)
     sub.add_parser("firm-info")
-    sub.add_parser("kappa")
     sub.add_parser("cc-guess")
     c = sub.add_parser("cc-collect"); c.add_argument("--ats-map", default="data/ats_map.csv")
     b = sub.add_parser("build")
@@ -270,7 +227,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = Config()
     {"edgar-search": cmd_edgar_search, "edgar-verify": cmd_edgar_verify,
-     "firm-info": cmd_firm_info, "kappa": cmd_kappa, "cc-guess": cmd_cc_guess, "cc-collect": cmd_cc_collect,
+     "firm-info": cmd_firm_info, "cc-guess": cmd_cc_guess, "cc-collect": cmd_cc_collect,
      "build": cmd_build}[args.cmd](cfg, args)
 
 

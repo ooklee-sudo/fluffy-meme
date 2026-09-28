@@ -42,8 +42,18 @@ def build_events(signals, censor):
     return pd.DataFrame(rows)
 
 
-def apply_exclusions(events, firms, min_assets, supplier_col="supplier_final"):
-    """Rules: R1 SIC 6770, R2 no base-year assets, R3 assets < min, R4 AI supplier (category A)."""
+# R4: AI and data infrastructure suppliers, identified from SIC codes alone (no hand coding):
+# computer and office equipment (357x), electronic components incl. semiconductors (367x),
+# computer programming, data processing, and software (737x)
+SUPPLIER_SIC = [(3570, 3579), (3670, 3679), (7370, 7379)]
+
+
+def is_supplier_sic(sic):
+    return sic.apply(lambda v: pd.notna(v) and any(lo <= v <= hi for lo, hi in SUPPLIER_SIC))
+
+
+def apply_exclusions(events, firms, min_assets):
+    """Rules: R1 SIC 6770, R2 no base-year assets, R3 assets < min, R4 supplier SIC (SUPPLIER_SIC)."""
     e = events.merge(firms, on="cik", how="left")
     reason = pd.Series("", index=e.index)
     reason[e["sic"] == 6770] = "R1 blank-check company"
@@ -51,9 +61,8 @@ def apply_exclusions(events, firms, min_assets, supplier_col="supplier_final"):
     reason[m] = "R2 no base-year financial statements"
     m = (reason == "") & (e["assets_base"] < min_assets)
     reason[m] = "R3 assets below threshold"
-    if supplier_col in e:
-        m = (reason == "") & (e[supplier_col].astype(str).str.upper() == "A")
-        reason[m] = "R4 AI/data infrastructure supplier"
+    m = (reason == "") & is_supplier_sic(e["sic"])
+    reason[m] = "R4 supplier industry (SIC 357x, 367x, 737x)"
     e["exclusion"] = reason
     return e
 

@@ -105,12 +105,6 @@ class TestSEC(unittest.TestCase):
         rows = sec.efts_search(FakeClient(h), "x", "2024-01-01", "2024-03-31", ("10-K",))
         self.assertEqual(len(rows), 15)   # three monthly windows x 5
 
-    def test_item1(self):
-        text = ("Table of contents Item 1. Business 3 Item 1A. Risk Factors 10 ... "
-                "PART I Item 1. Business We sell database software with vector search to enterprises. "
-                "Item 1A. Risk Factors Our business is risky.")
-        self.assertTrue(sec.item1_text(text).startswith("We sell database software"))
-
     def test_assets(self):
         body = json.dumps({"units": {"USD": [
             {"end": "2022-12-31", "val": 5e8, "form": "10-K", "filed": "2023-02-20"},
@@ -286,7 +280,7 @@ class TestPanel(unittest.TestCase):
     def test_exclusions(self):
         ev = panel.build_events(toy_signals(), "2024-12-31")
         firms = pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [7372, 6770, 6311, 3674],
-                              "assets_base": [5e9, 1e8, None, 2e6], "supplier_final": ["A", "", "", ""]})
+                              "assets_base": [5e9, 1e8, None, 2e6]})
         e = panel.apply_exclusions(ev, firms, 10e6).set_index("cik")
         self.assertTrue(e.loc[1, "exclusion"].startswith("R4"))
         self.assertTrue(e.loc[2, "exclusion"].startswith("R1"))
@@ -325,7 +319,7 @@ class TestBuildCLI(unittest.TestCase):
             s = toy_signals()
             post = s.rename(columns={"doc_id": "job_key"}).assign(text_len=500)
             post.to_csv(os.path.join(d, "postings.csv"), index=False)
-            pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [7372, 6311, 6311, 3674],
+            pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [5961, 6311, 6311, 3674],
                           "assets_base": [5e9, 1e9, 1e9, 1e9]}).to_csv(os.path.join(d, "firms.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
@@ -351,10 +345,8 @@ class TestBuildEdgar(unittest.TestCase):
                                  "file_date": [f"2024-{(i % 12) + 1:02d}-01" for i in range(24)],
                                  "sic": [7372, 6311] * 12, "kind": "ai"})
             hits.to_csv(os.path.join(d, "edgar_hits.csv"), index=False)
-            pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [7372, 6311, 6311, 3674],
+            pd.DataFrame({"cik": [1, 2, 3, 4], "sic": [5961, 7372, 6311, 3674],
                           "assets_base": [5e9, 1e9, 1e9, 1e9]}).to_csv(os.path.join(d, "firms.csv"), index=False)
-            pd.DataFrame({"cik": [1, 2, 3, 4], "supplier_final": ["C", "A", "", ""]}).to_csv(
-                os.path.join(d, "supplier_coding_sheet.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
             class A: source = "edgar"; min_text = 200
@@ -379,7 +371,7 @@ class TestBuildEdgar(unittest.TestCase):
                 os.path.join(d, "filing_dates.csv"), index=False)
             pd.DataFrame({"cik": [1], "adsh": ["f1"], "file_date": ["2024-01-10"], "sic": [7372],
                           "kind": "ai"}).to_csv(os.path.join(d, "edgar_hits.csv"), index=False)
-            pd.DataFrame({"cik": [1], "sic": [7372], "assets_base": [5e9]}).to_csv(
+            pd.DataFrame({"cik": [1], "sic": [5961], "assets_base": [5e9]}).to_csv(
                 os.path.join(d, "firms.csv"), index=False)
             cfg = cli.Config(); cfg.data_dir = d; cfg.end_date = "2024-12-31"
 
@@ -389,29 +381,6 @@ class TestBuildEdgar(unittest.TestCase):
             self.assertLessEqual(fm["S_share"].max(), 1.0)
             self.assertEqual(fm.loc[fm["month"] == "2024-02", "cum_rag"].item(), 1)
 
-
-
-class TestCoding(unittest.TestCase):
-    def test_recode_sample_is_fixed_20_percent(self):
-        from aitx import cli
-        flags = cli.recode_sample(35)
-        self.assertEqual(sum(flags), 7)
-        self.assertEqual(flags, cli.recode_sample(35))
-
-    def test_kappa(self):
-        from aitx import cli
-        self.assertAlmostEqual(cli.cohen_kappa("AABB", "AABB"), 1.0)
-        self.assertAlmostEqual(cli.cohen_kappa("AABB", "ABAB"), 0.0)
-        self.assertAlmostEqual(cli.cohen_kappa("AAAB", "AABB"), 0.5)
-
-    def test_kappa_command(self):
-        from aitx import cli
-        with tempfile.TemporaryDirectory() as d:
-            pd.DataFrame({"cik": [1, 2, 3, 4, 5], "code": ["A", "B", "C", "A", "B"],
-                          "recode_sample": [1, 1, 1, 1, 0], "recode": ["A", "B", "C", "B", ""]}).to_csv(
-                os.path.join(d, "supplier_coding_sheet.csv"), index=False)
-            cfg = cli.Config(); cfg.data_dir = d
-            cli.cmd_kappa(cfg, None)
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@
 ```bash
 pip install -r requirements.txt
 export AITX_USER_AGENT="Hong Gildong gildong@university.ac.kr"   # SEC는 연락처 없는 요청을 막습니다
-python -m unittest discover -s tests      # 오프라인 테스트 37개
+python -m unittest discover -s tests      # 오프라인 테스트 33개
 ```
 
 ## 실행 순서
@@ -28,13 +28,13 @@ python -m unittest discover -s tests      # 오프라인 테스트 37개
    걸러내는 예: "RAG status"(프로젝트 신호등), "fine-tune our strategy", "LoRaWAN". 판정 근거 문장(snippet)이 함께 저장됩니다.
 
 3. **`python -m aitx.cli firm-info`**
-   기업별 SIC, 2022년 총자산, 공시 일자, 최근 10-K 사업 설명 발췌를 가져옵니다 → `firms.csv`, `filing_dates.csv`, `supplier_coding_sheet.csv`.
+   기업별 SIC, 2022년 총자산, 공시 일자를 가져옵니다 → `firms.csv`, `filing_dates.csv`.
 
-4. **수작업: 공급기업 코딩 (코더 1명)**
-   `supplier_coding_sheet.csv`의 `item1_excerpt`를 읽고 `code`에 A/B/C/X를 적습니다.
-   A = AI·데이터 인프라 공급(제외), B = 생성형 AI 내장 소프트웨어 판매, C = 비소프트웨어 사용기업, X = SPAC.
-   `recode_sample = 1`로 표시된 무작위 20% 기업은 2주 이상 지난 뒤 첫 분류를 보지 않고 `recode`에 다시 적습니다.
-   `python -m aitx.cli kappa`로 코더 내 일치도(Cohen's κ)를 계산해 논문에 보고하고, 최종 분류를 `supplier_final`에 적습니다.
+4. **공급기업 제외 (수작업 없음)**
+   제외 규칙 R4는 SIC 코드만으로 적용합니다: 컴퓨터·사무기기(357x), 반도체 등 전자부품(367x), 소프트웨어·데이터 처리(737x).
+   사람의 판단이 들어가지 않아 코더 간·코더 내 신뢰도를 보고할 필요가 없습니다. 대신 거친 규칙이라
+   B 유형(생성형 AI 내장 소프트웨어 판매)도 737x이면 함께 빠지고, 737x 밖의 공급기업(예: 5961 Amazon, 6798 Equinix)은 남습니다.
+   범위를 바꾸려면 `panel.py`의 `SUPPLIER_SIC`를 고치세요.
 
 5. **채용공고 (선택이지만 권장)**
    - `python -m aitx.cli cc-guess`: 기업명으로 Greenhouse, Lever, Ashby 주소를 추측해 `ats_candidates.csv`를 만듭니다. 추측이므로 반드시 실제 채용 페이지와 대조하세요.
@@ -61,6 +61,6 @@ fit <- coxph(Surv(start, stop, event) ~ scale(S_share) + scale(ind_sigma) + scal
 - **Common Crawl 인덱스 서버가 자주 끊깁니다.** index.commoncrawl.org는 일부 클라우드 망에서 연결을 끊거나 502를 돌려줍니다. 그러면 `data.commoncrawl.org`에 있는 인덱스 파일(cluster.idx, cdx-*.gz)을 범위 요청으로 직접 읽도록 자동 전환합니다. 결과는 같지만 조회 한 번에 요청이 20회가량 필요해 느립니다(`data/cache/`에 저장되므로 같은 조회는 다시 받지 않습니다).
 - **Common Crawl의 날짜는 근사치입니다.** 크롤은 한두 달 간격으로 일부 페이지만 수집합니다. JSON-LD에 게시일(datePosted)이 있으면 그것을 쓰고, 없으면 처음 수집된 날짜를 씁니다. 그래서 실제 게시일보다 늦게 잡힐 수 있습니다.
 - **Workday 등은 본문이 비어 있을 수 있습니다.** 자바스크립트로 그리는 채용 페이지는 본문이 거의 비어 있어서, `--min-text` 기준(기본 200자) 아래로 떨어지면 빠집니다. `postings.csv`의 `text_len`, `jsonld`로 기업별 수집 상태를 점검하세요.
-- **정밀도를 직접 점검하세요.** 무작위 100개 문서의 snippet을 읽고 규칙 정밀도를 보고하는 것을 권합니다. 오탐이 보이면 `keywords.py`에 규칙을 추가하면 됩니다.
+- **규칙 정밀도는 사람이 점검하지 않습니다.** 판정 근거 문장(snippet)이 `edgar_docs.csv`에 저장되므로, 오탐이 보이면 `keywords.py`에 규칙을 추가하면 됩니다.
 - **요청 속도를 지키세요.** SEC는 초당 10회 이하(기본 8회), Common Crawl 인덱스는 기본 초당 1회입니다. 이 값을 올리면 차단될 수 있습니다.
 - **보완 자료가 필요한 변수:** 손실회피(CFO 재임 기간 영업권 손상 지연)와 CIO 권한(보고 라인)은 이 코드로 만들지 않습니다. Compustat이 없으면 XBRL의 GoodwillImpairmentLoss 태그로 대체할 수 있습니다.
