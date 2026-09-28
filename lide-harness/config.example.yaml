@@ -1,0 +1,67 @@
+# Copy to config.yaml and edit. Fix every value here in the preregistration.
+seed: 2026
+repetitions: 10          # runs per (cell, model); set by power analysis after the pilot
+workers: 2               # parallel episodes; keep low to respect rate limits
+
+environments: [coding, ops]
+
+# Sample models by family x generation x size (Section 4.1). Examples only - replace
+# with the exact model IDs and pin versions where the provider allows it.
+models:
+  - name: claude-sonnet-5
+    provider: anthropic
+    family: claude
+    generation: "5"
+    size: medium
+  - name: claude-haiku-4-5-20251001
+    provider: anthropic
+    family: claude
+    generation: "4.5"
+    size: small
+  - name: YOUR-OPENAI-MODEL-ID
+    provider: openai
+    family: gpt
+    generation: "?"
+    size: "?"
+    max_tokens_param: max_completion_tokens   # newer OpenAI models use this name
+  - name: Qwen/Qwen2.5-7B-Instruct              # open-weight via vLLM (needed for exploratory E1)
+    provider: openai_compatible
+    base_url: http://localhost:8000/v1
+    api_key_env: VLLM_API_KEY
+    family: qwen
+    generation: "2.5"
+    size: 7b
+
+generation:
+  temperature: 1.0       # set null to use the provider default
+  max_tokens: 2048
+
+episode:
+  max_live_actions: 12   # tool calls after the history
+  max_turns: 20
+
+study1:
+  enabled: true
+  valence: [success4, neutral, fail2, fail4, fail8]
+  scarcity: [none, steps, deadline]
+  record: [full, summary]
+  summary_valences: [fail2, fail4, fail8]
+  feedback_valences: [fail4, fail8]
+
+study2:
+  enabled: true
+  valence: [neutral, fail8]
+  scarcity: deadline
+  governance: [none, default_exit, stop_loss, friction, all]
+
+output:
+  dir: results
+  save_transcripts: true
+
+# For --estimate. Fill in current prices (USD per million tokens) from each provider.
+estimate:
+  input_tokens_per_episode: 60000
+  output_tokens_per_episode: 4000
+pricing:
+  claude-sonnet-5: {input_per_mtok: 0, output_per_mtok: 0}
+  claude-haiku-4-5-20251001: {input_per_mtok: 0, output_per_mtok: 0}
