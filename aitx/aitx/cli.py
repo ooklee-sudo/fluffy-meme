@@ -4,6 +4,7 @@
     python -m aitx.cli edgar-verify [--limit N]
     python -m aitx.cli firm-info
     python -m aitx.cli sp1500
+    python -m aitx.cli governance
     python -m aitx.cli cc-inventory
     python -m aitx.cli cc-match
     python -m aitx.cli cc-guess
@@ -17,6 +18,7 @@ from datetime import datetime
 import pandas as pd
 
 from . import commoncrawl as cc
+from . import governance as gov
 from . import keywords as kw
 from . import panel
 from . import sec
@@ -102,6 +104,35 @@ def cmd_firm_info(cfg, args):
     pd.DataFrame(firms).to_csv(_p(cfg, "firms.csv"), index=False)
     pd.DataFrame(dates).to_csv(_p(cfg, "filing_dates.csv"), index=False)
     print(f"saved firms.csv, filing_dates.csv for {len(ciks)} firms")
+
+
+# ------------------------------------------------------------------ governance proxies
+def cmd_governance(cfg, args):
+    """Loss aversion (impairment delay, XBRL) and CIO power (2022 10-K and proxy text) per firm."""
+    import json
+    client = _sec_client(cfg)
+    src = _p(cfg, "ats_map.csv") if os.path.exists(_p(cfg, "ats_map.csv")) else _p(cfg, "firms.csv")
+    ciks = sorted(pd.read_csv(src)["cik"].dropna().astype(int).unique())
+    negwords = gov.lm_negative_words()
+    rows = []
+    for i, cik in enumerate(ciks, 1):
+        row = {"cik": cik}
+        st, body = client.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", ok_status=(200, 404))
+        row.update(gov.impairment_delay(json.loads(body) if st == 200 else {}))
+        tenk = gov.filing_url_in_year(client, cik, "10-K", 2022)
+        proxy = gov.filing_url_in_year(client, cik, "DEF 14A", 2022)
+        tenk_text = sec.fetch_text(client, tenk) if tenk else ""
+        row.update(gov.cio_power(tenk_text, sec.fetch_text(client, proxy) if proxy else ""))
+        mdna = gov.mdna_text(tenk_text)
+        row.update(mdna_words=len(mdna.split()), lam_text=gov.negative_share(mdna, negwords) if mdna else None)
+        row.update(tenk_2022=bool(tenk), proxy_2022=bool(proxy))
+        rows.append(row)
+        if i % 25 == 0:
+            print(f"governance {i}/{len(ciks)}")
+    out = pd.DataFrame(rows)
+    out.to_csv(_p(cfg, "governance.csv"), index=False)
+    print(f"governance.csv: {len(out)} firms; lambda defined for {out['lam'].notna().sum()}, "
+          f"CIO in executive list for {int(out['cio_tmt'].sum())}")
 
 
 # ------------------------------------------------------------------ Common Crawl
@@ -310,6 +341,7 @@ def main(argv=None):
     v = sub.add_parser("edgar-verify"); v.add_argument("--limit", type=int, default=0)
     sub.add_parser("firm-info")
     sub.add_parser("sp1500")
+    sub.add_parser("governance")
     sub.add_parser("cc-inventory")
     sub.add_parser("cc-match")
     sub.add_parser("cc-guess")
@@ -323,7 +355,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     cfg = Config()
     {"edgar-search": cmd_edgar_search, "edgar-verify": cmd_edgar_verify,
-     "firm-info": cmd_firm_info, "sp1500": cmd_sp1500, "cc-inventory": cmd_cc_inventory,
+     "firm-info": cmd_firm_info, "sp1500": cmd_sp1500, "governance": cmd_governance, "cc-inventory": cmd_cc_inventory,
      "cc-match": cmd_cc_match, "cc-guess": cmd_cc_guess, "cc-collect": cmd_cc_collect,
      "build": cmd_build}[args.cmd](cfg, args)
 

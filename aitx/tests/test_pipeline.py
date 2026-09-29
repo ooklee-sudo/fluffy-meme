@@ -444,5 +444,49 @@ class TestInventory(unittest.TestCase):
             self.assertEqual(m[["cik", "ats", "slug"]].values.tolist(), [[3, "lever", "betawidgets"]])
 
 
+
+class TestGovernance(unittest.TestCase):
+    def test_impairment_delay(self):
+        from aitx import governance as gov
+
+        def fact(y, v, form="10-K"):
+            return {"end": f"{y}-12-31", "start": f"{y}-01-01", "val": v, "form": form, "filed": f"{y + 1}-02-01"}
+
+        def inst(y, v):
+            return {"end": f"{y}-12-31", "val": v, "form": "10-K", "filed": f"{y + 1}-02-01"}
+        cf = {"facts": {"us-gaap": {
+            "Goodwill": {"units": {"USD": [inst(y, 100) for y in range(2015, 2023)]}},
+            "StockholdersEquity": {"units": {"USD": [inst(y, 1000) for y in range(2015, 2023)]}},
+            "GoodwillImpairmentLoss": {"units": {"USD": [fact(2020, 30)]}}},
+            "dei": {"EntityPublicFloat": {"units": {"USD": [
+                {"end": f"{y}-06-30", "val": 500 if y in (2019, 2020, 2021) else 5000, "form": "10-K",
+                 "filed": f"{y + 1}-02-01"} for y in range(2015, 2023)]}}}}}
+        r = gov.impairment_delay(cf)
+        self.assertEqual((r["signal_years"], r["delay_years"]), (3, 2))   # 2020 impaired
+        self.assertAlmostEqual(r["lam"], 2 / 3)
+        self.assertIsNone(gov.impairment_delay({"facts": {}})["lam"])
+
+    def test_mdna_and_negative_share(self):
+        from aitx import governance as gov
+        t = ("Table of contents Item 7. Management's Discussion and Analysis 30 Item 8. Financial Statements 50 "
+             "... Item 7. Management's Discussion and Analysis of Financial Condition. Revenue declined and losses "
+             "rose because of an adverse ruling. Item 7A. Quantitative and Qualitative Disclosures")
+        m = gov.mdna_text(t)
+        self.assertIn("losses rose", m)
+        self.assertNotIn("Quantitative", m)
+        self.assertAlmostEqual(gov.negative_share("losses rose sharply", {"LOSSES"}), 100 / 3)
+
+    def test_cio_power(self):
+        from aitx import governance as gov
+        tenk = ("Item 1. Business ... Information about our Executive Officers. Jane Roe, 55, Chairman and Chief "
+                "Executive Officer. John Doe, 50, Executive Vice President and Chief Information Officer. "
+                "Ann Lee, 48, Senior Vice President and Chief Financial Officer. Item 1A. Risk Factors")
+        r = gov.cio_power(tenk, "Mr. Doe, our Chief Information Officer, reports directly to our CEO.")
+        self.assertEqual((r["cio_tmt"], r["cio_evp"], r["cio_reports_ceo"]), (1, 1, 1))
+        r = gov.cio_power(tenk.replace("Executive Vice President and Chief Information Officer",
+                                       "Vice President, Sales"), "")
+        self.assertEqual((r["cio_tmt"], r["cio_evp"], r["cio_reports_ceo"], r["theta"]), (0, 0, 0, 0))
+
+
 if __name__ == "__main__":
     unittest.main()
