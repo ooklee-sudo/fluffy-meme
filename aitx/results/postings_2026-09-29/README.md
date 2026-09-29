@@ -12,6 +12,8 @@ with the RAG/FT rules in `aitx/keywords.py`. These are the numbers in Section 5.
 | `postings.csv.gz` | every unique posting of the linked boards; `skipped = 1` rows were not fetched (non-technology title) |
 | `firms.csv` | SIC and fiscal 2022 total assets |
 | `events_postings*.csv`, `firm_month_postings*.csv` | risk set and firm-month panel, baseline and alternative R4 SIC ranges |
+| `governance.csv` | loss-aversion and CIO-power proxies (`governance` command): impairment delay `lam`, MD&A negative-word share `lam_text` (set to missing when the MD&A has fewer than 2,000 words), CIO indicators and `theta` |
+| `hypothesis_models_exploratory.json` | exploratory Cox models for H1, H2, H4 proxies (one to three covariates; 9-10 events) |
 | `summarize.py` -> `summary.json` | every number quoted in the manuscript, including the Cox models and Kaplan-Meier shares (needs statsmodels) |
 
 The full inventory (`cc_inventory.csv`, 850 MB) is not stored; rerun `cc-inventory` to rebuild it.
