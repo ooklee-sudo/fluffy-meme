@@ -5,6 +5,7 @@ Code for the three experiments in the paper.
 | Script | Paper section | Runs on | What it does |
 | --- | --- | --- | --- |
 | `real_options.py` | 4, 6 | CPU, seconds | Propositions 1–4: β, retraining thresholds v*, policy costs W_j(v), ACT-optimal region, Γ; tables 6.2 and 6.3; Monte Carlo check of Prop. 1 |
+| `behavioral_options.py` | extension | CPU, seconds | Behavioral-economics extension of the real options model: present bias, loss aversion, status quo, overconfidence, planning fallacy, ambiguity aversion. Reports threshold distortion v*_biased / v* and the regret of the biased policy choice vs. the optimum |
 | `act_toy.py` | 5.2, Appendix B | CPU (numpy), ~minutes | Toy MLP upgrade simulation: recovery of copy vs. ACT (sequential, independent, full-output), calibration size, α sweep, drift–α correlation |
 | `act_llama.py`, `run_pairs.py` | 7.1, Appendix A | GPU or CPU | Real model pair (e.g. Llama 3.2 1B Base → Instruct): train, retrain, copy, ACT; recovery R_C, R_A and cost ratio C_A/C_N |
 
@@ -23,6 +24,10 @@ python real_options.py --mc
 # Appendix B: toy simulation (6 drift levels x 5 seeds)
 python act_toy.py
 python real_options.py --recovery results/act_toy.json      # feed toy R into the model
+
+# Behavioral extension: regret of biased decision makers (illustrative bias strengths, not estimates)
+python behavioral_options.py
+python behavioral_options.py --pb 0.8 --lam 2.25 --recovery results/act_toy.json
 
 # Section 7.1: model-pair experiment (needs a GPU and Hugging Face access)
 python act_llama.py --source meta-llama/Llama-3.2-1B --target meta-llama/Llama-3.2-1B-Instruct --gen-eval 200
