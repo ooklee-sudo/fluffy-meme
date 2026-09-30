@@ -182,6 +182,7 @@ def main():
     for f in ("rho", "mu", "g", "sigma", "C_N", "C_A"):
         ap.add_argument(f"--{f}", type=float, default=getattr(Params, f))
     ap.add_argument("--recovery", help="JSON from act_toy.py / act_llama.py with R_C, R_A (and optional C_A_over_C_N)")
+    ap.add_argument("--focus", help="drift/pair label used for the sensitivity tables and the Monte Carlo check")
     ap.add_argument("--mc", action="store_true", help="Monte Carlo check of Proposition 1")
     ap.add_argument("--plot", default="results/policy_costs.png")
     ap.add_argument("--out", default="results/real_options.json")
@@ -200,12 +201,12 @@ def main():
             print(f"using measured C_A/C_N = {p.C_A / p.C_N:.3f}")
 
     rows = table_62(recov, p)
-    label = "0.8" if "0.8" in recov else next(iter(recov))
+    label = a.focus if a.focus in recov else ("0.8" if "0.8" in recov else next(iter(recov)))
     R_C, R_A = recov[label]
     table_63(R_C, R_A, p, label)
 
     if a.mc:
-        print("\n== Monte Carlo check of Proposition 1 (copy, drift 0.8) ==")
+        print(f"\n== Monte Carlo check of Proposition 1 (copy, drift {label}) ==")
         for v0 in (0.5, 2.0, 4.0):
             m, se = mc_check(R_C, p, v0)
             print(f"v0={v0}: MC={m:.4f} +- {se:.4f}   closed form W={float(W(v0, R_C, 0.0, p)):.4f}")
