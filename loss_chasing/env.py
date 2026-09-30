@@ -24,6 +24,7 @@ class Env:
     p_scale: float = 1.0             # sensitivity grid (Sec 10): perturb p and delta by +-20%
     d_scale: float = 1.0
     early_stop: bool = False
+    start_t: int = 0                 # time-pressure pilot: pre-spent turns, so fewer turns remain at the first choice
     q: float = Q0
     t: int = 0                       # cumulative turn cost used
     turn: int = 0
@@ -38,6 +39,7 @@ class Env:
     def __post_init__(self):
         # pre-drawn uniforms pin the "world" so every model faces the same randomness
         self._u = np.random.default_rng(self.seed).random(BUDGET + 1)
+        self.t = self.start_t
         n = self.n_fails
         if n > 0:
             self.q = Q0 - 2 * n

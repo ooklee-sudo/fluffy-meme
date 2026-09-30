@@ -40,12 +40,13 @@ def main():
     ap.add_argument("--p-scale", type=float, default=1.0)
     ap.add_argument("--d-scale", type=float, default=1.0)
     ap.add_argument("--early-stop", action="store_true")
+    ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
                     help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
     ap.add_argument("--out", default="results/log.jsonl")
     a = ap.parse_args()
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
-    env_kw = dict(p_scale=a.p_scale, d_scale=a.d_scale, early_stop=a.early_stop)
+    env_kw = dict(p_scale=a.p_scale, d_scale=a.d_scale, early_stop=a.early_stop, start_t=a.start_t)
     done = set()
     if a.resume and os.path.exists(a.out):
         for line in open(a.out):
