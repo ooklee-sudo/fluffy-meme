@@ -1,0 +1,29 @@
+using measured C_A/C_N = 0.359
+
+== Section 6.2: expected cost by policy ==
+beta = 4.43, beta/(beta-1) = 1.29
+             drift    R_C    R_A     v*_C     v*_A     copy opt              ACT opt  retrain opt  Gamma
+  pythia-160m +10k  0.946  0.946    45.55    45.16            - never (C_A >= Gamma)   v >= 45.55   0.00
+  pythia-160m +30k  0.925  0.938    32.79    39.36            - never (C_A >= Gamma)   v >= 32.79   0.12
+  pythia-160m +70k  0.459  0.739     4.54     9.40     v < 2.60     2.60 <= v < 4.77    v >= 4.77   0.43
+smollm2-360m instr  0.740  0.741     9.45     9.49            - never (C_A >= Gamma)    v >= 9.45   0.00
+qwen2.5-0.5b instr  0.683  0.715     7.74     8.62            - never (C_A >= Gamma)    v >= 7.74   0.07
+
+== Section 6.3: effect of upgrade frequency (drift pythia-160m +70k) ==
+   mu  months     v*_C     v*_A
+  0.5      24     1.42     2.94
+    1      12     2.48     5.14
+    2       6     4.54     9.40
+    4       3     8.54    17.68
+sigma sensitivity of v*_A: sigma=0.2: 8.56, sigma=0.4: 9.40, sigma=0.6: 10.36
+
+== Monte Carlo check of Proposition 1 (copy, drift pythia-160m +70k) ==
+v0=0.5: MC=0.1422 +- 0.0004   closed form W=0.1423
+v0=2.0: MC=0.5626 +- 0.0013   closed form W=0.5615
+v0=4.0: MC=0.9759 +- 0.0014   closed form W=0.9717
+
+saved results/policy_costs_seeds.png
+
+== Discretization check near the threshold (copy, pythia-160m +70k, v0=4.0, 200,000 paths) ==
+dt=1/365: MC=0.9759 +- 0.0014  closed form=0.9717  diff=+0.0041
+dt=1/1460: MC=0.9722 +- 0.0013  closed form=0.9717  diff=+0.0004
