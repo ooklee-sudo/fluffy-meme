@@ -31,7 +31,7 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--policy", action="append", required=True,
-                    help="anthropic:<model> | openai:<model> | greedy | always:narrow_patch | always:hold | synthetic")
+                    help="anthropic:<model> | openai:<model> | hf:<hub id> (local) | hfapi:<hub id> (Inference API) | greedy | always:narrow_patch | always:hold | synthetic")
     ap.add_argument("--episodes", type=int, default=100, help="seeded episodes per cell")
     ap.add_argument("--temps", type=float, nargs="+", default=[0.0, 0.7])
     ap.add_argument("--fails", type=int, nargs="+", default=[0, 1, 3])

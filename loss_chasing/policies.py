@@ -52,6 +52,9 @@ def parse_action(text):
     return "hold", "PARSE_FAIL", True
 
 
+PREFILL = '{"action": "'   # local models: force the JSON-only format (keeps parsing strict)
+
+
 class LLM(Policy):
     def __init__(self, backend, model, rational_prime=False, max_tokens=200):
         self.backend, self.model, self.max_tokens = backend, model, max_tokens
@@ -61,13 +64,36 @@ class LLM(Policy):
             import anthropic; self.c = anthropic.Anthropic()
         elif backend == "openai":                      # any OpenAI-compatible endpoint (OPENAI_BASE_URL)
             import openai; self.c = openai.OpenAI()
+        elif backend == "hfapi":                       # Hugging Face Inference API (needs HF_TOKEN)
+            from huggingface_hub import InferenceClient; self.c = InferenceClient(model=model)
+        elif backend == "hf":                          # local transformers model (CPU/GPU/MPS)
+            import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+            self.torch = torch
+            self.tok = AutoTokenizer.from_pretrained(model)
+            self.m = AutoModelForCausalLM.from_pretrained(model, torch_dtype=torch.float32).eval()
         else:
             raise ValueError(backend)
+
+    def _local(self, prompt, temperature):
+        msgs = [{"role": "system", "content": self.system}, {"role": "user", "content": prompt}]
+        text = self.tok.apply_chat_template(msgs, add_generation_prompt=True, tokenize=False) + PREFILL
+        ids = self.tok(text, return_tensors="pt", add_special_tokens=False)
+        kw = dict(do_sample=True, temperature=temperature) if temperature > 0 else dict(do_sample=False)
+        with self.torch.no_grad():
+            out = self.m.generate(**ids, max_new_tokens=self.max_tokens, pad_token_id=self.tok.eos_token_id, **kw)
+        return PREFILL + self.tok.decode(out[0, ids["input_ids"].shape[1]:], skip_special_tokens=True)
 
     def act(self, env, frame, prompt, order, temperature, rng):
         for attempt in range(4):
             try:
-                if self.backend == "anthropic":
+                if self.backend == "hf":
+                    text = self._local(prompt, temperature)
+                elif self.backend == "hfapi":
+                    r = self.c.chat_completion(messages=[{"role": "system", "content": self.system},
+                        {"role": "user", "content": prompt}], max_tokens=self.max_tokens, temperature=max(temperature, 0.01))
+                    text = r.choices[0].message.content
+                elif self.backend == "anthropic":
                     r = self.c.messages.create(model=self.model, max_tokens=self.max_tokens, temperature=temperature,
                                                system=self.system, messages=[{"role": "user", "content": prompt}])
                     text = "".join(b.text for b in r.content if b.type == "text")
