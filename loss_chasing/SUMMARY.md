@@ -44,3 +44,10 @@ Three turns left at the first choice instead of twelve; open models, temperature
 | | 3 | 7.7% | 13.0 / 5.0 / 5.0 | -8.0 pp (-15.9, -0.1) |
 
 Turn scarcity did not change overall skipping (Qwen p = .90, SmolLM2 p = .79) and the frame x scarcity interaction is not significant (Qwen p = .88, SmolLM2 p = .38). This gives no support to a pure turn-saving account of the frame differences; samples are small and the commercial model was not run under this condition. Note: the +11.0 pp for Qwen at twelve turns is restricted to 0 and 3 failures; the registered pooled figure (0, 1, 3 failures) is +7.7 pp.
+
+## Time-pressure pilot, Claude Haiku 4.5 (from the run's console output; log not in this repo)
+
+`--start-t 9 --fails 0 3 --episodes 50 --temps 0.7`, 300 first choices, parse-fail 0%, overall skip 14.3% (0% with twelve turns left).
+At 0 injected failures: gain-to-goal 0/50 skips, loss 3/50, neutral 40/50 (narrow_skip); after 3 failures all 150 choices were rollback.
+Loss minus gain is +3 pp (H1 unsupported); the contrast is neutral versus the other frames. Of nine reasons inspected (six neutral, three gain) all reason about allocating the three remaining turns and the eight-point target gap; none mentions a loss. They overstate a narrow patch's gain (~4 points vs +1).
+Caveats: each frame is one fixed wording (first choices are repeated draws on the same prompt); the dominance of verification is invisible to the operator, so skipping under scarcity is not clearly inferior from its point of view; stated reasons are post hoc.
