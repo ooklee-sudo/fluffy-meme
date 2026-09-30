@@ -24,7 +24,7 @@ To fold this row into the table, run `python summarize.py data/*.jsonl <haiku lo
 - **H1 (loss frame raises skipping) is not supported by any model.** Qwen-1.5B: +7.7pp (Holm p=0.012) but below the registered +10pp bar. SmolLM2-1.7B: -5.0pp (p=0.036), the opposite direction. Haiku: no skips at all, so not testable.
 - **SmolLM2 shows a failure-history effect, not a frame effect.** Skip rate rises from 2.7% (0 injected failures) to 11.7% (3 failures) in every frame (gain 5->14%, loss 0->8%, neutral 3->13%; frame x failures interaction p=0.26). After 3 failures its excess risk over the EV-maximizing policy is about zero (-0.016), so it is not riskier than a rational agent there; the rise is from a very conservative baseline (excess risk -0.473 at 0 failures). The post hoc H2 criterion flags it, but 11.7% skipping is modest.
 - **Qwen does the opposite:** skipping falls after failures (23% -> 13%) while it fails to retreat to rollback (excess risk +0.035 -> +0.368).
-- Different families and sizes; three models cannot support a claim about scale. SmolLM2 parse-fail is 0.6% (mapped to hold).
+- Different families and sizes; three models cannot support a claim about scale. SmolLM2 parse-fail is 0.7% (mapped to hold).
 
 ## Caveats
 
