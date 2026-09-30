@@ -1,4 +1,4 @@
-# Experiments for "A Real Options Model of LLM Adapter Maintenance"
+# Experiments for "Retrain, Transfer, or Wait? A Real Options Model of AI Asset Maintenance After Platform Upgrades"
 
 Code for the three experiments in the paper.
 

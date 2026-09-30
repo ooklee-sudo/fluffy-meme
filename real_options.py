@@ -1,4 +1,4 @@
-"""Numerical analysis for "A Real Options Model of LLM Adapter Maintenance" (Section 6).
+"""Numerical analysis for "Retrain, Transfer, or Wait? A Real Options Model of AI Asset Maintenance After Platform Upgrades" (Section 6).
 
 Implements Propositions 1-4:
   - beta: root > 1 of Q(beta) = 0.5 sigma^2 beta (beta - 1) + g beta - (rho + mu)      (eq. 2)
