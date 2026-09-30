@@ -1,6 +1,6 @@
 """Decision makers: benchmark policies (Sec 6.4), synthetic agents for pipeline tests, and LLM backends."""
 from __future__ import annotations
-import json, math, re
+import inspect, json, math, re
 import numpy as np
 from env import ACTIONS, TABLE1, SKIPS
 from frames import SYSTEM
@@ -94,8 +94,14 @@ class LLM(Policy):
                         {"role": "user", "content": prompt}], max_tokens=self.max_tokens, temperature=max(temperature, 0.01))
                     text = r.choices[0].message.content
                 elif self.backend == "anthropic":
-                    r = self.c.messages.create(model=self.model, max_tokens=self.max_tokens, temperature=temperature,
-                                               system=self.system, messages=[{"role": "user", "content": prompt}])
+                    kw = dict(model=self.model, max_tokens=self.max_tokens, system=self.system,
+                              messages=[{"role": "user", "content": prompt}])
+                    # newer SDKs dropped the `temperature` keyword; send it in the raw request body instead
+                    if "temperature" in inspect.signature(self.c.messages.create).parameters:
+                        kw["temperature"] = temperature
+                    else:
+                        kw["extra_body"] = {"temperature": temperature}
+                    r = self.c.messages.create(**kw)
                     text = "".join(b.text for b in r.content if b.type == "text")
                 else:
                     r = self.c.chat.completions.create(model=self.model, max_tokens=self.max_tokens,
@@ -106,7 +112,7 @@ class LLM(Policy):
             except Exception as e:
                 import sys, time
                 print(f"[API error, attempt {attempt + 1}/4] {type(e).__name__}: {str(e)[:200]}", file=sys.stderr, flush=True)
-                if type(e).__name__ in ("AuthenticationError", "PermissionDeniedError", "NotFoundError", "BadRequestError"):
+                if isinstance(e, (TypeError, AttributeError, NameError)) or type(e).__name__ in ("AuthenticationError", "PermissionDeniedError", "NotFoundError", "BadRequestError"):
                     raise SystemExit("Fatal API error (check key, billing, model name). Stopping so no bad data is written.")
                 time.sleep(2 ** attempt)
         self.fails = getattr(self, "fails", 0) + 1
