@@ -15,7 +15,7 @@ const c = [
   P("The manuscript is approximately 5,800 words in the main text, within the journal’s limit for first submissions, and is anonymised for review."),
   P("Thank you for considering our work."),
   P("Sincerely,"), L(""),
-  L("The authors"),
+  L("Ook Lee"), L("Department of Information Systems"), L("Hanyang University, Seoul, Korea"), L("ooklee@hanyang.ac.kr"),
 ];
 const doc = new Document({ sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children: c }] });
 Packer.toBuffer(doc).then((b) => { fs.writeFileSync("../EJIS_cover_letter.docx", b); console.log("ok"); });

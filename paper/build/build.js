@@ -48,10 +48,18 @@ function TB(widths, rows, size = 20) {
   });
 }
 
+const AUTH = process.env.AUTHOR === "1";
 const c = [];
 // ---------------------------------------------------------------- title
 c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: "When Delegated Agents Escalate: Loss-Induced Decision Escalation and the Governance of Agentic Information Systems", font: FONT, size: 32, bold: true })] }));
-c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 }, children: [new TextRun({ text: "Anonymised manuscript for review. Article genre: theory development", font: FONT, size: 22, italics: true })] }));
+if (AUTH) {
+  c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 }, children: [new TextRun({ text: "Ook Lee", font: FONT, size: 24, bold: true })] }));
+  c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 }, children: [new TextRun({ text: "Department of Information Systems, Hanyang University, Seoul, Korea", font: FONT, size: 22 })] }));
+  c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 }, children: [new TextRun({ text: "E-mail: ooklee@hanyang.ac.kr", font: FONT, size: 22 })] }));
+  c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 }, children: [new TextRun({ text: "Article genre: theory development", font: FONT, size: 22, italics: true })] }));
+} else {
+  c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 }, children: [new TextRun({ text: "Anonymised manuscript for review. Article genre: theory development", font: FONT, size: 22, italics: true })] }));
+}
 c.push(H1("Abstract"));
 c.push(P("Organizations increasingly delegate consequential work to agentic information systems built on large language models (LLMs). Average performance is often adequate, but failures cluster in the tail: after repeated errors an agent may delete production data, tamper with evaluations, or omit safeguards it previously used. Practitioners call this the agent panicking. We treat that label as a folk description and develop a theory of loss-induced decision escalation (LIDE): a within-episode shift toward higher ex ante risk and weaker safeguards after accumulated failure. Drawing on reference-dependent evaluation, we argue that an agent judges its situation against a goal-based reference point, that scarcity cues and an unintegrated record of sunk effort intensify the resulting loss coding, and that human-like patterns can reach LLM agents through imitation of pretraining data or optimization toward outcome rewards. A simple formalization yields predictions that rival accounts (context-length degradation, capability limits, instruction pressure, and noise) do not, most sharply that success streaks should reduce risky action. The central implication is that the decision quality of a delegated agent is state dependent, so part of agent governance belongs in the decision environment rather than in model weights. We map three governance artifacts onto the mechanism, evaluate the measurement instrument on scripted agents, and report a feasibility pilot on two small open-weight models that neither supports nor refutes the account. Two preregistered experiments are specified.", { noIndent: true }));
 c.push(P("**Keywords:** agentic information systems; delegation; large language models; prospect theory; escalation of commitment; human oversight; IT governance", { noIndent: true }));
@@ -245,7 +253,7 @@ const refs = [
 refs.forEach((r) => c.push(REF(r)));
 
 const doc = new Document({
-  creator: "Anonymous", title: "When Delegated Agents Escalate",
+  creator: AUTH ? "Ook Lee" : "Anonymous", title: "When Delegated Agents Escalate",
   styles: {
     default: { document: { run: { font: FONT, size: 24 } } },
     paragraphStyles: [
@@ -259,4 +267,4 @@ const doc = new Document({
     children: c,
   }],
 });
-Packer.toBuffer(doc).then((b) => { fs.writeFileSync("../EJIS_LIDE_theory_development.docx", b); console.log("written"); });
+Packer.toBuffer(doc).then((b) => { fs.writeFileSync(AUTH ? "../EJIS_LIDE_with_author_info.docx" : "../EJIS_LIDE_theory_development.docx", b); console.log("written"); });
