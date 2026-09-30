@@ -6,18 +6,18 @@ from frames import FRAMES, build_prompt, headline
 from policies import make_policy
 
 
-def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id, rng):
+def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id, rng, variant=0):
     env = Env(n_fails=n_fails, seed=seed, **env_kw)
     rows = []
     while not env.done:
         s = env.state()
-        prompt, order = build_prompt(frame, s)
+        prompt, order = build_prompt(frame, s, variant)
         a, reason, pf = policy.act(env, frame, prompt, order, temp, rng)
         row = dict(seed=seed, model_id=model_id, model_version=getattr(policy, "model", "n/a"), frame=frame,
                    n_fails=n_fails, temperature=temp, t=env.t, turn=env.turn, quality_before=env.q,
                    fail_streak_before=env.fail_streak, cum_loss_before=env.unrealized_loss, action=a,
                    parse_fail=pf, risk=TABLE1[a][4], ev_gap=env.ev_gap(a), reason=reason,
-                   headline_id=hashlib.md5(headline(frame, s).encode()).hexdigest()[:8], action_order=",".join(order))
+                   variant=variant, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
         row["outcome"] = env.step(a)
         row["quality_after"] = env.q
         rows.append(row)
@@ -40,6 +40,7 @@ def main():
     ap.add_argument("--p-scale", type=float, default=1.0)
     ap.add_argument("--d-scale", type=float, default=1.0)
     ap.add_argument("--early-stop", action="store_true")
+    ap.add_argument("--variants", type=int, nargs="+", default=[0], help="headline wordings to run (0 = registered, 1-3 = paraphrases)")
     ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
                     help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
@@ -55,7 +56,7 @@ def main():
             except json.JSONDecodeError:          # half-written last line after an interrupt
                 continue
             if r["turn"] == 0:                     # an episode is logged once its first turn exists
-                done.add((r["model_id"], r["frame"], r["n_fails"], r["temperature"], r["seed"]))
+                done.add((r["model_id"], r["frame"], r["n_fails"], r["temperature"], r["seed"], r.get("variant", 0)))
         print(f"resume: {len(done)} episodes already logged", flush=True)
     elif os.path.exists(a.out) and os.path.getsize(a.out) > 0:
         raise SystemExit(f"{a.out} already has data. Use --resume to continue it, or delete/rename it to start over.")
@@ -70,14 +71,16 @@ def main():
             for frame in FRAMES:
                 for nf in a.fails:
                     for T in a.temps:
-                        for seed in range(a.episodes):
-                            if (pol.name, frame, nf, T, seed) in done:
-                                continue
-                            rng = np.random.default_rng([seed, nf, int(T * 10), hash(frame) % 997])
-                            for r in run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng):
-                                f.write(json.dumps(r) + "\n")
-                            f.flush()
-                        print(f"{pol.name} frame={frame} fails={nf} T={T} done", flush=True)
+                        for v in a.variants:
+                            for seed in range(a.episodes):
+                                if (pol.name, frame, nf, T, seed, v) in done:
+                                    continue
+                                rng = np.random.default_rng([seed, nf, int(T * 10), hash(frame) % 997, v])
+                                for r in run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng, v):
+                                    f.write(json.dumps(r) + "\n")
+                                f.flush()
+                            tag = f" variant={v}" if len(a.variants) > 1 or v else ""
+                            print(f"{pol.name} frame={frame} fails={nf} T={T}{tag} done", flush=True)
 
 
 if __name__ == "__main__":

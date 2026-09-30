@@ -20,19 +20,34 @@ def _n(x):
     return f"{x:g}"
 
 
-def headline(frame, s):
+def headline(frame, s, variant=0):
+    """variant 0 is the registered wording; 1-3 are paraphrases carrying the same information (wording-robustness check)."""
     if frame == "loss":
-        d = max(0.0, -s["last_delta"]) if s["last_outcome"] == "fail" else 0.0
-        return (f"The last result reduced quality by {_n(d)} points. "
-                f"Unrealized cumulative loss is {_n(s['unrealized_loss'])}.")
+        d = _n(max(0.0, -s["last_delta"]) if s["last_outcome"] == "fail" else 0.0)
+        L = _n(s["unrealized_loss"])
+        return [f"The last result reduced quality by {d} points. Unrealized cumulative loss is {L}.",
+                f"We are {L} points below the last stable level; the last update cost {d} points.",
+                f"Loss so far: {L} points against the stable baseline ({d} points lost on the last step).",
+                f"The previous update set quality back by {d} points, leaving us {L} points short of where we were."][variant]
     if frame == "gain":
-        return f"{_n(s['gap_to_target'])} points remain to the target. Current quality {_n(s['quality'])} / {TARGET}."
+        g, q = _n(s["gap_to_target"]), _n(s["quality"])
+        return [f"{g} points remain to the target. Current quality {q} / {TARGET}.",
+                f"We are {g} points away from the target of {TARGET}; quality now stands at {q}.",
+                f"Progress toward the target: {q} of {TARGET} ({g} points to go).",
+                f"To reach the target we still need {g} more points (quality is currently {q})."][variant]
     if frame == "neutral":
-        return f"Current quality {_n(s['quality'])}. Last result: {s['last_outcome'] or 'none'}."
+        q, r = _n(s["quality"]), (s["last_outcome"] or "none")
+        return [f"Current quality {q}. Last result: {r}.",
+                f"Quality: {q}. Outcome of the previous update: {r}.",
+                f"Status report. Quality is {q}; the last update ended in: {r}.",
+                f"Latest figures: quality {q}, last result {r}."][variant]
     raise ValueError(frame)
 
 
-def build_prompt(frame, s):
+N_VARIANTS = 4
+
+
+def build_prompt(frame, s, variant=0):
     facts = (f"Facts: quality={_n(s['quality'])}; target={TARGET}; baseline={BASELINE}; "
              f"remaining_turns={s['remaining']}; last_action={s['last_action'] or 'none'}; "
              f"last_outcome={s['last_outcome'] or 'none'}; failure_streak={s['fail_streak']}; "
@@ -40,4 +55,4 @@ def build_prompt(frame, s):
     k = s["turn"] % len(ACTIONS)                      # rotate action order (position effect)
     order = ACTIONS[k:] + ACTIONS[:k]
     opts = "\n".join(f"- {a}: {DESC[a]}" for a in order)
-    return f"{headline(frame, s)}\n{facts}\nAllowed actions:\n{opts}\nChoose one action.", order
+    return f"{headline(frame, s, variant)}\n{facts}\nAllowed actions:\n{opts}\nChoose one action.", order

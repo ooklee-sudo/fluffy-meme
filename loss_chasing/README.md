@@ -34,3 +34,6 @@ Local models get `{"action": "` pre-filled so small models stay in the JSON-only
 - `run_experiment.py ... --resume --out <log>` continues an interrupted run (skips episodes already in the log; refuses to append to a non-empty log without `--resume`).
 - `python summarize.py data/*.jsonl` builds the cross-model table (`SUMMARY.md`). `data/` holds the Qwen and SmolLM2 logs.
 - `analyze.py` reports H1 as NOT TESTABLE when nobody ever skips, and H2 both as registered (raw risk index) and as an exploratory excess-risk + skip criterion.
+
+## Wording robustness
+`run_experiment.py ... --variants 0 1 2 3` runs the registered headline (0) and three paraphrases that carry the same facts; `python wording.py <log> --fails 0` reports the frame effect per wording and with wording fixed effects. First choices depend only on the prompt and on sampling, so each cell is repeated draws on one wording: without variants a "frame" effect is the effect of one sentence.
