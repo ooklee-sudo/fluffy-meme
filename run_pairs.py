@@ -46,9 +46,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="run pairs whose name contains this text")
     ap.add_argument("--preset", choices=["cpu", "gpu"], default="cpu")
-    ap.add_argument("--outdir", default=os.path.join(HERE, "results", "pairs"))
+    ap.add_argument("--seed", type=int, default=0, help="seed passed to act_llama.py; seed 0 keeps the original file names")
+    ap.add_argument("--outdir", default=None, help="default: results/pairs (seed 0) or results/pairs_seed<N>")
     ap.add_argument("--force", action="store_true", help="rerun pairs that already have results")
     a = ap.parse_args(argv)
+    sfx = f"_seed{a.seed}" if a.seed else ""
+    if a.outdir is None:
+        a.outdir = os.path.join(HERE, "results", "pairs" + sfx)
     os.makedirs(a.outdir, exist_ok=True)
 
     done = []
@@ -65,6 +69,7 @@ def main():
         cmd += ["--preset", a.preset] if a.preset == "cpu" else []
         cmd += ["--source-revision", srev] if srev else []
         cmd += ["--target-revision", trev] if trev else []
+        cmd += ["--seed", str(a.seed)] if a.seed else []
         cmd += extra
         print(f"\n===== {name} =====\n" + " ".join(cmd), flush=True)
         t0 = time.time()
@@ -88,12 +93,12 @@ def main():
                "pairs": {r["pair"]: {k: r[k] for k in ("none", "retrain", "copy", "act",
                                                        "time_retrain_s", "time_act_s", "C_A_over_C_N")}
                          for r in rows}}
-    path = os.path.join(HERE, "results", "pairs_summary.json")
+    path = os.path.join(HERE, "results", f"pairs_summary{sfx}.json")
     json.dump(summary, open(path, "w"), indent=2, default=float)
     print(f"\nsaved {path}\n\n===== economic model with measured (R_C, R_A, C_A/C_N) =====", flush=True)
     subprocess.run([sys.executable, os.path.join(HERE, "real_options.py"), "--recovery", path,
-                    "--out", os.path.join(HERE, "results", "real_options_pairs.json"),
-                    "--plot", os.path.join(HERE, "results", "policy_costs_pairs.png")])
+                    "--out", os.path.join(HERE, "results", f"real_options_pairs{sfx}.json"),
+                    "--plot", os.path.join(HERE, "results", f"policy_costs_pairs{sfx}.png")])
 
 
 if __name__ == "__main__":

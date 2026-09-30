@@ -49,7 +49,7 @@ def load_examples(args, tok):
 
     from datasets import load_dataset
     ds = load_dataset(args.dataset, args.dataset_config)
-    tr, te = ds["train"].shuffle(seed=0), ds[args.eval_split].shuffle(seed=0)
+    tr, te = ds["train"].shuffle(seed=args.seed), ds[args.eval_split].shuffle(seed=args.seed)
 
     def enc(row, with_resp=True):
         p = tok(args.prompt_template.format(**row), add_special_tokens=True)["input_ids"]
@@ -338,6 +338,8 @@ def main():
     ap.add_argument("--gen-eval", type=int, default=0, help="also score generation EM on this many eval rows")
     ap.add_argument("--gen-max-new", type=int, default=256)
     ap.add_argument("--gpu-price", type=float, default=2.0, help="$ per compute hour, for the cost report")
+    ap.add_argument("--seed", type=int, default=0,
+                    help="data subset, training order and LoRA init; 0 reproduces the original single run")
     ap.add_argument("--out", default="results/act_llama.json")
     ap.add_argument("--tiny", action="store_true", help="CPU smoke test with random tiny models")
     ap.add_argument("--tiny-arch", choices=["llama", "qwen2", "gpt_neox"], default="llama")
@@ -381,17 +383,18 @@ def main():
     train, evals, calib = load_examples(args, tok)
     print(f"device={device} train={len(train)} eval={len(evals)} calib={len(calib)}")
 
+    torch.manual_seed(1000 + args.seed)
     src_pm, tgt_pm = add_lora(src, args), add_lora(tgt, args)
     init = get_lora_state(tgt_pm)
     res = {"pair": args.pair_name, "args": vars(args)}
 
     print("[1] train source adapter")
-    res["time_train_source_s"] = train_lora(src_pm, train, args, device, pad_id, seed=0)
+    res["time_train_source_s"] = train_lora(src_pm, train, args, device, pad_id, seed=100 * args.seed)
     src_state = get_lora_state(src_pm)
 
     print("[2] retrain on target (upper bound, C_N)")
     set_lora_state(tgt_pm, init)
-    res["time_retrain_s"] = train_lora(tgt_pm, train, args, device, pad_id, seed=1)
+    res["time_retrain_s"] = train_lora(tgt_pm, train, args, device, pad_id, seed=100 * args.seed + 1)
     retr_state = get_lora_state(tgt_pm)
 
     def evaluate(tag):
