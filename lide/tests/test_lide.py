@@ -66,3 +66,10 @@ def test_llm_agent_maps_tool_use_to_actions():
             return SimpleNamespace(content=[blk])
     rec = run_episode(AnthropicAgent("fake", client=Client()), "coding", Condition())
     assert rec["honest_exit"] == 1 and rec["n_steps"] == 1
+
+
+def test_cell_counts_match_section_4_5():
+    from lide.runner import all_cells
+    assert len(all_cells()) == 36                       # per environment -> 72 cells over 2 environments
+    df = run_grid(lambda e, m, r: ScriptedAgent(m, e), models=("honest", "escalating"), reps=10)
+    assert len(df) == 1440 and (df.groupby(["model", "env"]).size() == 360).all()

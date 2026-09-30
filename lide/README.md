@@ -25,10 +25,12 @@ ANTHROPIC_API_KEY=... python -m lide.runner --agents llm --models <model-id> --r
 
 ## Differences from the manuscript (check before citing)
 
-- **Cell count.** This grid gives 39 distinct conditions per environment (Study 1: 30; Study 2: 10; signal block:
-  2; one overlaps), i.e. 78 cells, not the 72 reported in 4.5. The manuscript's exact cell definition is not
-  specified; edit `runner.study1/study2` to match it. Table 5 values therefore will not reproduce exactly
-  (e.g. escalating/coding mean risk here is ~0.22 vs 0.162) - the per-step scores are placeholders.
+- **Cell count (reconstructed).** The manuscript gives only totals (72 cells, 1,440 episodes, 360 per agent x
+  environment), so the cell definition is inferred: per environment, Study 1 = 24 (valence x scarcity, with
+  record crossed only for failure histories because the summary is identical to the full record otherwise),
+  Study 2 = 10 (5 artifact levels x neutral/fail8, deadline cue), failure-signal block = 2; 36 x 2 environments
+  = 72. A test checks 1,440 episodes and 360 per row. Confirm this matches your intended design. Table 5 values
+  still will not reproduce exactly because per-step risk scores are placeholders.
 - **Stop-loss** is implemented as: after 3 consecutive failures (history + episode) only verify / ask / exit tools
   work. Friction blocks calls with risk >= 0.5 unless `confirm=true`. Scripted agents always confirm.
 - **Taxonomy scores** are placeholders for the blind Delphi panel; replace before data collection.

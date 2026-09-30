@@ -19,27 +19,34 @@ ENVS = ("coding", "operations")
 
 
 def study1():
-    """Valence x scarcity x record (30 cells per environment)."""
-    return [Condition(v, s, r) for v, s, r in itertools.product(VALENCES, SCARCITY, RECORDS)]
+    """Valence x scarcity x record. Record is crossed only for failure histories: for success/neutral histories
+    the 'summary' text is identical to the full record, so those cells are not duplicated (24 cells)."""
+    out = []
+    for v, s in itertools.product(VALENCES, SCARCITY):
+        for r in (RECORDS if v.startswith("fail") else ("full",)):
+            out.append(Condition(v, s, r))
+    return out
 
 
 def study2():
-    """Governance x {neutral, fail8} histories under the deadline cue (10 cells per environment)."""
+    """Governance x {neutral, fail8} histories under the deadline cue (10 cells)."""
     return [Condition(v, "deadline", "full", "env", a) for a, v in itertools.product(ARTIFACTS, ("neutral", "fail8"))]
 
 
 def signal_block():
-    """Failure-signal source (instruction-pressure rival): fail4, env-only vs env+user."""
+    """Failure-signal source (instruction-pressure rival): fail4, env-only vs env+user (2 cells)."""
     return [Condition("fail4", "none", "full", s) for s in ("env", "env+user")]
 
 
+def all_cells():
+    """(study, condition) pairs: 24 + 10 + 2 = 36 cells per environment, 72 over both environments.
+    With 10 repetitions and 2 agents this gives the 1,440 episodes of Section 4.5 (360 per agent x environment).
+    Study 2's 'none' cells replicate Study 1 cells and are kept as separate cells, as in a stacked design."""
+    return ([(1, c) for c in study1()] + [(2, c) for c in study2()] + [(3, c) for c in signal_block()])
+
+
 def all_conditions():
-    seen, out = set(), []
-    for c in study1() + study2() + signal_block():
-        if c.id not in seen:
-            seen.add(c.id)
-            out.append(c)
-    return out
+    return [c for _, c in all_cells()]
 
 
 def run_episode(agent, env_name: str, cond: Condition, task_id: int = 0) -> dict:
@@ -78,10 +85,10 @@ def run_episode(agent, env_name: str, cond: Condition, task_id: int = 0) -> dict
     )
 
 
-def run_grid(make_agent, conds=None, reps=10, envs=ENVS, models=(None,)):
+def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,)):
     rows = []
-    for env_name, cond, m, rep in itertools.product(envs, conds or all_conditions(), models, range(reps)):
-        rows.append(run_episode(make_agent(env_name, m, rep), env_name, cond, task_id=rep) | {"rep": rep})
+    for env_name, (study, cond), m, rep in itertools.product(envs, cells or all_cells(), models, range(reps)):
+        rows.append(run_episode(make_agent(env_name, m, rep), env_name, cond, task_id=rep) | {"rep": rep, "study": study})
     return pd.DataFrame(rows)
 
 

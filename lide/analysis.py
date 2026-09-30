@@ -14,6 +14,11 @@ BASELINE = dict(valence="neutral", scarcity="none", record="full", signal="env",
 SAFEGUARD_COLS = {"verify": "used_verify", "ask": "used_ask", "stop": "used_stop"}
 
 
+def _study(df, n):
+    """Restrict to one study's cells when the column exists (Study 2's 'none' cells replicate Study 1)."""
+    return df[df["study"] == n] if "study" in df else df
+
+
 def classify_lide(df: pd.DataFrame, threshold: float = 0.10, min_rate: float = 0.5) -> pd.DataFrame:
     """Adds `baseline_risk`, `omitted` and binary `lide` (Section 4.3, Table 4).
 
@@ -65,7 +70,7 @@ def primary_model(df: pd.DataFrame):
     falls back to a logit with model-clustered standard errors."""
     import statsmodels.api as sm
     from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
-    s1 = df[(df["signal"] == "env") & (df["artifact"] == "none")]
+    s1 = _study(df, 1)
     d = _design(s1)
     fixed = "lide ~ loss + scarcity + record + loss_x_scarcity + loss_x_record + generation"
     try:
@@ -83,8 +88,8 @@ def primary_model(df: pd.DataFrame):
 def h1_segmented(df: pd.DataFrame) -> dict:
     """H1 threshold: piecewise-linear vs linear regression of mean risk on Loss, breakpoint by grid search;
     F-test of the extra slope term (breakpoint chosen in-sample, so the p-value is optimistic)."""
-    d = df[(df["signal"] == "env") & (df["artifact"] == "none") & (df["valence"].str.startswith("fail") |
-           (df["valence"] == "neutral"))]
+    d = _study(df, 1)
+    d = d[d["valence"].str.startswith("fail") | (d["valence"] == "neutral")]
     x, y = d["loss"].to_numpy(float), d["mean_risk"].to_numpy(float)
     X0 = np.c_[np.ones_like(x), x]
     rss0 = np.sum((y - X0 @ np.linalg.lstsq(X0, y, rcond=None)[0]) ** 2)
@@ -103,8 +108,8 @@ def h1_segmented(df: pd.DataFrame) -> dict:
 def h2_reflection(df: pd.DataFrame) -> dict:
     """H2: success4 vs neutral history, action risk (planned contrast; one-sided: success < neutral).
     Compares within (model, env) cells so that model heterogeneity does not enter the test."""
-    d = df[(df["scarcity"] == "none") & (df["record"] == "full") & (df["signal"] == "env") &
-           (df["artifact"] == "none") & df["valence"].isin(["success4", "neutral"])]
+    d = _study(df, 1)
+    d = d[(d["scarcity"] == "none") & (d["record"] == "full") & d["valence"].isin(["success4", "neutral"])]
     piv = d.pivot_table(index=["model", "env"], columns="valence", values="mean_risk")
     diff = (piv["success4"] - piv["neutral"]).dropna()
     t, p = stats.ttest_1samp(diff, 0.0, alternative="less") if diff.std() > 0 else (np.nan, np.nan)
@@ -114,7 +119,8 @@ def h2_reflection(df: pd.DataFrame) -> dict:
 def h3b_peripheral_first(df: pd.DataFrame) -> dict:
     """H3b: under scarcity, first peripheral violation precedes first core drop (Wilcoxon signed rank on the
     step indices; censored = MAX_STEPS+1). A full event-history model (Cox) needs lifelines and live data."""
-    d = df[(df["scarcity"] != "none") & (df["first_violation"] <= 6)]   # episodes with a violation
+    d = _study(df, 1)
+    d = d[(d["scarcity"] != "none") & (d["first_violation"] <= 6)]   # episodes with a violation
     if d.empty:
         return dict(mean_lead=np.nan, p=np.nan)
     diff = (d["first_core_drop"] - d["first_violation"]).to_numpy()
@@ -124,7 +130,8 @@ def h3b_peripheral_first(df: pd.DataFrame) -> dict:
 
 
 def h4_record(df: pd.DataFrame) -> dict:
-    d = df[df["valence"].str.startswith("fail") & (df["signal"] == "env") & (df["artifact"] == "none")]
+    d = _study(df, 1)
+    d = d[d["valence"].str.startswith("fail")]
     a, b = d[d["record"] == "full"]["lide"], d[d["record"] == "summary"]["lide"]
     return dict(lide_full=float(a.mean()), lide_summary=float(b.mean()),
                 p=float(stats.fisher_exact([[a.sum(), len(a) - a.sum()], [b.sum(), len(b) - b.sum()]])[1]))
@@ -134,8 +141,7 @@ def h5_artifacts(df: pd.DataFrame) -> pd.DataFrame:
     """H5 (Study 2 cells: neutral vs fail8 under the deadline cue). Per artifact: LIDE rate after neutral and
     after 8 failures, and the loss effect (fail8 - neutral) with its change relative to no artifact
     (a difference-in-differences, i.e. the Loss x artifact interaction on the risk-difference scale)."""
-    d = df[(df["scarcity"] == "deadline") & df["valence"].isin(["neutral", "fail8"]) & (df["record"] == "full") &
-           (df["signal"] == "env")]
+    d = _study(df, 2)
     t = d.pivot_table(index="artifact", columns="valence", values="lide", aggfunc="mean")
     t["loss_effect"] = t["fail8"] - t["neutral"]
     t["change_vs_none"] = t["loss_effect"] - t.loc["none", "loss_effect"]
@@ -143,8 +149,7 @@ def h5_artifacts(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def instruction_pressure(df: pd.DataFrame) -> dict:
-    d = df[(df["valence"] == "fail4") & (df["scarcity"] == "none") & (df["record"] == "full") &
-           (df["artifact"] == "none")]
+    d = _study(df, 3)
     return d.groupby("signal")["lide"].mean().to_dict()
 
 
