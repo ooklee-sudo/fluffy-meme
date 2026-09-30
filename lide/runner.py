@@ -92,7 +92,10 @@ def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,), rep_sta
     for n, (env_name, (study, cond), m, rep) in enumerate(grid):
         if verbose and n % 12 == 0:
             print(f"[{n}/{len(grid)}] {m} {env_name} {cond.id}", flush=True)
-        rows.append(run_episode(make_agent(env_name, m, rep), env_name, cond, task_id=rep) | {"rep": rep, "study": study})
+        agent = make_agent(env_name, m, rep)
+        if hasattr(agent, "reseed"):   # independent sampling noise per cell; seeding by rep alone shares draws across cells
+            agent.reseed(f"{env_name}|{cond.id}|{study}|{rep}")
+        rows.append(run_episode(agent, env_name, cond, task_id=rep) | {"rep": rep, "study": study})
     return pd.DataFrame(rows)
 
 

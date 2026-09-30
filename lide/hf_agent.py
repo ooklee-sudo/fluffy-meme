@@ -36,6 +36,9 @@ class HFAgent:
         self.rng = random.Random(f"{model_id}-{seed}")
         self.reset()
 
+    def reseed(self, key: str):
+        self.rng = random.Random(f"{self.model}-{key}")
+
     def reset(self):
         self.turns = []          # (user text, assistant reply)
 
