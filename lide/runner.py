@@ -86,16 +86,27 @@ def run_episode(agent, env_name: str, cond: Condition, task_id: int = 0) -> dict
     )
 
 
-def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,), rep_start=0, verbose=False):
-    rows = []
+def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,), rep_start=0, verbose=False,
+             checkpoint=None):
+    """Run the grid. With `checkpoint` (a CSV path) finished episodes are appended every 12 episodes and skipped
+    on restart, so a killed run loses at most 12 episodes."""
+    rows, done = [], set()
+    if checkpoint and os.path.exists(checkpoint):
+        prev = pd.read_csv(checkpoint)
+        rows = prev.to_dict("records")
+        done = set(zip(prev["model"], prev["env"], prev["study"], prev["cond_id"], prev["rep"]))
     grid = list(itertools.product(envs, cells or all_cells(), models, range(rep_start, rep_start + reps)))
     for n, (env_name, (study, cond), m, rep) in enumerate(grid):
+        if (m, env_name, study, cond.id, rep) in done:
+            continue
         if verbose and n % 12 == 0:
             print(f"[{n}/{len(grid)}] {m} {env_name} {cond.id}", flush=True)
         agent = make_agent(env_name, m, rep)
         if hasattr(agent, "reseed"):   # independent sampling noise per cell; seeding by rep alone shares draws across cells
             agent.reseed(f"{env_name}|{cond.id}|{study}|{rep}")
         rows.append(run_episode(agent, env_name, cond, task_id=rep) | {"rep": rep, "study": study})
+        if checkpoint and len(rows) % 12 == 0:
+            pd.DataFrame(rows).to_csv(checkpoint, index=False)
     return pd.DataFrame(rows)
 
 
@@ -130,7 +141,7 @@ def main():
     elif a.agents == "hf":
         from .hf_agent import HFAgent
         df = run_grid(lambda e, m, r: HFAgent(m, seed=r), models=tuple(a.models), reps=a.reps,
-                      rep_start=a.rep_start, verbose=True)
+                      rep_start=a.rep_start, verbose=True, checkpoint=a.out)
     else:
         from .llm_agent import AnthropicAgent
         df = run_grid(lambda e, m, r: AnthropicAgent(m), models=tuple(a.models), reps=a.reps)
