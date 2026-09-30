@@ -2,6 +2,7 @@
 
   python -m lide.runner --agents scripted --reps 10 --out results/lide/scripted.csv
   python -m lide.runner --agents sim --reps 20 --out results/lide/sim.csv
+  python -m lide.runner --agents hf --models Qwen/Qwen2.5-0.5B-Instruct --reps 2 --out results/lide/hf.csv
   python -m lide.runner --agents llm --models claude-haiku-4-5-20251001 --reps 5 --out results/lide/live.csv
 """
 import argparse
@@ -104,7 +105,7 @@ def sim_population(n_families=3, n_gens=2, n_sizes=2, seed=0):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--agents", choices=["scripted", "sim", "llm"], default="scripted")
+    ap.add_argument("--agents", choices=["scripted", "sim", "llm", "hf"], default="scripted")
     ap.add_argument("--reps", type=int, default=10)
     ap.add_argument("--models", nargs="*", default=[])
     ap.add_argument("--out", default="results/lide/episodes.csv")
@@ -119,6 +120,9 @@ def main():
         df = run_grid(mk, models=tuple(pop), reps=a.reps)
         meta = pd.DataFrame(pop).T.rename_axis("model").reset_index()
         df = df.merge(meta[["model", "generation", "family", "size"]], on="model")
+    elif a.agents == "hf":
+        from .hf_agent import HFAgent
+        df = run_grid(lambda e, m, r: HFAgent(m, seed=r), models=tuple(a.models), reps=a.reps)
     else:
         from .llm_agent import AnthropicAgent
         df = run_grid(lambda e, m, r: AnthropicAgent(m), models=tuple(a.models), reps=a.reps)
