@@ -104,7 +104,14 @@ class LLM(Policy):
                     text = r.choices[0].message.content
                 return parse_action(text)
             except Exception as e:
-                import time; time.sleep(2 ** attempt)
+                import sys, time
+                print(f"[API error, attempt {attempt + 1}/4] {type(e).__name__}: {str(e)[:200]}", file=sys.stderr, flush=True)
+                if type(e).__name__ in ("AuthenticationError", "PermissionDeniedError", "NotFoundError", "BadRequestError"):
+                    raise SystemExit("Fatal API error (check key, billing, model name). Stopping so no bad data is written.")
+                time.sleep(2 ** attempt)
+        self.fails = getattr(self, "fails", 0) + 1
+        if self.fails >= 5:
+            raise SystemExit("5 calls failed after retries. Stopping so no bad data is written.")
         return "hold", "API_ERROR", True
 
 
