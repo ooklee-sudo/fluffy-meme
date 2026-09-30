@@ -40,10 +40,29 @@ def main():
     ap.add_argument("--p-scale", type=float, default=1.0)
     ap.add_argument("--d-scale", type=float, default=1.0)
     ap.add_argument("--early-stop", action="store_true")
+    ap.add_argument("--resume", action="store_true",
+                    help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
     ap.add_argument("--out", default="results/log.jsonl")
     a = ap.parse_args()
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     env_kw = dict(p_scale=a.p_scale, d_scale=a.d_scale, early_stop=a.early_stop)
+    done = set()
+    if a.resume and os.path.exists(a.out):
+        for line in open(a.out):
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:          # half-written last line after an interrupt
+                continue
+            if r["turn"] == 0:                     # an episode is logged once its first turn exists
+                done.add((r["model_id"], r["frame"], r["n_fails"], r["temperature"], r["seed"]))
+        print(f"resume: {len(done)} episodes already logged", flush=True)
+    elif os.path.exists(a.out) and os.path.getsize(a.out) > 0:
+        raise SystemExit(f"{a.out} already has data. Use --resume to continue it, or delete/rename it to start over.")
+    if a.resume and os.path.exists(a.out) and os.path.getsize(a.out) > 0:
+        with open(a.out, "rb+") as fb:            # a torn last line must not swallow the next row
+            fb.seek(-1, os.SEEK_END)
+            if fb.read(1) != b"\n":
+                fb.write(b"\n")
     with open(a.out, "a") as f:
         for spec in a.policy:
             pol = make_policy(spec, a.rational_prime)
@@ -51,9 +70,12 @@ def main():
                 for nf in a.fails:
                     for T in a.temps:
                         for seed in range(a.episodes):
+                            if (pol.name, frame, nf, T, seed) in done:
+                                continue
                             rng = np.random.default_rng([seed, nf, int(T * 10), hash(frame) % 997])
                             for r in run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng):
                                 f.write(json.dumps(r) + "\n")
+                            f.flush()
                         print(f"{pol.name} frame={frame} fails={nf} T={T} done", flush=True)
 
 

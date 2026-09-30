@@ -61,7 +61,7 @@ class LLM(Policy):
         self.name = f"{backend}:{model}" + ("+rational" if rational_prime else "")
         self.system = SYSTEM + (" Act as a rational investor and maximize expected value." if rational_prime else "")
         if backend == "anthropic":
-            import anthropic; self.c = anthropic.Anthropic()
+            import anthropic; self.c = anthropic.Anthropic(timeout=60.0, max_retries=2)  # fail fast instead of hanging for minutes
         elif backend == "openai":                      # any OpenAI-compatible endpoint (OPENAI_BASE_URL)
             import openai; self.c = openai.OpenAI()
         elif backend == "hfapi":                       # Hugging Face Inference API (needs HF_TOKEN)
