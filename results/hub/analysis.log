@@ -1,0 +1,76 @@
+# analyze.py
+author-events: 2,857 | events: 19 | families: 10 | authors: 2,441
+
+Population sizes: all=2857, >=3 adapters=582, persistent (>=3 adapters or >=50 downloads)=613
+
+Migration to the next generation, by population and window:
+  all                      n=  2857  90d: 0.026 (any later 0.026)  180d: 0.033 (any later 0.035)  365d: 0.036 (any later 0.039)
+  multi (>=3 adapters)     n=   582  90d: 0.050 (any later 0.050)  180d: 0.064 (any later 0.069)  365d: 0.067 (any later 0.072)
+  persistent               n=   613  90d: 0.049 (any later 0.049)  180d: 0.062 (any later 0.069)  365d: 0.065 (any later 0.072)
+
+Events with >=20 persistent authors:
+       event  family  interval   n  m180  m365
+  Gemma:0->1   Gemma       136  39 0.128 0.128
+  Gemma:1->2   Gemma       241  30 0.000 0.000
+  Llama:2->3   Llama        65  24 0.083 0.125
+  Llama:1->2   Llama        88  49 0.041 0.041
+  Llama:0->1   Llama       278 114 0.044 0.044
+Mistral:1->2 Mistral       162  48 0.042 0.042
+    Phi:0->1     Phi       225  28 0.071 0.071
+    Phi:1->2     Phi       232  36 0.028 0.028
+   Qwen:1->2    Qwen       107  20 0.550 0.600
+   Qwen:2->3    Qwen       223 171 0.035 0.035
+  Spearman(interval of old generation, m180): n=10 rho=-0.53 p=0.12
+  Spearman(interval of old generation, m365): n=10 rho=-0.53 p=0.12
+
+Author-level logit, event fixed effects, SE clustered by author (odds ratios per one-unit log increase):
+  all authors, m180                        n=  2857 ln_n: OR=1.50 (p=0.008) | ln_dl: OR=1.19 (p=0.278)
+  >=3 adapters, m180                       n=   582 ln_n: OR=0.93 (p=0.782) | ln_dl: OR=1.13 (p=0.750)
+  all authors, m365                        n=  2857 ln_n: OR=1.54 (p=0.001) | ln_dl: OR=1.15 (p=0.364)
+  >=3 adapters, m365                       n=   582 ln_n: OR=1.11 (p=0.629) | ln_dl: OR=1.22 (p=0.575)
+
+Cadence test (author-level logit, family fixed effects, SE clustered by event):
+  all         m180: ln(interval) OR=0.36, p=0.046  (events=19, n=2857)
+  persistent  m180: ln(interval) OR=0.17, p=0.170  (events=17, n=613)
+  all         m365: ln(interval) OR=0.32, p=0.023  (events=19, n=2857)
+  persistent  m365: ln(interval) OR=0.14, p=0.145  (events=17, n=613)
+
+# robustness.py
+events: 19, author-events: 2,857
+
+Event-level migration rates (all authors, 180 days):
+               interval    n  m180
+event                             
+Mistral:2->3         56   42 0.048
+Llama:2->3           65  112 0.080
+Mistral:0->1         82  123 0.016
+Llama:1->2           88  273 0.040
+Qwen:1->2           107   43 0.326
+SmolLM:0->1         108   12 0.000
+Qwen:0->1           129   12 0.083
+Gemma:0->1          136  243 0.041
+Mistral:1->2        162  399 0.018
+InternLM:0->1       169    2 0.000
+Yi:0->1             190   10 0.000
+InternLM:1->2       199    2 0.000
+Qwen:2->3           223  363 0.028
+Phi:0->1            225  226 0.022
+Phi:1->2            232  201 0.030
+Gemma:1->2          241  137 0.000
+Llama:0->1          278  510 0.033
+DeepSeek:0->1       454   64 0.000
+Falcon:0->1         576   83 0.000
+
+Linear probability model, event fixed effects, errors clustered by author (percentage points per 1 log-unit):
+  all authors  m180: ln(1+adapters)=+2.12 (p=0.016) | ln(1+max downloads)=+0.50 (p=0.339)
+  >=3 adapters m180: ln(1+adapters)=-0.46 (p=0.788) | ln(1+max downloads)=+0.52 (p=0.745)
+  all authors  m365: ln(1+adapters)=+2.41 (p=0.006) | ln(1+max downloads)=+0.46 (p=0.410)
+  >=3 adapters m365: ln(1+adapters)=+0.80 (p=0.615) | ln(1+max downloads)=+0.82 (p=0.615)
+
+Release cadence (ln of the old generation's lifetime in days): LPM, family fixed effects, errors clustered by event
+  m180: -3.79 pp (p=0.044); with release-date control -3.87 pp (p=0.024)
+  m365: -4.61 pp (p=0.028); with release-date control -4.67 pp (p=0.019)
+  >=3 adapters, m180, release-date control: -10.17 pp (p=0.023)
+  leave-one-event-out (m180): range -9.28 to -2.13 pp, p<0.05 in 13 of 19
+  without Qwen:1->2: -2.13 pp (p=0.008)
+  without Qwen:1->2, >=3 adapters: -3.31 pp (p=0.108)
