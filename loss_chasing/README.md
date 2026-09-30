@@ -29,3 +29,8 @@ python run_experiment.py --policy hf:Qwen/Qwen2.5-0.5B-Instruct --episodes 100 -
 python run_experiment.py --policy hfapi:meta-llama/Llama-3.1-8B-Instruct --episodes 100 --first-only --out results/llama.jsonl
 ```
 Local models get `{"action": "` pre-filled so small models stay in the JSON-only format; parsing remains strict.
+
+## Resuming, summarizing
+- `run_experiment.py ... --resume --out <log>` continues an interrupted run (skips episodes already in the log; refuses to append to a non-empty log without `--resume`).
+- `python summarize.py data/*.jsonl` builds the cross-model table (`SUMMARY.md`). `data/` holds the Qwen and SmolLM2 logs.
+- `analyze.py` reports H1 as NOT TESTABLE when nobody ever skips, and H2 both as registered (raw risk index) and as an exploratory excess-risk + skip criterion.

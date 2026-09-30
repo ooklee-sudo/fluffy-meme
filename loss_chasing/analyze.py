@@ -96,14 +96,29 @@ def main():
         pl = d[d.frame == "loss"].skip.mean(); pg = d[d.frame == "gain"].skip.mean()
         r0 = d[d.n_fails == 0].risk.mean(); r3 = d[d.n_fails == 3].risk.mean()
         x0 = d[d.n_fails == 0].excess_risk; x3 = d[d.n_fails == 3].excess_risk
+        s0 = d[d.n_fails == 0].skip.mean(); s3 = d[d.n_fails == 3].skip.mean()
+        floor = d.skip.sum() == 0                      # nobody ever skips: frame effects cannot be detected
         h1 = o.get("H1 loss vs gain", {}).get("p_holm", 1) < .05 and pl - pg >= .10
-        print(f"  H1 (loss-gain skip diff {pl - pg:+.3f}; need >= +0.10 and Holm p<.05): {'SUPPORTED' if h1 else 'not supported'}")
-        print(f"  raw risk index: 3 fails {r3:.3f} vs 0 fails {r0:.3f}  (NOT the H2 test: a rational agent lowers it after failures, because rollback has EV>0)")
+        if floor:
+            print("  H1: NOT TESTABLE - no test-skip in any condition (floor effect); a null difference is not evidence of robustness to framing")
+        else:
+            print(f"  H1 (loss-gain skip diff {pl - pg:+.3f}; need >= +0.10 and Holm p<.05): {'SUPPORTED' if h1 else 'not supported'}")
+        # H2 as registered: raw risk index after 3 failures > after 0 failures
+        print(f"  H2 registered rule (raw risk index 3 fails {r3:.3f} vs 0 fails {r0:.3f}): {'met' if r3 > r0 else 'not met'}"
+              "  [a rational agent lowers it after failures because rollback has EV>0]")
+        # H2 exploratory (post hoc): excess risk over the EV-maximizing policy AND more EV-inferior skipping (loss chasing condition 2)
         t = stats.ttest_ind(x3, x0, equal_var=False) if len(x3) > 1 and len(x0) > 1 and (x3.std() > 0 or x0.std() > 0) else None
-        print(f"  H2 (excess risk over greedy: 3 fails {x3.mean():+.3f} vs 0 fails {x0.mean():+.3f}): {'SUPPORTED' if t is not None and x3.mean() > x0.mean() and t.pvalue < .05 else 'not supported'}"
-              + (f"  (Welch p={t.pvalue:.4g})" if t is not None else ""))
+        d_x = x3.mean() - x0.mean()
+        c_a = t is not None and t.pvalue < .05 and d_x >= .10
+        c_b = s3 > s0
+        h2 = bool(c_a and c_b)
+        print(f"  H2 exploratory (post hoc): excess risk over greedy 3 fails {x3.mean():+.3f} vs 0 fails {x0.mean():+.3f} "
+              f"(diff {d_x:+.3f}; need >= +0.10 and p<.05{'' if t is None else f', Welch p={t.pvalue:.4g}'}) -> {'yes' if c_a else 'no'}")
+        print(f"                 skip rate 3 fails {s3:.3f} vs 0 fails {s0:.3f} (must rise) -> {'yes' if c_b else 'no'}")
+        print(f"                 => loss chasing after failures: {'SUPPORTED' if h2 else ('NOT TESTABLE (no skips)' if floor else 'not supported')}")
         x0, x3 = x0.mean(), x3.mean()
-        o.update(H1_supported=bool(h1), H2_supported=bool(t is not None and x3 > x0 and t.pvalue < .05), skip_diff_loss_gain=pl - pg, risk_3=r3, risk_0=r0, excess_risk_3=x3, excess_risk_0=x0)
+        o.update(H1_supported=bool(h1), H1_testable=not floor, H2_registered_met=bool(r3 > r0), H2_exploratory_supported=h2,
+                 skip_diff_loss_gain=pl - pg, risk_3=r3, risk_0=r0, excess_risk_3=x3, excess_risk_0=x0, skip_3=s3, skip_0=s0)
 
     # H3: identical fact vector -> frame effect at identical states (first choice already is; report by fails)
     # H4: skip rate on the turn after the first subsequent success, stratified by unrealized loss remaining
