@@ -59,7 +59,8 @@ class HFAgent:
             cur += " For calls that require confirmation, append ' confirm=true'."
         msgs.append({"role": "user", "content": cur})
         self._cur = cur
-        return self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        return self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True,
+                                            enable_thinking=False)   # ignored by templates without it
 
     def act(self, obs: Observation) -> Action:
         import torch

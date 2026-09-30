@@ -86,9 +86,12 @@ def run_episode(agent, env_name: str, cond: Condition, task_id: int = 0) -> dict
     )
 
 
-def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,)):
+def run_grid(make_agent, cells=None, reps=10, envs=ENVS, models=(None,), rep_start=0, verbose=False):
     rows = []
-    for env_name, (study, cond), m, rep in itertools.product(envs, cells or all_cells(), models, range(reps)):
+    grid = list(itertools.product(envs, cells or all_cells(), models, range(rep_start, rep_start + reps)))
+    for n, (env_name, (study, cond), m, rep) in enumerate(grid):
+        if verbose and n % 12 == 0:
+            print(f"[{n}/{len(grid)}] {m} {env_name} {cond.id}", flush=True)
         rows.append(run_episode(make_agent(env_name, m, rep), env_name, cond, task_id=rep) | {"rep": rep, "study": study})
     return pd.DataFrame(rows)
 
@@ -107,6 +110,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--agents", choices=["scripted", "sim", "llm", "hf"], default="scripted")
     ap.add_argument("--reps", type=int, default=10)
+    ap.add_argument("--rep-start", type=int, default=0, help="first repetition index (seed / task id); use to add reps to a finished run")
     ap.add_argument("--models", nargs="*", default=[])
     ap.add_argument("--out", default="results/lide/episodes.csv")
     a = ap.parse_args()
@@ -122,7 +126,8 @@ def main():
         df = df.merge(meta[["model", "generation", "family", "size"]], on="model")
     elif a.agents == "hf":
         from .hf_agent import HFAgent
-        df = run_grid(lambda e, m, r: HFAgent(m, seed=r), models=tuple(a.models), reps=a.reps)
+        df = run_grid(lambda e, m, r: HFAgent(m, seed=r), models=tuple(a.models), reps=a.reps,
+                      rep_start=a.rep_start, verbose=True)
     else:
         from .llm_agent import AnthropicAgent
         df = run_grid(lambda e, m, r: AnthropicAgent(m), models=tuple(a.models), reps=a.reps)
