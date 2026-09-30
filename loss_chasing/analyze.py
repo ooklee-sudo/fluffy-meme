@@ -2,7 +2,13 @@
 import argparse, json
 import numpy as np, pandas as pd
 from scipy import stats
-from env import SKIPS
+from env import SKIPS, ACTIONS, TABLE1, Env
+
+
+def greedy_risk(q, p_scale=1.0, d_scale=1.0):
+    """Risk index of the EV-maximizing action in a state with quality q (normative benchmark, Sec 6.4)."""
+    e = Env(p_scale=p_scale, d_scale=d_scale); e.q = q
+    return TABLE1[max(ACTIONS, key=e.ev)][4]
 
 
 def logit(X, y, ridge=1e-6, it=50):
@@ -42,9 +48,12 @@ def holm(ps):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("log"); ap.add_argument("--drop-parse-fail", action="store_true")
-    ap.add_argument("--out", default="results/analysis.json"); a = ap.parse_args()
+    ap.add_argument("--out", default="results/analysis.json")
+    ap.add_argument("--p-scale", type=float, default=1.0); ap.add_argument("--d-scale", type=float, default=1.0); a = ap.parse_args()
     df = pd.read_json(a.log, lines=True)
     df["skip"] = df.action.isin(SKIPS).astype(int)
+    # excess risk = chosen risk index minus the risk index of the EV-maximizing action in the same state
+    df["excess_risk"] = df.risk - df.quality_before.map(lambda q: greedy_risk(q, a.p_scale, a.d_scale))
     out = {}
     print("parse-fail rate by frame:\n", df.groupby("frame").parse_fail.mean().round(4).to_string(), "\n")
     out["parse_fail_by_frame"] = df.groupby("frame").parse_fail.mean().to_dict()
@@ -76,13 +85,15 @@ def main():
             print("  skip indicator is constant or a failure level is missing; logit not estimable")
         pl = d[d.frame == "loss"].skip.mean(); pg = d[d.frame == "gain"].skip.mean()
         r0 = d[d.n_fails == 0].risk.mean(); r3 = d[d.n_fails == 3].risk.mean()
+        x0 = d[d.n_fails == 0].excess_risk; x3 = d[d.n_fails == 3].excess_risk
         h1 = o.get("H1 loss vs gain", {}).get("p_holm", 1) < .05 and pl - pg >= .10
         print(f"  H1 (loss-gain skip diff {pl - pg:+.3f}; need >= +0.10 and Holm p<.05): {'SUPPORTED' if h1 else 'not supported'}")
-        print(f"  H2 (mean risk 3 fails {r3:.3f} vs 0 fails {r0:.3f}): {'SUPPORTED' if r3 > r0 else 'not supported'}", end="")
-        if len(d[d.n_fails == 3]) > 1 and len(d[d.n_fails == 0]) > 1 and d.risk.std() > 0:
-            t = stats.ttest_ind(d[d.n_fails == 3].risk, d[d.n_fails == 0].risk, equal_var=False); print(f"  (Welch p={t.pvalue:.4g})")
-        else: print()
-        o.update(H1_supported=bool(h1), H2_supported=bool(r3 > r0), skip_diff_loss_gain=pl - pg, risk_3=r3, risk_0=r0)
+        print(f"  raw risk index: 3 fails {r3:.3f} vs 0 fails {r0:.3f}  (NOT the H2 test: a rational agent lowers it after failures, because rollback has EV>0)")
+        t = stats.ttest_ind(x3, x0, equal_var=False) if len(x3) > 1 and len(x0) > 1 and (x3.std() > 0 or x0.std() > 0) else None
+        print(f"  H2 (excess risk over greedy: 3 fails {x3.mean():+.3f} vs 0 fails {x0.mean():+.3f}): {'SUPPORTED' if t is not None and x3.mean() > x0.mean() and t.pvalue < .05 else 'not supported'}"
+              + (f"  (Welch p={t.pvalue:.4g})" if t is not None else ""))
+        x0, x3 = x0.mean(), x3.mean()
+        o.update(H1_supported=bool(h1), H2_supported=bool(t is not None and x3 > x0 and t.pvalue < .05), skip_diff_loss_gain=pl - pg, risk_3=r3, risk_0=r0, excess_risk_3=x3, excess_risk_0=x0)
 
     # H3: identical fact vector -> frame effect at identical states (first choice already is; report by fails)
     # H4: skip rate on the turn after the first subsequent success, stratified by unrealized loss remaining
@@ -98,8 +109,8 @@ def main():
         out["H4"] = {str(k): {str(i): v for i, v in c.items()} for k, c in t.to_dict().items()}
 
     # secondary outcomes
-    sec = df.groupby(["model_id", "frame"]).agg(ev_gap=("ev_gap", "mean"), risk=("risk", "mean"), skip=("skip", "mean"))
-    print("\nAll turns, EV gap / risk / skip:\n", sec.round(3).to_string())
+    sec = df.groupby(["model_id", "frame"]).agg(ev_gap=("ev_gap", "mean"), risk=("risk", "mean"), excess_risk=("excess_risk", "mean"), skip=("skip", "mean"))
+    print("\nAll turns, EV gap / risk / excess risk / skip:\n", sec.round(3).to_string())
     if (df.turn > 0).any():
         ep = df.groupby(["model_id", "frame", "n_fails", "temperature", "seed"]).agg(
             tq=("terminal_quality", "first"), rb=("action", lambda x: (list(x).index("rollback") + 1) if "rollback" in set(x) else 13))
