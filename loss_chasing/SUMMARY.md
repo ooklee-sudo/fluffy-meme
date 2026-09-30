@@ -31,3 +31,16 @@ To fold this row into the table, run `python summarize.py data/*.jsonl <haiku lo
 - The H2 rule here is post hoc (exploratory). In this state machine rollback has positive EV after a failure, so a rational agent *lowers* its raw risk index; the registered raw-risk H2 cannot separate chasing from rational retreat.
 - First free choice only (registered primary sample); the later turns (H4, chase streaks, terminal quality) have not been run.
 - One temperature (0.7) for the open models; at temperature 0 the 100 episodes per cell collapse to one effective sample.
+
+## Time-pressure control (exploratory pilot; `data/tp_*.jsonl`, run with `--start-t 9 --fails 0 3`)
+
+Three turns left at the first choice instead of twelve; open models, temperature 0.7, 50 episodes per cell; compared with the main-grid cells with 0 and 3 failures (like for like).
+
+| Model | Turns left | Skip overall | Gain / Loss / Neutral | Loss - gain (95% CI) |
+|---|---|---|---|---|
+| Qwen2.5-1.5B | 12 | 18.0% | 12.5 / 23.5 / 18.0 | +11.0 pp (+3.5, +18.5) |
+| | 3 | 18.3% | 14.0 / 22.0 / 19.0 | +8.0 pp (-2.6, +18.6) |
+| SmolLM2-1.7B | 12 | 7.2% | 9.5 / 4.0 / 8.0 | -5.5 pp (-10.4, -0.6) |
+| | 3 | 7.7% | 13.0 / 5.0 / 5.0 | -8.0 pp (-15.9, -0.1) |
+
+Turn scarcity did not change overall skipping (Qwen p = .90, SmolLM2 p = .79) and the frame x scarcity interaction is not significant (Qwen p = .88, SmolLM2 p = .38). This gives no support to a pure turn-saving account of the frame differences; samples are small and the commercial model was not run under this condition. Note: the +11.0 pp for Qwen at twelve turns is restricted to 0 and 3 failures; the registered pooled figure (0, 1, 3 failures) is +7.7 pp.
