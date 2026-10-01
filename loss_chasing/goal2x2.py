@@ -36,10 +36,13 @@ def load(paths):
     return pd.DataFrame(rows)
 
 
+CI = 95.0
+
+
 def boot(v, B=4000, seed=1):
     rng = np.random.default_rng(seed); v = np.asarray(v)
     m = np.array([rng.choice(v, len(v)).mean() for _ in range(B)])
-    return np.percentile(m, [2.5, 97.5])
+    return np.percentile(m, [(100 - CI) / 2, 100 - (100 - CI) / 2])
 
 
 def analyse(df, fails):
@@ -73,7 +76,7 @@ def to_md(res):
                  f"{r['wordings']} wordings x {r['episodes']} episodes**\n")
         L.append("| Frame | " + " | ".join(FR) + " |\n|---|" + "---|" * len(FR))
         L.append("| Skip rate (mean over wordings) | " + " | ".join(pct(r[f"rate_{f}"]) for f in FR) + " |\n")
-        L.append("| Contrast | Mean difference, pp [95% CI over wordings] | Wordings positive / negative |\n|---|---|---|")
+        L.append("| Contrast | Mean difference, pp [CI over wordings] | Wordings positive / negative |\n|---|---|---|")
         for name, _ in CONTRASTS:
             m, lo, hi, pos, neg = r[name]
             L.append(f"| {name} | {100 * m:+.1f} [{100 * lo:+.1f}, {100 * hi:+.1f}] | {pos} / {neg} of {r['wordings']} |")
@@ -82,7 +85,9 @@ def to_md(res):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("logs", nargs="+"); ap.add_argument("--fails", type=int, default=0); ap.add_argument("--md", default=None)
+    ap.add_argument("--ci", type=float, default=95.0, help="bootstrap interval level in percent")
     a = ap.parse_args()
+    global CI; CI = a.ci
     res = analyse(load(a.logs), a.fails)
     if not res:
         raise SystemExit("no complete 5-frame cells found (run with --extra-frames)")

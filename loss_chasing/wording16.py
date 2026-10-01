@@ -45,10 +45,13 @@ def decompose(R, n):
                 interaction=ss_int / tot if tot else np.nan, noise=min(1.0, noise / tot) if tot else np.nan)
 
 
+CI = 95.0
+
+
 def boot(vals, B=4000, seed=1):
     rng = np.random.default_rng(seed); v = np.asarray(vals)
     m = np.array([rng.choice(v, len(v)).mean() for _ in range(B)])
-    return np.percentile(m, [2.5, 97.5])
+    return np.percentile(m, [(100 - CI) / 2, 100 - (100 - CI) / 2])
 
 
 def analyse(df, fails):
@@ -77,7 +80,7 @@ def pp(x): return "-" if pd.isna(x) else f"{100 * x:+.1f}"
 
 
 def to_md(t):
-    L = ["| Model | Turns left | Wordings x episodes | Skip rate (min-max over cells) | Loss minus gain, pp [95% CI over wordings] | Neutral minus gain, pp [95% CI] | SD across wordings (excess over noise), pp | Loss above gain | Variation due to frame / wording / interaction (noise floor) |",
+    L = ["| Model | Turns left | Wordings x episodes | Skip rate (min-max over cells) | Loss minus gain, pp [CI over wordings] | Neutral minus gain, pp [CI] | SD across wordings (excess over noise), pp | Loss above gain | Variation due to frame / wording / interaction (noise floor) |",
          "|---|---|---|---|---|---|---|---|---|"]
     for _, r in t.iterrows():
         if r.floor:
@@ -91,7 +94,9 @@ def to_md(t):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("logs", nargs="+"); ap.add_argument("--fails", type=int, default=0); ap.add_argument("--md", default=None)
+    ap.add_argument("--ci", type=float, default=95.0, help="bootstrap interval level in percent (e.g. 99.6 for a Bonferroni-style check over 12 contrasts)")
     a = ap.parse_args()
+    global CI; CI = a.ci
     t = analyse(load(a.logs), a.fails)
     md = to_md(t); print(md)
     if a.md:
