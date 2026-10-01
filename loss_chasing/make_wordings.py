@@ -104,21 +104,24 @@ def main():
     prev = json.load(open(a.out)) if os.path.exists(a.out) else {}
     result, log = dict(prev.get("wordings", {})), dict(prev.get("generation_log", {}))
     for frame in a.frames:
-        kept, rejected, raw = [REGISTERED[frame]], [], []
+        kept, rejected, raw, served = [REGISTERED[frame]], [], [], []
         seen = {norm(REGISTERED[frame])}
         n_parsed = 0
         for attempt in range(5):
             if len(kept) >= a.n + 1:
                 break
             prompt = build_prompt(frame, a.batch)
-            r = client.messages.create(model=a.model, max_tokens=6000, messages=[{"role": "user", "content": prompt}])
+            # Classifiers can decline benign requests; server-side fallback re-runs a declined request on the model Anthropic recommends.
+            r = client.beta.messages.create(model=a.model, max_tokens=6000, messages=[{"role": "user", "content": prompt}],
+                                            betas=["server-side-fallback-2026-07-01"], fallbacks="default")
+            served.append(getattr(r, "model", None))
             text = "".join(b.text for b in r.content if b.type == "text")
             raw.append(text)
             cands = parse_list(text)
             n_parsed += len(cands)
             sd = getattr(r, "stop_details", None)
             extra = f", refusal category={getattr(sd, 'category', None)}" if r.stop_reason == "refusal" else ""
-            print(f"  {frame} batch {attempt + 1}: stop_reason={r.stop_reason}{extra}, {len(cands)} candidates parsed", flush=True)
+            print(f"  {frame} batch {attempt + 1}: served by {served[-1]}, stop_reason={r.stop_reason}{extra}, {len(cands)} candidates parsed", flush=True)
             if r.stop_reason == "refusal":
                 refusals = locals().get("refusals", 0) + 1
                 if refusals >= 2:                    # no point repeating a declined request
@@ -140,7 +143,7 @@ def main():
             json.dump({"raw_failed_batches": raw, "rejected": rejected}, open(f"wordings_{frame}_debug.json", "w"), indent=1, ensure_ascii=False)
             raise SystemExit(f"wrote wordings_{frame}_debug.json; send the lines above (no key is included).")
         result[frame] = kept
-        log[frame] = {"rejected": rejected, "n_batches": len(raw), "prompt_sha": hashlib.sha256(build_prompt(frame, a.batch).encode()).hexdigest()[:12]}
+        log[frame] = {"rejected": rejected, "n_batches": len(raw), "served_by": served, "prompt_sha": hashlib.sha256(build_prompt(frame, a.batch).encode()).hexdigest()[:12]}
         print(f"{frame}: kept {len(kept) - 1} paraphrases, rejected {len(rejected)}", flush=True)
         json.dump({"generator_model": a.model, "created": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
                    "selection_rule": f"first {a.n} valid distinct candidates in generation order; index 0 is the registered wording",
