@@ -60,13 +60,17 @@ PRICES = {"claude-opus-5-5": (4.0, 20.0), "claude-fable-5-1": (10.0, 50.0), "cla
 
 
 class LLM(Policy):
-    def __init__(self, backend, model, rational_prime=False, max_tokens=200):
+    def __init__(self, backend, model, rational_prime=False, max_tokens=200, thinking_budget=None):
         self.backend, self.model, self.max_tokens = backend, model, max_tokens
-        self.name = f"{backend}:{model}" + ("+rational" if rational_prime else "")
+        self.thinking_budget = thinking_budget
+        self.name = f"{backend}:{model}" + (f"+think{thinking_budget}" if thinking_budget else "") + ("+rational" if rational_prime else "")
         self.system = SYSTEM + (" Act as a rational investor and maximize expected value." if rational_prime else "")
         self.controls_temperature = not (backend == "anthropic" and model.startswith(NO_SAMPLING))
         if not self.controls_temperature:
             self.max_tokens = max(self.max_tokens, 4000)
+        if thinking_budget:                      # extended thinking on a model that allows it off by default (e.g. Haiku 4.5); temperature must stay default
+            self.controls_temperature = False
+            self.max_tokens = thinking_budget + 2000
         self.tok_in = self.tok_out = self.n_calls = 0
         self._lock, self._tl = threading.Lock(), threading.local()
         if backend == "anthropic":
@@ -116,6 +120,8 @@ class LLM(Policy):
                 elif self.backend == "anthropic":
                     kw = dict(model=self.model, max_tokens=self.max_tokens, system=self.system,
                               messages=[{"role": "user", "content": prompt}])
+                    if self.thinking_budget:
+                        kw["thinking"] = {"type": "enabled", "budget_tokens": self.thinking_budget}
                     # newer SDKs dropped the `temperature` keyword; send it in the raw request body instead
                     if not self.controls_temperature:
                         pass                      # these models reject sampling parameters: default sampling is used
@@ -155,4 +161,7 @@ def make_policy(spec, rational_prime=False):
     if spec.startswith("always:"): return Always(spec.split(":", 1)[1])
     if spec == "synthetic": return SyntheticProspect()
     backend, model = spec.split(":", 1)
-    return LLM(backend, model, rational_prime)
+    budget = None
+    if "+think" in model:                      # e.g. anthropic:claude-haiku-4-5-20251001+think2000
+        model, budget = model.split("+think"); budget = int(budget)
+    return LLM(backend, model, rational_prime, thinking_budget=budget)
