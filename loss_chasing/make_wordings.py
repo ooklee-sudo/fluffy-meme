@@ -39,7 +39,7 @@ FORBIDDEN = {
 def build_prompt(frame, k):
     desc, fields, rule = SPEC[frame]
     fl = "\n".join(f"  {{{n}}}: {m}" for n, m in fields.items())
-    return (f"You write one-to-two sentence status lines for an on-call dashboard that reports on a deployed AI model.\n"
+    return (f"You write one-to-two sentence status lines for an on-call dashboard that reports on a monitored software service.\n"
             f"Write {k} different phrasings of {desc}. Plain English, no emojis, no markdown, each under 160 characters.\n"
             f"Insert the values only through these placeholders, written exactly with braces:\n{fl}\n"
             f"Do not write any digits. {rule} Add no information beyond the placeholders listed.\n"
@@ -116,7 +116,13 @@ def main():
             raw.append(text)
             cands = parse_list(text)
             n_parsed += len(cands)
-            print(f"  {frame} batch {attempt + 1}: stop_reason={r.stop_reason}, {len(cands)} candidates parsed", flush=True)
+            sd = getattr(r, "stop_details", None)
+            extra = f", refusal category={getattr(sd, 'category', None)}" if r.stop_reason == "refusal" else ""
+            print(f"  {frame} batch {attempt + 1}: stop_reason={r.stop_reason}{extra}, {len(cands)} candidates parsed", flush=True)
+            if r.stop_reason == "refusal":
+                refusals = locals().get("refusals", 0) + 1
+                if refusals >= 2:                    # no point repeating a declined request
+                    break
             for cand in cands:                      # selection rule: generation order, first valid wins
                 if len(kept) >= a.n + 1:
                     break
@@ -126,7 +132,7 @@ def main():
                 else:
                     kept.append(cand.strip()); seen.add(norm(cand))
         if len(kept) < a.n + 1:
-            print(f"\nFAILED for the {frame} frame: {len(kept) - 1} valid paraphrases after 5 batches ({n_parsed} candidates parsed, {len(rejected)} rejected).")
+            print(f"\nFAILED for the {frame} frame: {len(kept) - 1} valid paraphrases after {len(raw)} batch(es) ({n_parsed} candidates parsed, {len(rejected)} rejected).")
             print("Rejection reasons:", dict(collections.Counter(x["reason"] for x in rejected)))
             for x in rejected[:8]:
                 print("  rejected:", x["reason"], "|", str(x["text"])[:110])
