@@ -18,7 +18,7 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
                    n_fails=n_fails, temperature=temp, t=env.t, turn=env.turn, quality_before=env.q,
                    fail_streak_before=env.fail_streak, cum_loss_before=env.unrealized_loss, action=a,
                    parse_fail=pf, risk=TABLE1[a][4], ev_gap=env.ev_gap(a), reason=reason,
-                   variant=variant, wordings_sha=frames.WORDINGS_SHA, hide_target=frames.HIDE_TARGET, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
+                   variant=variant, wordings_sha=frames.WORDINGS_SHA, hide_target=frames.HIDE_TARGET, reveal_ev=frames.REVEAL_EV, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
         usage = getattr(policy, "last_usage", None)
         row["tokens_in"], row["tokens_out"] = usage if usage else (None, None)
         row["temperature_applied"] = getattr(policy, "controls_temperature", True)
@@ -49,6 +49,7 @@ def main():
     ap.add_argument("--start-ts", type=int, nargs="+", default=None, help="several time-pressure conditions in one run (turns already spent); overrides --start-t")
     ap.add_argument("--workers", type=int, default=1, help="parallel API calls per cell (API backends only; 4 is a sensible start)")
     ap.add_argument("--extra-frames", action="store_true", help="add loss_goal and neutral_goal (valence headline + target headline); needs --wordings")
+    ap.add_argument("--reveal-ev", action="store_true", help="state each option's expected quality change in its description (dominance of verification becomes visible)")
     ap.add_argument("--hide-target", action="store_true", help="omit the target and the gap to it from the facts line of every frame")
     ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
@@ -63,6 +64,7 @@ def main():
     if a.extra_frames and not a.wordings:
         raise SystemExit("--extra-frames needs --wordings")
     frames.HIDE_TARGET = a.hide_target
+    frames.REVEAL_EV = a.reveal_ev
     run_frames = list(ALL_FRAMES) if a.extra_frames else list(FRAMES)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     env_kw = dict(p_scale=a.p_scale, d_scale=a.d_scale, early_stop=a.early_stop, start_t=a.start_t)

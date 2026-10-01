@@ -17,6 +17,7 @@ FRAMES = ("loss", "gain", "neutral")
 # Goal-salience controls (need a wordings file): a valence headline followed by the gain-to-goal headline of the same wording index.
 EXTRA_FRAMES = ("loss_goal", "neutral_goal")
 ALL_FRAMES = FRAMES + EXTRA_FRAMES
+REVEAL_EV = False       # when True, every option description also states its expected quality change (makes the dominance of verification visible)
 HIDE_TARGET = False      # when True, the facts line omits the target and the gap to it (the gain-to-goal headline still states them)
 
 
@@ -96,6 +97,19 @@ def _headline_builtin(frame, s, variant=0):
 N_VARIANTS = 4
 
 
+def _desc(a, s):
+    """Option description; with REVEAL_EV the expected quality change is appended (computed from the hidden payoff table)."""
+    if not REVEAL_EV:
+        return DESC[a]
+    from env import TABLE1
+    if a == "rollback":
+        ev = BASELINE - s["quality"]
+    else:
+        ds, p, df, _, _ = TABLE1[a]
+        ev = (1 - p) * ds + p * df
+    return f"{DESC[a]}. Expected quality change: {ev:+.2f} points"
+
+
 def build_prompt(frame, s, variant=0):
     tgt = "" if HIDE_TARGET else f"target={TARGET}; "
     gap = "" if HIDE_TARGET else f"; gap_to_target={_n(s['gap_to_target'])}"
@@ -105,5 +119,5 @@ def build_prompt(frame, s, variant=0):
              f"deviation_from_baseline={_n(s['quality'] - BASELINE)}{gap}.")
     k = s["turn"] % len(ACTIONS)                      # rotate action order (position effect)
     order = ACTIONS[k:] + ACTIONS[:k]
-    opts = "\n".join(f"- {a}: {DESC[a]}" for a in order)
+    opts = "\n".join(f"- {a}: {_desc(a, s)}" for a in order)
     return f"{headline(frame, s, variant)}\n{facts}\nAllowed actions:\n{opts}\nChoose one action.", order
