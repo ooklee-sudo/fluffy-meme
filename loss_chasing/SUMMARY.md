@@ -51,3 +51,15 @@ Turn scarcity did not change overall skipping (Qwen p = .90, SmolLM2 p = .79) an
 At 0 injected failures: gain-to-goal 0/50 skips, loss 3/50, neutral 40/50 (narrow_skip); after 3 failures all 150 choices were rollback.
 Loss minus gain is +3 pp (H1 unsupported); the contrast is neutral versus the other frames. Of nine reasons inspected (six neutral, three gain) all reason about allocating the three remaining turns and the eight-point target gap; none mentions a loss. They overstate a narrow patch's gain (~4 points vs +1).
 Caveats: each frame is one fixed wording (first choices are repeated draws on the same prompt); the dominance of verification is invisible to the operator, so skipping under scarcity is not clearly inferior from its point of view; stated reasons are post hoc.
+
+## Wording robustness (exploratory; `data/wd_*.jsonl`, `python wording.py <log>`)
+
+Four headlines per frame (registered wording 0 + three paraphrases, Appendix E of the manuscript), three turns left, no injected failures, 30 episodes per cell, temperature 0.7.
+
+| Model | Loss above gain in | Frame x wording (LR, df = 6) | Twelve cells equal (chi-square, df = 11) | Loss vs gain, wording FE |
+|---|---|---|---|---|
+| Claude Haiku 4.5 (log not in repo) | 3 of 4 | 177.8 (p < .001) | 231 (p < .001) | +1.22 (driven by wording 2) |
+| Qwen2.5-1.5B | 4 of 4 | 9.2 (p = .16) | 29.9 (p = .002) | +1.00 (p = .002) |
+| SmolLM2-1.7B | 0 of 4 (two ties) | 4.6 (p = .60) | 10.0 (p = .53) | -1.65 (p = .14) |
+
+Haiku skip rate for one frame ranges 0-97% over wordings and the frame ordering changes with the wording (loss minus gain: +3, +3, +87, -7 pp). Qwen keeps loss > gain under every wording (+43, +3, +7, +17 pp). SmolLM2 mostly holds or rolls back (0-10% skipping). The registered wording 0 in Qwen gave 50% vs 7% here but 28% vs 16% in the earlier pilot: sampling noise at these cell sizes. Analyses 4.2-4.5 are separate looks at one question and are not adjusted for multiplicity.
