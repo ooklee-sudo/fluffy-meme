@@ -22,6 +22,10 @@ def load(path, manual=None):
     rows = [json.loads(l) for l in open(path) if l.strip().startswith("{")]
     df = pd.DataFrame(rows)
     items = {json.loads(l)["stem_id"]: json.loads(l) for l in open("items.jsonl")}
+    if "system_variant" not in df:
+        df["system_variant"] = 0
+    if "social_set" not in df:
+        df["social_set"] = "A"
     df["domain_name"] = df.stem_id.map(lambda s: items[s]["domain_name"])
     if manual:                                   # blind second coding of parse failures: columns model_key, stem_id, channel, letter
         m = pd.read_csv(manual)
@@ -256,6 +260,25 @@ def report(df, drop_failed, margin=0.05):
     return "\n".join(out)
 
 
+def robustness(df, drop_failed):
+    """Do the size contrasts survive other wordings of the system prompt and of the stance sentences? (primary pooled sample)"""
+    combos = sorted({(int(v), s) for v, s in zip(df.system_variant, df.social_set)})
+    if len(combos) < 2:
+        return ""
+    L = ["## Robustness to wording (primary pooled sample; registered wording is system 0, stance set A)\n",
+         "| System prompt | Stance set | N pairs | RN b1 Large | Conditional RS b1 Large | RS b1 Large |", "|---|---|---|---|---|---|"]
+    for sv, ss in combos:
+        d = df[(df.system_variant == sv) & (df.social_set == ss)]
+        p = build_pairs(d, drop_failed)
+        pr = p[(p.panel == "open") & p.family.isin(["Qwen2.5", "Llama3.1"]) & (p.thinking == False)]
+        if pr.family.nunique() < 1 or pr.Large.nunique() < 2:
+            continue
+        r = {y: lpm(pr, y)[0].get("Large") for y in ("RN", "CondRS", "RS")}
+        L.append(f"| {sv}{' (registered)' if (sv, ss) == (0, 'A') else ''} | {ss} | {len(pr)} | " + " | ".join(fmt(r[y]) if r[y] else "-" for y in ("RN", "CondRS", "RS")) + " |")
+    L.append("\nA conclusion about scale should hold in sign across wordings; if it flips, the result is a statement about the wording.")
+    return "\n".join(L) + "\n"
+
+
 def echo_sample(df, path, frac=0.2, seed=7):
     soc = df[df.channel == "social"].sample(frac=frac, random_state=seed)
     with open(path, "w", newline="") as f:
@@ -286,7 +309,10 @@ def main():
     df = load(a.log, a.manual)
     if a.echo_sample:
         return echo_sample(df, a.echo_sample)
-    md = report(df, a.drop_failed, a.margin); print(md)
+    reg = df[(df.system_variant == 0) & (df.social_set == "A")]
+    md = report(reg, a.drop_failed, a.margin)
+    md += "\n" + robustness(df, a.drop_failed)
+    print(md)
     if a.md:
         open(a.md, "w").write(md + "\n")
 

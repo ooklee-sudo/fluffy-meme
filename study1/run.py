@@ -14,7 +14,7 @@ drop Domain 3, keep the first 16 stems of each other domain.
 import argparse, hashlib, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor
 from items import build, render
-from prompts import SYSTEM, parse
+from prompts import SYSTEMS, parse
 
 
 def query_order(items, cut):
@@ -108,7 +108,7 @@ def done_keys(path):
     if os.path.exists(path):
         for line in open(path):
             try:
-                r = json.loads(line); keys.add((r["model_key"], r["stem_id"], r["channel"]))
+                r = json.loads(line); keys.add((r["model_key"], r["stem_id"], r["channel"], r.get("system_variant", 0), r.get("social_set", "A")))
             except (json.JSONDecodeError, KeyError):
                 pass
     return keys
@@ -120,6 +120,8 @@ def main():
     ap.add_argument("--out", default="results/study1.jsonl"); ap.add_argument("--resume", action="store_true")
     ap.add_argument("--max-new", type=int, default=512, help="maximum new tokens (pre-registered: 512)")
     ap.add_argument("--cut", action="store_true", help="pre-registered reduction: drop Domain 3, 16 stems per remaining domain")
+    ap.add_argument("--system-variant", type=int, default=0, choices=[0, 1, 2], help="0 = registered system prompt; 1, 2 = robustness wordings")
+    ap.add_argument("--social-set", default="A", choices=["A", "B"], help="A = registered stance sentences; B = robustness wordings")
     ap.add_argument("--limit", type=int, default=0, help="debug: only the first N queries")
     ap.add_argument("--workers", type=int, default=4, help="parallel API calls (api backends only)")
     a = ap.parse_args()
@@ -138,7 +140,7 @@ def main():
         qs = qs[:a.limit]
     done = done_keys(a.out)
     for spec in chosen:
-        todo = [q for q in qs if (spec["key"], q[0]["stem_id"], q[1]) not in done]
+        todo = [q for q in qs if (spec["key"], q[0]["stem_id"], q[1], a.system_variant, a.social_set) not in done]
         print(f"[{spec['key']}] {len(todo)} queries to run ({len(qs) - len(todo)} already done)", flush=True)
         if not todo:
             continue
@@ -152,7 +154,7 @@ def main():
             item, ch = q
             t0 = time.time()
             try:
-                text, finish, tin, tout, applied = be(SYSTEM, render(item, ch), max_new)
+                text, finish, tin, tout, applied = be(SYSTEMS[a.system_variant], render(item, ch, a.social_set), max_new)
             except Exception as e:
                 if any(w in repr(e).lower() for w in ("auth", "permission", "notfound", "not_found", "badrequest", "invalid")):
                     print("FATAL API error:", repr(e)[:300]); os._exit(2)
@@ -163,7 +165,7 @@ def main():
             letter, conf = parse(text)
             return dict(model_key=spec["key"], family=spec["family"], tier=spec["tier"], thinking=bool(spec.get("thinking", False)),
                         size_b=spec.get("size_b"), panel=spec.get("panel", "open"), model_id=spec["model"], revision=getattr(be, "revision", None),
-                        stem_id=item["stem_id"], domain=item["domain"], channel=ch, letter=letter, confidence=conf,
+                        stem_id=item["stem_id"], domain=item["domain"], channel=ch, system_variant=a.system_variant, social_set=a.social_set, letter=letter, confidence=conf,
                         parse_fail=letter is None, finish_reason=finish, tokens_in=tin, tokens_out=tout, temperature_applied=applied,
                         seconds=round(time.time() - t0, 2), items_sha=man["items_sha256"][:12], completion=text)
 

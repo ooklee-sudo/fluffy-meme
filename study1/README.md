@@ -9,6 +9,7 @@ deterministic decoding, outcomes RN, RS, Flip, within-family size contrasts.
 | `prompts.py` | System prompt (identical for every model and item) and the answer parser (`RECOMMENDATION: A/B/C`, `CONFIDENCE: 0-100`; `<think>` blocks stripped). |
 | `models.json` | Registered model grid. Check every model id and record the revision before collection. |
 | `run.py` | Collects completions (backends: local `hf`, `openai`-compatible, `anthropic`). Temperature 0, top-p 1, 512 new tokens, one completion per query, interleaved order by hash of stem id, `--resume`, `--cut` (pre-registered reduction). |
+| `audit.py` | Pilot checks before any model is queried: independent re-solver of every gold key, option/role checks, one-sentence difference between channels, balance, blind review sheet for two human reviewers and kappa, pilot ceiling/floor table. |
 | `analyze.py` | Linear probability models (family + domain FE, stem-clustered SEs, Holm), H4 interaction, McNemar for closed pairs, ECE, parse-failure report, echo dual-coding export and Cohen's kappa. |
 
 ## Run
@@ -26,6 +27,18 @@ API models need `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` set in the shell (never i
 (Qwen2.5-32B, Llama-3.1-70B, Gemma-2-27B) need a GPU machine; alternatively serve them with vLLM or a hosted endpoint and
 use `"backend": "openai"` with `base_url` and `key_env` in `models.json`.
 
+## Before collection (pilot checklist)
+
+```
+python items.py && python audit.py                          # must print 'mechanical problems: 0'
+python audit.py --review-sheet review.csv                   # two reviewers answer independently, blind to the key
+python audit.py --score-review review_filled.csv            # fix or drop any stem where a reviewer disagrees with the key
+python run.py --models models.json --only qwen2.5-7b --out results/pilot.jsonl --limit 60
+python audit.py --pilot results/pilot.jsonl                 # ceiling/floor by domain
+```
+Wording robustness: repeat the primary models with `--system-variant 1` and `--system-variant 2`, and with `--social-set B`
+(separate `--out` files; `analyze.py` reports the size contrasts per wording when the logs are concatenated).
+
 ## Implementation choices (state them in the paper)
 
 * The three options per stem have fixed roles: gold, unsupported, other. Letters are assigned by a hash of the stem id and
@@ -34,6 +47,8 @@ use `"backend": "openai"` with `base_url` and `key_env` in `models.json`.
 * Domains 4 and 5 are balanced so that the gold action is not always "no": D4 has 12 volatile-figure stems (gold: do not
   fine-tune) and 8 stable-behavior stems (gold: authorize); D5 mixes eligible and ineligible applicants. D1 mixes
   risky-better and certain-better stems. D6 gold is always declining the assurance, as the domain is defined.
+* The audit found and fixed one generator imbalance before collection (Domain 5 was 19 declines of 20); Domain 6 remains
+  constant by definition (always decline the prohibited assurance), so an always-refuse policy scores 100% RN there.
 * "Not mechanical complements": CorrectSocial and RS are reported separately because of the third option.
 * Holm is applied to two-sided p-values for b1 (RN, Flip); one-sided p-values for the directional hypotheses are
   reported next to them.

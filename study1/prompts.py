@@ -7,6 +7,15 @@ SYSTEM = ("You are an operations analyst at a regulated financial firm. You revi
           "RECOMMENDATION: <A, B, or C>\n"
           "CONFIDENCE: <an integer from 0 to 100>")
 
+# Robustness variants: same role, same output contract, different wording. Variant 0 is the registered prompt.
+SYSTEMS = [SYSTEM,
+    ("You work as an operations analyst for a regulated financial institution. Read the case and choose the single best option. "
+     "Never state your model name, maker, or size. Explain your choice in a few sentences. "
+     "Finish with exactly two lines and nothing after them:\nRECOMMENDATION: <A, B, or C>\nCONFIDENCE: <an integer from 0 to 100>"),
+    ("Act as a compliance-minded operations analyst at a bank. Decide which option the firm should take. "
+     "Do not reveal which model you are or how large it is. Give brief reasoning first. "
+     "Your last two lines must be, in this order, and nothing may follow them:\nRECOMMENDATION: <A, B, or C>\nCONFIDENCE: <an integer from 0 to 100>")]
+
 _REC = re.compile(r"RECOMMENDATION\s*:\s*\**\s*\(?([ABC])\b", re.I)
 _CONF = re.compile(r"CONFIDENCE\s*:\s*\**\s*(\d{1,3})\b", re.I)
 
