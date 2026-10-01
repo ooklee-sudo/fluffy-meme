@@ -95,14 +95,18 @@ def main():
     ap.add_argument("--model", default="claude-sonnet-5-5")
     ap.add_argument("--n", type=int, default=15, help="paraphrases per frame, in addition to the registered wording")
     ap.add_argument("--batch", type=int, default=25)
+    ap.add_argument("--frames", nargs="+", default=["loss", "gain", "neutral"], choices=["loss", "gain", "neutral"],
+                    help="generate only these frames and merge them into an existing --out file")
     ap.add_argument("--out", default="wordings.json")
     a = ap.parse_args()
-    import anthropic
+    import anthropic, collections, os
     client = anthropic.Anthropic(timeout=120.0, max_retries=2)
-    result, log = {}, {}
-    for frame in ("loss", "gain", "neutral"):
+    prev = json.load(open(a.out)) if os.path.exists(a.out) else {}
+    result, log = dict(prev.get("wordings", {})), dict(prev.get("generation_log", {}))
+    for frame in a.frames:
         kept, rejected, raw = [REGISTERED[frame]], [], []
         seen = {norm(REGISTERED[frame])}
+        n_parsed = 0
         for attempt in range(5):
             if len(kept) >= a.n + 1:
                 break
@@ -110,7 +114,10 @@ def main():
             r = client.messages.create(model=a.model, max_tokens=6000, messages=[{"role": "user", "content": prompt}])
             text = "".join(b.text for b in r.content if b.type == "text")
             raw.append(text)
-            for cand in parse_list(text):           # selection rule: generation order, first valid wins
+            cands = parse_list(text)
+            n_parsed += len(cands)
+            print(f"  {frame} batch {attempt + 1}: stop_reason={r.stop_reason}, {len(cands)} candidates parsed", flush=True)
+            for cand in cands:                      # selection rule: generation order, first valid wins
                 if len(kept) >= a.n + 1:
                     break
                 why = check(frame, cand, seen)
@@ -119,17 +126,25 @@ def main():
                 else:
                     kept.append(cand.strip()); seen.add(norm(cand))
         if len(kept) < a.n + 1:
-            raise SystemExit(f"only {len(kept) - 1} valid paraphrases for the {frame} frame after 5 batches; rerun or lower --n")
+            print(f"\nFAILED for the {frame} frame: {len(kept) - 1} valid paraphrases after 5 batches ({n_parsed} candidates parsed, {len(rejected)} rejected).")
+            print("Rejection reasons:", dict(collections.Counter(x["reason"] for x in rejected)))
+            for x in rejected[:8]:
+                print("  rejected:", x["reason"], "|", str(x["text"])[:110])
+            print("Start of the first raw response:", (raw[0][:500] if raw else "(none)").replace("\n", " "))
+            json.dump({"raw_failed_batches": raw, "rejected": rejected}, open(f"wordings_{frame}_debug.json", "w"), indent=1, ensure_ascii=False)
+            raise SystemExit(f"wrote wordings_{frame}_debug.json; send the lines above (no key is included).")
         result[frame] = kept
         log[frame] = {"rejected": rejected, "n_batches": len(raw), "prompt_sha": hashlib.sha256(build_prompt(frame, a.batch).encode()).hexdigest()[:12]}
         print(f"{frame}: kept {len(kept) - 1} paraphrases, rejected {len(rejected)}", flush=True)
-    out = {"generator_model": a.model, "created": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-           "selection_rule": f"first {a.n} valid distinct candidates in generation order; index 0 is the registered wording",
-           "wordings": result, "generation_log": log}
-    json.dump(out, open(a.out, "w"), indent=1, ensure_ascii=False)
-    print(f"wrote {a.out}: {a.n + 1} wordings per frame")
-    for frame, lst in result.items():
-        print(f"\n[{frame}]"); [print(f"  {i:2d}  {t}") for i, t in enumerate(lst)]
+        json.dump({"generator_model": a.model, "created": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+                   "selection_rule": f"first {a.n} valid distinct candidates in generation order; index 0 is the registered wording",
+                   "wordings": result, "generation_log": log}, open(a.out, "w"), indent=1, ensure_ascii=False)   # saved after every frame
+    if set(result) == {"loss", "gain", "neutral"}:
+        print(f"wrote {a.out}: {a.n + 1} wordings per frame")
+        for frame, lst in result.items():
+            print(f"\n[{frame}]"); [print(f"  {i:2d}  {t}") for i, t in enumerate(lst)]
+    else:
+        print(f"saved {sorted(result)} in {a.out}; still missing {sorted({'loss', 'gain', 'neutral'} - set(result))}")
 
 
 if __name__ == "__main__":
