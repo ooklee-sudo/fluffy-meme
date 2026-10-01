@@ -56,6 +56,9 @@ def analyse(df, fails):
     df["skip"] = df.action.isin(SKIPS).astype(int)
     out = []
     for (mid, t), g in df.groupby(["model_id", "t"]):
+        if not set(FR) <= set(g.frame):
+            print(f"[{mid}, {12 - int(t)} turns left] skipped: frames present {sorted(set(g.frame))}; the run was interrupted, rerun the batch file (it resumes)")
+            continue
         rate, n = table(g)
         lg = (rate["loss"] - rate["gain"]).values; ng = (rate["neutral"] - rate["gain"]).values
         noise_var = ((rate["loss"] * (1 - rate["loss"]) / n["loss"]) + (rate["gain"] * (1 - rate["gain"]) / n["gain"])).mean()
