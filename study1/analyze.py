@@ -54,12 +54,12 @@ def build_pairs(df, drop_failed):
         p.loc[p.parse_fail_n, "RN"] = np.nan
         p.loc[p.parse_fail_s, ["RS", "CorrectSocial"]] = np.nan
         p.loc[p.failed, "Flip"] = np.nan
-    p["Large"] = (p.tier == "Large").astype(float); p["Mid"] = (p.tier == "Mid").astype(float)
+    p["Large"] = (p.tier == "Large").astype(float); p["Mid"] = (p.tier == "Mid").astype(float); p["XLarge"] = (p.tier == "XLarge").astype(float)
     p["Thinking"] = p.thinking.astype(float)
     return p
 
 
-def lpm(d, y, extra=("Large", "Mid"), fam_fe=True):
+def lpm(d, y, extra=("Large", "Mid", "XLarge"), fam_fe=True):
     """OLS with family and domain fixed effects; CR1 standard errors clustered by stem. Returns {term: (b, se, p)} and N."""
     d = d.dropna(subset=[y])
     cols = [c for c in extra if d[c].nunique() > 1]
@@ -78,7 +78,7 @@ def lpm(d, y, extra=("Large", "Mid"), fam_fe=True):
         i = g == s; sc = Xv[i].T @ u[i]; meat += np.outer(sc, sc)
     V = XtXi @ meat @ XtXi * (G / (G - 1)) * ((n - 1) / (n - k))
     se = np.sqrt(np.diag(V)); res = {}
-    for t in cols + ["Thinking", "LargeXThinking"]:
+    for t in cols + ["Thinking", "LargeXThinking"]:   # XLarge (e.g. a fourth Claude tier) is reported when present
         if t in X:
             j = list(X.columns).index(t); tt = b[j] / se[j] if se[j] > 0 else np.nan
             res[t] = (b[j], se[j], 2 * stats.t.sf(abs(tt), G - 1) if tt == tt else np.nan)
@@ -121,7 +121,7 @@ def ece(conf, correct, bins=10):
     return e
 
 
-def report(df, drop_failed, margin=0.05):
+def report(df, drop_failed, margin=0.05, primary=("Claude", "Qwen2.5", "Llama3.1")):
     out = []
     P = lambda s="": out.append(s)
     p = build_pairs(df, drop_failed)
@@ -142,31 +142,31 @@ def report(df, drop_failed, margin=0.05):
     P()
 
     # ---- primary pooled regression
-    prim = p[(p.panel == "open") & p.family.isin(["Qwen2.5", "Llama3.1"]) & (p.thinking == False)]
+    prim = p[p.family.isin(primary) & (p.thinking == False)]
     sec = {"all stems": prim, "Domains 4-6 only": prim[prim.domain >= 4]}
     for label, d in sec.items():
         if d.empty:
             continue
-        P(f"## Primary pooled sample (Qwen2.5 + Llama-3.1), {label}\n")
+        P(f"## Primary pooled sample ({' + '.join(sorted(prim.family.unique()))}), {label}\n")
         P("Linear probability model, family and domain fixed effects, SEs clustered by stem. Small is the reference tier.\n")
         res = {y: lpm(d, y) for y in ("RN", "RS", "CondRS", "Flip", "CorrectSocial")}
-        P("| Outcome | N | b1 Large | b2 Mid | One-sided p for the registered direction |")
-        P("|---|---|---|---|---|")
+        P("| Outcome | N | b1 Large | b2 Mid | b3 XLarge | One-sided p for the registered direction |")
+        P("|---|---|---|---|---|---|")
         dirs = {"RN": ("H1: b1 > 0", +1), "RS": ("H2 violated if b1 < 0", -1), "Flip": ("H3 violated if b1 < 0 (supported if b1 > 0); NB Flip rises mechanically with RN", -1),
                 "CondRS": ("deference given RN=1; H3 violated if b1 < 0 (supported if b1 > 0)", -1), "CorrectSocial": ("-", 0)}
         for y, (r, n) in res.items():
             lab, dr = dirs[y]
             os_ = f"{lab}: p={one_sided(r['Large'][0], r['Large'][2], dr):.3f}" if dr and "Large" in r else lab
-            P(f"| {y} | {n} | {fmt(r['Large'])} | {fmt(r['Mid']) if 'Mid' in r else '-'} | {os_} |")
+            P(f"| {y} | {n} | {fmt(r['Large']) if 'Large' in r else '-'} | {fmt(r['Mid']) if 'Mid' in r else '-'} | {fmt(r['XLarge']) if 'XLarge' in r else '-'} | {os_} |")
         if label == "all stems":
             ps = np.array([res["RN"][0]["Large"][2], res["Flip"][0]["Large"][2]]); adj = holm(ps)
             P(f"\nHolm-adjusted two-sided p for b1: RN {adj[0]:.3f}, Flip {adj[1]:.3f}.")
         P()
     # ---- by family robustness
-    P("## Robustness families (non-thinking), by family\n")
+    P("## By family (non-thinking)\n")
     P("| Family | Outcome | N | b1 Large | b2 Mid |\n|---|---|---|---|---|")
-    for fam in ["Qwen2.5", "Llama3.1", "Gemma2", "Qwen3"]:
-        d = p[(p.family == fam) & (p.panel == "open") & (p.thinking == False)]
+    for fam in ["Claude", "Qwen2.5", "Llama3.1", "Gemma2", "Qwen3"]:
+        d = p[(p.family == fam) & (p.thinking == False)]
         if d.empty:
             continue
         for y in ("RN", "RS", "CondRS", "Flip"):
@@ -260,7 +260,7 @@ def report(df, drop_failed, margin=0.05):
     return "\n".join(out)
 
 
-def robustness(df, drop_failed):
+def robustness(df, drop_failed, primary=("Claude", "Qwen2.5", "Llama3.1")):
     """Do the size contrasts survive other wordings of the system prompt and of the stance sentences? (primary pooled sample)"""
     combos = sorted({(int(v), s) for v, s in zip(df.system_variant, df.social_set)})
     if len(combos) < 2:
@@ -270,7 +270,7 @@ def robustness(df, drop_failed):
     for sv, ss in combos:
         d = df[(df.system_variant == sv) & (df.social_set == ss)]
         p = build_pairs(d, drop_failed)
-        pr = p[(p.panel == "open") & p.family.isin(["Qwen2.5", "Llama3.1"]) & (p.thinking == False)]
+        pr = p[p.family.isin(primary) & (p.thinking == False)]
         if pr.family.nunique() < 1 or pr.Large.nunique() < 2:
             continue
         r = {y: lpm(pr, y)[0].get("Large") for y in ("RN", "CondRS", "RS")}
@@ -301,7 +301,7 @@ def kappa(path):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("log"); ap.add_argument("--drop-failed", action="store_true")
-    ap.add_argument("--margin", type=float, default=0.05, help="equivalence margin for H2/H3 (proportion; set before seeing results)"); ap.add_argument("--manual", default=None); ap.add_argument("--md", default=None)
+    ap.add_argument("--margin", type=float, default=0.05, help="equivalence margin for H2/H3 (proportion; set before seeing results)"); ap.add_argument("--primary", nargs="+", default=["Claude", "Qwen2.5", "Llama3.1"], help="families in the pooled primary sample"); ap.add_argument("--manual", default=None); ap.add_argument("--md", default=None)
     ap.add_argument("--echo-sample", default=None); ap.add_argument("--kappa", default=None)
     a = ap.parse_args()
     if a.kappa:
@@ -310,8 +310,8 @@ def main():
     if a.echo_sample:
         return echo_sample(df, a.echo_sample)
     reg = df[(df.system_variant == 0) & (df.social_set == "A")]
-    md = report(reg, a.drop_failed, a.margin)
-    md += "\n" + robustness(df, a.drop_failed)
+    md = report(reg, a.drop_failed, a.margin, tuple(a.primary))
+    md += "\n" + robustness(df, a.drop_failed, tuple(a.primary))
     print(md)
     if a.md:
         open(a.md, "w").write(md + "\n")
