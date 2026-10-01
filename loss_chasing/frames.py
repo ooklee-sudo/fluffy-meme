@@ -20,7 +20,47 @@ def _n(x):
     return f"{x:g}"
 
 
+import hashlib, json, re, string
+WORDINGS = None          # {frame: [template, ...]}; index 0 is the registered wording when loaded from a wordings file
+WORDINGS_SHA = None
+REQUIRED = {"loss": {"d", "L"}, "gain": {"g", "q"}, "neutral": {"q", "r"}}
+ALLOWED = {"loss": {"d", "L"}, "gain": {"g", "q", "T"}, "neutral": {"q", "r"}}
+
+
+def load_wordings(path):
+    """Use headline templates from a JSON file ({"loss": [...], "gain": [...], "neutral": [...]}) instead of the built-in four."""
+    global WORDINGS, WORDINGS_SHA
+    raw = open(path, "rb").read()
+    data = json.loads(raw)
+    W = {fr: list(data["wordings"][fr] if "wordings" in data else data[fr]) for fr in ("loss", "gain", "neutral")}
+    if len({len(v) for v in W.values()}) != 1:
+        raise ValueError("every frame needs the same number of wordings")
+    for fr, lst in W.items():
+        for i, t in enumerate(lst):
+            names = {n for _, n, _, _ in string.Formatter().parse(t) if n}
+            if not REQUIRED[fr] <= names <= ALLOWED[fr]:
+                raise ValueError(f"{fr} wording {i} uses placeholders {sorted(names)}; required {sorted(REQUIRED[fr])}, allowed {sorted(ALLOWED[fr])}")
+    WORDINGS, WORDINGS_SHA = W, hashlib.sha256(raw).hexdigest()[:12]
+    return len(W["loss"])
+
+
+def n_wordings():
+    return len(WORDINGS["loss"]) if WORDINGS else N_VARIANTS
+
+
+def _values(s):
+    d = max(0.0, -s["last_delta"]) if s["last_outcome"] == "fail" else 0.0
+    return dict(d=_n(d), L=_n(s["unrealized_loss"]), g=_n(s["gap_to_target"]), q=_n(s["quality"]),
+                r=(s["last_outcome"] or "none"), T=TARGET)
+
+
 def headline(frame, s, variant=0):
+    if WORDINGS is not None:
+        return WORDINGS[frame][variant].format(**_values(s))
+    return _headline_builtin(frame, s, variant)
+
+
+def _headline_builtin(frame, s, variant=0):
     """variant 0 is the registered wording; 1-3 are paraphrases carrying the same information (wording-robustness check)."""
     if frame == "loss":
         d = _n(max(0.0, -s["last_delta"]) if s["last_outcome"] == "fail" else 0.0)

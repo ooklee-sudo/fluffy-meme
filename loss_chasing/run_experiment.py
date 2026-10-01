@@ -2,6 +2,7 @@
 import argparse, json, os, hashlib
 import numpy as np
 from env import Env, SKIPS, TABLE1, ACTIONS
+import frames
 from frames import FRAMES, build_prompt, headline
 from policies import make_policy
 
@@ -17,7 +18,7 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
                    n_fails=n_fails, temperature=temp, t=env.t, turn=env.turn, quality_before=env.q,
                    fail_streak_before=env.fail_streak, cum_loss_before=env.unrealized_loss, action=a,
                    parse_fail=pf, risk=TABLE1[a][4], ev_gap=env.ev_gap(a), reason=reason,
-                   variant=variant, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
+                   variant=variant, wordings_sha=frames.WORDINGS_SHA, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
         usage = getattr(policy, "last_usage", None)
         row["tokens_in"], row["tokens_out"] = usage if usage else (None, None)
         row["temperature_applied"] = getattr(policy, "controls_temperature", True)
@@ -29,13 +30,6 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
     for r in rows:
         r["terminal_quality"] = env.q
     return rows
-
-
-def over_budget(pol, cap):
-    """Stop the run (it can be continued with --resume) once the estimated spend of this process reaches the cap."""
-    est = getattr(pol, "est_usd", lambda: None)()
-    if cap is not None and est is not None and est >= cap:
-        raise SystemExit(f"Budget cap reached: estimated ${est:.2f} >= --max-usd {cap}. Stopped; continue with --resume.")
 
 
 def main():
@@ -50,14 +44,20 @@ def main():
     ap.add_argument("--p-scale", type=float, default=1.0)
     ap.add_argument("--d-scale", type=float, default=1.0)
     ap.add_argument("--early-stop", action="store_true")
-    ap.add_argument("--variants", type=int, nargs="+", default=[0], help="headline wordings to run (0 = registered, 1-3 = paraphrases)")
+    ap.add_argument("--wordings", default=None, help="JSON file of headline templates (see make_wordings.py); index 0 is the registered wording")
+    ap.add_argument("--variants", nargs="+", default=["0"], help="wording indices to run, or 'all'")
+    ap.add_argument("--start-ts", type=int, nargs="+", default=None, help="several time-pressure conditions in one run (turns already spent); overrides --start-t")
     ap.add_argument("--workers", type=int, default=1, help="parallel API calls per cell (API backends only; 4 is a sensible start)")
-    ap.add_argument("--max-usd", type=float, default=None, help="stop (resumable) once this run's estimated API spend reaches this amount")
     ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
                     help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
     ap.add_argument("--out", default="results/log.jsonl")
     a = ap.parse_args()
+    import frames
+    if a.wordings:
+        print(f"wordings file {a.wordings}: {frames.load_wordings(a.wordings)} wordings per frame (sha {frames.WORDINGS_SHA})", flush=True)
+    a.variants = list(range(frames.n_wordings())) if a.variants == ["all"] else [int(v) for v in a.variants]
+    start_ts = a.start_ts if a.start_ts is not None else [a.start_t]
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     env_kw = dict(p_scale=a.p_scale, d_scale=a.d_scale, early_stop=a.early_stop, start_t=a.start_t)
     done = set()
@@ -68,7 +68,7 @@ def main():
             except json.JSONDecodeError:          # half-written last line after an interrupt
                 continue
             if r["turn"] == 0:                     # an episode is logged once its first turn exists
-                done.add((r["model_id"], r["frame"], r["n_fails"], r["temperature"], r["seed"], r.get("variant", 0)))
+                done.add((r["model_id"], r["frame"], r["n_fails"], r["temperature"], r["seed"], r.get("variant", 0), r["t"]))
         print(f"resume: {len(done)} episodes already logged", flush=True)
     elif os.path.exists(a.out) and os.path.getsize(a.out) > 0:
         raise SystemExit(f"{a.out} already has data. Use --resume to continue it, or delete/rename it to start over.")
@@ -85,14 +85,16 @@ def main():
                 temps = a.temps[:1]
                 print(f"NOTE: {pol.name} rejects temperature; sampling is the model default. Running one temperature label ({temps[0]}), "
                       f"logged with temperature_applied=false.", flush=True)
-            for frame in FRAMES:
+            for st in start_ts:
+              env_kw_st = dict(env_kw, start_t=st)
+              for frame in FRAMES:
                 for nf in a.fails:
                     for T in temps:
                         for v in a.variants:
-                            todo = [s for s in range(a.episodes) if (pol.name, frame, nf, T, s, v) not in done]
-                            def one(seed, frame=frame, nf=nf, T=T, v=v):
+                            todo = [s for s in range(a.episodes) if (pol.name, frame, nf, T, s, v, st) not in done]
+                            def one(seed, frame=frame, nf=nf, T=T, v=v, env_kw_st=env_kw_st):
                                 rng = np.random.default_rng([seed, nf, int(T * 10), FRAMES.index(frame), v])
-                                return run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng, v)
+                                return run_episode(pol, frame, nf, T, seed, a.first_only, env_kw_st, pol.name, rng, v)
                             if a.workers > 1 and len(todo) > 1:
                                 from concurrent.futures import ThreadPoolExecutor, as_completed
                                 with ThreadPoolExecutor(max_workers=a.workers) as ex:
@@ -102,7 +104,6 @@ def main():
                                             for row in fu.result():
                                                 f.write(json.dumps(row) + "\n")
                                             f.flush()
-                                            over_budget(pol, a.max_usd)
                                     except BaseException:
                                         for fu in futs: fu.cancel()
                                         raise
@@ -111,8 +112,8 @@ def main():
                                     for row in one(s):
                                         f.write(json.dumps(row) + "\n")
                                     f.flush()
-                                    over_budget(pol, a.max_usd)
                             tag = f" variant={v}" if len(a.variants) > 1 or v else ""
+                            tag += f" start_t={st}" if len(start_ts) > 1 or st else ""
                             print(f"{pol.name} frame={frame} fails={nf} T={T}{tag} done{getattr(pol, 'cost_line', lambda: '')()}", flush=True)
 
 

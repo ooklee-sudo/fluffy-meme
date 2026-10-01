@@ -37,3 +37,15 @@ Local models get `{"action": "` pre-filled so small models stay in the JSON-only
 
 ## Wording robustness
 `run_experiment.py ... --variants 0 1 2 3` runs the registered headline (0) and three paraphrases that carry the same facts; `python wording.py <log> --fails 0` reports the frame effect per wording and with wording fixed effects. First choices depend only on the prompt and on sampling, so each cell is repeated draws on one wording: without variants a "frame" effect is the effect of one sentence.
+
+## Many-wording study (frame effect over independently generated paraphrases)
+```bash
+# 1. A model writes paraphrases from a fixed instruction; candidates are checked mechanically; the first 15 valid ones are kept
+python make_wordings.py --model claude-sonnet-5-5 --n 15 --out wordings.json
+# 2. Run any model on all 16 wordings (index 0 = registered) in two conditions (3 turns left, 12 turns left), 20 episodes per cell
+python run_experiment.py --policy anthropic:claude-opus-5-5 --wordings wordings.json --variants all --episodes 20 \
+    --temps 0.7 --fails 0 --start-ts 9 0 --first-only --workers 4 --out results/w16_opus.jsonl
+# 3. Frame effect with wording as the unit of replication (cluster bootstrap over wordings, variance shares)
+python wording16.py results/w16_opus.jsonl --md results/w16_opus.md
+```
+Models that reject `temperature` (Opus 5.x, Fable, Sonnet 5.x) run with default sampling and log `temperature_applied=false`; the console prints token and estimated cost totals after every cell (display only, nothing stops the run).

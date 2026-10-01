@@ -88,10 +88,6 @@ class LLM(Policy):
     def last_usage(self):
         return getattr(self._tl, "usage", None)
 
-    def est_usd(self):
-        pin, pout = next((v for k, v in PRICES.items() if self.model.startswith(k)), (None, None))
-        return None if pin is None else (self.tok_in * pin + self.tok_out * pout) / 1e6
-
     def cost_line(self):
         if not self.n_calls:
             return ""
