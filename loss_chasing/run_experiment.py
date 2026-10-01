@@ -31,6 +31,13 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
     return rows
 
 
+def over_budget(pol, cap):
+    """Stop the run (it can be continued with --resume) once the estimated spend of this process reaches the cap."""
+    est = getattr(pol, "est_usd", lambda: None)()
+    if cap is not None and est is not None and est >= cap:
+        raise SystemExit(f"Budget cap reached: estimated ${est:.2f} >= --max-usd {cap}. Stopped; continue with --resume.")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--policy", action="append", required=True,
@@ -45,6 +52,7 @@ def main():
     ap.add_argument("--early-stop", action="store_true")
     ap.add_argument("--variants", type=int, nargs="+", default=[0], help="headline wordings to run (0 = registered, 1-3 = paraphrases)")
     ap.add_argument("--workers", type=int, default=1, help="parallel API calls per cell (API backends only; 4 is a sensible start)")
+    ap.add_argument("--max-usd", type=float, default=None, help="stop (resumable) once this run's estimated API spend reaches this amount")
     ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
                     help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
@@ -94,6 +102,7 @@ def main():
                                             for row in fu.result():
                                                 f.write(json.dumps(row) + "\n")
                                             f.flush()
+                                            over_budget(pol, a.max_usd)
                                     except BaseException:
                                         for fu in futs: fu.cancel()
                                         raise
@@ -102,6 +111,7 @@ def main():
                                     for row in one(s):
                                         f.write(json.dumps(row) + "\n")
                                     f.flush()
+                                    over_budget(pol, a.max_usd)
                             tag = f" variant={v}" if len(a.variants) > 1 or v else ""
                             print(f"{pol.name} frame={frame} fails={nf} T={T}{tag} done{getattr(pol, 'cost_line', lambda: '')()}", flush=True)
 
