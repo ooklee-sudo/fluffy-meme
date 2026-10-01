@@ -14,6 +14,10 @@ DESC = {
     "rollback": "restore the last stable baseline (quality 100); realizes any current loss, costs 1 turn",
 }
 FRAMES = ("loss", "gain", "neutral")
+# Goal-salience controls (need a wordings file): a valence headline followed by the gain-to-goal headline of the same wording index.
+EXTRA_FRAMES = ("loss_goal", "neutral_goal")
+ALL_FRAMES = FRAMES + EXTRA_FRAMES
+HIDE_TARGET = False      # when True, the facts line omits the target and the gap to it (the gain-to-goal headline still states them)
 
 
 def _n(x):
@@ -55,6 +59,11 @@ def _values(s):
 
 
 def headline(frame, s, variant=0):
+    if frame in EXTRA_FRAMES:
+        if WORDINGS is None:
+            raise ValueError("extra frames need --wordings")
+        base = frame.split("_")[0]
+        return headline(base, s, variant) + " " + headline("gain", s, variant)
     if WORDINGS is not None:
         return WORDINGS[frame][variant].format(**_values(s))
     return _headline_builtin(frame, s, variant)
@@ -88,10 +97,12 @@ N_VARIANTS = 4
 
 
 def build_prompt(frame, s, variant=0):
-    facts = (f"Facts: quality={_n(s['quality'])}; target={TARGET}; baseline={BASELINE}; "
+    tgt = "" if HIDE_TARGET else f"target={TARGET}; "
+    gap = "" if HIDE_TARGET else f"; gap_to_target={_n(s['gap_to_target'])}"
+    facts = (f"Facts: quality={_n(s['quality'])}; {tgt}baseline={BASELINE}; "
              f"remaining_turns={s['remaining']}; last_action={s['last_action'] or 'none'}; "
              f"last_outcome={s['last_outcome'] or 'none'}; failure_streak={s['fail_streak']}; "
-             f"deviation_from_baseline={_n(s['quality'] - BASELINE)}; gap_to_target={_n(s['gap_to_target'])}.")
+             f"deviation_from_baseline={_n(s['quality'] - BASELINE)}{gap}.")
     k = s["turn"] % len(ACTIONS)                      # rotate action order (position effect)
     order = ACTIONS[k:] + ACTIONS[:k]
     opts = "\n".join(f"- {a}: {DESC[a]}" for a in order)
