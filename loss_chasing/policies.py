@@ -1,6 +1,6 @@
 """Decision makers: benchmark policies (Sec 6.4), synthetic agents for pipeline tests, and LLM backends."""
 from __future__ import annotations
-import inspect, json, math, re
+import inspect, json, math, re, threading
 import numpy as np
 from env import ACTIONS, TABLE1, SKIPS
 from frames import SYSTEM
@@ -53,6 +53,10 @@ def parse_action(text):
 
 
 PREFILL = '{"action": "'   # local models: force the JSON-only format (keeps parsing strict)
+# Newer Claude models reject temperature/top_p/top_k (400) and always think, so thinking tokens count against max_tokens.
+NO_SAMPLING = ("claude-opus-5", "claude-opus-4-8", "claude-opus-4-7", "claude-fable", "claude-mythos", "claude-sonnet-5")
+PRICES = {"claude-opus-5-5": (4.0, 20.0), "claude-fable-5-1": (10.0, 50.0), "claude-sonnet-5-5": (2.0, 10.0),
+          "claude-haiku-4-5": (1.0, 5.0)}   # USD per 1M tokens (input, output); check the current price list
 
 
 class LLM(Policy):
@@ -60,6 +64,11 @@ class LLM(Policy):
         self.backend, self.model, self.max_tokens = backend, model, max_tokens
         self.name = f"{backend}:{model}" + ("+rational" if rational_prime else "")
         self.system = SYSTEM + (" Act as a rational investor and maximize expected value." if rational_prime else "")
+        self.controls_temperature = not (backend == "anthropic" and model.startswith(NO_SAMPLING))
+        if not self.controls_temperature:
+            self.max_tokens = max(self.max_tokens, 4000)
+        self.tok_in = self.tok_out = self.n_calls = 0
+        self._lock, self._tl = threading.Lock(), threading.local()
         if backend == "anthropic":
             import anthropic; self.c = anthropic.Anthropic(timeout=60.0, max_retries=2)  # fail fast instead of hanging for minutes
         elif backend == "openai":                      # any OpenAI-compatible endpoint (OPENAI_BASE_URL)
@@ -74,6 +83,17 @@ class LLM(Policy):
             self.m = AutoModelForCausalLM.from_pretrained(model, torch_dtype=torch.float32).eval()
         else:
             raise ValueError(backend)
+
+    @property
+    def last_usage(self):
+        return getattr(self._tl, "usage", None)
+
+    def cost_line(self):
+        if not self.n_calls:
+            return ""
+        pin, pout = next((v for k, v in PRICES.items() if self.model.startswith(k)), (None, None))
+        usd = f", est. ${(self.tok_in * pin + self.tok_out * pout) / 1e6:.2f}" if pin is not None else ""
+        return f"  [{self.n_calls} calls, {self.tok_in} in / {self.tok_out} out tokens{usd}]"
 
     def _local(self, prompt, temperature):
         msgs = [{"role": "system", "content": self.system}, {"role": "user", "content": prompt}]
@@ -97,11 +117,20 @@ class LLM(Policy):
                     kw = dict(model=self.model, max_tokens=self.max_tokens, system=self.system,
                               messages=[{"role": "user", "content": prompt}])
                     # newer SDKs dropped the `temperature` keyword; send it in the raw request body instead
-                    if "temperature" in inspect.signature(self.c.messages.create).parameters:
+                    if not self.controls_temperature:
+                        pass                      # these models reject sampling parameters: default sampling is used
+                    elif "temperature" in inspect.signature(self.c.messages.create).parameters:
                         kw["temperature"] = temperature
                     else:
                         kw["extra_body"] = {"temperature": temperature}
                     r = self.c.messages.create(**kw)
+                    u = getattr(r, "usage", None)
+                    if u is not None:
+                        self._tl.usage = (u.input_tokens, u.output_tokens)
+                        with self._lock:
+                            self.tok_in += u.input_tokens; self.tok_out += u.output_tokens; self.n_calls += 1
+                    if getattr(r, "stop_reason", None) == "refusal":
+                        return "hold", "REFUSAL", True
                     text = "".join(b.text for b in r.content if b.type == "text")
                 else:
                     r = self.c.chat.completions.create(model=self.model, max_tokens=self.max_tokens,

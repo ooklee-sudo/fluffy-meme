@@ -18,6 +18,9 @@ def run_episode(policy, frame, n_fails, temp, seed, first_only, env_kw, model_id
                    fail_streak_before=env.fail_streak, cum_loss_before=env.unrealized_loss, action=a,
                    parse_fail=pf, risk=TABLE1[a][4], ev_gap=env.ev_gap(a), reason=reason,
                    variant=variant, headline_id=hashlib.md5(headline(frame, s, variant).encode()).hexdigest()[:8], action_order=",".join(order))
+        usage = getattr(policy, "last_usage", None)
+        row["tokens_in"], row["tokens_out"] = usage if usage else (None, None)
+        row["temperature_applied"] = getattr(policy, "controls_temperature", True)
         row["outcome"] = env.step(a)
         row["quality_after"] = env.q
         rows.append(row)
@@ -41,6 +44,7 @@ def main():
     ap.add_argument("--d-scale", type=float, default=1.0)
     ap.add_argument("--early-stop", action="store_true")
     ap.add_argument("--variants", type=int, nargs="+", default=[0], help="headline wordings to run (0 = registered, 1-3 = paraphrases)")
+    ap.add_argument("--workers", type=int, default=1, help="parallel API calls per cell (API backends only; 4 is a sensible start)")
     ap.add_argument("--start-t", type=int, default=0, help="turns already spent at the first choice (12 - start_t remain); time-pressure pilot")
     ap.add_argument("--resume", action="store_true",
                     help="append to --out and skip episodes (model, frame, fails, temp, seed) that are already logged")
@@ -68,19 +72,38 @@ def main():
     with open(a.out, "a") as f:
         for spec in a.policy:
             pol = make_policy(spec, a.rational_prime)
+            temps = a.temps
+            if not getattr(pol, "controls_temperature", True):
+                temps = a.temps[:1]
+                print(f"NOTE: {pol.name} rejects temperature; sampling is the model default. Running one temperature label ({temps[0]}), "
+                      f"logged with temperature_applied=false.", flush=True)
             for frame in FRAMES:
                 for nf in a.fails:
-                    for T in a.temps:
+                    for T in temps:
                         for v in a.variants:
-                            for seed in range(a.episodes):
-                                if (pol.name, frame, nf, T, seed, v) in done:
-                                    continue
-                                rng = np.random.default_rng([seed, nf, int(T * 10), hash(frame) % 997, v])
-                                for r in run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng, v):
-                                    f.write(json.dumps(r) + "\n")
-                                f.flush()
+                            todo = [s for s in range(a.episodes) if (pol.name, frame, nf, T, s, v) not in done]
+                            def one(seed, frame=frame, nf=nf, T=T, v=v):
+                                rng = np.random.default_rng([seed, nf, int(T * 10), FRAMES.index(frame), v])
+                                return run_episode(pol, frame, nf, T, seed, a.first_only, env_kw, pol.name, rng, v)
+                            if a.workers > 1 and len(todo) > 1:
+                                from concurrent.futures import ThreadPoolExecutor, as_completed
+                                with ThreadPoolExecutor(max_workers=a.workers) as ex:
+                                    futs = [ex.submit(one, s) for s in todo]
+                                    try:
+                                        for fu in as_completed(futs):
+                                            for row in fu.result():
+                                                f.write(json.dumps(row) + "\n")
+                                            f.flush()
+                                    except BaseException:
+                                        for fu in futs: fu.cancel()
+                                        raise
+                            else:
+                                for s in todo:
+                                    for row in one(s):
+                                        f.write(json.dumps(row) + "\n")
+                                    f.flush()
                             tag = f" variant={v}" if len(a.variants) > 1 or v else ""
-                            print(f"{pol.name} frame={frame} fails={nf} T={T}{tag} done", flush=True)
+                            print(f"{pol.name} frame={frame} fails={nf} T={T}{tag} done{getattr(pol, 'cost_line', lambda: '')()}", flush=True)
 
 
 if __name__ == "__main__":
