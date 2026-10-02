@@ -40,8 +40,9 @@ BOARD_URL = "https://pipc.go.kr/np/default/agenda.do?mCode=E030010000"
 # name or id (unknown). Dates are typed as YYYYMMDD, as the site shows them.
 DATE_FROM_PH = "input[placeholder*='2022-01-01']"
 DATE_TO_PH = "input[placeholder*='2022-12-31']"
-KEYWORD_INPUT = ("input[type=text]:not([placeholder*='ex :']), "
-                 "input:not([type]):not([placeholder*='ex :'])")
+KEYWORD_INPUT = ("input:not([type=hidden]):not([type=checkbox]):not([type=radio])"
+                 ":not([type=submit]):not([type=button]):not([type=image])"
+                 ":not([placeholder*='ex :'])")
 SUBMIT = ("button:has-text('검색'), a:has-text('검색'), input[type=submit], "
           "input[type=button][value*='검색']")
 ROWS = "table tbody tr"
@@ -122,7 +123,12 @@ def run_search(page, q):
     page.goto(BOARD_URL, wait_until="networkidle")
     form = find_form(page)
     kw = form.locator(KEYWORD_INPUT).first
-    kw.fill(q["kw"])
+    try:
+        kw.fill(q["kw"], timeout=8000)
+    except Exception:
+        Path("debug_form.html").write_text(form.evaluate("e => e.outerHTML"), encoding="utf-8")
+        print("    ! keyword box not found; form HTML saved to debug_form.html", file=sys.stderr)
+        raise
     pick_option(form, q["field"])
     pick_option(form, q["meeting"], exclude_with=q["field"])
     set_date(form.locator(DATE_FROM_PH).first, site_date(q["d_from"]))
