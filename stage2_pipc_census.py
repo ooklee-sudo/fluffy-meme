@@ -148,16 +148,48 @@ def sheet(wb, name, header):
     return ws
 
 
+def inspect_site():
+    """Dump page structure so SELECTORS can be fixed. Writes inspect_*.html/txt."""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as pw:
+        b = pw.chromium.launch(headless=False)
+        page = b.new_page()
+        page.goto(BOARD_URL)
+        print("\n브라우저에서 '위원회 결정문' 검색 화면으로 직접 이동하세요 (메뉴 클릭 OK).")
+        print("키워드 '얼굴'로 검색까지 해서 결과 목록이 보이면 여기서 Enter.")
+        input("Enter > ")
+        lines = [f"URL: {page.url}", f"frames: {[f.url for f in page.frames]}", ""]
+        for i, fr in enumerate(page.frames):
+            for el in fr.query_selector_all("input, select, button, textarea, a.btn, a[onclick]"):
+                try:
+                    lines.append(f"frame{i} <{el.evaluate('e => e.tagName')}> "
+                                 f"name={el.get_attribute('name')} id={el.get_attribute('id')} "
+                                 f"type={el.get_attribute('type')} class={el.get_attribute('class')} "
+                                 f"text={el.inner_text()[:30]!r}")
+                except Exception:
+                    pass
+            Path(f"inspect_frame{i}.html").write_text(fr.content(), encoding="utf-8")
+        Path("inspect_elements.txt").write_text("\n".join(lines), encoding="utf-8")
+        page.screenshot(path="inspect.png", full_page=True)
+        b.close()
+    print("저장됨: inspect_elements.txt, inspect_frame0.html (+frame N), inspect.png")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--xlsx", required=True)
     ap.add_argument("--out", help="default: <xlsx stem>_stage2.xlsx")
+    ap.add_argument("--inspect", action="store_true",
+                    help="open the board, let you navigate/search, then dump form + result HTML")
     ap.add_argument("--manual", action="store_true", help="no browser; type hit counts")
     ap.add_argument("--headed", action="store_true")
     ap.add_argument("--debug", action="store_true", help="pause after each search")
     ap.add_argument("--only", nargs="*", help="run only these keywords")
     ap.add_argument("--delay", type=float, default=2.0, help="seconds between searches")
     a = ap.parse_args()
+
+    if a.inspect:
+        return inspect_site()
 
     src = Path(a.xlsx)
     out = Path(a.out) if a.out else src.with_name(src.stem + "_stage2.xlsx")
