@@ -1,3 +1,5 @@
+> **Superseded.** The numbers below come from a first version of the simulation whose price-gap module was flawed (see research_program/THEORY.md). Current results: results.md, breakeven.md and IEEE_Computer_manuscript.docx. Earlier output is kept in results_v1_flawed_timing.md.
+
 # Managing Enterprise LLM Maintenance Uncertainties: A Real Options Framework for Cloud API Lifecycles
 
 Target: IEEE IT Professional. Draft prepared 2026-10-02. Check the journal's current author guidelines for length and format before writing the full text.
