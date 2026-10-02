@@ -91,10 +91,8 @@ def rmtree_safe(path):
         subprocess.run(["cmd", "/c", "rmdir", "/s", "/q", os.path.abspath(path)], capture_output=True)
 
 
-def process_repo(spec, models, out, tmp, today, max_mb=300):
-    name = spec["full_name"] if isinstance(spec, dict) else spec
-    if isinstance(spec, dict) and spec.get("size", 0) / 1024 > max_mb:
-        print("  skip (large)", name); return
+def clone_repo(name, tmp):
+    """Clone with Windows-safe options; returns the destination directory or None."""
     url = name if os.path.exists(name) else f"https://github.com/{name}.git"
     dest = os.path.join(tmp, re.sub(r"[^\w.-]", "_", name))
     env = dict(os.environ, GIT_LFS_SKIP_SMUDGE="1")            # do not download large-file pointers
@@ -103,7 +101,17 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
     if r.returncode != 0 and os.path.isdir(os.path.join(dest, ".git")):   # checkout of a few files failed (Windows paths) but the history is there
         r.returncode = 0
     if r.returncode != 0:
-        print("  clone failed", name, r.stderr[:100].strip()); return
+        print("  clone failed", name, r.stderr[:100].strip()); return None
+    return dest
+
+
+def process_repo(spec, models, out, tmp, today, max_mb=300):
+    name = spec["full_name"] if isinstance(spec, dict) else spec
+    if isinstance(spec, dict) and spec.get("size", 0) / 1024 > max_mb:
+        print("  skip (large)", name); return
+    dest = clone_repo(name, tmp)
+    if dest is None:
+        return
     try:
         for m, (a, s) in models.items():
             row = analyse_repo(dest, m, a, s, today)
@@ -112,6 +120,67 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
                 out.write(json.dumps(row) + "\n"); out.flush()
     finally:
         rmtree_safe(dest)
+
+
+# ---- second pass (--enrich): extra variables for the sensitivity analyses, computed for repositories already in history.jsonl ----
+CONFIG_PATH = re.compile(r"(^|/)(\.env[^/]*|[^/]*\.(ya?ml|json|toml|ini|cfg|conf|properties|env)|[^/]*(config|settings)[^/]*)$", re.I)
+
+
+def grep_counts_split(cwd, pattern, rev):
+    """Occurrences of a fixed string at a revision, split into code files and configuration files (by path pattern)."""
+    r = git(["grep", "-I", "-c", "-F", "-e", pattern, rev, "--"], cwd)
+    code = cfg = 0
+    for l in r.stdout.splitlines():
+        if ":" not in l:
+            continue
+        path, n = l.split(":", 1)[1].rsplit(":", 1)
+        if CONFIG_PATH.search(path): cfg += int(n)
+        else: code += int(n)
+    return code, cfg
+
+
+def enrich_row(cwd, row, today):
+    """Adds: externalised-model flag and 3-level flexibility at the announcement date; commits between the announcement and the end of the observation window
+    (activity); and a relaxed migration date (identifier gone from code files, or total occurrences halved) alongside the strict one."""
+    m, base = row["model"], row["base_sha"]
+    ann, shut = dt.date.fromisoformat(row["announced"]), dt.date.fromisoformat(row["shutdown"])
+    code0, cfg0 = grep_counts_split(cwd, m, base)
+    out = dict(occ_code_base=code0, occ_cfg_base=cfg0, model_in_code=code0 > 0, model_in_config=cfg0 > 0)
+    # ordinal flexibility: 0 hard-coded in source; 1 identifier only in configuration files; 2 provider-agnostic layer present
+    out["flex_level"] = 2 if row.get("flex_layer") else (1 if code0 == 0 and cfg0 > 0 else 0)
+    end = min(shut, today)
+    n = git(["rev-list", "--count", f"--since={ann.isoformat()}T23:59:59", f"--until={end.isoformat()}T23:59:59", "HEAD"], cwd).stdout.strip()
+    out["commits_to_shutdown"] = int(n) if n.isdigit() else None
+    total0 = code0 + cfg0
+    out.update(censored_relaxed=True, lag_relaxed=(today - ann).days)
+    cands = git(["log", f"--since={ann.isoformat()}T23:59:59", "--format=%H\t%cI", "--reverse", "-S" + m, "HEAD"], cwd, timeout=600).stdout.splitlines()[:300]
+    for c in cands:
+        sha, d = c.split("\t"); code, cfg = grep_counts_split(cwd, m, sha)
+        if code == 0 or (code + cfg) <= total0 / 2:
+            out.update(censored_relaxed=False, lag_relaxed=(dt.date.fromisoformat(d[:10]) - ann).days); break
+    return out
+
+
+def enrich(history_path, out_path, today):
+    rows = [json.loads(l) for l in open(history_path) if l.strip()]
+    by_repo = {}
+    for r in rows: by_repo.setdefault(r["repo"], []).append(r)
+    marker = out_path + ".done"
+    done = {l.strip() for l in open(marker)} if os.path.exists(marker) else set()
+    with open(out_path, "a") as out, tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+        for i, (name, rs) in enumerate(by_repo.items(), 1):
+            if name in done: continue
+            print(f"[{i}/{len(by_repo)}] enrich {name}", flush=True)
+            dest = clone_repo(name, tmp)
+            if dest is None: continue
+            try:
+                for r in rs:
+                    try: r.update(enrich_row(dest, r, today))
+                    except Exception as e: print("  row failed", r["model"], repr(e)[:100]); continue
+                    out.write(json.dumps(r) + "\n"); out.flush()
+                open(marker, "a").write(name + "\n")
+            finally:
+                rmtree_safe(dest)
 
 
 def find_repos(out_path, per_query=300, created_before="2025-06-01", pushed_after="2025-09-01"):
@@ -156,6 +225,12 @@ def selftest():
         assert rb and rb["censored"] and rb["direct_sdk"] and not rb["flex_layer"] and rb["occ_head"] == 1, rb
         assert analyse_repo(C, "gpt-4-0613", a, s, dt.date(2026, 10, 2)) is None            # not at risk: never contained the identifier
         assert analyse_repo(D, "gpt-4-0613", a, s, dt.date(2026, 10, 2)) is None            # created after the announcement: not at risk
+        ea = enrich_row(A, ra, dt.date(2026, 10, 2)); eb = enrich_row(B, rb, dt.date(2026, 10, 2))
+        assert ea["flex_level"] == 2 and not ea["censored_relaxed"] and ea["lag_relaxed"] == ra["lag_days"] and ea["commits_to_shutdown"] == 1, ea
+        assert eb["flex_level"] == 0 and eb["censored_relaxed"] and eb["commits_to_shutdown"] == 1 and eb["model_in_code"], eb
+        E = mk(d, "E", [("2026-03-01", {"app.py": "import openai\nM='gpt-4-0613'\n"}), ("2026-06-01", {"app.py": "import openai\nimport os\nM=os.environ['M']\n", ".env": "M=gpt-4-0613\n"})])
+        re_ = analyse_repo(E, "gpt-4-0613", a, s, dt.date(2026, 10, 2)); ee = enrich_row(E, re_, dt.date(2026, 10, 2))
+        assert re_["censored"] and not ee["censored_relaxed"] and ee["lag_relaxed"] == (dt.date(2026, 6, 1) - a).days, (re_, ee)   # strict: still present; relaxed: moved to config
         print("selftest ok", {k: ra[k] for k in ("lag_days", "flex_layer", "commit_files")}, {k: rb[k] for k in ("lag_days", "censored")})
 
 
@@ -165,9 +240,11 @@ if __name__ == "__main__":
     ap.add_argument("--repos"); ap.add_argument("--out", default="results/history.jsonl"); ap.add_argument("--models", nargs="*")
     ap.add_argument("--default-set", action="store_true", help="use the retired text models of the OpenAI table")
     ap.add_argument("--max-repos", type=int, default=100000)
+    ap.add_argument("--enrich", help="history.jsonl from a finished run: add flexibility level, activity and relaxed-migration variables (writes --out)")
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
     if a.find_repos: find_repos(a.out); sys.exit()
+    if a.enrich: enrich(a.enrich, a.out, dt.date.today()); sys.exit()
     o = pd.read_csv(os.path.join(HERE, "..", "data", "openai_deprecations.csv"), parse_dates=["announced", "shutdown"])
     names = a.models or []
     if a.default_set:

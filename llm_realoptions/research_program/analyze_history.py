@@ -31,6 +31,98 @@ def logrank_stratified(d, group_col):
     return chi2, (math.erfc(math.sqrt(chi2 / 2)) if chi2 == chi2 else float("nan")), O1, E1, O0, E0
 
 
+def _strata(d, lag, cens, grp, K):
+    """Per model stratum: sorted arrays for the vectorised log-rank."""
+    out = []
+    for _, g in d.groupby("model"):
+        out.append((g[lag].to_numpy(float), (~g[cens].to_numpy(bool)).astype(int), g[grp].to_numpy(int)))
+    return out
+
+
+def logrank_k(strata, K):
+    """Stratified K-group log-rank: observed O, expected E (length K) and covariance V (K x K)."""
+    O = np.zeros(K); E = np.zeros(K); V = np.zeros((K, K))
+    for lag, ev, g in strata:
+        for t in np.unique(lag[ev == 1]):
+            at = lag >= t; n = at.sum()
+            if n < 2: continue
+            nk = np.array([(at & (g == k)).sum() for k in range(K)], float)
+            dk = np.array([((lag == t) & (ev == 1) & (g == k)).sum() for k in range(K)], float); dd = dk.sum()
+            O += dk; E += dd * nk / n
+            V += dd * (n - dd) / (n - 1) * (np.diag(nk / n) - np.outer(nk, nk) / n ** 2)
+    return O, E, V
+
+
+def trend_test(strata, K):
+    """Log-rank test for trend with scores 0..K-1 (a dose-response test); chi2 on 1 d.f."""
+    O, E, V = logrank_k(strata, K); sc = np.arange(K, dtype=float)
+    den = sc @ V @ sc
+    chi2 = (sc @ (O - E)) ** 2 / den if den > 0 else float("nan")
+    return chi2, math.erfc(math.sqrt(chi2 / 2)) if chi2 == chi2 else float("nan"), O, E
+
+
+def rate_ratio(strata):
+    O, E, _ = logrank_k(strata, 2)
+    return (O[1] / E[1]) / (O[0] / E[0]) if min(O) > 0 and min(E) > 0 else float("nan")
+
+
+def cluster_bootstrap_rr(d, lag, cens, grp, B=1000, seed=1):
+    """Percentile CI for the rate ratio, resampling whole repositories (all their model rows), which removes the repeat-repository dependence."""
+    rng = np.random.default_rng(seed); repos = d.repo.unique(); parts = {r: g for r, g in d.groupby("repo")}; est = []
+    for _ in range(B):
+        samp = pd.concat([parts[r] for r in rng.choice(repos, len(repos))], ignore_index=True)
+        v = rate_ratio(_strata(samp, lag, cens, grp, 2))
+        if v == v and v > 0: est.append(math.log(v))
+    est = np.array(est)
+    if len(est) < B * 0.9: return float("nan"), float("nan"), float("nan")
+    p = 2 * min((est <= 0).mean(), (est >= 0).mean())
+    return float(np.exp(np.percentile(est, 2.5))), float(np.exp(np.percentile(est, 97.5))), float(min(p, 1.0))
+
+
+def sensitivity(d, B=1000):
+    """Sensitivity analyses: repository-clustered CI, active-repositories subset, relaxed migration definition, three-level flexibility (trend)."""
+    d = d.copy(); d["censored"] = d.censored.astype(bool); d["flex_layer"] = d.flex_layer.astype(int)
+    L = ["\n## Sensitivity analyses\n"]
+    def line(label, sub, lag="lag_days", cens="censored", grp="flex_layer"):
+        st = _strata(sub, lag, cens, grp, 2); O, E, V = logrank_k(st, 2); rr = rate_ratio(st); lo, hi, p = cluster_bootstrap_rr(sub, lag, cens, grp, B)
+        L.append(f"{label}: {len(sub)} pairs, {sub.repo.nunique()} repos, {int(O.sum())} migrations; rate ratio {rr:.2f}; repository-cluster bootstrap 95% CI [{lo:.2f}, {hi:.2f}], p = {p:.3f}")
+    L.append("Rate ratio = migration hazard with a provider-agnostic layer relative to without (stratified by model). Clustering by repository.")
+    line("A. All pairs, strict definition (identifier absent from the whole tree)", d)
+    d["direct_only"] = (~d.direct_sdk.astype(bool)).astype(int) if "direct_sdk" in d else 0
+    if "direct_sdk" in d: line("A2. No direct SDK call (vs direct SDK)", d, grp="direct_only")
+    if "commits_to_shutdown" in d.columns and d.commits_to_shutdown.notna().any():
+        for k in (1, 5):
+            act = d[d.commits_to_shutdown.fillna(0) >= k]
+            L.append(f"B{k}. Active repositories (>= {k} commits between announcement and shutdown/today): {len(act)} of {len(d)} pairs; migrated before shutdown {act.migrated_before_shutdown.mean():.3f} (all pairs: {d.migrated_before_shutdown.mean():.3f})")
+            if (~act.censored).sum() >= 10: line(f"B{k}. Rate ratio, active repositories", act)
+    else:
+        L.append("B. Activity filter: not available (run mine_by_history.py --enrich first).")
+    if "lag_relaxed" in d.columns and d.lag_relaxed.notna().any():
+        dr = d.assign(censored_r=d.censored_relaxed.astype(bool))
+        L.append(f"C. Relaxed definition (identifier gone from code files or occurrences halved): migrations {int((~dr.censored_r).sum())} (strict: {int((~d.censored).sum())})")
+        line("C. Rate ratio, relaxed definition", dr, lag="lag_relaxed", cens="censored_r")
+        L.append(f"   share migrated by shutdown under the relaxed definition: {((~dr.censored_r) & (dr.lag_relaxed <= dr.notice_days)).mean():.3f}")
+    else:
+        L.append("C. Relaxed definition: not available (run mine_by_history.py --enrich first).")
+    if "flex_level" in d.columns and d.flex_level.notna().any():
+        d["flex_level"] = d.flex_level.astype(int); K = 3
+        st = _strata(d, "lag_days", "censored", "flex_level", K); chi2, p, O, E = trend_test(st, K)
+        L.append("D. Three-level flexibility (0 hard-coded in code, 1 model string only in configuration files, 2 provider-agnostic layer), log-rank trend test:")
+        for k in range(K):
+            g = d[d.flex_level == k]
+            L.append(f"   level {k}: {len(g)} pairs, {int(O[k])} migrations (expected {E[k]:.1f}), migrated before shutdown {g.migrated_before_shutdown.mean():.3f}")
+        L.append(f"   trend chi2 = {chi2:.2f}, p = {p:.3f} (pair-level; the repository-clustered version is in the bootstrap below)")
+        rng = np.random.default_rng(2); repos = d.repo.unique(); parts = {r: g for r, g in d.groupby("repo")}; est = []
+        for _ in range(B):
+            samp = pd.concat([parts[r] for r in rng.choice(repos, len(repos))], ignore_index=True)
+            O_, E_, V_ = logrank_k(_strata(samp, "lag_days", "censored", "flex_level", K), K); sc = np.arange(K); est.append(float(sc @ (O_ - E_)))
+        est = np.array(est); obs = float(np.arange(K) @ (O - E))
+        L.append(f"   repository-cluster bootstrap of the trend statistic: observed {obs:.1f}, 95% CI [{np.percentile(est, 2.5):.1f}, {np.percentile(est, 97.5):.1f}] (0 means no trend)")
+    else:
+        L.append("D. Three-level flexibility: not available (run mine_by_history.py --enrich first).")
+    return "\n".join(L)
+
+
 def report(d):
     d = d.copy(); d["censored"] = d.censored.astype(bool); d["flex_layer"] = d.flex_layer.astype(bool)
     L = [f"{len(d)} repository-model pairs at risk, {d.repo.nunique()} repositories, {d.model.nunique()} models\n", "## Per model\n"]
@@ -74,12 +166,17 @@ def selftest():
     r = report(pd.DataFrame(rows)); assert "crude rate ratio" in r
     d = pd.DataFrame(rows); chi2, p, O1, E1, O0, E0 = logrank_stratified(d.assign(censored=d.censored.astype(bool)), "flex_layer")
     assert O1 / E1 > 1.5 and p < 0.001, (O1, E1, p)
+    d["flex_level"] = np.where(d.flex_layer, 2, rng.integers(0, 2, len(d))); d["commits_to_shutdown"] = 3; d["lag_relaxed"] = d.lag_days * 0.8
+    d["censored_relaxed"] = d.censored; d["flex_layer"] = d.flex_layer.astype(int)
+    out = sensitivity(d, B=50); assert "trend chi2" in out and "Rate ratio, relaxed" in out, out
+    st = _strata(d.assign(censored=d.censored.astype(bool)), "lag_days", "censored", "flex_layer", 2); lo, hi, p = cluster_bootstrap_rr(d.assign(censored=d.censored.astype(bool)), "lag_days", "censored", "flex_layer", 50)
+    assert lo > 1.5 and abs(rate_ratio(st) - (O1 / E1) / (O0 / E0)) < 1e-9, (lo, hi)
     print("selftest ok; rate ratio", round((O1 / E1) / (O0 / E0), 2))
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("path", nargs="?"); ap.add_argument("--md"); ap.add_argument("--selftest", action="store_true")
+    ap = argparse.ArgumentParser(); ap.add_argument("path", nargs="?"); ap.add_argument("--md"); ap.add_argument("--selftest", action="store_true"); ap.add_argument("--boot", type=int, default=1000)
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
-    r = report(pd.read_json(a.path, lines=True)); print(r)
+    d = pd.read_json(a.path, lines=True); r = report(d) + "\n" + sensitivity(d, a.boot); print(r)
     if a.md: open(a.md, "w").write(r + "\n")
