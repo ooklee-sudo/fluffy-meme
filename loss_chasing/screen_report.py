@@ -16,8 +16,8 @@ def main(paths):
         sk = lambda g: 100 * sum(r["action"] in SKIPS for r in g) / len(g) if g else float("nan")
         by = lambda f: [r for r in rows if r["frame"] == f]
         pf = sum(bool(r["parse_fail"]) for r in rows); rf = sum(r.get("reason") == "REFUSAL" for r in rows)
-        s = sk(rows)
-        print(f"{p[-34:]:34} {len(rows):>6} {s:>7.1f} {sk(by('loss')):>7.1f} {sk(by('gain')):>7.1f} {sk(by('neutral')):>7.1f} {pf:>10} {rf:>8}  {'PASS' if s >= 5 else 'floor'}")
+        s = sk(rows); invalid = pf / len(rows) > 0.05
+        print(f"{p[-34:]:34} {len(rows):>6} {s:>7.1f} {sk(by('loss')):>7.1f} {sk(by('gain')):>7.1f} {sk(by('neutral')):>7.1f} {pf:>10} {rf:>8}  {'INVALID (parse failures > 5%: rerun or exclude)' if invalid else ('PASS' if s >= 5 else 'floor')}")
 
 if __name__ == "__main__":
     main(sys.argv[1:] or sys.exit(__doc__))

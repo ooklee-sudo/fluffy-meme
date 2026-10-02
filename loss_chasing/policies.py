@@ -12,7 +12,7 @@ class Policy:
         """OpenAI-compatible chat call. Newer models reject max_tokens (they want max_completion_tokens) and temperature (they reason by default);
         adapt once on a 400 error and remember, so one runner covers both kinds. Token usage is counted when the endpoint returns it."""
         import openai
-        for _ in range(3):
+        for _ in range(6):
             kw = dict(model=self.model, messages=[{"role": "system", "content": self.system}, {"role": "user", "content": prompt}])
             kw["max_completion_tokens" if getattr(self, "_oa_mct", False) else "max_tokens"] = self.max_tokens
             if not getattr(self, "_oa_notemp", False):
@@ -31,7 +31,12 @@ class Policy:
                 self._tl.usage = (u.prompt_tokens, u.completion_tokens)
                 with self._lock:
                     self.tok_in += u.prompt_tokens; self.tok_out += u.completion_tokens; self.n_calls += 1
-            return r.choices[0].message.content
+            ch = r.choices[0]
+            if not (ch.message.content or "").strip() and self.max_tokens < 8000:
+                # a reasoning model that spent its whole output budget on hidden reasoning returns empty text: raise the budget and ask again
+                self.max_tokens = min(max(self.max_tokens * 4, 1000), 8000); self.controls_temperature = getattr(self, "controls_temperature", True)
+                continue
+            return ch.message.content
         raise RuntimeError("could not adapt the request parameters")
 
     def act(self, env, frame, prompt, order, temperature, rng):  # -> (action, reason, parse_fail)
