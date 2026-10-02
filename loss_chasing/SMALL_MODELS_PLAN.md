@@ -31,3 +31,6 @@ About 1,440 calls with roughly 900 input and 50 output tokens each, which is on 
 
 ## How the results would enter the paper
 A new section after Study 5: "Replication in small models from other vendors." If one or more models skip and show the same ordering (loss below gain, goal visibility raising skipping), the generality concern is reduced; if all are at floor, we report that the environment does not elicit skipping in them, as for the larger Claude models. Either result goes in.
+
+## Record of a decision after the runs (2 October 2026)
+The first runs of openai/gpt-5-nano and qwen/qwen3-14b were invalid under rule 3a (1,440 and 1,276 parse failures; the 200-token output budget was used by hidden reasoning). The runner was fixed to raise the budget automatically, but the two models were not rerun, by the authors' decision. Under rule 3a they are excluded and the exclusion is reported in the manuscript (Table 10 and Appendices C and D). Their invalid logs are kept in the replication package and are not analyzed.
