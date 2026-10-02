@@ -35,7 +35,7 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill
 
 # --- adjust to the live site -------------------------------------------------
-BOARD_URL = "https://www.pipc.go.kr/np/cop/bbs/selectBoardList.do?bbsId=BS074&mCode=E030010000"
+BOARD_URL = "https://pipc.go.kr/np/default/agenda.do?mCode=E030010000"
 SELECTORS = {
     "keyword":   "input[name='searchKrwd']",       # keyword box
     "field":     "select[name='searchCnd']",       # search field (제목+내용)
