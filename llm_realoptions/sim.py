@@ -43,55 +43,58 @@ def disc(m):
 
 
 def run(n, vol_m_tokens=1000.0, kw=(2, 4, 10), emerg=1.5, outage_day=2000.0, premium_w=6.0, phi=0.5, notice_scale=1.0,
-        corr_alt=0.5, succ_ratio=None, sig_m=0.10, seed=7):
+        corr_alt=0.5, succ_ratio=None, sig_m=0.10, theta_override=None, seed=7):
     """Paired present-value costs (USD) for four strategies over H months, common random numbers.
-    rigid: reactive, hard-wired; migrates only at retirement, to the vendor successor.
-    flex: pays premium_w person-weeks up front, migration effort phi*K, at retirement picks the cheaper of successor and an alternative vendor.
-    flex_npv: flex plus early switching whenever the present value of savings exceeds the switching cost (threshold multiple 1).
-    flex_ro: flex plus early switching only when savings exceed theta*switching cost (McDonald-Siegel threshold from the volatility of the price gap).
-    The price gap x between the cheapest alternative and the current model follows a monthly random walk with volatility sig_m and zero drift; the data-derived value (0.36) mixes capability and price changes, so 0.10 is the default and 0.36 an upper bound.
-    corr_alt = probability that the alternative vendor's retirement price ratio equals the successor's (assumption; 1 = perfectly correlated)."""
+    Two vendors have price levels A (current vendor) and B (alternative) that follow monthly log random walks with volatility sig_m and
+    innovation correlation corr_alt (martingale prices). A retirement event reprices both vendors (current by r1, alternative by r2, r2 = r1 with probability corr_alt, else an independent draw from the observed
+    generation ratios). After a switch the former vendor becomes the alternative with its own level, so there is no reset of the price gap.
+    rigid: hard-wired, migrates only at retirement, to the same vendor's successor.
+    flex: premium_w person-weeks up front, migration effort phi*K, at retirement moves to the cheaper of the successor and the alternative.
+    flex_npv: flex plus early switching when the present value of the saving to the horizon exceeds the switching cost (multiple 1).
+    flex_ro: flex plus early switching when the saving exceeds theta times the switching cost, theta = b/(b-1) (zero-drift one-shot form)."""
     rng = np.random.default_rng(seed)
-    th = theta(sig_m)
+    th = theta(sig_m) if theta_override is None else theta_override
     keys = ("rigid", "flex", "flex_npv", "flex_ro")
     out = {k: np.zeros(n) for k in keys}
     out.update({"sw_" + k: np.zeros(n) for k in keys}); out["forced"] = np.zeros(n)
     ratios = RATIOS if succ_ratio is None else np.array([succ_ratio])
+    W = vol_m_tokens
     for i in range(n):
         K = rng.triangular(*kw) * WEEK
         life0 = rng.choice(LIFE) * rng.uniform(0.2, 1.0)
         forced = []; t = life0
         while t < H:
-            forced.append((int(t), rng.choice(NOTICE) * notice_scale, rng.choice(ratios), rng.choice(ratios)))
+            r1 = rng.choice(ratios); r2 = r1 if rng.random() < corr_alt else rng.choice(ratios)
+            forced.append((int(t), rng.choice(NOTICE) * notice_scale, r1, r2))
             t += rng.choice(LIFE) * rng.uniform(0.2, 1.0)
-        gap = np.cumsum(rng.normal(0, sig_m, H))                      # log(price of cheapest alternative / current) if never reset
+        zA = rng.normal(size=H); zB = corr_alt * zA + math.sqrt(1 - corr_alt ** 2) * rng.normal(size=H)
         fmap = {f[0]: f for f in forced}
         out["forced"][i] = len(forced)
-        W = vol_m_tokens
         def mig(Kc, nd):
             short = max(0.0, 14 * (Kc / WEEK) - nd)
             return Kc * (emerg if short > 0 else 1.0) + short * outage_day
         for key in keys:
             flexible = key != "rigid"
             tco = premium_w * WEEK if flexible else 0.0
-            idx = 1.0; x = 0.0; thr = {"flex": None, "flex_npv": 1.0, "flex_ro": th}.get(key)
+            A = 1.0; B = 1.0; thr = {"flex": None, "flex_npv": 1.0, "flex_ro": th}.get(key)
             for m in range(H):
+                A *= math.exp(sig_m * zA[m] - 0.5 * sig_m ** 2); B *= math.exp(sig_m * zB[m] - 0.5 * sig_m ** 2)
                 if m in fmap:
                     _, nd, r1, r2 = fmap[m]
                     if flexible:
-                        tco += disc(m) * mig(phi * K, nd); idx *= min(r1, r2 if rng.random() > corr_alt else r1)
+                        tco += disc(m) * mig(phi * K, nd)
+                        if B * r2 < A * r1:
+                            A, B = B * r2, A * r1
+                        else:
+                            A, B = A * r1, B * r2
                     else:
-                        tco += disc(m) * mig(K, nd); idx *= r1
-                    x = 0.0
-                elif thr is not None:
-                    x += gap[m] - (gap[m - 1] if m else 0.0)
-                    if x < 0:
-                        left = H - m
-                        pv = sum(disc(k) * W * BASE_BLEND * idx * (1 - math.exp(x)) for k in range(m, H))
-                        cost = disc(m) * mig(phi * K, 1e9)
-                        if pv >= thr * cost:
-                            tco += cost; idx *= math.exp(x); x = 0.0; out["sw_" + key][i] += 1
-                tco += disc(m) * W * BASE_BLEND * idx
+                        tco += disc(m) * mig(K, nd); A *= r1
+                elif thr is not None and B < A:
+                    pv = sum(disc(k) for k in range(m, H)) * W * BASE_BLEND * (A - B)
+                    cost = disc(m) * mig(phi * K, 1e9)
+                    if pv >= thr * cost:
+                        tco += cost; A, B = B, A; out["sw_" + key][i] += 1
+                tco += disc(m) * W * BASE_BLEND * A
             out[key][i] = tco
     return out
 
