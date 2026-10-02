@@ -45,6 +45,12 @@ def report(d):
     L.append(f"with layer: {int(d.flex_layer.sum())} pairs, {int(O1)} migrations, expected {E1:.1f}; without: {int((~d.flex_layer).sum())} pairs, {int(O0)} migrations, expected {E0:.1f}")
     if E1 > 0 and E0 > 0 and O0 > 0:
         L.append(f"crude rate ratio (with layer vs without) = {(O1 / E1) / (O0 / E0):.2f}; stratified log-rank chi2 = {chi2:.2f}, p = {p:.3f} (indicative: repositories repeat across models)")
+    if "direct_sdk" in d.columns:
+        d["direct_sdk"] = d.direct_sdk.astype(bool)
+        c2, p2, A1, B1, A0, B0 = logrank_stratified(d.assign(flex_layer=~d.direct_sdk), "flex_layer")
+        L.append(f"\nAlternative split: no direct SDK call at the announcement date ({int((~d.direct_sdk).sum())} pairs, {int(A1)} migrations, expected {B1:.1f}) versus direct SDK ({int(d.direct_sdk.sum())} pairs, {int(A0)} migrations, expected {B0:.1f}); chi2 = {c2:.2f}, p = {p2:.3f}")
+        L.append(f"Repositories with a layer and no direct SDK: {int((d.flex_layer & ~d.direct_sdk).sum())}; both: {int((d.flex_layer & d.direct_sdk).sum())}; direct only: {int((~d.flex_layer & d.direct_sdk).sum())}; neither: {int((~d.flex_layer & ~d.direct_sdk).sum())}")
+    L.append(f"Power note: {int((~d.censored).sum())} migrations in {d.repo.nunique()} repositories; with fewer than about 100 migrations a rate ratio below about 1.5 cannot be separated from zero.")
     for flag, g in d.groupby("flex_layer"):
         ev = (~g.censored).astype(int).values
         L.append(f"  layer={flag}: migrated before shutdown {g.migrated_before_shutdown.mean():.3f}; median lag of migrated {g[~g.censored].lag_days.median()}")

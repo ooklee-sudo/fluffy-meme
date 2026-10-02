@@ -15,7 +15,7 @@ import argparse, datetime as dt, json, os, re, shutil, stat, subprocess, sys, te
 import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-LAYER = r"litellm|langchain|llama_index|llamaindex|portkey|openrouter|llm[_-]?gateway|@ai-sdk|from ai import|instructor|guidance|dspy"
+LAYER = r"import litellm|from litellm|litellm\.completion|langchain_openai|from langchain|import langchain|from llama_index|import llama_index|portkey_ai|@ai-sdk/|from ai import|vercel/ai"
 DIRECT = r"import openai|from openai|require\(.openai.\)|from .openai.|openai\.(ChatCompletion|chat)|OpenAI\("
 
 
@@ -82,7 +82,11 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
         print("  skip (large)", name); return
     url = name if os.path.exists(name) else f"https://github.com/{name}.git"
     dest = os.path.join(tmp, re.sub(r"[^\w.-]", "_", name))
-    r = subprocess.run(["git", "clone", "--quiet", "--no-tags", "--single-branch", url, dest], capture_output=True, text=True, timeout=1800, errors="ignore")
+    env = dict(os.environ, GIT_LFS_SKIP_SMUDGE="1")            # do not download large-file pointers
+    r = subprocess.run(["git", "-c", "core.longpaths=true", "-c", "filter.lfs.smudge=", "-c", "filter.lfs.required=false", "-c", "core.protectNTFS=false",
+                        "clone", "--quiet", "--no-tags", "--single-branch", url, dest], capture_output=True, text=True, timeout=1800, errors="ignore", env=env)
+    if r.returncode != 0 and os.path.isdir(os.path.join(dest, ".git")):   # checkout of a few files failed (Windows paths) but the history is there
+        r.returncode = 0
     if r.returncode != 0:
         print("  clone failed", name, r.stderr[:100].strip()); return
     try:
@@ -95,15 +99,17 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
         shutil.rmtree(dest, onerror=_rm)
 
 
-def find_repos(out_path, per_query=300):
+def find_repos(out_path, per_query=300, created_before="2025-06-01", pushed_after="2025-09-01"):
     sys.path.insert(0, HERE)
     from mine_migrations import gh
     import time
-    queries = ["topic:openai", "topic:llm", "topic:chatgpt", "topic:langchain", "topic:gpt-4", "topic:ai-agents", "topic:chatbot"]
+    # repositories that existed before the announcements (so they can be at risk) and are still active; not tied to any migration outcome
+    queries = ["topic:openai", "topic:llm", "topic:chatgpt", "topic:langchain", "topic:gpt-4", "topic:gpt-3", "topic:ai-agents", "topic:chatbot", "topic:openai-api",
+               "topic:generative-ai", "topic:rag", "topic:llm-agent", "topic:gpt", "topic:prompt-engineering", "topic:litellm", "topic:langchain-python"]
     seen = {}
     for q in queries:
         for page in range(1, per_query // 100 + 1):
-            items = gh("/search/repositories", {"q": f"{q} pushed:>=2024-01-01 stars:5..2000 fork:false archived:false", "per_page": 100, "page": page, "sort": "updated"}).get("items", [])
+            items = gh("/search/repositories", {"q": f"{q} created:<{created_before} pushed:>={pushed_after} stars:5..2000 fork:false archived:false", "per_page": 100, "page": page, "sort": "updated"}).get("items", [])
             for it in items:
                 seen[it["full_name"]] = dict(full_name=it["full_name"], size=it["size"], stargazers_count=it["stargazers_count"], pushed_at=it["pushed_at"], language=it["language"])
             time.sleep(3)
