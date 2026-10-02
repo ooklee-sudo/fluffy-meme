@@ -55,6 +55,7 @@ def run(n, vol_m_tokens=1000.0, kw=(2, 4, 10), emerg=1.5, outage_day=2000.0, pre
     th = theta(sig_m)
     keys = ("rigid", "flex", "flex_npv", "flex_ro")
     out = {k: np.zeros(n) for k in keys}
+    out.update({"sw_" + k: np.zeros(n) for k in keys}); out["forced"] = np.zeros(n)
     ratios = RATIOS if succ_ratio is None else np.array([succ_ratio])
     for i in range(n):
         K = rng.triangular(*kw) * WEEK
@@ -65,6 +66,7 @@ def run(n, vol_m_tokens=1000.0, kw=(2, 4, 10), emerg=1.5, outage_day=2000.0, pre
             t += rng.choice(LIFE) * rng.uniform(0.2, 1.0)
         gap = np.cumsum(rng.normal(0, sig_m, H))                      # log(price of cheapest alternative / current) if never reset
         fmap = {f[0]: f for f in forced}
+        out["forced"][i] = len(forced)
         W = vol_m_tokens
         def mig(Kc, nd):
             short = max(0.0, 14 * (Kc / WEEK) - nd)
@@ -88,7 +90,7 @@ def run(n, vol_m_tokens=1000.0, kw=(2, 4, 10), emerg=1.5, outage_day=2000.0, pre
                         pv = sum(disc(k) * W * BASE_BLEND * idx * (1 - math.exp(x)) for k in range(m, H))
                         cost = disc(m) * mig(phi * K, 1e9)
                         if pv >= thr * cost:
-                            tco += cost; idx *= math.exp(x); x = 0.0
+                            tco += cost; idx *= math.exp(x); x = 0.0; out["sw_" + key][i] += 1
                 tco += disc(m) * W * BASE_BLEND * idx
             out[key][i] = tco
     return out
