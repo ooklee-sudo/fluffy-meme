@@ -20,9 +20,9 @@ Usage:
     python stage2_pipc_census.py --xlsx ... --manual     # type hit counts yourself
     python stage2_pipc_census.py --xlsx ... --only 얼굴 홍채   # re-run some keywords
 
-NOTE: the CSS selectors below were NOT verified against the live site (it was
-unreachable when this was written). Run once with --headed --debug, inspect
-the page, and adjust SELECTORS / BOARD_URL if needed.
+NOTE: form fields are located by placeholder text and option labels, based on
+the page text of the live board; the exact HTML was not available when this was
+written. Run once with --debug --only <keyword> and check the output.
 """
 import argparse
 import datetime as dt
@@ -34,20 +34,20 @@ from pathlib import Path
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 
-# --- adjust to the live site -------------------------------------------------
+# --- site-specific settings --------------------------------------------------
 BOARD_URL = "https://pipc.go.kr/np/default/agenda.do?mCode=E030010000"
-SELECTORS = {
-    "keyword":   "input[name='searchKrwd']",       # keyword box
-    "field":     "select[name='searchCnd']",       # search field (제목+내용)
-    "date_from": "input[name='startDt']",
-    "date_to":   "input[name='endDt']",
-    "meeting":   "select[name='mtgType']",         # meeting type (전체)
-    "submit":    "button:has-text('검색'), a:has-text('검색')",
-    "rows":      "table tbody tr",                 # result rows
-    "next":      "a.next, a:has-text('다음'), .paging a.next",
-}
+# Form fields are located by their placeholder text / option labels, not by
+# name or id (unknown). Dates are typed as YYYYMMDD, as the site shows them.
+DATE_FROM_PH = "input[placeholder*='2022-01-01']"
+DATE_TO_PH = "input[placeholder*='2022-12-31']"
+KEYWORD_INPUT = ("input[type=text]:not([placeholder*='ex :']), "
+                 "input:not([type]):not([placeholder*='ex :'])")
+SUBMIT = ("button:has-text('검색'), a:has-text('검색'), input[type=submit], "
+          "input[type=button][value*='검색']")
+ROWS = "table tbody tr"
+PIA_MARK = "침해요인 평가"      # legislative privacy-impact assessments: excluded by protocol
 TOTAL_RE = re.compile(r"(?:총|전체)\s*[:：]?\s*([\d,]+)\s*건")
-MAX_PAGES = 50
+MAX_PAGES = 100
 # -----------------------------------------------------------------------------
 
 HDR_ROW = 2          # header row in Stage2_Template (row 1 is the legend)
@@ -80,61 +80,89 @@ def stage1_dates(wb):
     return m
 
 
-def try_select(page, sel, label):
-    try:
-        page.select_option(sel, label=label, timeout=3000)
-    except Exception:
-        print(f"    ! could not set {sel} = {label!r}; check manually", file=sys.stderr)
+def site_date(x):
+    return re.sub(r"\D", "", str(x))        # 2020-08-05 -> 20200805
+
+
+def find_form(page):
+    page.locator(DATE_FROM_PH).first.wait_for(timeout=20000)
+    f = page.locator("form").filter(has=page.locator(DATE_FROM_PH))
+    return f.first if f.count() else page.locator("body")
+
+
+def pick_option(form, label, exclude_with=None):
+    """Select `label` in the <select> that offers it (optionally not the one offering `exclude_with`)."""
+    for sel in form.locator("select").all():
+        opts = [o.strip() for o in sel.locator("option").all_inner_texts()]
+        if label in opts and not (exclude_with and exclude_with in opts):
+            sel.select_option(label=label)
+            return True
+    print(f"    ! no <select> offers {label!r}; set it by hand", file=sys.stderr)
+    return False
 
 
 def run_search(page, q):
     page.goto(BOARD_URL, wait_until="networkidle")
-    page.fill(SELECTORS["keyword"], q["kw"])
-    try_select(page, SELECTORS["field"], q["field"])
-    try_select(page, SELECTORS["meeting"], q["meeting"])
-    page.fill(SELECTORS["date_from"], q["d_from"])
-    page.fill(SELECTORS["date_to"], q["d_to"])
-    page.click(SELECTORS["submit"])
+    form = find_form(page)
+    kw = form.locator(KEYWORD_INPUT).first
+    kw.fill(q["kw"])
+    pick_option(form, q["field"])
+    pick_option(form, q["meeting"], exclude_with=q["field"])
+    form.locator(DATE_FROM_PH).first.fill(site_date(q["d_from"]))
+    form.locator(DATE_TO_PH).first.fill(site_date(q["d_to"]))
+    try:
+        form.locator(SUBMIT).last.click(timeout=5000)
+    except Exception:
+        kw.press("Enter")
     page.wait_for_load_state("networkidle")
 
 
+def read_rows(page):
+    out = []
+    for tr in page.locator(ROWS).all():
+        cells = [c.strip() for c in tr.locator("td").all_inner_texts()]
+        if len(cells) < 4 or not re.fullmatch(r"\d+", cells[0]):
+            continue                          # header, "자료가 없습니다", layout rows
+        a = tr.locator("a").first
+        href = a.get_attribute("href") if a.count() else ""
+        if href and href.startswith("/"):
+            href = "https://pipc.go.kr" + href
+        date = next((c for c in cells if re.fullmatch(r"\d{4}[-.]\d{2}[-.]\d{2}", c)), "")
+        out.append(dict(no=int(cells[0]), meeting=cells[1], title=cells[2],
+                        date=date.replace(".", "-"), link=href or "",
+                        cells=" | ".join(cells)))
+    return out
+
+
 def scrape(page):
-    """Return (reported_total, hits). Follows the site's own pagination."""
+    """Return (reported_total_or_None, hits, first_row_number). Follows the site's pagination."""
     m = TOTAL_RE.search(page.inner_text("body"))
     total = int(m.group(1).replace(",", "")) if m else None
-    hits, seen = [], set()
-    for _ in range(MAX_PAGES):
-        for tr in page.query_selector_all(SELECTORS["rows"]):
-            cells = [c.inner_text().strip() for c in tr.query_selector_all("td")]
-            if not cells:
-                continue
-            a = tr.query_selector("a")
-            href = a.get_attribute("href") if a else ""
-            if href and href.startswith("/"):
-                href = "https://www.pipc.go.kr" + href
-            date = next((c for c in cells if re.fullmatch(r"\d{4}[-.]\d{2}[-.]\d{2}", c)), "")
-            title = max(cells, key=len)
-            key = (title, date)
-            if key in seen:
-                continue
-            seen.add(key)
-            hits.append(dict(date=date.replace(".", "-"), title=title,
-                             link=href or "", cells=" | ".join(cells)))
-        nxt = page.query_selector(SELECTORS["next"])
-        if not nxt or (total is not None and len(hits) >= total):
+    hits, seen, first_no = [], set(), None
+    for k in range(1, MAX_PAGES + 1):
+        rows = read_rows(page)
+        if k == 1 and rows:
+            first_no = max(r["no"] for r in rows)
+        new = [r for r in rows if (r["no"], r["title"], r["date"]) not in seen]
+        if not new:
             break
-        before = len(hits)
-        nxt.click()
+        for r in new:
+            seen.add((r["no"], r["title"], r["date"]))
+        hits += new
+        nxt = page.get_by_role("link", name=str(k + 1), exact=True)
+        if nxt.count() == 0:
+            nxt = page.locator("a:has-text('다음'), a.next, a[title*='다음']")
+        if nxt.count() == 0:
+            break
+        nxt.first.click()
         page.wait_for_load_state("networkidle")
-        if len(hits) == before and not page.query_selector_all(SELECTORS["rows"]):
-            break
-    return total, hits
+    return total, hits, first_no
 
 
 def manual_prompt(q):
     print(f"\n[manual] Search '{q['kw']}' ({q['field']}, {q['d_from']}~{q['d_to']}, {q['meeting']}) in the DB.")
     n = input("  Hits (n): ").strip()
-    return (int(n) if n.isdigit() else None), []
+    return (int(n) if n.isdigit() else None), [], None
 
 
 def sheet(wb, name, header):
@@ -201,7 +229,8 @@ def main():
     print(f"{len(queries)} keywords to run")
 
     hits_ws = sheet(wb, "Stage2_Hits", ["Keyword", "Decision date", "Title", "Link",
-                                        "Stage-1 RecID(s) with same date", "Raw row"])
+                                        "Stage-1 RecID(s) with same date", "Raw row",
+                                        "Likely legislative PIA (excluded)"])
     uniq = {}
 
     pw = browser = page = None
@@ -217,21 +246,25 @@ def main():
             note = "auto"
             try:
                 if a.manual:
-                    total, hits = manual_prompt(q)
+                    total, hits, first_no = manual_prompt(q)
                     note = "manual count"
                 else:
                     run_search(page, q)
                     if a.debug:
                         input("  [debug] inspect the page, then press Enter...")
-                    total, hits = scrape(page)
-                    if total is not None and total != len(hits):
+                    total, hits, first_no = scrape(page)
+                    if total is None:
+                        total = len(hits)         # site shows no total; count what was scraped
+                    elif total != len(hits):
                         note = f"auto; reported {total}, scraped {len(hits)} - verify"
+                    if first_no and first_no != len(hits):
+                        note += f"; top row no. {first_no} vs scraped {len(hits)} - verify"
             except Exception as e:                      # keep going, flag the row
-                total, hits, note = None, [], f"FAILED: {type(e).__name__}: {e}"[:200]
+                total, hits, first_no, note = None, [], None, f"FAILED: {type(e).__name__}: {e}"[:200]
                 print("   ", note, file=sys.stderr)
 
             r = q["row"]
-            tpl.cell(r, 6).value = total if total is not None else len(hits) or None
+            tpl.cell(r, 6).value = total
             tpl.cell(r, 10).value = today
             tpl.cell(r, 11).value = note
             for c in (6, 10, 11):
@@ -239,7 +272,8 @@ def main():
 
             for h in hits:
                 flag = ", ".join(s1.get(h["date"], []))
-                hits_ws.append([q["kw"], h["date"], h["title"], h["link"], flag, h["cells"]])
+                pia = "Y" if PIA_MARK in h["title"] else ""
+                hits_ws.append([q["kw"], h["date"], h["title"], h["link"], flag, h["cells"], pia])
                 u = uniq.setdefault((h["date"], h["title"]),
                                     dict(h, kws=[], flag=flag))
                 u["kws"].append(q["kw"])
@@ -252,10 +286,11 @@ def main():
             pw.stop()
 
     u_ws = sheet(wb, "Stage2_Unique", ["Decision date", "Title", "Link", "Keywords matched",
-                                       "Stage-1 RecID(s) same date",
+                                       "Stage-1 RecID(s) same date", "Likely legislative PIA (excluded)",
                                        "Eligible? (Y/N/PEND)", "Reason code", "New RecID", "Screened by"])
     for (d, t), u in sorted(uniq.items(), reverse=True):
-        u_ws.append([d, t, u["link"], "; ".join(u["kws"]), u["flag"]])
+        u_ws.append([d, t, u["link"], "; ".join(u["kws"]), u["flag"],
+                     "Y" if PIA_MARK in t else ""])
 
     wb.save(out)
     print(f"\nSaved {out}\nUnique decisions across keywords: {len(uniq)}")
