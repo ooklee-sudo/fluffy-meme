@@ -61,9 +61,24 @@ def selftest():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--models", nargs="*"); ap.add_argument("--max-hits", type=int, default=50)
     ap.add_argument("--out", default="migrations.jsonl"); ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--default-set", action="store_true", help="use the text-model identifiers listed in the OpenAI table (no audio, image, tts, realtime)")
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
     o = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "openai_deprecations.csv"), parse_dates=["announced", "shutdown"])
+    models = a.models or []
+    if a.default_set:
+        bad = ("audio", "image", "tts", "realtime", "transcribe", "whisper", "dall-e", "sora", "moderation", "search", "computer-use", "codex", "api", "platform", "builder", "ft-")
+        t = o[o.model.str.match(r"^(gpt-|o[134]|text-davinci|babbage|davinci)") & ~o.model.str.contains("|".join(bad)) & (o.announced < pd.Timestamp("2026-07-01"))]
+        models = list(dict.fromkeys(t.model))
+    done = set()
+    if os.path.exists(a.out):
+        done = {json.loads(l)["model"] for l in open(a.out) if l.strip()}
     with open(a.out, "a") as out:
-        for m in a.models:
-            r = o[o.model == m].iloc[0]; mine(m, r.announced.date(), r.shutdown.date(), a.max_hits, out)
+        for m in models:
+            if m in done:
+                print("skip (already done):", m); continue
+            r = o[o.model == m].iloc[0]; print("mining", m, flush=True)
+            try:
+                mine(m, r.announced.date(), r.shutdown.date(), a.max_hits, out)
+            except Exception as e:
+                print("failed", m, repr(e)[:200], flush=True)
