@@ -73,7 +73,22 @@ def analyse_repo(cwd, model, announced, shutdown, today):
 
 
 def _rm(func, path, exc):
-    os.chmod(path, stat.S_IWRITE); func(path)
+    try:
+        os.chmod(path, stat.S_IWRITE); func(path)
+    except OSError:
+        pass
+
+
+def rmtree_safe(path):
+    """Delete a clone even when Windows paths exceed 260 characters or files are read-only; never raises."""
+    if not os.path.exists(path):
+        return
+    p = os.path.abspath(path)
+    if os.name == "nt":
+        p = "\\\\?\\" + p if not p.startswith("\\\\?\\") else p        # extended-length path prefix
+    shutil.rmtree(p, onerror=_rm)
+    if os.path.exists(path) and os.name == "nt":                            # last resort
+        subprocess.run(["cmd", "/c", "rmdir", "/s", "/q", os.path.abspath(path)], capture_output=True)
 
 
 def process_repo(spec, models, out, tmp, today, max_mb=300):
@@ -96,7 +111,7 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
                 row.update(repo=name, **({k: spec.get(k) for k in ("stargazers_count", "pushed_at", "language")} if isinstance(spec, dict) else {}))
                 out.write(json.dumps(row) + "\n"); out.flush()
     finally:
-        shutil.rmtree(dest, onerror=_rm)
+        rmtree_safe(dest)
 
 
 def find_repos(out_path, per_query=300, created_before="2025-06-01", pushed_after="2025-09-01"):
@@ -166,7 +181,7 @@ if __name__ == "__main__":
     marker = a.out + ".done"
     done = {l.strip() for l in open(marker)} if os.path.exists(marker) else set()
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
-    with open(a.out, "a") as out, tempfile.TemporaryDirectory() as tmp:
+    with open(a.out, "a") as out, tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         for i, sp in enumerate(specs, 1):
             if sp["full_name"] in done: continue
             print(f"[{i}/{len(specs)}] {sp['full_name']}", flush=True)
