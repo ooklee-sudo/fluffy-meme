@@ -17,12 +17,15 @@ API = "https://api.github.com"
 def gh(path, params=None):
     import requests
     h = {"Accept": "application/vnd.github+json", "Authorization": "Bearer " + os.environ["GITHUB_TOKEN"]}
-    for _ in range(5):
-        r = requests.get(API + path, headers=h, params=params, timeout=60)
-        if r.status_code in (403, 429) and "rate limit" in r.text.lower():
+    for k in range(8):
+        try:
+            r = requests.get(API + path, headers=h, params=params, timeout=60)
+        except requests.exceptions.RequestException as e:      # network trouble: wait and retry
+            print("  network error, retry", k + 1, type(e).__name__, flush=True); time.sleep(min(15 * 2 ** k, 300)); continue
+        if r.status_code in (403, 429) and ("rate limit" in r.text.lower() or "abuse" in r.text.lower()):
             time.sleep(65); continue
         r.raise_for_status(); return r.json()
-    raise RuntimeError("rate limit")
+    raise RuntimeError("gave up after repeated errors")
 
 
 def lag_from_versions(versions, model, announced, observed_end):
@@ -33,11 +36,24 @@ def lag_from_versions(versions, model, announced, observed_end):
     return (observed_end - announced).days, True
 
 
+SEEN = set()
+
+
 def mine(model, announced, shutdown, max_hits, out):
     hits = gh("/search/code", {"q": f'"{model}"', "per_page": min(max_hits, 100)}).get("items", [])
     time.sleep(7)
     for it in hits[:max_hits]:
         repo, path = it["repository"]["full_name"], it["path"]
+        if (model, repo, path) in SEEN:
+            continue
+        try:
+            _one(model, announced, shutdown, repo, path, out)
+        except Exception as e:
+            print("  skipped file", repo, path, repr(e)[:120], flush=True)
+
+
+def _one(model, announced, shutdown, repo, path, out):
+    if True:
         commits = gh(f"/repos/{repo}/commits", {"path": path, "since": announced.isoformat() + "T00:00:00Z", "per_page": 100})
         versions = []
         for c in reversed(commits):
@@ -61,6 +77,7 @@ def selftest():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--models", nargs="*"); ap.add_argument("--max-hits", type=int, default=50)
     ap.add_argument("--out", default="migrations.jsonl"); ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--past-shutdown-only", action="store_true", help="only models whose shutdown date has passed (others are all right-censored)")
     ap.add_argument("--default-set", action="store_true", help="use the text-model identifiers listed in the OpenAI table (no audio, image, tts, realtime)")
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
@@ -69,10 +86,17 @@ if __name__ == "__main__":
     if a.default_set:
         bad = ("audio", "image", "tts", "realtime", "transcribe", "whisper", "dall-e", "sora", "moderation", "search", "computer-use", "codex", "api", "platform", "builder", "ft-")
         t = o[o.model.str.match(r"^(gpt-|o[134]|text-davinci|babbage|davinci)") & ~o.model.str.contains("|".join(bad)) & (o.announced < pd.Timestamp("2026-07-01"))]
+        if a.past_shutdown_only:
+            t = t[t.shutdown < pd.Timestamp.today()]
         models = list(dict.fromkeys(t.model))
     done = set()
+    marker = a.out + ".done"
+    if os.path.exists(marker):
+        done = {l.strip() for l in open(marker) if l.strip()}
     if os.path.exists(a.out):
-        done = {json.loads(l)["model"] for l in open(a.out) if l.strip()}
+        for l in open(a.out):
+            if l.strip():
+                j = json.loads(l); SEEN.add((j["model"], j["repo"], j["path"]))
     with open(a.out, "a") as out:
         for m in models:
             if m in done:
@@ -80,5 +104,6 @@ if __name__ == "__main__":
             r = o[o.model == m].iloc[0]; print("mining", m, flush=True)
             try:
                 mine(m, r.announced.date(), r.shutdown.date(), a.max_hits, out)
+                open(marker, "a").write(m + "\n")
             except Exception as e:
-                print("failed", m, repr(e)[:200], flush=True)
+                print("failed (will retry on next run)", m, repr(e)[:200], flush=True)
