@@ -78,8 +78,11 @@ def repo_meta(repo):
 
 
 def mine(model, announced, shutdown, max_hits, out):
-    hits = gh("/search/code", {"q": f'"{model}"', "per_page": min(max_hits, 100)}).get("items", [])
-    time.sleep(7)
+    hits = []
+    for page in range(1, (min(max_hits, 1000) + 99) // 100 + 1):        # code search returns at most 1,000 results per query
+        items = gh("/search/code", {"q": f'"{model}"', "per_page": 100, "page": page}).get("items", [])
+        hits += items; time.sleep(7)
+        if len(items) < 100: break
     for it in hits[:max_hits]:
         repo, path = it["repository"]["full_name"], it["path"]
         if (model, repo, path) in SEEN:
