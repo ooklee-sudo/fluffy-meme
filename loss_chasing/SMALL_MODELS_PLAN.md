@@ -7,6 +7,16 @@ Purpose. In the Loss Chasing manuscript the evidence for what is associated with
 - One small tier of the Google Gemini family (a Flash-Lite tier), through the OpenAI-compatible endpoint `https://generativelanguage.googleapis.com/v1beta/openai/` with a Google API key.
 - One or two small open-weight instruct models (about 7 to 14 billion parameters, for example a Llama, Mistral, or Qwen model) through an OpenAI-compatible hosting service such as OpenRouter or Together.
 
+## Candidates fixed before the runs (all through OpenRouter with one key; ids checked on the OpenRouter list of 2 October 2026)
+1. openai/gpt-5-nano (reasons by default)
+2. google/gemini-2.5-flash-lite
+3. google/gemini-3.1-flash-lite
+4. mistralai/ministral-8b-2512
+5. meta-llama/llama-3.1-8b-instruct
+6. google/gemma-3-12b-it
+7. qwen/qwen3-14b
+The list is not changed after the first run. gpt-4.1-nano is excluded because its retirement is announced for 2026-10-23. `run_small_all.bat` runs all seven in this order and `screen_report.py` prints the screening table.
+
 ## Screening rule (stated before the runs)
 1. Run every candidate at three turns left: 3 frames x 16 wordings x 30 episodes = 1,440 first choices, temperature 0.7 (reasoning models use their default sampling and are flagged).
 2. A model passes the screen if the pooled test-skip rate over the 1,440 first choices is at least 5%, so that frame contrasts can be estimated.
