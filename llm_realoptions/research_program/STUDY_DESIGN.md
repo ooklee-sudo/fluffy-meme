@@ -16,10 +16,13 @@ The code runs on your own machine with your own token. It was not run in the ses
 - **Retirement Exposure Index** (`exposure_index.py`): share of model-identifier occurrences weighted by how near the shutdown is. It gives firms and researchers a simple exposure score and can be computed for any code base.
 - **Provider switch**: the identifier replaced is from a different vendor.
 
+- **Effort proxies** (from `mine_migrations.py`, pull-request and commit data of the migration change): lines added and deleted, files changed, hours from pull-request creation to merge, review comments, and whether the change touched prompt files or tests. They measure the size of public migration work. They are not person-weeks.
+
 ## Hypotheses
 - **H1 (effort).** Lag is shorter for repositories with a provider-agnostic layer. Test: survival model (Cox, with censoring) of lag on the flexibility proxy and controls, clustering by repository owner. Model prediction: hazard ratio above 1 (Proposition 1).
 - **H2 (choice).** The probability of a provider switch rises with the price multiple of the named replacement, and the rise is steeper for repositories with the flexibility proxy. Test: logit of provider switch on replacement price ratio, the proxy and their interaction (Proposition 2). Price ratios come from the vendor pricing pages.
 - **H3 (timing).** Migrations bunch in the final third of the notice window, and bunching is stronger when the price gap between alternatives is more volatile or the migration cost is higher. Test: distribution of the notice share and its dependence on a repository-level proxy for migration cost (size, number of call sites). Model prediction: a wide switching band, not an NPV rule (Proposition 3).
+- **H5 (effort).** Migrations in repositories with the flexibility proxy are smaller (fewer lines and files, faster merge) than in repositories without it. Test: regression of log lines changed and log hours to merge on the proxy and controls, with repository clustering (Proposition 1).
 - **H4 (notice).** Longer notice does not shorten the lag proportionally (deadline effect): lag grows less than one-for-one with notice length.
 
 ## Identification and threats

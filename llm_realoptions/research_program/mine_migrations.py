@@ -29,14 +29,43 @@ def gh(path, params=None):
 
 
 def lag_from_versions(versions, model, announced, observed_end):
-    """versions: list of (commit_date, text) in chronological order, only commits after the announcement. Returns (lag_days, censored)."""
-    for d, text in versions:
+    """versions: list of (commit_date, text, sha) in chronological order, only commits after the announcement.
+    Returns (lag_days, censored, sha of the first commit without the model string, or None)."""
+    for d, text, sha in versions:
         if model not in text:
-            return (d - announced).days, False
-    return (observed_end - announced).days, True
+            return (d - announced).days, False, sha
+    return (observed_end - announced).days, True, None
+
+
+def _parse_dt(x):
+    return dt.datetime.fromisoformat(x.replace("Z", "+00:00")) if x else None
+
+
+def effort_proxies(repo, sha):
+    """Size and review time of the change that removed the model string (a proxy for migration effort).
+    Uses the pull request that contains the commit if there is one, else the commit itself."""
+    out = {}
+    c = gh(f"/repos/{repo}/commits/{sha}")
+    files = c.get("files", [])
+    st = c.get("stats", {})
+    out.update(commit_additions=st.get("additions"), commit_deletions=st.get("deletions"), commit_files=len(files),
+               commit_touches_prompt=any("prompt" in f.get("filename", "").lower() for f in files))
+    prs = gh(f"/repos/{repo}/commits/{sha}/pulls")
+    if prs:
+        n = prs[0]["number"]
+        p = gh(f"/repos/{repo}/pulls/{n}")
+        pf = gh(f"/repos/{repo}/pulls/{n}/files", {"per_page": 100})
+        created, merged = _parse_dt(p.get("created_at")), _parse_dt(p.get("merged_at"))
+        out.update(pr_number=n, pr_additions=p.get("additions"), pr_deletions=p.get("deletions"), pr_changed_files=p.get("changed_files"),
+                   pr_commits=p.get("commits"), pr_review_comments=p.get("review_comments"), pr_comments=p.get("comments"),
+                   pr_hours_to_merge=(round((merged - created).total_seconds() / 3600, 1) if created and merged else None),
+                   pr_touches_prompt=any("prompt" in f.get("filename", "").lower() for f in pf),
+                   pr_touches_tests=any("test" in f.get("filename", "").lower() for f in pf))
+    return out
 
 
 SEEN = set()
+PR_DATA = True
 
 
 def mine(model, announced, shutdown, max_hits, out):
@@ -59,28 +88,35 @@ def _one(model, announced, shutdown, repo, path, out):
         for c in reversed(commits):
             f = gh(f"/repos/{repo}/contents/{path}", {"ref": c["sha"]})
             text = base64.b64decode(f.get("content", "")).decode("utf-8", "ignore") if f.get("encoding") == "base64" else ""
-            versions.append((dt.datetime.fromisoformat(c["commit"]["committer"]["date"].replace("Z", "+00:00")).date(), text))
-        lag, cens = lag_from_versions(versions, model, announced, dt.date.today())
+            versions.append((dt.datetime.fromisoformat(c["commit"]["committer"]["date"].replace("Z", "+00:00")).date(), text, c["sha"]))
+        lag, cens, sha = lag_from_versions(versions, model, announced, dt.date.today())
         row = dict(model=model, repo=repo, path=path, announced=str(announced), shutdown=str(shutdown), lag_days=lag, censored=cens,
-                   notice_days=(shutdown - announced).days, n_commits=len(commits))
+                   notice_days=(shutdown - announced).days, n_commits=len(commits), migration_sha=sha)
+        if sha and PR_DATA:
+            try:
+                row.update(effort_proxies(repo, sha))
+            except Exception as e:
+                row["effort_error"] = repr(e)[:100]
         out.write(json.dumps(row) + "\n"); out.flush()
 
 
 def selftest():
     a = dt.date(2026, 4, 22)
-    v = [(dt.date(2026, 5, 1), 'm="gpt-4-0613"'), (dt.date(2026, 6, 10), 'm="gpt-5.6-sol"')]
-    assert lag_from_versions(v, "gpt-4-0613", a, dt.date(2026, 10, 2)) == (49, False)
-    assert lag_from_versions(v[:1], "gpt-4-0613", a, dt.date(2026, 10, 2)) == ((dt.date(2026, 10, 2) - a).days, True)
+    v = [(dt.date(2026, 5, 1), 'm="gpt-4-0613"', "s1"), (dt.date(2026, 6, 10), 'm="gpt-5.6-sol"', "s2")]
+    assert lag_from_versions(v, "gpt-4-0613", a, dt.date(2026, 10, 2)) == (49, False, "s2")
+    assert lag_from_versions(v[:1], "gpt-4-0613", a, dt.date(2026, 10, 2)) == ((dt.date(2026, 10, 2) - a).days, True, None)
     print("selftest ok")
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--models", nargs="*"); ap.add_argument("--max-hits", type=int, default=50)
     ap.add_argument("--out", default="migrations.jsonl"); ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--no-pr", action="store_true", help="skip pull-request / commit size data (fewer API calls)")
     ap.add_argument("--past-shutdown-only", action="store_true", help="only models whose shutdown date has passed (others are all right-censored)")
     ap.add_argument("--default-set", action="store_true", help="use the text-model identifiers listed in the OpenAI table (no audio, image, tts, realtime)")
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
+    PR_DATA = not a.no_pr
     o = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "openai_deprecations.csv"), parse_dates=["announced", "shutdown"])
     models = a.models or []
     if a.default_set:
