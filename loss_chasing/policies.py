@@ -8,6 +8,32 @@ from frames import SYSTEM
 
 class Policy:
     name = "policy"
+    def _openai(self, prompt, temperature):
+        """OpenAI-compatible chat call. Newer models reject max_tokens (they want max_completion_tokens) and temperature (they reason by default);
+        adapt once on a 400 error and remember, so one runner covers both kinds. Token usage is counted when the endpoint returns it."""
+        import openai
+        for _ in range(3):
+            kw = dict(model=self.model, messages=[{"role": "system", "content": self.system}, {"role": "user", "content": prompt}])
+            kw["max_completion_tokens" if getattr(self, "_oa_mct", False) else "max_tokens"] = self.max_tokens
+            if not getattr(self, "_oa_notemp", False):
+                kw["temperature"] = temperature
+            try:
+                r = self.c.chat.completions.create(**kw)
+            except openai.BadRequestError as e:
+                msg = str(e)
+                if "max_completion_tokens" in msg and not getattr(self, "_oa_mct", False):
+                    self._oa_mct = True; continue
+                if "temperature" in msg and not getattr(self, "_oa_notemp", False):
+                    self._oa_notemp = True; self.controls_temperature = False; self.max_tokens = max(self.max_tokens, 4000); continue
+                raise
+            u = getattr(r, "usage", None)
+            if u is not None:
+                self._tl.usage = (u.prompt_tokens, u.completion_tokens)
+                with self._lock:
+                    self.tok_in += u.prompt_tokens; self.tok_out += u.completion_tokens; self.n_calls += 1
+            return r.choices[0].message.content
+        raise RuntimeError("could not adapt the request parameters")
+
     def act(self, env, frame, prompt, order, temperature, rng):  # -> (action, reason, parse_fail)
         raise NotImplementedError
 
@@ -139,10 +165,7 @@ class LLM(Policy):
                         return "hold", "REFUSAL", True
                     text = "".join(b.text for b in r.content if b.type == "text")
                 else:
-                    r = self.c.chat.completions.create(model=self.model, max_tokens=self.max_tokens,
-                        temperature=temperature, messages=[{"role": "system", "content": self.system},
-                                                           {"role": "user", "content": prompt}])
-                    text = r.choices[0].message.content
+                    text = self._openai(prompt, temperature)
                 return parse_action(text)
             except Exception as e:
                 import sys, time

@@ -1,0 +1,22 @@
+# Small-model replication: plan fixed before any run
+
+Purpose. In the Loss Chasing manuscript the evidence for what is associated with skipping comes from one model that skips (Claude Haiku 4.5). This plan adds small fast models from other vendors, run with the same environment, the same 16 wordings, the same prompts and the same analysis scripts (`wording16.py`, `goal2x2.py`).
+
+## Candidate models (check availability and exact names on the vendor's model list before running)
+- One small tier of the OpenAI family (a nano or mini tier that is currently offered). Note that earlier small models are being retired (the OpenAI table lists gpt-4.1-nano for 2026-10-23), so choose a model that will still be available during review.
+- One small tier of the Google Gemini family (a Flash-Lite tier), through the OpenAI-compatible endpoint `https://generativelanguage.googleapis.com/v1beta/openai/` with a Google API key.
+- One or two small open-weight instruct models (about 7 to 14 billion parameters, for example a Llama, Mistral, or Qwen model) through an OpenAI-compatible hosting service such as OpenRouter or Together.
+
+## Screening rule (stated before the runs)
+1. Run every candidate at three turns left: 3 frames x 16 wordings x 30 episodes = 1,440 first choices, temperature 0.7 (reasoning models use their default sampling and are flagged).
+2. A model passes the screen if the pooled test-skip rate over the 1,440 first choices is at least 5%, so that frame contrasts can be estimated.
+3. Passing models are also run at 6 and 12 turns left (`run_small_full.bat`) and in the Study 4 design (goal visibility and valence, `goal2x2.py`).
+4. All candidates that were run are reported, including those that did not pass the screen; a model is not dropped or replaced after its results are seen. Parse failures and refusals are reported for every model (`check_log.py`).
+5. The analysis is the one used for Haiku 4.5: wording-level cluster bootstrap, 95% intervals with a 99.6% multiplicity check, variance shares, and the same contrasts (loss minus gain, neutral minus gain; for Study 4 the registered and the goal contrasts).
+6. The commit that holds this file is the time-stamped record that the plan preceded the runs.
+
+## Cost
+About 1,440 calls with roughly 900 input and 50 output tokens each, which is on the order of USD 0.1 to 1 per model for small tiers (check current prices; models that reason by default produce more output tokens and cost more).
+
+## How the results would enter the paper
+A new section after Study 5: "Replication in small models from other vendors." If one or more models skip and show the same ordering (loss below gain, goal visibility raising skipping), the generality concern is reduced; if all are at floor, we report that the environment does not elicit skipping in them, as for the larger Claude models. Either result goes in.
