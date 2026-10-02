@@ -101,6 +101,23 @@ def pick_option(form, label, exclude_with=None):
     return False
 
 
+def set_date(loc, value):
+    """Datepicker inputs are often readonly: try typing, else set the value directly."""
+    try:
+        loc.fill(value, timeout=3000)
+        if loc.input_value() == value:
+            return
+    except Exception:
+        pass
+    loc.evaluate("""(el, v) => {
+        el.removeAttribute('readonly'); el.value = v;
+        for (const t of ['input', 'change', 'blur'])
+            el.dispatchEvent(new Event(t, {bubbles: true}));
+    }""", value)
+    if loc.input_value() != value:
+        print(f"    ! date field did not take {value!r}; pick it in the calendar by hand", file=sys.stderr)
+
+
 def run_search(page, q):
     page.goto(BOARD_URL, wait_until="networkidle")
     form = find_form(page)
@@ -108,8 +125,8 @@ def run_search(page, q):
     kw.fill(q["kw"])
     pick_option(form, q["field"])
     pick_option(form, q["meeting"], exclude_with=q["field"])
-    form.locator(DATE_FROM_PH).first.fill(site_date(q["d_from"]))
-    form.locator(DATE_TO_PH).first.fill(site_date(q["d_to"]))
+    set_date(form.locator(DATE_FROM_PH).first, site_date(q["d_from"]))
+    set_date(form.locator(DATE_TO_PH).first, site_date(q["d_to"]))
     try:
         form.locator(SUBMIT).last.click(timeout=5000)
     except Exception:
