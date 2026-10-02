@@ -63,7 +63,7 @@ def selftest():
     rng = np.random.default_rng(0); rows = []
     for i in range(400):
         flex = i % 2 == 0; lag = rng.exponential(60 if flex else 180); cens = lag > 300
-        rows.append(dict(model="m" + str(i % 2), repo=f"r{i}", notice_days=184, flex_layer=flex, direct_sdk=not flex, censored=cens, lag_days=min(lag, 300),
+        rows.append(dict(model="m" + str((i // 2) % 2), repo=f"r{i}", notice_days=184, flex_layer=flex, direct_sdk=not flex, censored=cens, lag_days=min(lag, 300),
                          migrated_before_shutdown=(not cens) and lag <= 184, commit_additions=10, commit_deletions=5, commit_files=2, commit_touches_prompt=False))
     r = report(pd.DataFrame(rows)); assert "crude rate ratio" in r
     d = pd.DataFrame(rows); chi2, p, O1, E1, O0, E0 = logrank_stratified(d.assign(censored=d.censored.astype(bool)), "flex_layer")
