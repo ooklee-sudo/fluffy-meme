@@ -11,7 +11,7 @@ Intervals resample wordings. Logs are on the researcher's laptop (results\w16_*.
 | Haiku 4.5 + extended thinking (2,000 tokens; default sampling) | - | - | 9.7% (0-23.3%) | loss-gain -5.2 [-9.6,-1.0]; neutral-gain -6.2 [-9.8,-2.7]; 4 of 16 wordings loss>gain, 10 below; 21.6/26.5/51.9% |
 | Sonnet 5.5 (default sampling, always reasons) | 0% | 0% | 0% | floor; 4,320 rows, parse failure 0.09% or 0%, 0 refusals; actions only patch / wide_patch / hold |
 | Opus 5.5 (default sampling, always reasons) | 0% | 0% | 0% | floor; 4,320 rows, 0 refusals |
-| Fable 5.1 (default sampling, always reasons) | not run | not run | 0% | floor; 1,440 rows at 3 turns left only, parse failure 0, refusals 0; narrow_patch 1,382 (96.0%), wide_patch 58 (4.0%); API cost about $35.5 |
+| Fable 5.1 (default sampling, always reasons) | not run | not run | 0% | floor in all three conditions (12, 6, 3 turns left; 4,320 first choices, 0% skipping); at 3 turns left parse failure 0, refusals 0, narrow_patch 1,382 (96.0%), wide_patch 58 (4.0%); API cost about $69 in total ($35.5 at 3 turns, $33.3 at 12 and 6) |
 
 Action counts for the two floor logs (one file each, labelled by the researcher as the two logs pasted): only narrow_patch, wide_patch and hold ever chosen;
 wide_patch rises with time pressure (up to 40 of 1,440 at 6 turns left in one, 25 of 1,440 at 3 turns left in the other).
