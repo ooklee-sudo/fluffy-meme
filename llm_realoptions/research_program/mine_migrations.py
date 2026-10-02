@@ -66,6 +66,15 @@ def effort_proxies(repo, sha):
 
 SEEN = set()
 PR_DATA = True
+META = {}
+
+
+def repo_meta(repo):
+    if repo not in META:
+        r = gh(f"/repos/{repo}")
+        META[repo] = dict(repo_pushed_at=r.get("pushed_at"), repo_stars=r.get("stargazers_count"), repo_fork=r.get("fork"),
+                          repo_archived=r.get("archived"), repo_created_at=r.get("created_at"), repo_size=r.get("size"))
+    return META[repo]
 
 
 def mine(model, announced, shutdown, max_hits, out):
@@ -92,6 +101,10 @@ def _one(model, announced, shutdown, repo, path, out):
         lag, cens, sha = lag_from_versions(versions, model, announced, dt.date.today())
         row = dict(model=model, repo=repo, path=path, announced=str(announced), shutdown=str(shutdown), lag_days=lag, censored=cens,
                    notice_days=(shutdown - announced).days, n_commits=len(commits), migration_sha=sha)
+        try:
+            row.update(repo_meta(repo))
+        except Exception as e:
+            row["meta_error"] = repr(e)[:100]
         if sha and PR_DATA:
             try:
                 row.update(effort_proxies(repo, sha))
