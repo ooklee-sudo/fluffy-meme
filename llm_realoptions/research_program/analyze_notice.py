@@ -33,8 +33,10 @@ def cox(t, e, X, strata, cluster, iters=50):
         return ll, g, H, resid
     for _ in range(iters):
         ll, g, H, _ = pieces(beta)
-        step = np.linalg.solve(H + 1e-9 * np.eye(p), g); beta = beta + step
-        if np.abs(step).max() < 1e-8: break
+        step = np.linalg.solve(H + 1e-9 * np.eye(p), g); k = 1.0
+        while k > 1e-4 and pieces(beta + k * step)[0] < ll - 1e-10: k /= 2        # step halving: never accept a step that lowers the likelihood
+        beta = beta + k * step
+        if np.abs(k * step).max() < 1e-8: break
     ll, g, H, resid = pieces(beta, True); Hi = np.linalg.inv(H + 1e-9 * np.eye(p))
     B = np.zeros((p, p))
     for c in np.unique(cluster):
@@ -44,7 +46,8 @@ def cox(t, e, X, strata, cluster, iters=50):
 
 def fit(d, cols, stratify, label, L):
     d = d.dropna(subset=cols + ["lag_c", "event"])
-    X = d[cols].to_numpy(float); strata = d.repo.to_numpy() if stratify else np.zeros(len(d), int)
+    X = d[cols].to_numpy(float); X = X - X.mean(0)       # centred: the hazard ratios are unchanged, the optimiser is stable (announce_year is about 2025)
+    strata = d.repo.to_numpy() if stratify else np.zeros(len(d), int)
     if stratify:                                     # a repository with a single pair carries no information
         keep = d.groupby("repo").repo.transform("size").to_numpy() > 1; d, X, strata = d[keep], X[keep], strata[keep]
     beta, Vr, Vm, ll = cox(d.lag_c.to_numpy(float), d.event.to_numpy(int), X, strata, d.repo.to_numpy())
