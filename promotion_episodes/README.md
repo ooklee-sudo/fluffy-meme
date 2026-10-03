@@ -54,3 +54,12 @@ Jongbin-kr/exaone, jacob-24b GGUFs) but also noise: the 7 figment-finetuned-mode
 (not reversals), 'Upload rollback adapter artifacts' is a ship, and most links are same-day (days_ship_to_revert ~0),
 which fits training-run churn rather than a promotion that went live. A stricter revert regex and a hash/diff-inversion
 link check are the next fixes.
+
+## Step 5: strict reverts + diff-inversion linking (`link_reverts_v2.py` -> `revert_links_v2.csv`)
+Strict revert = title starts with revert/rollback/undo/restore/back out, not an archive repo, touches a non-docs artifact.
+Link = best earlier commit (lookback 50) whose removed lines reappear as added lines in the revert (non-docs files only;
+LFS pointer oids count). Threshold 0.5; every accepted link scored 1.0.
+Result over both samples: 16 strict reverts, 12 linked, 4 not (gpt-j-6b, exaone, Sentie archive restore, StarSupernova).
+Only 4 of the 12 have ship->revert gaps over one day (gte-Qwen2 3.1d, phi-4 525d, Apertus 245d; falcon 0.7d);
+the rest are same-day training-run churn or delete-then-restore. These are artifact reversals, not evidence that a
+judge-promoted release was rolled back: no judge/rubric data attached.
