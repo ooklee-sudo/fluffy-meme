@@ -27,3 +27,16 @@ Adds `files`, `cats`, `artifact_change`, `label2` using `/api/models/{repo}/comp
 Confirmed artifact reverts (7): phi-4 generation_config stop token, Apertus tokenizer special token,
 falcon-7b in-library PR, gte-Qwen2 undo PR, Phi-4-multimodal PR 56, Qwen3.6-abliterated config fields, gpt-j-6b restore.
 Caveat: file touched != behaviour changed; and a revert commit does not show what promotion it reverses (not linked yet).
+
+## Step 3: link reverts to the ship they reverse (`link_reverts.py` -> `revert_links.csv`)
+Order: commit hash in title, then PR number in title, then fallback = latest earlier commit with overlapping changed files.
+
+| method | n | confidence |
+|---|---|---|
+| pr_number | 2 | high (gte-Qwen2 undo PR 20, Phi-4-multimodal PR 56) |
+| file_overlap | 5 | candidate only, needs hand check |
+| hash | 0 | - |
+
+Hand-check notes: Bahushruth config fix->revert and falcon-7b look right; phi-4 (525 days) and Apertus (245 days) are
+suspect because overlap picks any earlier touch of the file, not necessarily the commit that introduced the reverted change;
+gpt-j-6b is plausible (weights upload -> restore). Only 7 pairs, so this is a feasibility check, not a sample.
