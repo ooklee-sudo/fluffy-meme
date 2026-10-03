@@ -29,9 +29,15 @@ def get(url, **kw):
         return r
     return None
 
-def list_models(n, pipeline):
-    r = get(f"{API}/models", params=dict(sort="downloads", direction=-1, limit=n, filter=pipeline))
-    return [m["id"] for m in r.json()] if r else []
+def list_models(n, filters, sort="downloads"):
+    """Models matching ALL filters (e.g. text-generation + peft), paginated via Link header."""
+    out, url, params = [], f"{API}/models", dict(sort=sort, direction=-1, limit=min(n, 1000), filter=filters)
+    while url and len(out) < n:
+        r = get(url, params=params)
+        if not r: break
+        out += [m["id"] for m in r.json()]
+        url, params = r.links.get("next", {}).get("url"), None
+    return out[:n]
 
 def commits(repo, max_pages=20):
     out, url = [], f"{API}/models/{repo}/commits/main"
@@ -53,16 +59,24 @@ def classify(title):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=100)
-    ap.add_argument("--pipeline", default="text-generation")
+    ap.add_argument("--filter", action="append", default=None, help="Hub tag filter, repeatable (AND)")
+    ap.add_argument("--sort", default="downloads")
+    ap.add_argument("--exclude", default=None, help="CSV whose repos are skipped (already collected)")
+    ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--out", default="episodes.csv")
     a = ap.parse_args()
-    repos = list_models(a.n, a.pipeline)
+    repos = list_models(a.n, a.filter or ["text-generation"], a.sort)
+    if a.exclude:
+        seen = {r["repo"] for r in csv.DictReader(open(a.exclude))}
+        repos = [r for r in repos if r not in seen]
     print(f"{len(repos)} repos", file=sys.stderr)
     with open(a.out, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["repo", "commit_id", "date", "title", "authors", "label"])
-        for i, repo in enumerate(repos, 1):
-            cs = commits(repo)
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(a.workers) as ex:
+            results = list(ex.map(commits, repos))
+        for i, (repo, cs) in enumerate(zip(repos, results), 1):
             for c in cs:
                 t = c.get("title", "")
                 w.writerow([repo, c["id"], c["date"], t,

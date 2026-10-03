@@ -30,12 +30,15 @@ def diff_files(repo, sha):
         return sorted(set(re.findall(r"^diff --git a/(\S+) b/", r.text, re.M)))
     return None
 
+ONLY = set()  # labels to fetch; set by main()
+
 def work(row):
-    if row["label"] == "other":
+    if row["label"] not in ONLY:
         return row, None
     return row, diff_files(row["repo"], row["commit_id"])
 
-def main(path="episodes.csv"):
+def main(path="episodes.csv", only="ship,revert"):
+    ONLY.update(only.split(","))
     rows = list(csv.DictReader(open(path)))
     cols = [c for c in rows[0] if c not in ("files", "cats", "artifact_change", "label2")]
     with ThreadPoolExecutor(8) as ex:
@@ -44,7 +47,8 @@ def main(path="episodes.csv"):
     for row, files in res:
         row = {k: row[k] for k in cols}
         if files is None:
-            row.update(files="", cats="", artifact_change="" , label2=row["label"] if row["label"] == "other" else "unknown")
+            row.update(files="", cats="", artifact_change="", label2=row["label"] if row["label"] not in ONLY else "unknown")
+            if row["label"] not in ONLY: row["label2"] = row["label"] + "_unchecked"
         else:
             cats = sorted({cat(f) for f in files})
             art = any(c != "docs" and c != "other" for c in cats)

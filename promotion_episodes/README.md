@@ -40,3 +40,17 @@ Order: commit hash in title, then PR number in title, then fallback = latest ear
 Hand-check notes: Bahushruth config fix->revert and falcon-7b look right; phi-4 (525 days) and Apertus (245 days) are
 suspect because overlap picks any earlier touch of the file, not necessarily the commit that introduced the reverted change;
 gpt-j-6b is plausible (weights upload -> restore). Only 7 pairs, so this is a feasibility check, not a sample.
+
+## Step 4: wider sample (fine-tune / adapter repos)
+Collector gained `--filter` (repeatable), `--sort`, `--exclude`, threads. New sample = `text-generation` repos tagged
+peft (1,500), trl (690), unsloth (684), merge (699), excluding repos already in the pilot: 3,420 repos, 77,440 commits
+(`episodes_new.csv`): 31,823 ship-by-title, 76 revert-by-title.
+File diffs fetched only for reverts (`add_file_diffs.py episodes_new.csv revert`); ship rows are `ship_unchecked`
+(title label only, includes docs-only commits). Of 76 title-reverts: 57 docs_only, 19 artifact reverts
+(`revert_links_new.csv`: 10 file_overlap, 9 unlinked). Combined with the pilot: `revert_links_all.csv` (26 artifact reverts, `sample` column).
+
+Quality notes: fine-tune repos give genuine checkpoint rollbacks (e.g. t4nishq/phi-redactor, JoaoGuiAlves/thagiPo,
+Jongbin-kr/exaone, jacob-24b GGUFs) but also noise: the 7 figment-finetuned-model-archive rows are archive restores
+(not reversals), 'Upload rollback adapter artifacts' is a ship, and most links are same-day (days_ship_to_revert ~0),
+which fits training-run churn rather than a promotion that went live. A stricter revert regex and a hash/diff-inversion
+link check are the next fixes.
