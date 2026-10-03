@@ -90,6 +90,14 @@ def sensitivity(d, B=1000):
     line("A. All pairs, strict definition (identifier absent from the whole tree)", d)
     d["direct_only"] = (~d.direct_sdk.astype(bool)).astype(int) if "direct_sdk" in d else 0
     if "direct_sdk" in d: line("A2. No direct SDK call (vs direct SDK)", d, grp="direct_only")
+    if "frame" in d.columns and d.frame.astype(str).nunique() > 1:
+        d["frame"] = d.frame.astype(str)
+        L.append("E. Sampling-frame check (the layer-targeted frame samples framework and SDK repositories, which may list model names as catalogue entries and migrate differently):")
+        comp = d.groupby("frame").agg(pairs=("repo", "size"), repos=("repo", "nunique"), share_layer=("flex_layer", "mean"), migrated_before_shutdown=("migrated_before_shutdown", "mean"), migrations=("censored", lambda x: int((~x).sum())))
+        L.append(comp.round(3).to_string())
+        line("E1. Strata = model x frame, all pairs", d.assign(model=d.model + "|" + d.frame))
+        for fr, g in d.groupby("frame"):
+            if (~g.censored).sum() >= 20 and g.flex_layer.nunique() > 1: line(f"E2. Frame '{fr}' only", g)
     if "commits_to_shutdown" in d.columns and d.commits_to_shutdown.notna().any():
         for k in (1, 5):
             act = d[d.commits_to_shutdown.fillna(0) >= k]
