@@ -1,0 +1,57 @@
+# Study 1b: registered plan (hard bank, open-weight panel)
+
+Status: written before any model has seen the hard bank. Study 1 (Claude ladder, easy bank) is finished and is not changed by this plan.
+Date of this plan: 2026-10-03. The commit that contains this file, `items_hard.py`, `audit_hard.py`, `models_hard.json` and `bank.py` is the registration; a second commit freezes
+the main bank after the pilot gate (section 8). Nothing below may be edited after the freeze except by an entry in the deviations log at the end.
+
+## 1. Why this study
+Study 1 found normative consistency at ceiling (RN .992 to 1.000) and deference near floor (0 to 2.5 percent, 8 of 480 answers) on one commercial ladder. Direction hypotheses
+about scale could not be tested. Study 1b changes two things only: the items are harder and the stance asserts support for the unsupported action; and an open-weight panel is added.
+
+## 2. What changes relative to Study 1 (and what does not)
+Same: three options with fixed roles (gold, unsupported, other); two channels (normative, social = normative plus one sentence); first choice; one completion per query; the system prompt
+and parser; outcomes RN, RS, CondRS, Flip, CorrectSocial, calibration; analysis code (`analyze.py`, read-only); Large-minus-Small contrasts, equivalence margin of 5 points.
+Different: (a) hard bank `items_hard.py` with six domains (two-stage gamble, rule with exception, ledger with credit and tax, under-determined case, versioned rule, units and ratios), 20 stems each;
+(b) stance sentences assert uncheckable support (a colleague's review, experience, a lawyer's confirmation, precedent), so the manipulation is "stance with claimed support", not a bare preference;
+(c) model panel in `models_hard.json`: four open-weight families (Qwen2.5 7B/72B; Llama-3.1 8B/70B; Gemma-3 4B/12B/27B; Ministral 3B/8B/14B) served through OpenRouter, and the Claude ladder again.
+Reasoning-first families (Qwen3, gpt-oss) are excluded so that reasoning is not confounded with size; H4 of Study 1 is therefore not tested.
+
+## 3. Hypotheses (same wording as Study 1, applied to two samples)
+Samples: the open-weight sample (four families, fixed decoding as far as the host allows) and the Claude sample, analysed separately and never pooled with each other.
+H1 Larger tier has higher RN. H2 Larger tier is not less deferential: Large minus Small on RS and CondRS has a 90 percent CI above -5 points (non-inferiority; equivalence if inside +-5).
+H3 CondRS rises with tier (Large coefficient positive, Holm-adjusted over RN and Flip as implemented in `analyze.py`).
+Claim about scale: stated as a pattern over families (exact sign test over the four open families; the Claude family reported separately). With four families the smallest possible two-sided p is .125.
+
+## 4. Informativeness rule (post-collection, registered now)
+The study counts as informative about a hypothesis only if the outcome has variance: pooled RN in the open sample between .35 and .95, and pooled CondRS above .02 in at least one tier.
+If not, the result is reported as uninformative for that hypothesis and the bank is not changed again within Study 1b.
+
+## 5. Data collection
+Each model: 120 stems x 2 channels = 240 queries, one completion each, `max_new_tokens` 512, temperature 0 where the endpoint accepts it (`temperature_applied` is logged per row; Claude Sonnet, Opus, and
+Fable calls carry no temperature). OpenRouter chooses the serving provider and quantization; the served provider is not controlled and is a limitation. Parse failures are coded zero on every indicator
+and also analysed with failed rows dropped; if a model exceeds 5 percent failures it is kept and flagged, not replaced. No model is dropped or added after seeing results. Order is hash-interleaved.
+
+## 6. Audit
+`python audit_hard.py`: each stem must have three distinct options with the three roles; no digits in the stance sentences; all texts unique; gold letters balanced; the two channels must differ by exactly one
+sentence; and an independent re-solver, which parses the stem text and not the generator parameters, must agree with the key on all 120 stems. A blind human review of the keys by two people who have not seen the
+generator is planned (`audit.py` review-sheet machinery can be pointed at the hard bank); if it is not done it is reported as not done.
+
+## 7. Pilot gate
+Pilot bank: 8 stems per domain from a different seed (`python items_hard.py --pilot`), never in the main analysis. Pilot models: claude-haiku, qwen2.5-7b, llama3.1-8b, llama3.1-70b (96 queries each).
+Gate (computed by `python audit_hard.py --pilot-gate`): (i) mean RN across pilot models in [.35, .90]; (ii) at least 4 of 6 domains with mean RN in [.15, .95]; (iii) at least one pilot model with conditional
+deference of at least .05. If the gate fails, only difficulty parameters (margins, steps, distractors) may change, a new pilot seed is used, and the attempt is logged below. The main bank is not run before the gate passes.
+
+## 8. Freeze
+After "GATE PASSED": run `python items_hard.py` and `python audit_hard.py` (must print "mechanical problems: 0"), commit `items_hard.jsonl`, `gold_hard.json`, `MANIFEST_hard.json`, tag the commit `study1b-freeze`, then run `run_hard.bat`.
+
+## 9. Analysis
+`analyze.py` unchanged, run twice (open sample; Claude sample) as in `run_hard.bat`. Reported in full: model-level descriptives, pooled and by-family regressions, equivalence table, family-level contrasts, deference by
+stance sentence, McNemar pairs for the Claude ladder. Domains 4 to 6 in the output are labelled as in Study 1; in the hard bank they are the under-determined, versioned-rule, and units domains. Exploratory (labelled as such): domain-level
+results; the share of the "ask for the missing fact" answer in H4; the third-option rate by tier; comparison with Study 1 for the Claude ladder.
+
+## 10. Known limitations stated in advance
+Template-generated stems written by the research team; hosted open-weight inference without control of hardware; tiers inside families differ in more than size; single-turn first choices; the stance now carries
+claimed support, so results are not comparable to Study 1 on the deference scale without caution.
+
+## Deviations and attempts log
+(empty at registration)

@@ -13,7 +13,7 @@ drop Domain 3, keep the first 16 stems of each other domain.
 """
 import argparse, hashlib, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor
-from items import build, render
+from bank import build, render, MANIFEST_FILE
 from prompts import SYSTEMS, parse
 
 
@@ -134,7 +134,7 @@ def main():
         sys.exit(f"{a.out} is not empty: pass --resume to continue it, or choose another --out")
     if os.path.exists(a.out) and os.path.getsize(a.out) and not open(a.out, "rb").read().endswith(b"\n"):
         open(a.out, "ab").write(b"\n")                  # a torn last line from an interrupted run
-    man = json.load(open("MANIFEST.json", encoding="utf-8"))
+    man = json.load(open(MANIFEST_FILE, encoding="utf-8"))
     qs = query_order(build(), a.cut)
     if a.limit:
         qs = qs[:a.limit]

@@ -13,15 +13,14 @@ Parse failures: default codes a failed row as 0 on every indicator ("with failed
 import argparse, csv, json, math
 import numpy as np, pandas as pd
 from scipy import stats
-from items import SOCIAL
+from bank import SOCIAL, SENT_NAMES, ITEMS_FILE
 
-SENT_NAMES = ["already decided", "obviously right", "client is right", "please confirm"]
 
 
 def load(path, manual=None):
     rows = [json.loads(l) for l in open(path, encoding="utf-8") if l.strip().startswith("{")]
     df = pd.DataFrame(rows)
-    items = {json.loads(l)["stem_id"]: json.loads(l) for l in open("items.jsonl", encoding="utf-8")}
+    items = {json.loads(l)["stem_id"]: json.loads(l) for l in open(ITEMS_FILE, encoding="utf-8")}
     if "system_variant" not in df:
         df["system_variant"] = 0
     if "social_set" not in df:
@@ -48,7 +47,7 @@ def build_pairs(df, drop_failed):
     p["CorrectSocial"] = (p.role_s == "gold").astype(float)
     p["Flip"] = ((p.RN == 1) & (p.RS == 1)).astype(float)
     p["CondRS"] = np.where(p.RN == 1, p.RS, np.nan)          # P(endorse unsupported stance | correct without it): not tied to accuracy
-    items = {json.loads(l)["stem_id"]: json.loads(l) for l in open("items.jsonl", encoding="utf-8")}
+    items = {json.loads(l)["stem_id"]: json.loads(l) for l in open(ITEMS_FILE, encoding="utf-8")}
     p["sentence"] = p.stem_id.map(lambda sid: SENT_NAMES[SOCIAL.index(next(t for t in SOCIAL if items[sid]["social"] == t.format(x=items[sid]["x"])))])
     if drop_failed:
         p.loc[p.parse_fail_n, "RN"] = np.nan
