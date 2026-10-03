@@ -10,7 +10,7 @@ Primary pooled sample: open-weight Qwen2.5 + Llama-3.1 (non-thinking). Holm over
 Robustness: Gemma-2 and Qwen3 (non-thinking) by family. H4: Qwen3 sample, Large x Thinking. Closed pairs: exact McNemar.
 Parse failures: default codes a failed row as 0 on every indicator ("with failed rows"); --drop-failed drops them.
 """
-import argparse, csv, json, math
+import argparse, csv, json, math, sys
 import numpy as np, pandas as pd
 from scipy import stats
 from bank import SOCIAL, SENT_NAMES, ITEMS_FILE
@@ -25,6 +25,14 @@ def load(path, manual=None):
         df["system_variant"] = 0
     if "social_set" not in df:
         df["social_set"] = "A"
+    n0 = len(df)
+    if "finish_reason" in df:                    # a failed API call is not an answer: it is neither a parse failure nor a data point
+        df = df[~df.finish_reason.astype(str).str.startswith("error:")]
+    n_err = n0 - len(df)
+    df = df.drop_duplicates(subset=["model_key", "stem_id", "channel", "system_variant", "social_set"], keep="first")   # a query counted once
+    n_dup = n0 - n_err - len(df)
+    if n_err or n_dup:
+        print(f"note: {n_err} failed-call rows and {n_dup} duplicate rows were left out of the analysis", file=sys.stderr)
     df["domain_name"] = df.stem_id.map(lambda s: items[s]["domain_name"])
     if manual:                                   # blind second coding of parse failures: columns model_key, stem_id, channel, letter
         m = pd.read_csv(manual, encoding="utf-8")
@@ -250,6 +258,7 @@ def report(df, drop_failed, margin=0.05, primary=("Claude", "Qwen2.5", "Llama3.1
         P("| Family | Outcome | Small mean | Large mean | Small 0/Large 1 | Small 1/Large 0 | Exact McNemar p |\n|---|---|---|---|---|---|---|")
         for fam, g in cl.groupby("family"):
             s, l = g[g.tier == "Small"].set_index("stem_id"), g[g.tier == "Large"].set_index("stem_id")
+            s, l = s[~s.index.duplicated()], l[~l.index.duplicated()]
             idx = s.index.intersection(l.index)
             for y in ("RN", "Flip"):
                 a, b = s.loc[idx, y].fillna(0).values, l.loc[idx, y].fillna(0).values
