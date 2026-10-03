@@ -1,0 +1,226 @@
+{
+ "args": {
+  "chains": [
+   "deepseek",
+   "llama"
+  ],
+  "models": null,
+  "n": 60,
+  "seed": 0,
+  "workers": 6,
+  "max_tokens": 400,
+  "mock": false,
+  "out": "results/openrouter_isr_oss.json"
+ },
+ "results": {
+  "deepseek": {
+   "models": [
+    "deepseek/deepseek-chat-v3-0324",
+    "deepseek/deepseek-chat-v3.1",
+    "deepseek/deepseek-v3.2"
+   ],
+   "models_stats": {
+    "deepseek/deepseek-chat-v3-0324": {
+     "0": {
+      "strict": 0.9833333333333333,
+      "content": 0.9833333333333333,
+      "format_fail": 0.0
+     },
+     "1": {
+      "strict": 0.9833333333333333,
+      "content": 0.9833333333333333,
+      "format_fail": 0.0
+     },
+     "2": {
+      "strict": 0.0,
+      "content": 1.0,
+      "format_fail": 1.0
+     },
+     "3": {
+      "strict": 1.0,
+      "content": 1.0,
+      "format_fail": 0.0
+     }
+    },
+    "deepseek/deepseek-chat-v3.1": {
+     "0": {
+      "strict": 1.0,
+      "content": 1.0,
+      "format_fail": 0.0
+     },
+     "1": {
+      "strict": 0.9166666666666666,
+      "content": 0.9166666666666666,
+      "format_fail": 0.0
+     },
+     "2": {
+      "strict": 1.0,
+      "content": 1.0,
+      "format_fail": 0.0
+     },
+     "3": {
+      "strict": 1.0,
+      "content": 1.0,
+      "format_fail": 0.0
+     }
+    },
+    "deepseek/deepseek-v3.2": {
+     "0": {
+      "strict": 1.0,
+      "content": 1.0,
+      "format_fail": 0.0
+     },
+     "1": {
+      "strict": 0.9833333333333333,
+      "content": 0.9833333333333333,
+      "format_fail": 0.0
+     },
+     "2": {
+      "strict": 0.9833333333333333,
+      "content": 0.9833333333333333,
+      "format_fail": 0.0
+     },
+     "3": {
+      "strict": 0.9833333333333333,
+      "content": 0.9833333333333333,
+      "format_fail": 0.0
+     }
+    }
+   },
+   "transitions": [
+    {
+     "old": "deepseek/deepseek-chat-v3-0324",
+     "new": "deepseek/deepseek-chat-v3.1",
+     "by_depth": {
+      "0": {
+       "regression": 0.0,
+       "fix": 0.016666666666666666,
+       "content_regression": 0.0
+      },
+      "1": {
+       "regression": 0.06666666666666667,
+       "fix": 0.0,
+       "content_regression": 0.06666666666666667
+      },
+      "2": {
+       "regression": 0.0,
+       "fix": 1.0,
+       "content_regression": 0.0
+      },
+      "3": {
+       "regression": 0.0,
+       "fix": 0.0,
+       "content_regression": 0.0
+      }
+     }
+    },
+    {
+     "old": "deepseek/deepseek-chat-v3.1",
+     "new": "deepseek/deepseek-v3.2",
+     "by_depth": {
+      "0": {
+       "regression": 0.0,
+       "fix": 0.0,
+       "content_regression": 0.0
+      },
+      "1": {
+       "regression": 0.016666666666666666,
+       "fix": 0.08333333333333333,
+       "content_regression": 0.016666666666666666
+      },
+      "2": {
+       "regression": 0.016666666666666666,
+       "fix": 0.0,
+       "content_regression": 0.016666666666666666
+      },
+      "3": {
+       "regression": 0.016666666666666666,
+       "fix": 0.0,
+       "content_regression": 0.016666666666666666
+      }
+     }
+    }
+   ]
+  },
+  "llama": {
+   "models": [
+    "meta-llama/llama-3.1-70b-instruct",
+    "meta-llama/llama-3.3-70b-instruct"
+   ],
+   "models_stats": {
+    "meta-llama/llama-3.1-70b-instruct": {
+     "0": {
+      "strict": 0.9166666666666666,
+      "content": 0.9166666666666666,
+      "format_fail": 0.0
+     },
+     "1": {
+      "strict": 0.4666666666666667,
+      "content": 0.7666666666666667,
+      "format_fail": 0.3
+     },
+     "2": {
+      "strict": 0.7833333333333333,
+      "content": 0.7833333333333333,
+      "format_fail": 0.0
+     },
+     "3": {
+      "strict": 0.6333333333333333,
+      "content": 0.8,
+      "format_fail": 0.16666666666666666
+     }
+    },
+    "meta-llama/llama-3.3-70b-instruct": {
+     "0": {
+      "strict": 0.8833333333333333,
+      "content": 0.8833333333333333,
+      "format_fail": 0.0
+     },
+     "1": {
+      "strict": 0.7166666666666667,
+      "content": 0.7333333333333333,
+      "format_fail": 0.016666666666666666
+     },
+     "2": {
+      "strict": 0.8666666666666667,
+      "content": 0.8666666666666667,
+      "format_fail": 0.0
+     },
+     "3": {
+      "strict": 0.7333333333333333,
+      "content": 0.7333333333333333,
+      "format_fail": 0.0
+     }
+    }
+   },
+   "transitions": [
+    {
+     "old": "meta-llama/llama-3.1-70b-instruct",
+     "new": "meta-llama/llama-3.3-70b-instruct",
+     "by_depth": {
+      "0": {
+       "regression": 0.08333333333333333,
+       "fix": 0.05,
+       "content_regression": 0.08333333333333333
+      },
+      "1": {
+       "regression": 0.03333333333333333,
+       "fix": 0.2833333333333333,
+       "content_regression": 0.06666666666666667
+      },
+      "2": {
+       "regression": 0.03333333333333333,
+       "fix": 0.11666666666666667,
+       "content_regression": 0.03333333333333333
+      },
+      "3": {
+       "regression": 0.11666666666666667,
+       "fix": 0.21666666666666667,
+       "content_regression": 0.13333333333333333
+      }
+     }
+    }
+   ]
+  }
+ }
+}
