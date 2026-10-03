@@ -66,14 +66,21 @@ class OpenAICompat:
     def __call__(self, system, user, max_new):
         kw = {"max_tokens": max_new} if not self.spec.get("max_completion_tokens") else {"max_completion_tokens": max_new}
         applied = True
-        try:
-            r = self.c.chat.completions.create(model=self.spec["model"], temperature=0, top_p=1,
-                                               messages=[{"role": "system", "content": system}, {"role": "user", "content": user}], **kw)
-        except Exception as e:                         # some endpoints reject temperature 0: use the lowest permitted value and record it
-            if "temperature" not in str(e).lower():
+        msgs = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        for attempt in range(7):                       # upstream rate limits (429) are temporary: wait and retry before counting a call as failed
+            try:
+                try:
+                    r = self.c.chat.completions.create(model=self.spec["model"], temperature=0, top_p=1, messages=msgs, **kw)
+                except Exception as e:                 # some endpoints reject temperature 0: use the lowest permitted value and record it
+                    if "temperature" not in str(e).lower():
+                        raise
+                    applied = False
+                    r = self.c.chat.completions.create(model=self.spec["model"], messages=msgs, **kw)
+                break
+            except Exception as e:
+                if attempt < 6 and ("429" in str(e) or "rate" in repr(e).lower()):
+                    time.sleep(min(15 * 2 ** attempt, 240)); continue
                 raise
-            applied = False
-            r = self.c.chat.completions.create(model=self.spec["model"], messages=[{"role": "system", "content": system}, {"role": "user", "content": user}], **kw)
         ch = r.choices[0]
         return ch.message.content or "", ch.finish_reason, r.usage.prompt_tokens, r.usage.completion_tokens, applied
 
@@ -108,7 +115,10 @@ def done_keys(path):
     if os.path.exists(path):
         for line in open(path, encoding="utf-8"):
             try:
-                r = json.loads(line); keys.add((r["model_key"], r["stem_id"], r["channel"], r.get("system_variant", 0), r.get("social_set", "A")))
+                r = json.loads(line)
+                if str(r.get("finish_reason", "")).startswith("error:"):
+                    continue                           # a failed API call is not an answer: query it again on resume
+                keys.add((r["model_key"], r["stem_id"], r["channel"], r.get("system_variant", 0), r.get("social_set", "A")))
             except (json.JSONDecodeError, KeyError):
                 pass
     return keys

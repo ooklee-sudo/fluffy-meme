@@ -4,6 +4,7 @@ rem Safe to rerun: it resumes. Wording robustness for the 14 main models (system
 set PYTHONUTF8=1
 set STUDY1_BANK=hard
 python audit_hard.py || goto :eof
+python clean_errors.py results\study1b.jsonl
 python check_models.py models_hard_ext.json || goto :eof
 set MAIN=claude-haiku claude-sonnet claude-opus claude-fable qwen2.5-7b qwen2.5-72b llama3.1-8b llama3.1-70b gemma3-4b gemma3-12b gemma3-27b ministral-3b ministral-8b ministral-14b
 python run.py --models models_hard.json --only %MAIN% --system-variant 1 --out results\study1b.jsonl --workers 4 --resume || goto :eof
