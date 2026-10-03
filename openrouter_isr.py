@@ -112,7 +112,7 @@ class Client:
             return self.mock_reply(model, sysmsg, user)
         msgs = ([{"role": "system", "content": sysmsg}] if sysmsg else []) + [{"role": "user", "content": user}]
         body = dict(model=model, messages=msgs, temperature=0, max_tokens=max_tokens, usage={"include": True})
-        for a in range(5):
+        for a in range(8):
             try:
                 r = requests.post("https://openrouter.ai/api/v1/chat/completions", json=body, timeout=120,
                                   headers={"Authorization": f"Bearer {self.key}"})
@@ -125,10 +125,9 @@ class Client:
                 f.write_text(json.dumps(dict(text=text, model=j.get("model"), id=j.get("id"))))
                 return text
             except Exception as e:
-                if a == 4:
-                    print(f"  fail {model}: {e}", file=sys.stderr)
-                    return None
-                time.sleep(2 ** a)
+                if a == 7:
+                    raise RuntimeError(f"giving up on {model}: {e}")  # never grade a failed call as wrong
+                time.sleep(min(60, 2 ** a * (1 + random.random())))
 
     @staticmethod
     def mock_reply(model, sysmsg, user):  # deterministic fake: newer "versions" are chattier at high depth
