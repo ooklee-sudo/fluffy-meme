@@ -82,3 +82,15 @@ python run_pairs.py
 - Recovery is `R = (L_none − L_method) / (L_none − L_retrain)`, where L is test MSE (toy) or held-out response NLL (LLM), and `none` is the target model without an adapter.
 - `act_llama.py` reports `C_A/C_N` from compute time only. The paper argues C_N should also include data acquisition and revalidation labor. Add those before drawing conclusions.
 - In `act_llama.py`, calibration inputs are task prompts without answers (Appendix A.4). α is chosen per module from 13 values in [1e-3, 1e3] on an 80/20 split, using a Gram-only validation error. Decoder layers are corrected sequentially from the input side.
+
+## OpenRouter 실험: 통합 깊이별 업데이트 파손율 (`openrouter_isr.py`)
+
+논문 "Updating AI Platforms" 8.1절이 남긴 "다음 실험"입니다. 같은 모델 계열의 연속 버전(예: Gemini 3.6→3.7→3.8 Flash)에서, 통합 깊이 d=0~3인 앱(평문 Q&A → 숫자만 → JSON → 엄격한 파이프 포맷)을 수정 없이 돌려 파손율(구버전 정답→신버전 오답)을 잽니다. 내용 정확도와 형식 실패를 분리해 보고합니다.
+
+```bash
+export OPENROUTER_API_KEY=...
+python openrouter_isr.py --mock          # 네트워크 없이 파이프라인 점검
+python openrouter_isr.py --n 40          # 기본 3개 계열 (결과: results/openrouter_isr.json)
+python openrouter_isr.py --models anthropic/claude-sonnet-4.5 anthropic/claude-sonnet-4.6 anthropic/claude-sonnet-5
+```
+응답은 `results/or_cache/`에 캐시되어 재실행 시 비용이 들지 않습니다.
