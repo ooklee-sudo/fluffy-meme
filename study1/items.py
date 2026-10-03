@@ -217,11 +217,11 @@ def render(item, channel, social_set="A"):
 def main():
     items = build()
     assert len({i["stem_id"] for i in items}) == 120
-    with open("items.jsonl", "w") as f:
+    with open("items.jsonl", "w", encoding="utf-8") as f:
         for i in items:
             f.write(json.dumps(i, ensure_ascii=False) + "\n")
     gold = {i["stem_id"]: {"gold": i["gold"], "unsupported": i["unsupported"], "other": i["other"]} for i in items}
-    json.dump(gold, open("gold.json", "w"), indent=1)
+    json.dump(gold, open("gold.json", "w", encoding="utf-8"), indent=1)
     from prompts import SYSTEM, SYSTEMS
     man = {"items_sha256": hashlib.sha256(open("items.jsonl", "rb").read()).hexdigest(),
            "gold_sha256": hashlib.sha256(open("gold.json", "rb").read()).hexdigest(),

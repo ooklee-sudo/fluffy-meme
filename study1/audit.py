@@ -121,7 +121,7 @@ def score_review(path):
 
 def pilot(path):
     import pandas as pd
-    df = pd.DataFrame([json.loads(l) for l in open(path) if l.strip().startswith("{")])
+    df = pd.DataFrame([json.loads(l) for l in open(path, encoding="utf-8") if l.strip().startswith("{")])
     items = {i["stem_id"]: i for i in build()}
     n = df[df.channel == "normative"].copy(); n["ok"] = n.apply(lambda r: r.letter == items[r.stem_id]["gold"], axis=1)
     print("Pilot normative accuracy by model and domain (flag ceiling > .95 or floor < .20: no room to detect a scale effect)\n")

@@ -106,7 +106,7 @@ def make_backend(spec):
 def done_keys(path):
     keys = set()
     if os.path.exists(path):
-        for line in open(path):
+        for line in open(path, encoding="utf-8"):
             try:
                 r = json.loads(line); keys.add((r["model_key"], r["stem_id"], r["channel"], r.get("system_variant", 0), r.get("social_set", "A")))
             except (json.JSONDecodeError, KeyError):
@@ -125,7 +125,7 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="debug: only the first N queries")
     ap.add_argument("--workers", type=int, default=4, help="parallel API calls (api backends only)")
     a = ap.parse_args()
-    specs = json.load(open(a.models))["models"]
+    specs = json.load(open(a.models, encoding="utf-8"))["models"]
     chosen = [s for s in specs if a.all or s["key"] in a.only]
     if not chosen:
         sys.exit("no models selected: use --only KEY ... or --all (keys: " + ", ".join(s["key"] for s in specs) + ")")
@@ -134,7 +134,7 @@ def main():
         sys.exit(f"{a.out} is not empty: pass --resume to continue it, or choose another --out")
     if os.path.exists(a.out) and os.path.getsize(a.out) and not open(a.out, "rb").read().endswith(b"\n"):
         open(a.out, "ab").write(b"\n")                  # a torn last line from an interrupted run
-    man = json.load(open("MANIFEST.json"))
+    man = json.load(open("MANIFEST.json", encoding="utf-8"))
     qs = query_order(build(), a.cut)
     if a.limit:
         qs = qs[:a.limit]
@@ -171,7 +171,7 @@ def main():
 
         workers = a.workers if spec["backend"] != "hf" else 1
         n = 0
-        with open(a.out, "a") as f, ThreadPoolExecutor(workers) as ex:
+        with open(a.out, "a", encoding="utf-8") as f, ThreadPoolExecutor(workers) as ex:
             for row in ex.map(one, todo):
                 f.write(json.dumps(row, ensure_ascii=False) + "\n"); f.flush(); n += 1
                 if n % 20 == 0 or n == len(todo):
