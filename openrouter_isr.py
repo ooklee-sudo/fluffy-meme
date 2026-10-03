@@ -91,7 +91,7 @@ def grade(item, depth, out):
             return False, c
     exp = f"TICKET|{item['oid']}|{item['date']}|{item['total']:.2f}|{item['label']}|{item['qty']}"
     c = all(x in out for x in [item["oid"], item["date"], f"{item['total']:.2f}", item["label"]])
-    return out == exp, c
+    return out.strip() == exp, c
 
 
 class Client:
