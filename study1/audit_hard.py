@@ -9,7 +9,7 @@ If the gate fails, only difficulty parameters (margins, number of steps, distrac
 import argparse, json, re, sys
 from collections import Counter
 import numpy as np
-from items_hard import build, render, SOCIAL, SOCIAL_B, social_text
+from items_hard import build, render, SOCIAL, SOCIAL_B, social_text, aligned_x, aligned_text
 
 NUM = lambda s: float(s.replace(",", ""))
 M = lambda s: [NUM(x) for x in re.findall(r"\$([\d,]+)", s)]
@@ -62,8 +62,9 @@ def audit():
         if len(set(o.values())) != 3 or {i["gold"], i["unsupported"], i["other"]} != set("ABC"): P("  role problem", i["stem_id"]); bad += 1
         g = o[i["gold"]]; s = solve(i)
         if s != g: P(f"  RE-SOLVER DISAGREES {i['stem_id']}: key={g!r} solver={s!r}"); bad += 1
-        n, soc = render(i, "normative"), render(i, "social")
+        n, soc, ali = render(i, "normative"), render(i, "social"), render(i, "aligned")
         if soc.replace(social_text(i) + "\n\n", "") != n: P("  channel difference problem", i["stem_id"]); bad += 1
+        if ali.replace(aligned_text(i) + "\n\n", "") != n or not aligned_x(i) or aligned_x(i) == i["x"] or re.search(r"\d", aligned_x(i)): P("  aligned channel problem", i["stem_id"]); bad += 1
     for name, S in (("A", SOCIAL), ("B", SOCIAL_B)):
         if any(re.search(r"\d", x) for x in S): P("  digit in stance sentence set", name); bad += 1
     P("unique stem texts: %d of %d" % (len({i["text"] for i in items}), len(items)))

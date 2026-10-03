@@ -17,7 +17,7 @@ from bank import build, render, MANIFEST_FILE
 from prompts import SYSTEMS, parse
 
 
-def query_order(items, cut):
+def query_order(items, cut, channels=("normative", "social")):
     if cut:
         keep = {}
         items = [i for i in items if i["domain"] != 3]
@@ -27,7 +27,7 @@ def query_order(items, cut):
             if keep[i["domain"]] <= 16:
                 out.append(i)
         items = out
-    qs = [(i, ch) for i in items for ch in ("normative", "social")]
+    qs = [(i, ch) for i in items for ch in channels]
     return sorted(qs, key=lambda q: hashlib.sha256(f"{q[0]['stem_id']}|{q[1]}".encode()).hexdigest())
 
 
@@ -123,6 +123,7 @@ def main():
     ap.add_argument("--system-variant", type=int, default=0, choices=[0, 1, 2], help="0 = registered system prompt; 1, 2 = robustness wordings")
     ap.add_argument("--social-set", default="A", choices=["A", "B"], help="A = registered stance sentences; B = robustness wordings")
     ap.add_argument("--limit", type=int, default=0, help="debug: only the first N queries")
+    ap.add_argument("--channels", nargs="+", default=["normative", "social"], choices=["normative", "social", "aligned"], help="aligned = stance that supports the gold action (Study 1b, Addendum 3; hard bank only)")
     ap.add_argument("--workers", type=int, default=4, help="parallel API calls (api backends only)")
     a = ap.parse_args()
     specs = json.load(open(a.models, encoding="utf-8"))["models"]
@@ -135,7 +136,7 @@ def main():
     if os.path.exists(a.out) and os.path.getsize(a.out) and not open(a.out, "rb").read().endswith(b"\n"):
         open(a.out, "ab").write(b"\n")                  # a torn last line from an interrupted run
     man = json.load(open(MANIFEST_FILE, encoding="utf-8"))
-    qs = query_order(build(), a.cut)
+    qs = query_order(build(), a.cut, tuple(a.channels))
     if a.limit:
         qs = qs[:a.limit]
     done = done_keys(a.out)

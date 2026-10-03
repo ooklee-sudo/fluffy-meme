@@ -3,7 +3,7 @@ Study 1 files are never modified by the hard bank; the hard bank writes items_ha
 import os
 NAME = os.environ.get("STUDY1_BANK", "main")
 if NAME == "hard":
-    from items_hard import build, render, social_text, SOCIAL, SOCIAL_SETS, SENT_NAMES, DOMAINS
+    from items_hard import build, render, social_text, aligned_x, SOCIAL, SOCIAL_SETS, SENT_NAMES, DOMAINS
     ITEMS_FILE, GOLD_FILE, MANIFEST_FILE = "items_hard.jsonl", "gold_hard.json", "MANIFEST_hard.json"
 elif NAME == "pilot":
     import items_hard as _h

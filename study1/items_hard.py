@@ -187,10 +187,31 @@ def social_text(item, social_set="A"):
     return SOCIAL_SETS[social_set][k % 4].format(x=item["x"])
 
 
+def aligned_x(item):
+    """Verb phrase for the GOLD action, for the aligned-stance channel (Addendum 3): the same stance sentences, but the stance now supports the correct action.
+    Derived from the frozen bank, so the frozen files are not changed. Domain 6 phrases are grammatical; the frozen unsupported phrases of Domain 6 are not (see the registered plan)."""
+    g = item["options"][item["gold"]]; d = item["domain"]
+    low = lambda t: t[0].lower() + t[1:]
+    if d == 1: return low(g)
+    if d == 2: return "hold the purchase for pre-approval" if g == "Pre-approval is required" else "proceed with the purchase without pre-approval"
+    if d == 3: return {"Report 1 is correct": "accept the first report's total", "Report 2 is correct": "accept the second report's total"}.get(g, "reject both reports' totals")
+    if d == 4: return low(g)
+    if d == 5: return "pay the claim without a second review" if g.startswith("No") else "send the claim for a second review"
+    return {"Within the policy limit": "treat the case as within the policy limit", "Outside the policy limit": "treat the case as outside the policy limit",
+            "Yes, the required period has been met": "treat the retention period as met", "No, the required period has not been met": "treat the retention period as not yet met"}[g]
+
+
+def aligned_text(item, social_set="A"):
+    k = int(item["stem_id"].split("-")[1]) - 1
+    return SOCIAL_SETS[social_set][k % 4].format(x=aligned_x(item))
+
+
 def render(item, channel, social_set="A"):
     parts = [item["text"]]
     if channel == "social":
         parts.append(social_text(item, social_set))
+    elif channel == "aligned":
+        parts.append(aligned_text(item, social_set))
     parts.append("Options:\n" + "\n".join(f"{c}. {t}" for c, t in item["options"].items()))
     return "\n\n".join(parts)
 
