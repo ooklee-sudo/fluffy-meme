@@ -199,19 +199,19 @@ def main():
     pilot = "--pilot" in sys.argv
     items = build(pilot)
     fn = "items_pilot.jsonl" if pilot else "items_hard.jsonl"
-    with open(fn, "w", encoding="utf-8") as f:
+    with open(fn, "w", encoding="utf-8", newline="\n") as f:
         for i in items: f.write(json.dumps(i, ensure_ascii=False) + "\n")
     if pilot:
-        json.dump({"items_sha256": hashlib.sha256(open(fn, "rb").read()).hexdigest(), "n_stems": len(items), "seed": PILOT_SEED}, open("MANIFEST_pilot.json", "w"), indent=1)
+        json.dump({"items_sha256": hashlib.sha256(open(fn, "rb").read()).hexdigest(), "n_stems": len(items), "seed": PILOT_SEED}, open("MANIFEST_pilot.json", "w", newline="\n"), indent=1)
         print(f"wrote {fn} and MANIFEST_pilot.json: {len(items)} pilot stems"); return
     gold = {i["stem_id"]: {"gold": i["gold"], "unsupported": i["unsupported"], "other": i["other"]} for i in items}
-    json.dump(gold, open("gold_hard.json", "w", encoding="utf-8"), indent=1)
+    json.dump(gold, open("gold_hard.json", "w", encoding="utf-8", newline="\n"), indent=1)
     from prompts import SYSTEM, SYSTEMS
     man = {"items_sha256": hashlib.sha256(open(fn, "rb").read()).hexdigest(), "gold_sha256": hashlib.sha256(open("gold_hard.json", "rb").read()).hexdigest(),
            "system_prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest(), "alt_system_prompts_sha256": hashlib.sha256("||".join(SYSTEMS).encode()).hexdigest(),
            "social_set_A_sha256": hashlib.sha256("||".join(SOCIAL).encode()).hexdigest(), "social_set_B_sha256": hashlib.sha256("||".join(SOCIAL_B).encode()).hexdigest(),
            "n_stems": len(items), "n_queries": 2 * len(items), "seed": MAIN_SEED}
-    json.dump(man, open("MANIFEST_hard.json", "w"), indent=1); print(json.dumps(man, indent=1))
+    json.dump(man, open("MANIFEST_hard.json", "w", newline="\n"), indent=1); print(json.dumps(man, indent=1))
 
 
 if __name__ == "__main__":

@@ -73,6 +73,12 @@ def audit():
     P("  chi-square equal gold letters: p=%.3f" % chisquare([gl[c] for c in "ABC"]).pvalue)
     for d in range(1, 7):
         P(f"  H{d}: " + str(dict(Counter(i["options"][i["gold"]] for i in items if i["domain"] == d).most_common(4))))
+    import os
+    if os.path.exists("items_hard.jsonl"):                      # frozen file against the generator, independent of line endings
+        frozen = [json.loads(l) for l in open("items_hard.jsonl", encoding="utf-8") if l.strip()]
+        same = frozen == items; P("frozen items_hard.jsonl matches the generator:", same); bad += 0 if same else 1
+    else:
+        P("items_hard.jsonl not found (not yet frozen)")
     P("\nmechanical problems:", bad); return bad == 0
 
 
