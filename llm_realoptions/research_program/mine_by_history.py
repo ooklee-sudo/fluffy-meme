@@ -116,7 +116,7 @@ def process_repo(spec, models, out, tmp, today, max_mb=300):
         for m, (a, s) in models.items():
             row = analyse_repo(dest, m, a, s, today)
             if row:
-                row.update(repo=name, **({k: spec.get(k) for k in ("stargazers_count", "pushed_at", "language")} if isinstance(spec, dict) else {}))
+                row.update(repo=name, **({k: spec.get(k) for k in ("stargazers_count", "pushed_at", "language", "frame")} if isinstance(spec, dict) else {}))
                 out.write(json.dumps(row) + "\n"); out.flush()
     finally:
         rmtree_safe(dest)
@@ -203,6 +203,40 @@ def find_repos(out_path, per_query=300, created_before="2025-06-01", pushed_afte
     print(len(seen), "repositories written to", out_path)
 
 
+LAYER_TOPICS = ["litellm", "langchain", "langchain-python", "langchainjs", "llamaindex", "llama-index", "vercel-ai", "ai-sdk", "portkey", "openrouter",
+                "llm-gateway", "llm-proxy", "multi-provider", "haystack", "semantic-kernel", "dspy", "instructor", "pydantic-ai", "crewai", "autogen"]
+STAR_BANDS = ["5..20", "21..60", "61..200", "201..800", "801..3000"]
+
+
+def find_repos_layer(out_path, exclude_path, per_query=300, created_before="2025-06-01", pushed_after="2025-09-01"):
+    """Second frame aimed at provider-agnostic-layer users: topics of layer/framework libraries, split by star band so that each query stays under the
+    1000-result search cap. Repositories already in the first frame are left out. Whether a repository really used a layer on the announcement date is still
+    decided from its tree (flex_layer), not from the topic; the frame only raises the share of layer users. Rows carry frame='layer'."""
+    sys.path.insert(0, HERE)
+    from mine_migrations import gh
+    import time
+    have = set()
+    for p in exclude_path or []:
+        if os.path.exists(p): have |= {json.loads(l)["full_name"] for l in open(p) if l.strip()}
+    seen = {}
+    for q in LAYER_TOPICS:
+        for band in STAR_BANDS:
+            for page in range(1, per_query // 100 + 1):
+                try:
+                    items = gh("/search/repositories", {"q": f"topic:{q} created:<{created_before} pushed:>={pushed_after} stars:{band} fork:false archived:false", "per_page": 100, "page": page, "sort": "updated"}).get("items", [])
+                except Exception as e:
+                    print("  query failed", q, band, repr(e)[:80]); break
+                for it in items:
+                    if it["full_name"] not in have:
+                        seen[it["full_name"]] = dict(full_name=it["full_name"], size=it["size"], stargazers_count=it["stargazers_count"], pushed_at=it["pushed_at"], language=it["language"], frame="layer")
+                time.sleep(3)
+                if len(items) < 100: break
+        print(f"  {q}: {len(seen)} new repositories so far", flush=True)
+    with open(out_path, "w") as f:
+        for v in seen.values(): f.write(json.dumps(v) + "\n")
+    print(len(seen), "repositories written to", out_path)
+
+
 def selftest():
     env = dict(os.environ, GIT_AUTHOR_NAME="t", GIT_COMMITTER_NAME="t", GIT_AUTHOR_EMAIL="t@x", GIT_COMMITTER_EMAIL="t@x")
     def mk(base, name, commits):
@@ -240,10 +274,13 @@ if __name__ == "__main__":
     ap.add_argument("--repos"); ap.add_argument("--out", default="results/history.jsonl"); ap.add_argument("--models", nargs="*")
     ap.add_argument("--default-set", action="store_true", help="use the retired text models of the OpenAI table")
     ap.add_argument("--max-repos", type=int, default=100000)
+    ap.add_argument("--find-repos-layer", action="store_true", help="build the layer-targeted second frame (needs GITHUB_TOKEN); --exclude lists frames to leave out")
+    ap.add_argument("--exclude", nargs="*"); ap.add_argument("--max-mb", type=int, default=300)
     ap.add_argument("--enrich", help="history.jsonl from a finished run: add flexibility level, activity and relaxed-migration variables (writes --out)")
     a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
     if a.find_repos: find_repos(a.out); sys.exit()
+    if a.find_repos_layer: find_repos_layer(a.out, a.exclude); sys.exit()
     if a.enrich: enrich(a.enrich, a.out, dt.date.today()); sys.exit()
     o = pd.read_csv(os.path.join(HERE, "..", "data", "openai_deprecations.csv"), parse_dates=["announced", "shutdown"])
     names = a.models or []
@@ -263,7 +300,7 @@ if __name__ == "__main__":
             if sp["full_name"] in done: continue
             print(f"[{i}/{len(specs)}] {sp['full_name']}", flush=True)
             try:
-                process_repo(sp, models, out, tmp, dt.date.today())
+                process_repo(sp, models, out, tmp, dt.date.today(), a.max_mb)
                 open(marker, "a").write(sp["full_name"] + "\n")
             except Exception as e:
                 print("  failed", repr(e)[:120], flush=True)

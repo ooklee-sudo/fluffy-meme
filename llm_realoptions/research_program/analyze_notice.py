@@ -87,6 +87,33 @@ def report(d, selftest=False):
         t = v.groupby("tercile", observed=True).agg(n=("pos", "size"), median_notice_days=("notice_days", "median"), median_position=("pos", "median"), share_last20=("pos", lambda x: (x > 0.8).mean()))
         L.append(t.round(2).to_string()); L.append(f"all: n={len(v)}, share in last 20% = {(v.pos > 0.8).mean():.2f}, median position = {v.pos.median():.2f}")
         L.append(f"Hazard per window overall is low: voluntary migration before the shutdown in {d.event.mean():.3f} of pairs.")
+    return "\n".join(L) + after_deadline(d)
+
+
+def after_deadline(d):
+    """Timing of migration relative to the shutdown, using the full follow-up (to today, not cut at the deadline)."""
+    d = d.copy(); d["end"] = d.lag_days.astype(float); d["ev"] = (~d.censored).astype(int); N = d.notice_days.astype(float)
+    L = ["\n## Migration around the shutdown (full follow-up, strict definition)\n"]
+    L.append(f"Of {len(d)} pairs: migrated before the shutdown {((d.ev == 1) & (d.end <= N)).mean():.3f}; within 90 days after {((d.ev == 1) & (d.end > N) & (d.end <= N + 90)).mean():.3f}; "
+             f"more than 90 days after {((d.ev == 1) & (d.end > N + 90)).mean():.3f}; never observed {(d.ev == 0).mean():.3f}")
+    L.append("\nEvents per 1,000 pair-days in each window (a jump at the shutdown would show up as a higher rate after day N):")
+    def window(lo, hi, sub):
+        ev = 0; days = 0.0
+        for _, r in sub.iterrows():
+            Nn = r.notice_days; a_, b_ = lo(Nn), hi(Nn)
+            if r.end <= a_: continue
+            days += min(r.end, b_) - a_
+            if r.ev == 1 and a_ < r.end <= b_: ev += 1
+        return ev, days
+    wins = [("first half of the notice", lambda N: 0, lambda N: N / 2), ("second half of the notice", lambda N: N / 2, lambda N: N),
+            ("0-90 days after shutdown", lambda N: N, lambda N: N + 90), ("90-270 days after shutdown", lambda N: N + 90, lambda N: N + 270)]
+    rows = []
+    for lab, lo, hi in wins:
+        row = {"window": lab}
+        for name, sub in (("all", d), ("layer", d[d.flex_layer == 1]), ("no layer", d[d.flex_layer == 0])):
+            ev, days = window(lo, hi, sub); row[name + " events"] = ev; row[name + " rate/1000d"] = round(1000 * ev / days, 2) if days else float("nan")
+        rows.append(row)
+    L.append(pd.DataFrame(rows).to_string(index=False))
     return "\n".join(L)
 
 
