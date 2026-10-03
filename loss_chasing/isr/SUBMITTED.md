@@ -37,4 +37,4 @@ Earlier versions (v1 to v3) remain in this folder and are not part of the submis
 
 ## Generators
 
-`lc2.js` (manuscript and appendix) and `cover2.js` (cover letter) were kept in the working scratchpad, not in the repository. The title page was built with a python-docx script. If a revision needs them, regenerate from the .docx files or ask for the scripts to be recreated.
+The scripts that produced the four files are in `build/` (see `build/README.md`). The manuscript, appendix and cover-letter scripts were rerun and reproduce the submitted v4 files' body XML byte for byte; the title-page script (`build/title_page.py`) was not re-checked.
