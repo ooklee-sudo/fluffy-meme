@@ -58,8 +58,11 @@ def fit(d, cols, stratify, label, L):
     return beta
 
 
-def prepare(d):
-    d = d.copy(); d["censored"] = d.censored.astype(bool)
+def prepare(d, relaxed=False):
+    d = d.copy()
+    if relaxed:                                             # relaxed migration: identifier gone from code files, or occurrences halved (from the enrich pass)
+        d["censored"] = d.censored_relaxed.astype(bool); d["lag_days"] = d.lag_relaxed.astype(float)
+    d["censored"] = d.censored.astype(bool)
     d["event"] = ((~d.censored) & (d.lag_days <= d.notice_days)).astype(int)            # voluntary migration before the shutdown
     d["lag_c"] = np.maximum(np.where(d.event == 1, d.lag_days, d.notice_days).astype(float), 0.5)   # others censored at the shutdown
     d["log_notice"] = np.log(d.notice_days); d["flex_layer"] = d.flex_layer.astype(int)
@@ -69,8 +72,8 @@ def prepare(d):
     return d
 
 
-def report(d, selftest=False):
-    d = prepare(d); L = ["## Notice length and flexibility: voluntary migration before the shutdown (follow-up cut at the deadline)\n",
+def report(d, selftest=False, relaxed=False):
+    d = prepare(d, relaxed); L = ["## Notice length and flexibility: voluntary migration before the shutdown (follow-up cut at the deadline)" + ("; RELAXED migration definition (identifier gone from code files, or occurrences halved)" if relaxed else "; strict definition") + "\n",
                          "Hazard ratios per unit of the covariate; log_notice: per one-unit increase in log(days), i.e. doubling the notice multiplies the hazard by HR^0.693.\n"]
     fit(d, ["log_notice"], True, "1. Within repository (strata = repository): notice only", L)
     fit(d, ["log_notice", "flex_layer"], True, "2. Within repository: notice + provider-agnostic layer", L)
@@ -136,7 +139,7 @@ def selftest():
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("path", nargs="?"); ap.add_argument("--md"); ap.add_argument("--selftest", action="store_true"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("path", nargs="?"); ap.add_argument("--md"); ap.add_argument("--selftest", action="store_true"); ap.add_argument("--relaxed", action="store_true"); a = ap.parse_args()
     if a.selftest: selftest(); sys.exit()
-    r = report(pd.read_json(a.path, lines=True)); print(r)
+    r = report(pd.read_json(a.path, lines=True), relaxed=a.relaxed); print(r)
     if a.md: open(a.md, "w").write(r + "\n")

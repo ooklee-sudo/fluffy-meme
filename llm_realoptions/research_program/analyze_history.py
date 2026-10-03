@@ -120,6 +120,15 @@ def sensitivity(d, B=1000):
         dr = d.assign(censored_r=d.censored_relaxed.astype(bool))
         L.append(f"C. Relaxed definition (identifier gone from code files or occurrences halved): migrations {int((~dr.censored_r).sum())} (strict: {int((~d.censored).sum())})")
         line("C. Rate ratio, relaxed definition", dr, lag="lag_relaxed", cens="censored_r")
+        if "occ_base" in dr.columns and dr.occ_base.notna().any():
+            dr["occ_t"] = pd.qcut(dr.occ_base.rank(method="first"), 3, labels=False).astype(str)
+            L.append("C2. Relaxed definition, migrated by shutdown by number of occurrences at the announcement (tercile 0 = fewest):")
+            L.append(dr.assign(done=((~dr.censored_r) & (dr.lag_relaxed <= dr.notice_days))).groupby(["occ_t", "flex_layer"]).agg(pairs=("repo", "size"), migrated_by_shutdown=("done", "mean")).round(3).to_string())
+            line("C3. Relaxed definition, strata = model x occurrence tercile", dr.assign(model=dr.model + "|" + dr.occ_t), lag="lag_relaxed", cens="censored_r")
+            if "frame" in dr.columns:
+                line("C4. Relaxed definition, strata = model x frame x occurrence tercile", dr.assign(model=dr.model + "|" + dr.frame.astype(str) + "|" + dr.occ_t), lag="lag_relaxed", cens="censored_r")
+                for fr, g in dr.groupby(dr.frame.astype(str)):
+                    if (~g.censored_r).sum() >= 20 and g.flex_layer.nunique() > 1: line(f"C5. Relaxed definition, frame '{fr}' only, strata = model x occurrence tercile", g.assign(model=g.model + "|" + g.occ_t), lag="lag_relaxed", cens="censored_r")
         L.append(f"   share migrated by shutdown under the relaxed definition: {((~dr.censored_r) & (dr.lag_relaxed <= dr.notice_days)).mean():.3f}")
     else:
         L.append("C. Relaxed definition: not available (run mine_by_history.py --enrich first).")
