@@ -98,6 +98,17 @@ def sensitivity(d, B=1000):
         line("E1. Strata = model x frame, all pairs", d.assign(model=d.model + "|" + d.frame))
         for fr, g in d.groupby("frame"):
             if (~g.censored).sum() >= 20 and g.flex_layer.nunique() > 1: line(f"E2. Frame '{fr}' only", g)
+    if "occ_base" in d.columns and d.occ_base.notna().any():
+        d["occ_tercile"] = pd.qcut(d.occ_base.rank(method="first"), 3, labels=False).astype(str)
+        q = d.groupby("occ_tercile").occ_base.agg(["min", "median", "max"])
+        L.append("F. Number of occurrences of the identifier at the announcement date (the strict definition needs EVERY occurrence removed, so repositories with many occurrences cannot qualify):")
+        L.append(q.to_string())
+        L.append(d.groupby(["occ_tercile", "flex_layer"]).agg(pairs=("repo", "size"), migrated_before_shutdown=("migrated_before_shutdown", "mean")).round(3).to_string())
+        line("F1. Strata = model x occurrence tercile", d.assign(model=d.model + "|" + d.occ_tercile))
+        if "frame" in d.columns:
+            line("F2. Strata = model x frame x occurrence tercile", d.assign(model=d.model + "|" + d.frame.astype(str) + "|" + d.occ_tercile))
+            for fr, g in d.groupby(d.frame.astype(str)):
+                if (~g.censored).sum() >= 20 and g.flex_layer.nunique() > 1: line(f"F3. Frame '{fr}', strata = model x occurrence tercile", g.assign(model=g.model + "|" + g.occ_tercile))
     if "commits_to_shutdown" in d.columns and d.commits_to_shutdown.notna().any():
         for k in (1, 5):
             act = d[d.commits_to_shutdown.fillna(0) >= k]

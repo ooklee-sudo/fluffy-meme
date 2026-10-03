@@ -64,6 +64,7 @@ def prepare(d):
     d["lag_c"] = np.maximum(np.where(d.event == 1, d.lag_days, d.notice_days).astype(float), 0.5)   # others censored at the shutdown
     d["log_notice"] = np.log(d.notice_days); d["flex_layer"] = d.flex_layer.astype(int)
     d["announce_year"] = pd.to_datetime(d.announced).dt.year + pd.to_datetime(d.announced).dt.dayofyear / 366
+    if "occ_base" in d.columns: d["log_occ"] = np.log1p(d.occ_base.astype(float))
     d["log_age"] = np.log1p(d.repo_age_days_at_announcement.clip(lower=0)); d["log_commits90"] = np.log1p(d.commits_prior90)
     return d
 
@@ -76,6 +77,8 @@ def report(d, selftest=False):
     if "flex_level" in d.columns and d.flex_level.notna().any():
         d["flex_cfg"] = (d.flex_level == 1).astype(int); d["flex_lay"] = (d.flex_level == 2).astype(int)
         fit(d, ["log_notice", "flex_cfg", "flex_lay"], True, "3. Within repository: notice + config-only + layer (vs hard-coded)", L)
+    if "log_occ" in d.columns:
+        fit(d, ["log_notice", "flex_layer", "log_occ"], True, "3b. Within repository, controlling for log(1 + occurrences of the identifier at the announcement)", L)
     fit(d, ["log_notice", "flex_layer", "announce_year"], True, "4. Within repository, adding calendar time of the announcement (retirements get later and notices shorter)", L)
     fit(d, ["log_notice", "flex_layer", "announce_year", "log_age", "log_commits90"], False, "5. Between repositories (no strata), repository age and activity as controls, clustered by repository", L)
     # deadline bunching
