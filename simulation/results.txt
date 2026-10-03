@@ -1,0 +1,51 @@
+uH=0.15 uC=-0.30 pi*=0.667 flip at beta=0.40
+
+T1: gaming intercept sweep, s=0.3 (mean net gain per episode)
+ beta  rank prob   closed      NPV  options   canary   oracle
+ 0.00      0.029    0.030    0.087    0.087    0.085    0.105
+ 0.20      0.173    0.173    0.050    0.056    0.085    0.105
+ 0.40      0.500    0.500    0.014    0.015    0.085    0.105
+ 0.60      0.827    0.827    0.006    0.056    0.085    0.105
+ 0.80      0.970    0.970    0.006    0.087    0.085    0.105
+
+T2: best-of-N search on the judge: Pr(argmax is a cheat), s=0.3, beta=0.6 vs 0.2
+beta=0.2: N=1:0.301  N=2:0.162  N=5:0.067  N=10:0.037  N=20:0.022
+beta=0.6: N=1:0.300  N=2:0.438  N=5:0.624  N=10:0.743  N=20:0.828
+
+T3: NPV vs options vs canary as search pressure s rises (beta=0.6)
+    s  P(ship cheat)      NPV  options   canary      cG*
+ 0.10          0.100    0.093    0.110    0.115    0.025
+ 0.30          0.298    0.006    0.056    0.085    0.049
+ 0.50          0.499   -0.081    0.024    0.055    0.051
+ 0.70          0.697   -0.168    0.007    0.025    0.038
+
+T4: collapse (a, beta -> 0), s=0.5: NPV ships an uninformative argmax; options rule abstains
+a=1.00 beta=0.00  mean post(H|J)=0.500  NPV=  0.054  options=  0.056  prior mixture= -0.075
+a=0.30 beta=0.10  mean post(H|J)=0.500  NPV= -0.041  options=  0.000  prior mixture= -0.075
+a=0.05 beta=0.02  mean post(H|J)=0.500  NPV= -0.040  options=  0.000  prior mixture= -0.075
+a=0.00 beta=0.00  mean post(H|J)=0.500  NPV= -0.037  options=  0.000  prior mixture= -0.075
+
+T5: ruler jump beta0=0.2 -> beta1=0.6; stale vs re-estimated vs pinned likelihood, s=0.3
+ lambda    ignore    re-est    pinned  loss ignore
+   0.00     0.056     0.056     0.056        0.000
+   0.25     0.040     0.056     0.056        0.016
+   0.50     0.024     0.056     0.056        0.032
+   1.00    -0.006     0.056     0.056        0.062
+
+T6: mixed holdout (Theorem 2): holdout rises iff mu>q; value falls iff omega>1-q
+q=0.55 mu=0.5 omega=0.5: holdout change=-0.05  value change=-0.05  mislead=False
+q=0.55 mu=0.7 omega=0.5: holdout change=+0.15  value change=-0.05  mislead=True
+q=0.55 mu=0.7 omega=0.8: holdout change=+0.15  value change=-0.35  mislead=True
+q=0.55 mu=0.9 omega=0.9: holdout change=+0.35  value change=-0.45  mislead=True
+
+T7: sensitivity, s=0.3: gain at beta = 0.5*flip vs 1.5*flip (flip = a(Delta+ell))
+   a  sigma  flip |  NPV lo  NPV hi |  opt lo  opt hi | P(ship cheat) lo     hi
+ 0.5   0.05  0.20 |   0.058   0.012 |   0.074   0.074 |            0.150  0.300
+ 0.5   0.15  0.20 |   0.033  -0.003 |   0.033   0.034 |            0.151  0.272
+ 0.5   0.30  0.20 |   0.021  -0.002 |   0.021   0.022 |            0.151  0.225
+ 1.0   0.05  0.40 |   0.061   0.015 |   0.101   0.101 |            0.149  0.300
+ 1.0   0.15  0.40 |   0.051   0.004 |   0.056   0.055 |            0.149  0.301
+ 1.0   0.30  0.40 |   0.034  -0.003 |   0.034   0.034 |            0.150  0.271
+ 2.0   0.05  0.80 |   0.060   0.014 |   0.105   0.105 |            0.151  0.303
+ 2.0   0.15  0.80 |   0.061   0.015 |   0.088   0.087 |            0.147  0.299
+ 2.0   0.30  0.80 |   0.050   0.006 |   0.056   0.057 |            0.150  0.299
