@@ -2,7 +2,7 @@
 usage: python classify_onet.py --model M --n 100 --out data/pilot_M.jsonl   (pilot, fixed-seed sample)
        python classify_onet.py --model M --out data/all_M.jsonl             (full run, resumable)
 Needs OPENROUTER_API_KEY in the environment."""
-import argparse, csv, io, json, os, random, re, sys, urllib.request, concurrent.futures as cf
+import time, argparse, csv, io, json, os, random, re, sys, urllib.request, concurrent.futures as cf
 URL="https://www.onetcenter.org/dl_files/database/db_29_1_text/Task%20Statements.txt"
 CACHE="data/Task_Statements.txt"
 PROMPT="""You code O*NET task statements for a labor-economics study of AI vision.
@@ -21,7 +21,7 @@ def load():
 def call(model,batch,key):
     body={"model":model,"temperature":0,"messages":[{"role":"system","content":PROMPT},
       {"role":"user","content":"\n".join(f'{t["id"]}: {t["text"]}' for t in batch)}]}
-    for a in range(4):
+    for a in range(8):
         try:
             req=urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",json.dumps(body).encode(),
                 {"Authorization":"Bearer "+key,"Content-Type":"application/json"})
@@ -29,7 +29,8 @@ def call(model,batch,key):
             txt=r["choices"][0]["message"]["content"]; txt=re.search(r"\{.*\}",txt,re.S).group(0)
             lab={x["i"]:x["s"] for x in json.loads(txt)["labels"]}
             if all(t["id"] in lab and lab[t["id"]] in (0,1,2) for t in batch): return lab,r.get("usage",{})
-        except Exception as e: err=e
+        except Exception as e:
+            err=e; time.sleep(min(60,5*2**a))
     raise RuntimeError(f"batch failed: {err}")
 if __name__=="__main__":
     ap=argparse.ArgumentParser(); ap.add_argument("--model",required=True); ap.add_argument("--n",type=int); ap.add_argument("--out",required=True)
