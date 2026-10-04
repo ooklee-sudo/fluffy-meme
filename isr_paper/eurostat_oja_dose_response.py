@@ -14,7 +14,9 @@ for pos,v in d["value"].items():
         rows.append((key["geo"],key["isco08"][2:],int(key["time"]),v))
 oja=pd.DataFrame(rows,columns=["geo","isco3","t","v"]); oja=oja[oja.v>0]
 # exposures at ISCO3
-tasks=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")])[["id","s"]],on="id")
+import os
+EXPO=os.environ.get("EXPO","llm"); print("exposure:",EXPO)
+tasks=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_broad_sonnet55.jsonl" if EXPO=="broad" else "data/all_creation_sonnet55.jsonl")])[["id","s"]],on="id")
 expo=(tasks.s/2).groupby(tasks.soc).mean().to_dict()
 lang={r["O*NET-SOC Code"]:float(r["dv_rating_beta"]) for r in csv.DictReader(open("data/ext/occ_level.csv"))}
 o2i=UX.onet_to_isco(); gE=collections.defaultdict(list); gL=collections.defaultdict(list)
@@ -48,7 +50,7 @@ for spec,cL in (("with LLM control",True),("without LLM control",False)):
     print(spec)
     for t in (2019,2020,2021,2023,2024):
         dd=pan[pan.t==t]; b,s3,s2=fit(dd,cL); res.append((spec,t,b,s3,s2,len(dd))); print(f"  {t}: {b:+.3f} ({s3:.3f}) [{s2:.3f}]  N={len(dd)}")
-pd.DataFrame(res,columns=["spec","t","b","se_isco3","se_isco2","n"]).to_csv("data/eurostat/oja_dose_response.csv",index=False)
+pd.DataFrame(res,columns=["spec","t","b","se_isco3","se_isco2","n"]).to_csv(f"data/eurostat/oja_dose_response_{EXPO}.csv",index=False)
 rng=np.random.default_rng(4); print("\nRandomization p (E permuted within ISCO2 groups, LLM control):")
 for t in (2023,2024):
     dd=pan[pan.t==t].copy(); obs=fit(dd)[0]; cnt=0; R=1000

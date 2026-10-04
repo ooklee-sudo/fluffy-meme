@@ -35,9 +35,12 @@ def call(model,batch,key):
     raise RuntimeError(f"batch failed: {err}")
 if __name__=="__main__":
     ap=argparse.ArgumentParser(); ap.add_argument("--model",required=True); ap.add_argument("--n",type=int); ap.add_argument("--out",required=True)
-    ap.add_argument("--prompt-file"); ap.add_argument("--bs",type=int,default=20); ap.add_argument("--workers",type=int,default=8); a=ap.parse_args()
+    ap.add_argument("--prompt-file"); ap.add_argument("--with-occupation",action="store_true"); ap.add_argument("--bs",type=int,default=20); ap.add_argument("--workers",type=int,default=8); a=ap.parse_args()
     if a.prompt_file: PROMPT=open(a.prompt_file).read()
     key=os.environ["OPENROUTER_API_KEY"]; tasks=load()
+    if a.with_occupation:
+        titles={r["O*NET-SOC Code"]:r["Title"] for r in csv.DictReader(open("data/Occupation_Data.txt",encoding="utf-8"),delimiter="\t")}
+        for t in tasks: t["text"]=f"[{titles.get(t['soc'],t['soc'])}] {t['text']}"
     if a.n: random.Random(42).shuffle(tasks); tasks=tasks[:a.n]
     done={}
     if os.path.exists(a.out): done={json.loads(l)["id"]:1 for l in open(a.out)}
