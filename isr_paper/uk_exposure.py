@@ -27,10 +27,16 @@ def uk_exposure(onet_exposure:dict):
     for soc,v in onet_exposure.items():
         for i in o2i.get(soc,()): byisco[i].append(v)
     E={i:float(np.mean(v)) for i,v in byisco.items()}
-    W=isco_weights(); out={}; cov={}
+    inv=collections.defaultdict(set)
+    for soc,iscos in o2i.items():
+        for i in iscos: inv[i].add(soc)
+    fr={i:len([c for c in inv[i] if c in onet_exposure])/len(inv[i]) for i in inv}      # share of mapped O*NET occupations that have an exposure value
+    W=isco_weights(); out={}; cov={}; covo={}
     for s,w in W.items():
         tot=sum(wt for i,wt in w.items() if i in E)
-        if tot>0: out[s]=sum(wt*E[i] for i,wt in w.items() if i in E)/tot; cov[s]=tot
+        if tot>0:
+            out[s]=sum(wt*E[i] for i,wt in w.items() if i in E)/tot; cov[s]=tot; covo[s]=sum(wt*fr.get(i,0) for i,wt in w.items())
+    uk_exposure.onet_cov=pd.Series(covo)
     return pd.Series(out),pd.Series(cov)
 if __name__=="__main__":
     lang={r["O*NET-SOC Code"]:float(r["dv_rating_beta"]) for r in csv.DictReader(open("data/ext/occ_level.csv"))}

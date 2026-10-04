@@ -31,7 +31,7 @@ def call(model,batch,key):
             lab={int(i):int(v) for i,v in re.findall(r'"i"\s*:\s*(\d+)\s*,\s*"s"\s*:\s*([012])',txt)}   # tolerant to malformed JSON
             if all(t["id"] in lab and lab[t["id"]] in (0,1,2) for t in batch): return lab,r.get("usage",{})
         except Exception as e:
-            err=e; time.sleep(min(60,5*2**a))
+            err=e; print(f'  attempt {a} failed: {repr(e)[:120]}',file=sys.stderr,flush=True); time.sleep(min(30,2*2**a))
     raise RuntimeError(f"batch failed: {err}")
 if __name__=="__main__":
     ap=argparse.ArgumentParser(); ap.add_argument("--model",required=True); ap.add_argument("--n",type=int); ap.add_argument("--out",required=True)

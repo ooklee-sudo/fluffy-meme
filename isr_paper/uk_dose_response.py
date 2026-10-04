@@ -7,14 +7,21 @@ Inference check: randomization of E across occupations within SOC sub-major grou
 import json, re, sys, collections, numpy as np, pandas as pd
 import uk_exposure as UX
 import classify_onet as C
-cls=[json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")]
-print("classified tasks:",len(cls),"of 18796")
-tasks=pd.DataFrame(cls); tasks["soc"]=tasks.soc.astype(str)
+import os, rule_creation as RC
+EXPO=os.environ.get("EXPO","llm")
+if EXPO=="rule":      # rule-based score on ALL 18,796 tasks (no LLM; validated against LLM labels in rule_creation.py)
+    tasks=pd.DataFrame(C.load()); tasks["s"]=tasks.text.map(RC.score); print("exposure source: RULE-BASED, tasks scored:",len(tasks))
+else:
+    cls=[json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")]; print("exposure source: LLM, classified tasks:",len(cls),"of 18796")
+    tasks=pd.DataFrame(cls)
+tasks["soc"]=tasks.soc.astype(str)
 occ=tasks.groupby("soc").s.agg(lambda x:(x/2).mean()); occ_any=tasks.groupby("soc").s.agg(lambda x:(x>0).mean())
 E,covE=UX.uk_exposure(occ.to_dict()); E2,_=UX.uk_exposure(occ_any.to_dict())
 import csv
 lang={r["O*NET-SOC Code"]:float(r["dv_rating_beta"]) for r in csv.DictReader(open("data/ext/occ_level.csv"))}
 L,_=UX.uk_exposure(lang)
+E,covE=UX.uk_exposure(occ.to_dict()); covO=UX.uk_exposure.onet_cov   # coverage of O*NET occupations classified so far (partial run: SOC 11-29 only)
+MINCOV=float(sys.argv[1]) if len(sys.argv)>1 else 0.0
 # adverts
 r=pd.read_csv("data/ons/uk_soc4_new_adverts_monthly.csv",dtype={"soc4":str}).set_index("soc4")
 mc=[c for c in r.columns if re.match(r"[A-Z][a-z]{2}-\d\d$",c)]
@@ -22,7 +29,9 @@ X=r[mc].apply(pd.to_numeric,errors="coerce"); X.columns=pd.to_datetime(["01-"+c 
 X=X.T.interpolate(method="linear",limit=2,limit_area="inside").T
 def year(t): return X.loc[:,pd.Timestamp(f"{t-1}-07-01"):pd.Timestamp(f"{t}-06-01")].sum(axis=1,min_count=12)
 years=list(range(2018,2027)); A={t:year(t) for t in years}
-df=pd.DataFrame({"E":E,"E2":E2,"L":L}).join(pd.DataFrame(A)).dropna()
+df=pd.DataFrame({"E":E,"E2":E2,"L":L,"cov":covO}).join(pd.DataFrame(A)).dropna()
+print("UK occupations by O*NET classification coverage: >=0.9:",int((df["cov"]>=0.9).sum()),"| >=0.5:",int((df["cov"]>=0.5).sum()),"| all:",len(df))
+df=df[df["cov"]>=MINCOV]
 df=df[df[2022]>=1000].copy(); df["minor"]=df.index.str[:3]; df["sub"]=df.index.str[:2]; df["major"]=df.index.str[:1]
 print("occupations in estimation sample:",len(df)); 
 for c in ("E","L"): df["z"+c]=(df[c]-df[c].mean())/df[c].std()
@@ -45,7 +54,7 @@ for spec,fe,cl in (("no FE, controls L",None,True),("major-group FE, controls L"
         d=df.copy(); y=(np.log(d[t])-np.log(d[2022])).values; X=design(d,fe,cl); b,se=ols_cluster(y,X,d.minor.values)
         rows.append((spec,t,b[1],se[1])) 
 res=pd.DataFrame(rows,columns=["spec","t","b_E","se"]); res["lo"]=res.b_E-1.96*res.se; res["hi"]=res.b_E+1.96*res.se
-res.to_csv("data/ons/uk_dose_response.csv",index=False)
+res.to_csv(f"data/ons/uk_dose_response_{EXPO}.csv",index=False)
 print("\nCoefficient on z(E): change in ln adverts (year t vs Jul21-Jun22) per 1 SD of creation exposure")
 piv=res.pivot(index="spec",columns="t",values="b_E"); pse=res.pivot(index="spec",columns="t",values="se")
 for sp in piv.index: print(sp.ljust(30)," ".join(f"{t}:{piv.loc[sp,t]:+.3f}({pse.loc[sp,t]:.3f})" for t in piv.columns))
@@ -64,4 +73,4 @@ d=df.drop(index=[i for i in ["2141"] if i in df.index]); y=(np.log(d[2025])-np.l
 d=df.copy(); y=(np.log(d[2025])-np.log(d[2022])).values; w=np.sqrt(d[2022].values); Xw=design(d,"sub")*w[:,None]; b,se=ols_cluster(y*w,Xw,d.minor.values); print("volume-weighted, 2025:",round(b[1],3),"se",round(se[1],3))
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 fig,ax=plt.subplots(figsize=(7,3.8)); s=res[res.spec=="sub-major FE, controls L"]; ax.errorbar(s.t,s.b_E,yerr=1.96*s.se,fmt="o-",color="#1f77b4",capsize=3); ax.axhline(0,color="black",lw=.6); ax.axvline(2022,color="gray",ls=":")
-ax.set_xlabel("year ending June"); ax.set_ylabel("coefficient on creation exposure (per SD)\nrelative to Jul2021–Jun2022"); ax.set_title("UK adverts: dose-response event study (exploratory)",fontsize=10); plt.tight_layout(); plt.savefig("data/ons/uk_dose_response.png",dpi=130)
+ax.set_xlabel("year ending June"); ax.set_ylabel("coefficient on creation exposure (per SD)\nrelative to Jul2021–Jun2022"); ax.set_title("UK adverts: dose-response event study (exploratory)",fontsize=10); plt.tight_layout(); plt.savefig(f"data/ons/uk_dose_response_{EXPO}.png",dpi=130)
