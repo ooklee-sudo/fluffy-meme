@@ -15,6 +15,7 @@ Manuscript: `ISR_Paper_Early_Adoption_Delayed_Displacement.docx` (built by `buil
 | Eurostat adoption, barriers, exposure gradient (Tables 2-3) | `eurostat_adoption_barriers.py` | `data/eurostat/*` |
 | Scaling by adoption (Table 7) | `uk_bound.py` | printed |
 | European replication (Table 5) | `eurostat_oja_dose_response.py` | `data/eurostat/oja_*.csv` |
+| Canada replication (Table 6) | `classify_noc.py` then `canada_dose_response.py` | `data/statcan/canada_dose_response.csv` |
 | Supplementary: US sectors, EU employment | `indeed_event_study.py`, `eurostat_creative_employment.py` | `data/indeed/*`, `data/eurostat/*` |
 
 ## Data sources (open)

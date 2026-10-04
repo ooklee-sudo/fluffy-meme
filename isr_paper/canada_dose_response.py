@@ -7,15 +7,16 @@ d=pd.read_csv("data/statcan/canada_jv.csv",encoding="utf-8-sig",usecols=["REF_DA
 d["code"]=d["National Occupational Classification"].str.extract(r"\[(\d+)\]$")[0]; d=d[d.code.str.len()==5].copy()
 d["q"]=pd.PeriodIndex(d.REF_DATE.str[:4]+"Q"+((d.REF_DATE.str[5:7].astype(int)-1)//3+1).astype(str),freq="Q")
 wide=d.pivot_table(index="code",columns="q",values="VALUE",aggfunc="first")
+wide=wide.reindex(columns=pd.period_range("2015Q1","2026Q2",freq="Q"))   # 2020Q2 was not collected (COVID) -> missing
 def yr(y):   # four quarters: Q3(y-1)..Q2(y) -> reference months Jul(y-1)..Jun(y)
     qs=[pd.Period(f"{y-1}Q3"),pd.Period(f"{y-1}Q4"),pd.Period(f"{y}Q1"),pd.Period(f"{y}Q2")]
     return wide[qs].sum(axis=1,min_count=4)
-years=[2017,2018,2019,2020,2021,2023,2024,2025,2026]; A={t:yr(t) for t in years+[2022]}
+years=[2017,2018,2019,2021,2023,2024,2025,2026]; A={t:yr(t) for t in years+[2022]}   # 2020 window excluded: 2020Q2 not collected
 try:
     sc=pd.DataFrame([json.loads(l) for l in open("data/noc_creation_sonnet55.jsonl")])
 except FileNotFoundError: raise SystemExit("classification not finished")
 E=(sc.s/2).groupby(sc.noc).mean(); print("NOC unit groups with exposure:",len(E),"| share of duties scoring >=1: %.3f"%(sc.s>0).mean())
-df=pd.DataFrame({"E":E}).join(pd.DataFrame(A)).dropna(); df=df[df[2022]>=1000].copy(); df["g3"]=df.index.str[:3]; df["g2"]=df.index.str[:2]; df["g1"]=df.index.str[:1]
+df=pd.DataFrame({"E":E}).join(pd.DataFrame(A)).dropna(subset=["E",2022]); df=df[df[2022]>=1000].copy(); df["g3"]=df.index.str[:3]; df["g2"]=df.index.str[:2]; df["g1"]=df.index.str[:1]
 df["zE"]=(df.E-df.E.mean())/df.E.std(); print("estimation sample:",len(df),"unit groups; SD of exposure %.3f; top:"%df.E.std(),[(i,round(df.E[i],3)) for i in df.E.sort_values(ascending=False).index[:8]])
 def ols(y,X,cl):
     b=np.linalg.lstsq(X,y,rcond=None)[0]; e=y-X@b; XtXi=np.linalg.pinv(X.T@X); G=pd.unique(cl); meat=np.zeros((X.shape[1],)*2)
