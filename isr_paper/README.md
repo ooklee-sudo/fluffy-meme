@@ -23,4 +23,4 @@ Manuscript: `ISR_Submission_Early_Adoption_Delayed_Displacement.docx` (built by 
 ## Data sources (open)
 O*NET 29.1; ONS Labour demand volumes by SOC 2020 (Textkernel) and SOC 2020 coding index (download to `data/ons/`, large files not tracked); Eurostat isoc_eb_ai, isoc_eb_ain2, lfsa_eisn2, lfsa_egan22d (API); Indeed Hiring Lab job postings tracker (GitHub).
 
-Not validated: the LLM exposure measure has no human-coder validation yet (see manuscript Section 4.3).
+Human-coder validation of the exposure measure: see manuscript Section 4.3. Reviewer-preparation notes: `REVIEWER_PREP.md`. Table numbers in this README follow an earlier draft; `REVIEWER_PREP.md` has the current mapping.
