@@ -5,13 +5,14 @@ Needs OPENROUTER_API_KEY in the environment."""
 import time, argparse, csv, io, json, os, random, re, sys, urllib.request, concurrent.futures as cf
 URL="https://www.onetcenter.org/dl_files/database/db_29_1_text/Task%20Statements.txt"
 CACHE="data/Task_Statements.txt"
-PROMPT="""You code O*NET task statements for a labor-economics study of AI vision.
+PROMPT_PERCEPTION="""You code O*NET task statements for a labor-economics study of AI vision.
 For each task decide whether performing it DEPENDS ON VISUAL PERCEPTION OR INSPECTION: the worker must
 see, watch, read visual displays/images/scenes, inspect/examine/observe physical objects, or visually
 monitor something, and this visual judgment is central to doing the task (not merely incidental).
 Score: 2 = visual perception is central; 1 = visual perception is a meaningful but secondary part; 0 = not dependent
 (e.g. talking, writing, calculating, lifting, deciding with no visual input specified).
 Judge only the statement text. Reply with JSON only: {"labels":[{"i":<id>,"s":<0|1|2>}, ...]} covering every id."""
+PROMPT=PROMPT_PERCEPTION
 def load():
     os.makedirs("data",exist_ok=True)
     if not os.path.exists(CACHE):
@@ -34,7 +35,8 @@ def call(model,batch,key):
     raise RuntimeError(f"batch failed: {err}")
 if __name__=="__main__":
     ap=argparse.ArgumentParser(); ap.add_argument("--model",required=True); ap.add_argument("--n",type=int); ap.add_argument("--out",required=True)
-    ap.add_argument("--bs",type=int,default=20); ap.add_argument("--workers",type=int,default=8); a=ap.parse_args()
+    ap.add_argument("--prompt-file"); ap.add_argument("--bs",type=int,default=20); ap.add_argument("--workers",type=int,default=8); a=ap.parse_args()
+    if a.prompt_file: PROMPT=open(a.prompt_file).read()
     key=os.environ["OPENROUTER_API_KEY"]; tasks=load()
     if a.n: random.Random(42).shuffle(tasks); tasks=tasks[:a.n]
     done={}
