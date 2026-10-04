@@ -26,7 +26,7 @@ def call(model,batch,key):
         try:
             req=urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",json.dumps(body).encode(),
                 {"Authorization":"Bearer "+key,"Content-Type":"application/json"})
-            r=json.load(urllib.request.urlopen(req,timeout=120))
+            r=json.load(urllib.request.urlopen(req,timeout=90))
             txt=r["choices"][0]["message"]["content"]; txt=re.search(r"\{.*\}",txt,re.S).group(0)
             lab={x["i"]:x["s"] for x in json.loads(txt)["labels"]}
             if all(t["id"] in lab and lab[t["id"]] in (0,1,2) for t in batch): return lab,r.get("usage",{})
@@ -44,8 +44,12 @@ if __name__=="__main__":
     todo=[t for t in tasks if t["id"] not in done]; batches=[todo[i:i+a.bs] for i in range(0,len(todo),a.bs)]
     tok=[0,0]
     with open(a.out,"a") as f, cf.ThreadPoolExecutor(a.workers) as ex:
-        for b,fu in zip(batches,[ex.submit(call,a.model,b,key) for b in batches]):
-            lab,u=fu.result(); tok[0]+=u.get("prompt_tokens",0); tok[1]+=u.get("completion_tokens",0)
+        futs={ex.submit(call,a.model,b,key):b for b in batches}
+        for fu in cf.as_completed(futs):
+            b=futs[fu]
+            try: lab,u=fu.result()
+            except Exception as e: print("batch failed, will be retried on next run:",e,file=sys.stderr); continue
+            tok[0]+=u.get("prompt_tokens",0); tok[1]+=u.get("completion_tokens",0)
             for t in b: f.write(json.dumps({**t,"s":lab[t["id"]]})+"\n")
             f.flush()
     print(f"{len(todo)} tasks, tokens in/out {tok}",file=sys.stderr)
