@@ -11,6 +11,7 @@ Manuscript: `ISR_Paper_Early_Adoption_Delayed_Displacement.docx` (built by `buil
 | O*NET -> ISCO-08 -> UK SOC 2020 exposure mapping | `uk_exposure.py` | UK SOC4 exposures |
 | UK dose-response event study (Table 4, Fig. 1) | `EXPO=llm python uk_dose_response.py 0` (`EXPO=rule` for the rule-based score) | `data/ons/uk_dose_response_*.csv/png` |
 | UK occupation groups (Table 5), robustness | `uk_soc4_event_study.py`, `uk_soc4_checks.py` | `data/ons/uk_soc4_*` |
+| Broad-measure analysis (Table 10) | `classify_onet.py --prompt-file prompt_broad_v2.txt --with-occupation --out data/all_broad_sonnet55.jsonl`, then `EXPO=broad python uk_dose_response.py 0` and `EXPO=broad python eurostat_oja_dose_response.py` | `data/ons/uk_dose_response_broad.*`, `data/eurostat/oja_dose_response_broad.csv` |
 | Quality-requirement heterogeneity (Table 6) | `uk_threshold_heterogeneity.py` | `data/ons/uk_threshold_heterogeneity.csv` |
 | Eurostat adoption, barriers, exposure gradient (Tables 2-3) | `eurostat_adoption_barriers.py` | `data/eurostat/*` |
 | Scaling by adoption (Table 7) | `uk_bound.py` | printed |
