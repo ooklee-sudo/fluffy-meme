@@ -1,0 +1,119 @@
+"""Builds the Europe/Canada-only revision of the uploaded manuscript (UK data removed).
+usage: python revised/make_revised.py <uploaded.docx> <out.docx>"""
+import sys, re, copy, docx
+from docx.oxml.ns import qn
+src,out=sys.argv[1],sys.argv[2]
+d=docx.Document(src); P=list(d.paragraphs); orig={i:p.text for i,p in enumerate(P)}
+def base_rpr(p):
+    r=p.runs[0]._r; rp=r.find(qn("w:rPr")); return copy.deepcopy(rp) if rp is not None else None
+def settext(p,text):
+    rp=base_rpr(p) if p.runs else None
+    for r in list(p.runs): r._r.getparent().remove(r._r)
+    for part in re.split(r"(\{i\}.*?\{/i\}|\{b\}.*?\{/b\})",text):
+        if not part: continue
+        it=part.startswith("{i}"); bd=part.startswith("{b}"); t=re.sub(r"\{/?[ib]\}","",part)
+        r=p.add_run(t)
+        if rp is not None:
+            old=r._r.find(qn("w:rPr"))
+            if old is not None: r._r.remove(old)
+            nr=copy.deepcopy(rp); 
+            for tag in ("w:i","w:b"):
+                e=nr.find(qn(tag)); 
+                if e is not None: nr.remove(e)
+            r._r.insert(0,nr)
+        if it: r.italic=True
+        if bd: r.bold=True
+def sub(i,old,new):
+    t=orig[i]; assert old in t,(i,old); settext(P[i],t.replace(old,new))
+def delete(i): e=P[i]._p; e.getparent().remove(e)
+def cell(c,text):
+    p=c.paragraphs[0]; rp=base_rpr(p) if p.runs else None
+    for r in list(p.runs): r._r.getparent().remove(r._r)
+    r=p.add_run(text)
+    if rp is not None:
+        old=r._r.find(qn("w:rPr")); 
+        if old is not None: r._r.remove(old)
+        r._r.insert(0,copy.deepcopy(rp))
+def setrow(t,ri,vals):
+    for c,v in zip(t.rows[ri].cells,vals): cell(c,v)
+# ---------- abstract
+settext(P[5],"Statistics showing that firms use generative visual AI are increasingly read as evidence that creative work is being displaced. Information systems research separates acquiring an innovation from assimilating it into work. We model a firm that reassigns a visual task to a generator only when output acceptance exceeds a threshold set by generation, review, and human production costs. Review cost depends on organizational complements, so near-free acquisition can run ahead of assimilation. Eurostat data show that 9.6 percent of EU firms use AI that generates pictures, video, or audio, and that firms which considered AI cite missing expertise (70 percent) and legal uncertainty (54 percent) far more than lack of usefulness (18 percent). A detectability bound shows that European and Canadian job-advert designs could not detect even complete assimilation at platform-sized effects; the small gradients they find are no larger than earlier trends. We specify the firm-level evidence needed.")
+# ---------- introduction
+sub(11,"while the UK design cannot detect a reduction smaller than about 30 percent for that occupation. The exposure gradients that the designs do report are present before generative tools were released and are larger than any plausible assimilation effect. They reflect something other than the technology.","while the European design cannot detect a reduction smaller than about 24 percent for that occupation. The exposure gradients that the designs do report are small and imprecise, about 1 to 2 percent fewer adverts per standard deviation of exposure in 2023 and 2024, and the European gradient was already moving in the same direction before generative tools were released.")
+sub(11,"roughly 2 to 18 percent","roughly 2 to 17 percent") if False else None
+t=orig[11].replace("roughly 2 to 18 percent","roughly 2 to 17 percent").replace("while the UK design cannot detect a reduction smaller than about 30 percent for that occupation. The exposure gradients that the designs do report are present before generative tools were released and are larger than any plausible assimilation effect. They reflect something other than the technology.","while the European design cannot detect a reduction smaller than about 24 percent for that occupation. The exposure gradients that the designs do report are small and imprecise, about 1 to 2 percent fewer adverts per standard deviation of exposure in 2023 and 2024, and the European gradient was already moving in the same direction before generative tools were released.")
+settext(P[11],t)
+sub(13,"and it shows that a common empirical strategy currently attributes to the technology declines that the technology cannot have produced.","and it shows how the bound changes the reading of exposure gradients: the 2023 European gradient is no larger than the trend that preceded the technology, and the 2024 gradient is too imprecise to separate the scenarios.")
+# ---------- data
+settext(P[50],"Because the acquisition measure covers EU firms, the hiring series is Eurostat’s experimental online job advertisements by ISCO-08 three-digit occupation, 2019–2024, with 2022 as the base year (604 country-occupation cells, 96 occupations, 16 countries, after a floor of 1,000 base-year adverts). Its population matches the acquisition data, but it offers only two post-2022 years. The Canadian series is the Job Vacancy and Wage Survey by NOC 2021 unit group, 2015–2026, restricted to 308 unit groups with at least 1,000 vacancies in the base window; the quarter 2020Q2 was not collected, so 2020 and 2021 cannot be used. European Labour Force Survey employment by industry and US sector postings from Indeed Hiring Lab are used descriptively.")
+t=orig[52].replace("mapped to UK occupations through ISCO-08","mapped to European occupations through ISCO-08 (three-digit prefix of the ESCO crosswalk)")
+i0=t.index("Low reliability"); t=t[:i0]+"With the broad measure the European coefficients are −0.009 in 2023 and −0.004 in 2024 (standard errors 0.007 and 0.015). Low reliability attenuates exposure coefficients toward zero, which lowers power further and so strengthens the detectability result; we do not correct for it."
+settext(P[52],t)
+# ---------- theory rule (iii): define gamma**
+t=orig[44]; assert "γ**" in t
+# paragraph 44 has italics in several runs; keep as plain text with gamma markers
+t=orig[44].replace("γ**","γ**")
+settext(P[44],"(i) If |{i}γ{/i}*| is below the minimum detectable effect, the design is uninformative about assimilation, whatever the estimated coefficient. A null result does not support the gap, and a negative result is not evidence of substitution. (ii) If |{i}γ{/i}*| exceeds the minimum detectable effect and the estimate is significantly smaller in magnitude than {i}γ{/i}*, the data reject complete assimilation with net substitution but do not distinguish the gap from offsetting scale effects. (iii) If the estimate is significantly larger in magnitude than the largest plausible {i}γ{/i}**, which we take to be the coefficient implied by an effect of {i}β{/i} = −0.5 at the acquisition rate of the highest-acquisition sector, or if the gradient is already present before the technology was available, the decline is attributed to other causes and counts as evidence for none of the accounts.")
+# ---------- section 6.3 (UK depth) removed
+for i in (66,65,64): delete(i)
+# ---------- section 7
+settext(P[69],"For each country-occupation cell in 16 European countries we regress the change in log online adverts relative to 2022 on standardized visual-creation exposure and standardized language-model exposure, with country-year fixed effects and standard errors clustered by ISCO occupation (Table 4). A standard deviation of exposure is associated with 1.6 percent fewer adverts in 2023 (standard error 0.6, randomization p = 0.016) and 1.2 percent fewer in 2024 (standard error 1.7, p = 0.19). Without the language control the estimates are −3.7 and −5.9 percent, because exposure to visual content creation and exposure to language models are positively correlated across occupations (0.27).")
+settext(P[70],"Table 4. Europe: log-advert change per standard deviation of visual-creation exposure, relative to 2022")
+settext(P[71],"Notes. 604 country-occupation cells (96 occupations, 16 countries); country-year fixed effects; standard errors clustered by ISCO three-digit occupation in parentheses. The deviation row estimates a linear trend in the exposure gradient on 2019–2021 (−0.0072 per year, standard error 0.0047) and reports the deviation of 2023 and 2024 from its extrapolation. Minimum detectable effect = 2.8 × standard error (two-sided 5 percent test, 80 percent power) of the preferred specification.")
+settext(P[72],"The coefficients before 2022 are positive (+0.024, +0.008, and +0.011 for 2019, 2020, and 2021), which means that exposed occupations were already declining relative to others before generative tools were released. The trend is weak (−0.007 per year, standard error 0.005), but it runs in the same direction as the post-2022 coefficients: relative to it, the 2023 and 2024 coefficients are −0.009 (standard error 0.007) and +0.002 (0.023). The series has only two post-2022 years. In Canada, within NOC two-digit groups, the coefficient is −2.2 percent in the first post-2022 year (standard error 0.9, randomization p = 0.10) and indistinguishable from zero afterward (−0.9, +1.6, and +1.1 percent in 2024, 2025, and 2026, with standard errors of 2.5, 2.7, and 3.0), in a market where total vacancies fell 47 percent.")
+settext(P[74],"In the European exposure distribution the most exposed occupations are creative and performing artists (ISCO 265, 6.2 standard deviations above the mean) and architects, planners, surveyors, and designers (ISCO 216, which includes graphic designers, 5.7 standard deviations). We set {i}k{/i} = 5.7, the value more favorable to detection. Table 5 reports the coefficient per standard deviation that complete assimilation would produce under equation (3) for a range of acquisition rates and substitution effects, alongside the minimum detectable effect and the observed coefficients.")
+settext(P[75],"Table 5. Coefficient per standard deviation implied by complete assimilation (Aᵃ = Aᵘ), Europe, k = 5.7")
+settext(P[76],"Notes. γ* = Aᵘ·β/k. The upper bound Aᵃ = Aᵘ maximizes the implied response; any assimilation gap makes it smaller. Acquisition rates: Eurostat 2025 (all enterprises; publishing, film, television, and music) and Eurostat 2023 text generation as a proxy for early acquisition. The minimum detectable effect and the observed coefficients are for 2024, the year with the least power; the last column multiplies by k.")
+settext(P[77],"Two results follow. First, every complete-assimilation scenario for 2024 implies a coefficient below the minimum detectable effect of 0.048; the largest, −0.032, requires a 39 percent fall among assimilating employers in a sector where 36 percent have acquired the tool, and assimilation by all of them. Under rule (i), the 2024 European estimate is uninformative about whether acquisition has been assimilated, and its small and imprecise coefficient supports neither the gap nor substitution. The preferred estimate of −0.012 equals what the platform effect would produce if every employer in a high-acquisition sector had assimilated, but it is 0.7 standard errors from zero. The estimate without the language control (−0.059) is larger than any scenario, but it is not significantly larger than {i}γ{/i}** (−0.032; z = 1.3) and, as the difference between the specifications shows, partly reflects exposure to language models. Second, the 2023 estimate has more power (minimum detectable effect 0.016). Text-generation acquisition stood at 2.1 percent in 2023. If acquisition of visual generators was similarly low, complete assimilation with {i}β{/i} = −0.5 implies a coefficient of about −0.002, and the observed −0.016 differs from it significantly (z = 2.6); if acquisition had already reached its 2025 level, the implied coefficient would be −0.008 and the difference would not be significant. Either way, the 2023 gradient is of the size predicted by the trend that preceded the technology, since relative to that trend it is −0.009 (standard error 0.007). Under rule (iii), the gradient is better attributed to other causes than to generative visual AI.")
+settext(P[78],"The Canadian series has standard errors of 0.025 to 0.030 per standard deviation after 2023, so its minimum detectable effect is about 0.07 to 0.08 per standard deviation. For the most exposed unit group, 9.0 standard deviations above the mean, this corresponds to a log change of about 0.6 to 0.8. The Canadian series is therefore uninformative about assimilation at any plausible acquisition rate, and its first-year coefficient, which does not persist, leads to the same classification.")
+# 7.3 quality requirements removed (UK-only analysis); renumber
+delete(80); delete(79)
+settext(P[81],"7.3 Employment Where Acquisition Is Highest")
+settext(P[83],"7.4 Acquisition Interaction in Europe")
+settext(P[84],"A European dose-response test interacts occupational exposure with country-level acquisition of picture, video, or audio generation (Eurostat 2025), which is available for 12 of the 16 countries. Complete assimilation predicts a steeper exposure gradient where acquisition is higher, whereas the gap and offsetting-scale accounts predict no such interaction. The interaction coefficient per standard deviation of acquisition (5.1 percentage points) is −0.008 (standard error 0.008) in 2023 and +0.003 (0.016) in 2024; permutation p-values across countries are 0.46 and 0.85. In 2021, before the base year, it is +0.008 (0.007). Complete assimilation with {i}β{/i} = −0.5 predicts an interaction of only about −0.004 (−0.5 × 0.051 / 5.7), far smaller than the standard errors, so the test cannot discriminate among the accounts. We report it because it is the only test here that uses variation in acquisition directly. It becomes informative only with more countries, more post-2022 years, and acquisition measured before the outcome. The detectability result does not depend on it, because that result depends only on acquisition rates, reference effect sizes, and standard errors.")
+# ---------- section 8
+settext(P[86],"Equation (3) also tells us when the European design would gain the power to detect complete assimilation. Holding the 2024 standard error fixed, detection for an occupation at {i}k{/i} = 5.7 requires {i}A{/i}ᵃ · {i}β{/i} ≤ −0.28. With {i}β{/i} = −0.19 this cannot occur even at full assimilation. With {i}β{/i} = −0.5 it requires {i}A{/i}ᵃ ≥ 0.55; with {i}β{/i} = −0.8 (a 55 percent fall among assimilators), {i}A{/i}ᵃ ≥ 0.34. Table 6 reports the first year in which acquisition would reach these shares if its log-odds rose at the 2023–2025 pace of text-generation AI (about 0.75 per year) or at two-thirds or one-third of that pace. Because {i}A{/i}ᵃ ≤ {i}A{/i}ᵘ, these are the earliest possible detection dates; any persistent assimilation gap pushes them later. The standard error will change as post-2022 years accumulate, so the dates are conditional on the precision of the current design.")
+settext(P[87],"Table 6. Earliest year in which complete assimilation would become detectable, European design")
+settext(P[88],"Notes. Paths start in 2025 at 9.6 percent (all firms) or 36.2 percent (publishing, film, and broadcasting) with log-odds slopes of 0.75 (fast), 0.50 (medium), and 0.25 (slow) per year. Detection threshold: 2.8 × the 2024 standard error (0.017) × k = 5.7 ≈ 0.28. Each entry is the year in which the required share is first reached. Dates assume Aᵃ = Aᵘ and are lower bounds.")
+sub(89,"The media entries for β = −0.8 show that only very large effects concentrated in high-acquisition sectors could already be within reach, and even these assume that every acquiring employer has assimilated the tool.","The media entries for β = −0.8 are already within reach in 2025, because that sector’s acquisition rate exceeds the required share. They show that only very large effects concentrated in high-acquisition sectors could already be detectable, and even these assume that every acquiring employer has assimilated the tool.")
+# ---------- firm-level design, discussion, limitations, conclusion
+t=orig[91]; a=t.index("In the United Kingdom"); b=t.index("Eurostat ICT-usage microdata"); settext(P[91],t[:a]+t[b:])
+sub(96,"and that gradients they do detect can be too large, and too early, to be caused by the technology.","and that gradients they do detect can be no larger than a trend that preceded the technology.")
+
+# ---------- structural-change paragraph (after paragraph 96)
+import copy as _c
+newp=_c.deepcopy(P[96]._p); P[96]._p.addnext(newp)
+from docx.text.paragraph import Paragraph
+np_=Paragraph(newp,P[96]._parent)
+settext(np_,"A related reading is that falling demand for visual-production occupations reflects structural change in industries, such as shifts in how marketing and media content is produced and bought, and that generative AI accelerates change already under way rather than starting it. Our evidence is compatible with this reading. The European gradient was already moving in the same direction before 2022 (−0.007 per year, not statistically significant), and the estimates depend on the language-exposure control. In the model, acceleration enters through the acceptance threshold: the technology lowers the cost of review and generation for tasks in industries that were already reducing their demand for them, so assimilation is most likely where structural pressure exists. Country-year fixed effects absorb economy-wide shocks but not industry-specific restructuring, and the employment series in Section 7.3 show growth, not contraction, in the creative industries, so any restructuring would have to operate within industries as well as across them. Separating the two requires firm-level data that observe an employer’s industry, its use of the tool, and its hiring together.")
+sub(100,"UK acquisition comes from a voluntary survey with a response rate of about 27 percent and does not identify the employers of particular occupations.","Acquisition rates are sector averages and do not identify the employers of particular occupations.")
+sub(102,"and the exposure gradients they show are not effects of the technology.","and the exposure gradients they show are small, imprecise, and no larger than the trend that preceded the technology.")
+t=orig[104].replace("Eurostat, Office for National Statistics, Statistics Canada","Eurostat, Statistics Canada")+" The model used for task coding was [MODEL NAME AND VERSION, to be completed by the authors]."
+settext(P[104],t)
+delete(108)   # quality rubric (unused after removing UK heterogeneity analysis)
+# ---------- appendix B
+settext(P[110],"Let exposure {i}e{/i}ⱼ be proportional to the visual share of work, {i}e{/i}ⱼ = {i}λs{/i}ⱼ, and let standardized exposure be {i}z{/i}ⱼ = ({i}e{/i}ⱼ − ē)/σₑ. If the most exposed occupation has {i}s{/i}ⱼ ≈ 1 and {i}z{/i}ⱼ = {i}k{/i}, and if exposure near the mean is small relative to its maximum, then {i}s{/i}ⱼ ≈ {i}z{/i}ⱼ/{i}k{/i} over the relevant range. Substituting into equation (2) with {i}A{/i}ᵃ = {i}A{/i}ᵘ gives Δ ln {i}N{/i}ⱼ ≈ ({i}A{/i}ᵘ{i}β{/i}/{i}k{/i})·{i}z{/i}ⱼ, so the regression coefficient on {i}z{/i}ⱼ under complete assimilation is {i}γ{/i} = {i}A{/i}ᵘ{i}β{/i}/{i}k{/i}. The minimum detectable effect for a two-sided test of size 0.05 with power 0.8 is (1.96 + 0.84)·SE ≈ 2.8·SE. Detection for the most exposed occupation requires |{i}A{/i}ᵃ{i}β{/i}| ≥ 2.8·SE·{i}k{/i}. With SE = 0.017 (Europe, 2024) and {i}k{/i} = 5.7 the threshold is 0.28. If mean exposure is not small relative to its maximum, {i}k{/i} overstates the effective spread and the implied {i}γ{/i}* is somewhat larger, but for the values in Table 5 to cross the detection threshold the effective {i}k{/i}* would need to fall below about 4 under the most aggressive scenario.")
+# ---------- references: remove ONS
+for i in (133,132): delete(i)
+# ---------- tables
+T=d.tables
+t4=T[2]; setrow(t4,0,["Specification","2019","2020","2021","2023","2024"])
+setrow(t4,1,["Country-year FE, LLM control (preferred)","+0.024 (0.014)","+0.008 (0.013)","+0.011 (0.009)","−0.016 (0.006)","−0.012 (0.017)"])
+setrow(t4,2,["Country-year FE, no LLM control","+0.008 (0.013)","−0.002 (0.013)","+0.008 (0.008)","−0.037 (0.009)","−0.059 (0.021)"])
+setrow(t4,3,["Deviation from linear pre-trend, LLM control","","","","−0.009 (0.007)","+0.002 (0.023)"])
+setrow(t4,4,["Randomization p (preferred)","","","","0.016","0.19"])
+setrow(t4,5,["Minimum detectable effect (preferred)","0.038","0.037","0.024","0.016","0.048"])
+t5=T[3]
+setrow(t5,0,["Acquisition rate Aᵘ","β = −0.19 (platform)","β = −0.50 (aggressive)","Implied log change, most exposed occupation (β = −0.50)"])
+setrow(t5,1,["9.6% (EU27, all firms)","−0.003","−0.008","−0.048"])
+setrow(t5,2,["36.2% (publishing, film, broadcasting)","−0.012","−0.032","−0.181"])
+setrow(t5,3,["2.1% (text generation, 2023, proxy for early acquisition)","−0.001","−0.002","−0.010"])
+setrow(t5,4,["Minimum detectable effect, 2024","0.048","0.048","−0.28"])
+setrow(t5,5,["Observed (preferred), 2024","−0.012","−0.012","−0.07"])
+newrow=copy.deepcopy(t5.rows[5]._tr); t5._tbl.append(newrow)
+setrow(t5,6,["Observed (no language control), 2024","−0.059","−0.059","−0.34"])
+t6=T[4]
+setrow(t6,1,["−0.19 (−17%)","above 100%","never","never","never"])
+setrow(t6,2,["−0.50 (−39%)","55%","2029 / 2027","2030 / 2027","2035 / 2029"])
+setrow(t6,3,["−0.80 (−55%)","34%","2028 / 2025","2029 / 2025","2032 / 2025"])
+d.save(out); print("saved",out)
