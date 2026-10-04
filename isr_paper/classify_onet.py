@@ -20,15 +20,15 @@ def load():
     rows=list(csv.DictReader(open(CACHE,encoding="utf-8"),delimiter="\t"))
     return [{"id":i,"soc":r["O*NET-SOC Code"],"task_id":r["Task ID"],"type":r["Task Type"],"text":r["Task"]} for i,r in enumerate(rows)]
 def call(model,batch,key):
-    body={"model":model,"temperature":0,"messages":[{"role":"system","content":PROMPT},
+    body={"model":model,"temperature":0,"max_tokens":800,"messages":[{"role":"system","content":PROMPT},
       {"role":"user","content":"\n".join(f'{t["id"]}: {t["text"]}' for t in batch)}]}
     for a in range(8):
         try:
             req=urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",json.dumps(body).encode(),
                 {"Authorization":"Bearer "+key,"Content-Type":"application/json"})
             r=json.load(urllib.request.urlopen(req,timeout=90))
-            txt=r["choices"][0]["message"]["content"]; txt=re.search(r"\{.*\}",txt,re.S).group(0)
-            lab={x["i"]:x["s"] for x in json.loads(txt)["labels"]}
+            txt=r["choices"][0]["message"]["content"]
+            lab={int(i):int(v) for i,v in re.findall(r'"i"\s*:\s*(\d+)\s*,\s*"s"\s*:\s*([012])',txt)}   # tolerant to malformed JSON
             if all(t["id"] in lab and lab[t["id"]] in (0,1,2) for t in batch): return lab,r.get("usage",{})
         except Exception as e:
             err=e; time.sleep(min(60,5*2**a))
