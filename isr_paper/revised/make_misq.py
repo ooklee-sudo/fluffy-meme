@@ -53,12 +53,12 @@ NARR=[
 ("rises as the generator improves. Because","rises as the generator improves (Aghion et al., 2019; Baumol, 1967). Because"),
 ("as Eloundou et al. (2023) assess, the experience","(Eloundou et al., 2023), the experience"),
 # data sources
-("We use Eurostat’s survey on ICT usage in enterprises, which covers","We use Eurostat’s survey on ICT usage in enterprises (Eurostat, n.d.), which covers"),
-("is Eurostat’s experimental online job advertisements by ISCO-08 three-digit occupation, 2019–2024,","is Eurostat’s experimental online job advertisements by ISCO-08 three-digit occupation, 2019–2024 (Eurostat, n.d.),"),
-("The Canadian series is the Job Vacancy and Wage Survey by NOC 2021 unit group, 2015–2026,","The Canadian series is the Job Vacancy and Wage Survey by NOC 2021 unit group, 2015–2026 (Statistics Canada, n.d.),"),
-("US sector postings from Indeed Hiring Lab are used descriptively.","US sector postings from Indeed Hiring Lab (n.d.) are used descriptively."),
-("over O*NET task statements, of a language-model score","over O*NET task statements (National Center for O*NET Development, n.d.), of a language-model score"),
-("Business Trends and Outlook Survey correlates","Business Trends and Outlook Survey (U.S. Census Bureau, n.d.) correlates"),
+("We use Eurostat’s survey on ICT usage in enterprises, which covers","We use Eurostat’s survey on ICT usage in enterprises (Eurostat, 2026), which covers"),
+("is Eurostat’s experimental online job advertisements by ISCO-08 three-digit occupation, 2019–2024,","is Eurostat’s experimental online job advertisements by ISCO-08 three-digit occupation, 2019–2024 (Eurostat, 2026),"),
+("The Canadian series is the Job Vacancy and Wage Survey by NOC 2021 unit group, 2015–2026,","The Canadian series is the Job Vacancy and Wage Survey by NOC 2021 unit group, 2015–2026 (Statistics Canada, 2026),"),
+("US sector postings from Indeed Hiring Lab are used descriptively.","US sector postings from Indeed Hiring Lab (2026) are used descriptively."),
+("over O*NET task statements, of a language-model score","over O*NET task statements (National Center for O*NET Development, 2026), of a language-model score"),
+("Business Trends and Outlook Survey correlates","Business Trends and Outlook Survey (U.S. Census Bureau, 2026) correlates"),
 ]
 hit={a:0 for a,_ in NARR}
 for p in body:
@@ -94,7 +94,7 @@ for p in body:
 print("paragraphs with parenthetical citations converted:",chg)
 for p in body:
     if "(Eurostat, 2025)" in p.text:
-        settext(p,markup(p).replace("(Eurostat, 2025)","(Eurostat, n.d.)"))
+        settext(p,markup(p).replace("(Eurostat, 2025)","(Eurostat, 2026)"))
 # ---- 3. reference list (APA 7)
 REFS=[
 ([("Acemoglu, D., Autor, D., Hazell, J., & Restrepo, P. (2022). Artificial intelligence and jobs: Evidence from online vacancies. ",0),("Journal of Labor Economics",1),(", ",0),("40",1),("(S1), S293–S340.",0)]),
@@ -113,16 +113,16 @@ REFS=[
 ([("David, P. A. (1990). The dynamo and the computer: An historical perspective on the modern productivity paradox. ",0),("American Economic Review",1),(", ",0),("80",1),("(2), 355–361.",0)]),
 ([("Demirci, O., Hannane, J., & Zhu, X. (2025). Who is AI replacing? The impact of generative AI on online freelancing platforms. ",0),("Management Science",1),(", ",0),("71",1),("(10), 8097–8108.",0)]),
 ([("Eloundou, T., Manning, S., Mishkin, P., & Rock, D. (2023). ",0),("GPTs are GPTs: An early look at the labor market impact potential of large language models",1),(" (arXiv:2303.10130). arXiv.",0)]),
-([("Eurostat. (n.d.). ",0),("ICT usage in enterprises; online job advertisements by occupation (experimental); Labour force survey",1),(" [Data sets]. Eurostat dissemination database.",0)]),
+([("Eurostat. (2026). ",0),("ICT usage in enterprises; online job advertisements by occupation (experimental); Labour force survey",1),(" [Data sets]. Retrieved October 4, 2026, from the Eurostat dissemination database.",0)]),
 ([("Felten, E., Raj, M., & Seamans, R. (2021). Occupational, industry, and geographic exposure to artificial intelligence. ",0),("Strategic Management Journal",1),(", ",0),("42",1),("(12), 2195–2217.",0)]),
 ([("Fichman, R. G., & Kemerer, C. F. (1999). The illusory diffusion of innovation: An examination of assimilation gaps. ",0),("Information Systems Research",1),(", ",0),("10",1),("(3), 255–275.",0)]),
 ([("Hui, X., Reshef, O., & Zhou, L. (2024). The short-term effects of generative artificial intelligence on employment: Evidence from an online labor market. ",0),("Organization Science",1),(", ",0),("35",1),("(6), 1977–1989.",0)]),
-([("Indeed Hiring Lab. (n.d.). ",0),("Job postings index, by sector, United States",1),(" [Data set]. Creative Commons Attribution 4.0.",0)]),
+([("Indeed Hiring Lab. (2026). ",0),("Job postings index, by sector, United States",1),(" [Data set]. Retrieved October 4, 2026. Creative Commons Attribution 4.0.",0)]),
 ([("Kim, S., Jin, G. Z., & Lee, E. (2026). ",0),("Does generative AI crowd out human creators? Evidence from Pixiv",1),(" (NBER Working Paper No. 34733). National Bureau of Economic Research.",0)]),
 ([("Melville, N., Kraemer, K., & Gurbaxani, V. (2004). Information technology and organizational performance: An integrative model of IT business value. ",0),("MIS Quarterly",1),(", ",0),("28",1),("(2), 283–322.",0)]),
-([("National Center for O*NET Development. (n.d.). ",0),("O*NET database",1),(" (Version 29.1) [Data set]; ESCO crosswalk. Creative Commons Attribution 4.0.",0)]),
-([("Statistics Canada. (n.d.). ",0),("Job vacancies by occupation",1),(" (Table 14-10-0444; NOC 2021) [Data set]. Statistics Canada Open Licence.",0)]),
-([("U.S. Census Bureau. (n.d.). ",0),("Business Trends and Outlook Survey (BTOS), sector estimates",1),(" [Data set].",0)]),
+([("National Center for O*NET Development. (2026). ",0),("O*NET database",1),(" (Version 29.1) [Data set]; ESCO crosswalk. Retrieved October 4, 2026. Creative Commons Attribution 4.0.",0)]),
+([("Statistics Canada. (2026). ",0),("Job vacancies by occupation",1),(" (Table 14-10-0444; NOC 2021) [Data set]. Retrieved October 4, 2026. Statistics Canada Open Licence.",0)]),
+([("U.S. Census Bureau. (2026). ",0),("Business Trends and Outlook Survey (BTOS), sector estimates",1),(" [Data set]. Retrieved October 4, 2026.",0)]),
 ([("Webb, M. (2020). ",0),("The impact of artificial intelligence on the labor market",1),(" [Working paper]. SSRN. https://ssrn.com/abstract=3482150",0)]),
 ([("Zhou, E., & Lee, D. (2024). Generative artificial intelligence, human creativity, and art. ",0),("PNAS Nexus",1),(", ",0),("3",1),("(3), Article pgae052.",0)]),
 ([("Zhu, K., & Kraemer, K. L. (2005). Post-adoption variations in usage and value of e-business by organizations: Cross-country evidence from the retail industry. ",0),("Information Systems Research",1),(", ",0),("16",1),("(1), 61–84.",0)]),
