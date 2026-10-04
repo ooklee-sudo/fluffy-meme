@@ -12,7 +12,7 @@ EXPO=os.environ.get("EXPO","llm")
 if EXPO=="rule":      # rule-based score on ALL 18,796 tasks (no LLM; validated against LLM labels in rule_creation.py)
     tasks=pd.DataFrame(C.load()); tasks["s"]=tasks.text.map(RC.score); print("exposure source: RULE-BASED, tasks scored:",len(tasks))
 else:
-    cls=[json.loads(l) for l in open("data/all_broad_sonnet55.jsonl" if EXPO=="broad" else "data/all_creation_sonnet55.jsonl")]; print("exposure source:",EXPO.upper(),"LLM, classified tasks:",len(cls),"of 18796")
+    cls=[json.loads(l) for l in open("data/all_broad_llm.jsonl" if EXPO=="broad" else "data/all_creation_llm.jsonl")]; print("exposure source:",EXPO.upper(),"LLM, classified tasks:",len(cls),"of 18796")
     tasks=pd.DataFrame(cls)
 tasks["soc"]=tasks.soc.astype(str)
 occ=tasks.groupby("soc").s.agg(lambda x:(x/2).mean()); occ_any=tasks.groupby("soc").s.agg(lambda x:(x>0).mean())

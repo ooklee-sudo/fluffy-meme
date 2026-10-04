@@ -2,7 +2,7 @@
 Takes the dose-response coefficient (per SD of occupational creation exposure), converts to a predicted log change for specific occupations, and divides by assumed adoption shares."""
 import json, numpy as np, pandas as pd
 import uk_exposure as UX, classify_onet as C
-t=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")])[["id","s"]],on="id")
+t=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_creation_llm.jsonl")])[["id","s"]],on="id")
 E,_=UX.uk_exposure((t.s/2).groupby(t.soc).mean().to_dict())
 sd,mu=E.std(),E.mean(); occ={"2142":"graphic & multimedia designers","3411":"artists","3417":"photographers/AV operators","2141":"web design professionals"}
 r=pd.read_csv("data/ons/uk_dose_response_llm.csv"); print("SD of occupational exposure: %.4f, mean %.4f (across %d UK occupations)"%(sd,mu,len(E)))

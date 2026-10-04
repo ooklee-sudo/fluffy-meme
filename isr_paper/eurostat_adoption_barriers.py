@@ -25,7 +25,7 @@ bar=s_[(s_.geo=="EU27_2020")&(s_.time=="2025")&(s_.nace_r2=="C10-S951_X_K")&(s_.
 print("\nBarriers cited by enterprises that considered AI but do not use it (EU27, 10+, 2025; % of considerers):")
 for k,v in bar.sort_values(ascending=False).items(): print(f"  {B[k]:32s} {v:5.1f}")
 # sector exposure
-tasks=pd.DataFrame(C.load())[["id","soc"]]; cre=pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")])[["id","s"]]
+tasks=pd.DataFrame(C.load())[["id","soc"]]; cre=pd.DataFrame([json.loads(l) for l in open("data/all_creation_llm.jsonl")])[["id","s"]]
 t=tasks.merge(cre,on="id"); occ=(t.s/2).groupby(t.soc).mean().to_dict()
 o2i=UX.onet_to_isco(); byg=collections.defaultdict(list)
 for soc,v in occ.items():

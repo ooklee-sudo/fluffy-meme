@@ -1,3 +1,4 @@
+import os
 """Score NOC 2021 'Main duties' statements (Statistics Canada) with the same visual-content-creation rubric used for O*NET tasks (prompt_creation.txt)."""
 import json, os, sys, pandas as pd, concurrent.futures as cf
 import classify_onet as C
@@ -5,7 +6,7 @@ C.PROMPT=open("prompt_creation.txt").read()
 e=pd.read_csv("data/statcan/noc2021_elements.csv",encoding="utf-8-sig",dtype=str)
 m=e[(e["Element Type Label English"]=="Main duties")&(e.Level=="5")].reset_index(drop=True)
 tasks=[{"id":i,"noc":r["Code - NOC 2021 V1.0"],"text":r["Element Description English"].strip()} for i,r in m.iterrows()]
-out="data/noc_creation_sonnet55.jsonl"; key=os.environ["OPENROUTER_API_KEY"]; model="anthropic/claude-sonnet-5.5"
+out="data/noc_creation_llm.jsonl"; key=os.environ["OPENROUTER_API_KEY"]; model=os.environ["LLM_MODEL"]
 done=set()
 if os.path.exists(out): done={json.loads(l)["id"] for l in open(out)}
 todo=[t for t in tasks if t["id"] not in done]; print("duties:",len(tasks),"to code:",len(todo),file=sys.stderr,flush=True)

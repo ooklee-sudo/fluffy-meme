@@ -13,7 +13,7 @@ def yr(y):   # four quarters: Q3(y-1)..Q2(y) -> reference months Jul(y-1)..Jun(y
     return wide[qs].sum(axis=1,min_count=4)
 years=[2017,2018,2019,2021,2023,2024,2025,2026]; A={t:yr(t) for t in years+[2022]}   # 2020 window excluded: 2020Q2 not collected
 try:
-    sc=pd.DataFrame([json.loads(l) for l in open("data/noc_creation_sonnet55.jsonl")])
+    sc=pd.DataFrame([json.loads(l) for l in open("data/noc_creation_llm.jsonl")])
 except FileNotFoundError: raise SystemExit("classification not finished")
 E=(sc.s/2).groupby(sc.noc).mean(); print("NOC unit groups with exposure:",len(E),"| share of duties scoring >=1: %.3f"%(sc.s>0).mean())
 df=pd.DataFrame({"E":E}).join(pd.DataFrame(A)).dropna(subset=["E",2022]); df=df[df[2022]>=1000].copy(); df["g3"]=df.index.str[:3]; df["g2"]=df.index.str[:2]; df["g1"]=df.index.str[:1]

@@ -15,7 +15,7 @@ def score(text:str)->int:
 def f1(y,p):
     tp=((y==1)&(p==1)).sum(); fp=((y==0)&(p==1)).sum(); fn=((y==1)&(p==0)).sum(); pr=tp/max(tp+fp,1); rc=tp/max(tp+fn,1); return pr,rc,2*pr*rc/max(pr+rc,1e-9)
 if __name__=="__main__":
-    r=pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")]).sort_values("id"); r["rule"]=r.text.map(score)
+    r=pd.DataFrame([json.loads(l) for l in open("data/all_creation_llm.jsonl")]).sort_values("id"); r["rule"]=r.text.map(score)
     half=len(r)//2
     for name,d in (("dev (first half)",r.iloc[:half]),("test (second half)",r.iloc[half:])):
         y=(d.s>0).astype(int).values; p=(d.rule>0).astype(int).values; pr,rc,ff=f1(y,p)

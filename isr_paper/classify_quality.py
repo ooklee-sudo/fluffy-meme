@@ -1,10 +1,11 @@
+import os
 """LLM quality-requirement coding (0 low, 1 medium, 2 high) of the O*NET tasks scored >=1 for visual content creation."""
 import json, os, sys, concurrent.futures as cf
 import classify_onet as C
 C.PROMPT=open("prompt_quality.txt").read()
-key=os.environ["OPENROUTER_API_KEY"]; model="anthropic/claude-sonnet-5.5"; out="data/quality_sonnet55.jsonl"
+key=os.environ["OPENROUTER_API_KEY"]; model=os.environ["LLM_MODEL"]; out="data/quality_llm.jsonl"
 tasks={t["id"]:t for t in C.load()}
-cre=[json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")]; cre=[x for x in cre if x["s"]>=1]
+cre=[json.loads(l) for l in open("data/all_creation_llm.jsonl")]; cre=[x for x in cre if x["s"]>=1]
 done=set()
 if os.path.exists(out): done={json.loads(l)["id"] for l in open(out)}
 todo=[x for x in cre if x["id"] not in done]; print("tasks to code:",len(todo),file=sys.stderr)

@@ -1,3 +1,4 @@
+import os
 """Held-out evaluation of a revised rubric + few-shot prompt.
 dev = first 100 rows of the human-coded sample (rubric/examples derived from these only)
 test = last 100 rows (never inspected before scoring)."""
@@ -42,7 +43,7 @@ def stats(name,pred):
     b=lambda x:[int(v>0) for v in x]
     print(f"{name:42s} exact {sum(p==h for p,h in zip(pred,H))/len(H):.3f} kappa {kappa(H,pred):.3f} wkappa {kappa(H,pred,1):.3f} bin-kappa {kappa(b(H),b(pred)):.3f} dist {dict(sorted(collections.Counter(pred).items()))}")
 print("human test dist",dict(sorted(collections.Counter(H).items())))
-for m in ["deepseek/deepseek-v4.1-flash","anthropic/claude-sonnet-5.5"]:
+for m in [os.environ.get("LLM_MODEL_CHEAP",""),os.environ["LLM_MODEL"]]:
     stats(m+" (v1, held-out)",[M[t["id"]][m] for t in test])
     bs=[test[i:i+20] for i in range(0,100,20)]
     with cf.ThreadPoolExecutor(5) as ex: res=list(ex.map(lambda b:C.call(m,[{"id":t["id"],"text":f'[{t["occ"]}] {t["text"]}'} for t in b],key)[0],bs))

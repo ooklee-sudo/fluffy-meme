@@ -1,17 +1,17 @@
 # Early Adoption, Delayed Displacement? Generative Visual AI and Creative Work
 
-Manuscript: `ISR_Paper_Early_Adoption_Delayed_Displacement.docx` (built by `build.js`, `node build.js`).
+Manuscript: `ISR_Submission_Early_Adoption_Delayed_Displacement.docx` (built by `build.js`, `node build.js`).
 
 ## Pipeline (run from this directory)
 | Step | Script | Output |
 | --- | --- | --- |
-| O*NET task coding (visual content creation) | `classify_onet.py --model anthropic/claude-sonnet-5.5 --prompt-file prompt_creation.txt --out data/all_creation_sonnet55.jsonl` (needs `OPENROUTER_API_KEY`) | 18,796 task scores (0/1/2) |
-| Quality-requirement coding of the 859 creation tasks | `classify_quality.py` (`prompt_quality.txt`) | `data/quality_sonnet55.jsonl` |
+| O*NET task coding (visual content creation) | `classify_onet.py --model $LLM_MODEL --prompt-file prompt_creation.txt --out data/all_creation_llm.jsonl` (needs `OPENROUTER_API_KEY` and `LLM_MODEL`, the identifier of the model used for coding, which is reported in the manuscript) | 18,796 task scores (0/1/2) |
+| Quality-requirement coding of the 859 creation tasks | `classify_quality.py` (`prompt_quality.txt`) | `data/quality_llm.jsonl` |
 | Rule-based check of the creation score | `rule_creation.py` | task- and occupation-level agreement with the LLM score |
 | O*NET -> ISCO-08 -> UK SOC 2020 exposure mapping | `uk_exposure.py` | UK SOC4 exposures |
 | UK dose-response event study (Table 4, Fig. 1) | `EXPO=llm python uk_dose_response.py 0` (`EXPO=rule` for the rule-based score) | `data/ons/uk_dose_response_*.csv/png` |
 | UK occupation groups (Table 5), robustness | `uk_soc4_event_study.py`, `uk_soc4_checks.py` | `data/ons/uk_soc4_*` |
-| Broad-measure analysis (Table 10) | `classify_onet.py --prompt-file prompt_broad_v2.txt --with-occupation --out data/all_broad_sonnet55.jsonl`, then `EXPO=broad python uk_dose_response.py 0` and `EXPO=broad python eurostat_oja_dose_response.py` | `data/ons/uk_dose_response_broad.*`, `data/eurostat/oja_dose_response_broad.csv` |
+| Broad-measure analysis (Table 10) | `classify_onet.py --prompt-file prompt_broad_v2.txt --with-occupation --out data/all_broad_llm.jsonl`, then `EXPO=broad python uk_dose_response.py 0` and `EXPO=broad python eurostat_oja_dose_response.py` | `data/ons/uk_dose_response_broad.*`, `data/eurostat/oja_dose_response_broad.csv` |
 | Quality-requirement heterogeneity (Table 6) | `uk_threshold_heterogeneity.py` | `data/ons/uk_threshold_heterogeneity.csv` |
 | Eurostat adoption, barriers, exposure gradient (Tables 2-3) | `eurostat_adoption_barriers.py` | `data/eurostat/*` |
 | Scaling by adoption (Table 7) | `uk_bound.py` | printed |

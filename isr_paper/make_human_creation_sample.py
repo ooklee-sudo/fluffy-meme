@@ -7,7 +7,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.worksheet.datavalidation import DataValidation
 rng=random.Random(20261004)
-T=pd.DataFrame(C.load()); S=pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")])[["id","s"]]
+T=pd.DataFrame(C.load()); S=pd.DataFrame([json.loads(l) for l in open("data/all_creation_llm.jsonl")])[["id","s"]]
 t=T.merge(S,on="id"); t["rule"]=t.text.map(R.score)
 titles={r["O*NET-SOC Code"]:r["Title"] for r in csv.DictReader(open("data/Occupation_Data.txt",encoding="utf-8"),delimiter="\t")}
 t["occupation"]=t.soc.map(titles)

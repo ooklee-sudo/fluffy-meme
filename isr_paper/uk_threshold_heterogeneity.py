@@ -4,7 +4,7 @@ Mapped to UK SOC4 via ISCO-08 (uk_exposure.py). Model per year t: y = a + g1*(zL
 import json, re, csv, numpy as np, pandas as pd
 import uk_exposure as UX, classify_onet as C
 tasks=pd.DataFrame(C.load())[["id","soc"]]
-cre=pd.DataFrame([json.loads(l) for l in open("data/all_creation_sonnet55.jsonl")])[["id","s"]]; q=pd.DataFrame([json.loads(l) for l in open("data/quality_sonnet55.jsonl")])[["id","q"]]
+cre=pd.DataFrame([json.loads(l) for l in open("data/all_creation_llm.jsonl")])[["id","s"]]; q=pd.DataFrame([json.loads(l) for l in open("data/quality_llm.jsonl")])[["id","q"]]
 t=tasks.merge(cre,on="id").merge(q,on="id",how="left"); t["q"]=t.q.fillna(-1)
 comp={}
 for name,cond in (("low",t.q==0),("mid",t.q==1),("hi",t.q==2)):

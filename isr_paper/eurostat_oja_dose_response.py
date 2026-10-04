@@ -16,7 +16,7 @@ oja=pd.DataFrame(rows,columns=["geo","isco3","t","v"]); oja=oja[oja.v>0]
 # exposures at ISCO3
 import os
 EXPO=os.environ.get("EXPO","llm"); print("exposure:",EXPO)
-tasks=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_broad_sonnet55.jsonl" if EXPO=="broad" else "data/all_creation_sonnet55.jsonl")])[["id","s"]],on="id")
+tasks=pd.DataFrame(C.load())[["id","soc"]].merge(pd.DataFrame([json.loads(l) for l in open("data/all_broad_llm.jsonl" if EXPO=="broad" else "data/all_creation_llm.jsonl")])[["id","s"]],on="id")
 expo=(tasks.s/2).groupby(tasks.soc).mean().to_dict()
 lang={r["O*NET-SOC Code"]:float(r["dv_rating_beta"]) for r in csv.DictReader(open("data/ext/occ_level.csv"))}
 o2i=UX.onet_to_isco(); gE=collections.defaultdict(list); gL=collections.defaultdict(list)
