@@ -278,19 +278,26 @@ def stage_unlearn(a, ctx):
 
 def stage_conceal(a, ctx):
     full = load_full(a, ctx); retr = json.load(open(os.path.join(a.out, "retrain.json")))
-    allp = sum(ctx.groups, []); res = {"reference_full": retr["U"][str((1 << NG) - 1)], "reference_retrained_empty": retr["U"]["0"],
-                                       "control_relearn": retr["control_relearn"], "arms": []}
+    allp = sum(ctx.groups, [])
+    if a.heldout:   # developer sees only the public benchmark questions; the auditor also asks held-out questions
+        bench, held = allp[::2], allp[1::2]
+    else:
+        bench, held = allp, allp
+    res = {"reference_full": retr["U"][str((1 << NG) - 1)], "reference_retrained_empty": retr["U"]["0"],
+           "control_relearn": retr["control_relearn"], "heldout": a.heldout, "arms": []}
+    name = "conceal_heldout.json" if a.heldout else "conceal.json"
     for s in a.conceal_strengths:
         for b in a.budgets:
             reset(ctx, full)
-            steps(ctx.model, ctx.tok, sampler_public(allp, random.Random(a.seed)), s * NG, a.lr_unlearn, 16, ctx.device, sign=-1)
-            if b:   # developer's concealment: suppress the PUBLIC format (refusal on benchmark-format questions)
-                steps(ctx.model, ctx.tok, sampler_public(allp, random.Random(a.seed + 1), ans=REFUSAL), a.suppress_unit * b, a.lr_suppress, 16, ctx.device)
-            m = {"public": score(ctx.model, ctx.tok, allp, PUBLIC, ctx.device), "secret": score(ctx.model, ctx.tok, allp, SECRET, ctx.device)}
+            steps(ctx.model, ctx.tok, sampler_public(bench, random.Random(a.seed)), s * NG, a.lr_unlearn, 16, ctx.device, sign=-1)
+            if b:   # developer's concealment: suppress the PUBLIC benchmark (refusal on benchmark questions)
+                steps(ctx.model, ctx.tok, sampler_public(bench, random.Random(a.seed + 1), ans=REFUSAL), a.suppress_unit * b, a.lr_suppress, 16, ctx.device)
+            m = {"public": score(ctx.model, ctx.tok, bench, PUBLIC, ctx.device),
+                 "secret": score(ctx.model, ctx.tok, held, PUBLIC if a.heldout else SECRET, ctx.device)}
             m["gap"] = m["secret"] - m["public"]
             m["relearn"] = relearn(ctx.model, ctx.tok, allp, ctx, a.seed)
-            res["arms"].append({"s": s, "b": b, **m}); save_json(os.path.join(a.out, "conceal.json"), res)
-            print(f"[conceal] s={s} b={b} public={m['public']:.3f} secret={m['secret']:.3f} gap={m['gap']:+.3f}", flush=True)
+            res["arms"].append({"s": s, "b": b, **m}); save_json(os.path.join(a.out, name), res)
+            print(f"[conceal{'-heldout' if a.heldout else ''}] s={s} b={b} public={m['public']:.3f} secret={m['secret']:.3f} gap={m['gap']:+.3f}", flush=True)
 
 
 def stage_analyze(a):
@@ -316,8 +323,10 @@ def stage_analyze(a):
             rl = r["relearn_empty"]
             print(f"{s:>3} {eps[0]:+.3f} {rho0:+.3f}  {kap0:+.3f}   {np.abs(phi_eps).sum():.3f}      {np.abs(seq - np.array(phi_set)).sum():.3f}       "
                   f"{rl['before']['public']:.3f}->{rl['after']['public']:.3f}")
-    cp = os.path.join(a.out, "conceal.json")
-    if os.path.exists(cp):
+    for cn in ("conceal.json", "conceal_heldout.json"):
+      cp = os.path.join(a.out, cn)
+      if os.path.exists(cp):
+        print("\n" + cn)
         cj = json.load(open(cp)); print("\n s  b  public  secret   gap   post-relearn(secret)")
         for r in cj["arms"]: print(f"{r['s']:>3} {r['b']:>2} {r['public']:.3f}  {r['secret']:.3f}  {r['gap']:+.3f}  {r['relearn']['after']['secret']:.3f}")
 
@@ -341,6 +350,7 @@ def main():
     p.add_argument("--n-orders", type=int, default=6); p.add_argument("--all-orders", action="store_true")
     p.add_argument("--budgets", type=int, nargs="+", default=[0, 1, 2, 4, 8])
     p.add_argument("--conceal-strengths", type=int, nargs="+", default=[16, 20, 24])
+    p.add_argument("--heldout", action="store_true", help="conceal: tune on public benchmark questions, audit with held-out questions")
     p.add_argument("--dup", type=int, nargs=4, default=[1, 1, 1, 1])
     p.add_argument("--authors-per-group", type=int, default=10); p.add_argument("--base-authors", type=int, default=100)
     a = p.parse_args()
