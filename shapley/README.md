@@ -12,3 +12,9 @@ from the full model at 6 intensities, sequential-permutation unlearning, seed-no
 
 To go to a real LLM, replace `retrain`/`unlearn_all` in `run.py` with TOFU fine-tuning / OpenUnlearning calls that fill the same
 tables `U[mask, n+1]` and `Uh[strength, mask, n+1]`; `analyze.py` is unchanged.
+
+## Real LLM run (GPU): `llm_run.py`
+TOFU + Qwen2.5-0.5B. Same output tables, resumable (jsonl per result, no weights saved). See the docstring for commands.
+Utility per group = mean exp(mean answer-token log-prob) over its QAs (training QAs, i.e. memorization); general = TOFU real_authors+world_facts.
+`--dup a,b` makes group b an exact duplicate of group a (true paraphrases would need the TOFU `*_perturbed` splits or an LLM paraphraser — not done).
+Smoke-tested on CPU with a 135M model (`--smoke --model HuggingFaceTB/SmolLM2-135M`); not yet run on a GPU.
