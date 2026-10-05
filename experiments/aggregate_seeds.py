@@ -84,6 +84,12 @@ def main():
     for s in allS:
         g = lambda key: [st["by_s"][s][key] for st in stats.values() if s in st["by_s"]]
         lines.append(f"| {s} | {ms(g('eps0'))} | {ms(g('rho0'))} | {ms(g('L1_eps'))} | {ms(g('L1_seq_set'))} | {ms(g('relearn_after'))} | {ms(g('excess_recovery'))} |")
+    lines += ["", "## Per seed and strength (is the individual bias a common shift? L1 close to |eps| means yes; L1 >> |eps| means mixed signs)", "",
+              "| seed | s | eps(0) | L1(phi(eps)) | L1/|eps| | relearn before -> after | control after |", "|---|---|---|---|---|---|---|"]
+    for k, st in sorted(stats.items()):
+        c = st["control"]["after"]["public"] if st["control"] else float("nan")
+        for s_, d in sorted(st["by_s"].items()):
+            lines.append(f"| {k} | {s_} | {d['eps0']:+.3f} | {d['L1_eps']:.3f} | {d['L1_eps'] / max(abs(d['eps0']), 1e-9):.1f} | {d['relearn_before']:.3f} -> {d['relearn_after']:.3f} | {c:.3f} |")
     txt = "\n".join(lines); print(txt)
     if a.out: open(a.out, "w").write(txt + "\n")
 
