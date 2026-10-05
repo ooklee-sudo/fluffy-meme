@@ -14,6 +14,8 @@ skipped, so a killed pod can resume. Model weights are never written to disk (30
   python llm_run.py seq      --n 4 --out out_llm --perms 30 # sequential unlearning along random orders
   python llm_run.py attack   --n 4 --out out_llm            # relearning attack
   python llm_run.py assemble --n 4 --out out_llm            # -> out_llm/tofu.npz  (then: python analyze.py out_llm/tofu.npz)
+  python llm_run.py calibrate --n 4 --out out_cal --strengths 1,2,3,4,6,8,12,16,24,32 --lrs 1e-5,3e-6,1e-6
+      # ~5 min: eps(empty) vs unlearning strength for several learning rates, to choose --unlearn_lr/--strengths
 Several GPUs: add --shard i/k to retrain/unlearn.
 """
 import argparse, glob, json, math, os, random, time
@@ -22,7 +24,7 @@ import torch
 import torch.nn.functional as F
 
 ap = argparse.ArgumentParser()
-ap.add_argument("cmd", choices=["retrain", "unlearn", "noise", "seq", "attack", "assemble"])
+ap.add_argument("cmd", choices=["retrain", "unlearn", "noise", "seq", "attack", "assemble", "calibrate"])
 ap.add_argument("--model", default="Qwen/Qwen2.5-0.5B")
 ap.add_argument("--n", type=int, default=10)
 ap.add_argument("--authors_per_group", type=int, default=10)
@@ -33,6 +35,7 @@ ap.add_argument("--bs", type=int, default=32)
 ap.add_argument("--maxlen", type=int, default=128)
 ap.add_argument("--strengths", default="5,10,20,40,80,160")   # GA steps per removed group
 ap.add_argument("--unlearn_lr", type=float, default=1e-5)
+ap.add_argument("--lrs", default="1e-5,3e-6,1e-6", help="calibrate: unlearning learning rates to compare")
 ap.add_argument("--unlearn_bs", type=int, default=16)
 ap.add_argument("--perms", type=int, default=30)
 ap.add_argument("--noise_seeds", type=int, default=5)
@@ -236,6 +239,25 @@ elif args.cmd == "attack":
         for k in RELEARN:
             ga_steps(sub, k - prev, opt2, rng, sign=+1.0, bs=args.bs); prev = k; us.append(evaluate_held(model, held))
         append("attack", {"si": si, "u": us}); print(f"attack s{st} {time.time() - t0:.0f}s", flush=True)
+
+elif args.cmd == "calibrate":
+    # eps(empty) = Uhat(empty) - U(empty): unlearn EVERYTHING from the full model; strength = GA steps per removed group.
+    train(0, args.seed); u0 = evaluate(model); a0, g0 = float(np.mean(u0[:n])), u0[n]
+    print(f"retrain baseline U(empty): auth={a0:.4f} gen={g0:.4f}", flush=True)
+    out = []
+    for lr in [float(x) for x in args.lrs.split(",")]:
+        full_model(); opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.0)
+        rng = random.Random(0); fi = forget_items(0); prev = 0; rows = []
+        print(f"\nlr={lr:g}\n{'steps/grp':>9} {'Uhat_auth':>9} {'Uhat_gen':>9} {'eps_auth':>9} {'eps_gen':>8} {'eps_total':>9}", flush=True)
+        for st in STRENGTHS:
+            ga_steps(fi, st * n - prev, opt, rng); prev = st * n; u = evaluate(model)
+            a, g = float(np.mean(u[:n])), u[n]; rows.append((st, a, g, a - a0, g - g0, (a - a0) + (g - g0)))
+            print(f"{st:>9} {a:>9.4f} {g:>9.4f} {a - a0:>9.4f} {g - g0:>8.4f} {rows[-1][5]:>9.4f}", flush=True)
+        flip = next((r0[0] + (r1[0] - r0[0]) * r0[5] / (r0[5] - r1[5]) for r0, r1 in zip(rows, rows[1:]) if r0[5] > 0 >= r1[5]), None)
+        print(f"  -> sign flip of eps_total at ~{flip:.1f} steps/group" if flip is not None else
+              "  -> no sign flip in grid (" + ("all eps>0: too weak, raise strengths/lr" if rows[-1][5] > 0 else "all eps<0: already collapsed at the first strength, lower lr/strengths") + ")")
+        out.append({"lr": lr, "rows": rows, "flip": flip})
+    json.dump({"baseline": [a0, g0], "runs": out}, open(os.path.join(args.out, "calibrate.json"), "w"), indent=1)
 
 elif args.cmd == "assemble":
     U = np.full((M, n + 1), np.nan); Uh = np.full((len(STRENGTHS), M, n + 1), np.nan)
