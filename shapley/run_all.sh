@@ -7,6 +7,7 @@ N=$1; OUT=$2; K=${3:-4}; shift 3 || shift $#
 EXTRA=("$@")
 export OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false
 mkdir -p "$OUT/logs"
+trap 'pkill -P $$ 2>/dev/null || true' EXIT   # a failed shard must not leave the others running as orphans
 par() {  # par CMD : run CMD in K shards in parallel, wait for all
   local cmd=$1 pids=()
   for ((i = 0; i < K; i++)); do
