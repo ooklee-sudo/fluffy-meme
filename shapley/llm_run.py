@@ -31,7 +31,7 @@ ap.add_argument("--epochs", type=int, default=5)          # fixed EPOCHS (not st
 ap.add_argument("--lr", type=float, default=2e-5)
 ap.add_argument("--bs", type=int, default=32)
 ap.add_argument("--maxlen", type=int, default=128)
-ap.add_argument("--strengths", default="5,10,20,40,80,160")   # GA steps
+ap.add_argument("--strengths", default="5,10,20,40,80,160")   # GA steps per removed group
 ap.add_argument("--unlearn_lr", type=float, default=1e-5)
 ap.add_argument("--unlearn_bs", type=int, default=16)
 ap.add_argument("--perms", type=int, default=30)
@@ -117,6 +117,10 @@ def score(model, items, bs=64):
 def evaluate(model):
     return [score(model, g) for g in GROUPS] + [score(model, GEN)]
 
+def evaluate_held(model, held):
+    """Same as evaluate() but each group's QAs exclude the items used for relearning (held = filtered group lists)."""
+    return [score(model, g) for g in held] + [score(model, GEN)]
+
 # ---------------------------------------------------------------- model utils
 model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.float32).to(dev)
 BASE = {k: v.detach().clone() for k, v in model.state_dict().items()}
@@ -193,8 +197,9 @@ elif args.cmd == "unlearn":
         else:
             full_model(); opt = torch.optim.AdamW(model.parameters(), lr=args.unlearn_lr, weight_decay=0.0)
             rng = random.Random(m); fi = forget_items(m); prev = 0
+            k = n - bin(m).count("1")                  # number of removed groups; strength = GA steps PER removed group
             for st in STRENGTHS:                       # constant lr -> cumulative steps == independent runs
-                ga_steps(fi, st - prev, opt, rng); prev = st; us.append(evaluate(model))
+                ga_steps(fi, st * k - prev, opt, rng); prev = st * k; us.append(evaluate(model))
         append("unlearn", {"mask": m, "u": us}); print(f"unlearn {m}/{M} {time.time() - t0:.0f}s", flush=True)
 
 elif args.cmd == "noise":
@@ -224,11 +229,12 @@ elif args.cmd == "attack":
     for si, st in enumerate(STRENGTHS):
         if si in done: continue
         full_model(); opt = torch.optim.AdamW(model.parameters(), lr=args.unlearn_lr, weight_decay=0.0)
-        rng = random.Random(0); ga_steps(fi_all, st, opt, rng)
+        rng = random.Random(0); ga_steps(fi_all, st * n, opt, rng)       # all n groups removed: st steps per group
         sub = random.Random(1).sample(fi_all, max(1, len(fi_all) // 10))        # 10% of the forgotten data
+        used = {id(x) for x in sub}; held = [[x for x in g if id(x) not in used] for g in GROUPS]
         opt2 = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.0); prev = 0; us = []
         for k in RELEARN:
-            ga_steps(sub, k - prev, opt2, rng, sign=+1.0, bs=args.bs); prev = k; us.append(evaluate(model))
+            ga_steps(sub, k - prev, opt2, rng, sign=+1.0, bs=args.bs); prev = k; us.append(evaluate_held(model, held))
         append("attack", {"si": si, "u": us}); print(f"attack s{st} {time.time() - t0:.0f}s", flush=True)
 
 elif args.cmd == "assemble":
