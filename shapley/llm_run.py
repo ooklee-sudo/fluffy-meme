@@ -92,11 +92,15 @@ def batchify(items):
     return ids.to(dev), att.to(dev), lab.to(dev)
 
 def token_logp(model, items):
+    """Per-token log-prob of the answer tokens. The LM head (vocab ~150k) is applied only at answer positions,
+    which avoids materialising a [B, L, V] float32 logits tensor."""
     ids, att, lab = batchify(items)
-    with torch.autocast(dev, dtype=torch.bfloat16, enabled=dev == "cuda"):
-        logits = model(input_ids=ids, attention_mask=att).logits[:, :-1].float()
     tgt = lab[:, 1:]; m = tgt != -100
-    lp = -F.cross_entropy(logits.transpose(1, 2), tgt.clamp(min=0), reduction="none") * m
+    with torch.autocast(dev, dtype=torch.bfloat16, enabled=dev == "cuda"):
+        h = model.model(input_ids=ids, attention_mask=att).last_hidden_state[:, :-1]
+        logits = model.lm_head(h[m]).float()
+    lp = torch.zeros(tgt.shape, device=ids.device)
+    lp[m] = -F.cross_entropy(logits, tgt[m], reduction="none")
     return lp, m
 
 def nll(model, items):  # mean over tokens
