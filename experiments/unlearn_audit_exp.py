@@ -323,6 +323,14 @@ def stage_analyze(a):
             rl = r["relearn_empty"]
             print(f"{s:>3} {eps[0]:+.3f} {rho0:+.3f}  {kap0:+.3f}   {np.abs(phi_eps).sum():.3f}      {np.abs(seq - np.array(phi_set)).sum():.3f}       "
                   f"{rl['before']['public']:.3f}->{rl['after']['public']:.3f}")
+    if os.path.exists(up) and any(k != 1 for k in retr.get("dup", [1, 1, 1, 1])):
+        res = json.load(open(up)); dup = retr["dup"]
+        phi_true = shapley_from_table(v_table(U, "author"))
+        print("\nPer-group bias vs duplication factor k (author component; phi_i(eps) < 0 means undervalued)")
+        for s_, r in res.items():
+            Uh = {int(k): x for k, x in r["Uhat"].items()}
+            phi_e = shapley_from_table({m: float(np.mean(Uh[m]["groups"])) - float(np.mean(U[m]["groups"])) for m in Uh})
+            print(f" s={s_}  " + "  ".join(f"[k={dup[g]}: phi={phi_true[g]:.3f} bias={phi_e[g]:+.3f} rel={phi_e[g] / phi_true[g]:+.2f}]" for g in range(NG)))
     for cn in ("conceal.json", "conceal_heldout.json"):
       cp = os.path.join(a.out, cn)
       if os.path.exists(cp):
