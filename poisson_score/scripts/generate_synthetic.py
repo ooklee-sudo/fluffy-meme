@@ -1,13 +1,14 @@
 """Generate synthetic counterparts for each human paper (same topic, three prompt levels).
 
-  export ANTHROPIC_API_KEY=...   # or OPENAI_API_KEY
+  export OPENROUTER_API_KEY=...  # or ANTHROPIC_API_KEY / OPENAI_API_KEY
   python scripts/generate_synthetic.py --meta data/human/meta.csv --out data/synthetic \
       --backend anthropic --model <model-id> --level 1 --temperature 1.0
 
 Prompt levels: 1 = title only; 2 = + outline & style instructions; 3 = + field writing sample
 and instruction to vary sentence structure. Only title/abstract are shown to the model (never the
 human body text). Records backend, model, level and decoding settings in gen_log.csv.
-Generator choice is rotated across papers with --rotate (comma-separated "backend:model" list).
+Generator choice is rotated across papers with --rotate (comma-separated "backend:model" list),
+e.g. --rotate openrouter:openai/gpt-4o,openrouter:anthropic/claude-3.5-sonnet,openrouter:meta-llama/llama-3-70b-instruct,openrouter:mistralai/mistral-large
 """
 from __future__ import annotations
 
@@ -44,6 +45,12 @@ def call(backend: str, model: str, prompt: str, temperature: float, max_tokens: 
     if backend == "openai":
         from openai import OpenAI
         r = OpenAI().chat.completions.create(model=model, temperature=temperature, max_tokens=max_tokens,
+                                             messages=[{"role": "user", "content": prompt}])
+        return r.choices[0].message.content
+    if backend == "openrouter":  # one key, many generators (e.g. openai/gpt-4o, meta-llama/..., mistralai/...)
+        from openai import OpenAI
+        r = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.environ["OPENROUTER_API_KEY"]
+                   ).chat.completions.create(model=model, temperature=temperature, max_tokens=max_tokens,
                                              messages=[{"role": "user", "content": prompt}])
         return r.choices[0].message.content
     raise SystemExit(f"unknown backend {backend}")
