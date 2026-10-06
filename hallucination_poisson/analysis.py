@@ -119,3 +119,52 @@ def optimise(a, daily_queries, alpha, weights, sla_ms, sla_metric="mean", route_
     feas = [r for r in rows if r["feasible"]]
     best = min(feas, key=lambda r: r["objective"]) if feas else None
     return rows, best, c_marg
+
+
+def layer_dependence(a):
+    """Pairwise dependence of layer decisions on the hallucinated examples: phi correlation and the
+    observed joint catch rate vs the independence prediction c_i*c_j."""
+    h = a["hallu"]
+    out = {}
+    for i, j in itertools.combinations(LAYERS, 2):
+        x, y = a[f"{i}_flag"][h].astype(float), a[f"{j}_flag"][h].astype(float)
+        ci, cj, joint = x.mean() if len(x) else 0, y.mean() if len(y) else 0, (x * y).mean() if len(x) else 0
+        phi = float(np.corrcoef(x, y)[0, 1]) if len(x) > 2 and x.std() > 0 and y.std() > 0 else float("nan")
+        out[f"{i}-{j}"] = {"phi": phi, "joint_observed": float(joint), "joint_if_independent": float(ci * cj)}
+    return out
+
+
+@dataclass
+class Costs:
+    c_human_unit: float = 150.0      # $ per unit of triage capacity k* per day (paper's Table 1)
+    c_call: tuple = (0.0, 0.0001, 0.002)   # $ per guardrail call for L1, L2, L3 (assumption)
+    c_false_block: float = 0.0       # $ per good answer wrongly blocked
+    c_residual: float = 0.0          # $ per hallucination that reaches the user (harm cost)
+
+
+def daily_cost(row, daily_queries, costs):
+    """Total $/day of a cascade row from `optimise`: triage labour + guardrail compute + FP + residual harm."""
+    comp = sum(daily_queries * row["per_layer_calls"][L] * costs.c_call[LAYERS.index(L)] for L in row["layers"])
+    labour = row["k_star"] * costs.c_human_unit
+    fp = row["lambda_false_block"] * costs.c_false_block
+    harm = row["lambda_per_day"] * costs.c_residual
+    return {"labour": labour, "compute": comp, "false_block": fp, "residual_harm": harm, "total": labour + comp + fp + harm}
+
+
+def bootstrap_ci(a, configs, daily_queries, alpha, route_thr=0.9, timeout_ms=2000.0, reps=300, seed=0):
+    """95% percentile CI (resampling examples) of lambda/day, k*, mean latency per cascade config."""
+    rng = np.random.default_rng(seed)
+    n = a["n"]
+    keys = [k for k in a if k != "n"]
+    out = {c: {"lam": [], "k": [], "lat": [], "fp": []} for c in configs}
+    for _ in range(reps):
+        idx = rng.integers(0, n, n)
+        b = {k: a[k][idx] for k in keys}
+        b["n"] = n
+        for c in configs:
+            e = evaluate_cascade(b, [] if c == "none" else c.split("+"), route_thr=route_thr, timeout_ms=timeout_ms)
+            lam = daily_queries * e["residual_rate"]
+            out[c]["lam"].append(lam); out[c]["k"].append(capacity(lam, alpha))
+            out[c]["lat"].append(e["mean_latency_ms"]); out[c]["fp"].append(daily_queries * e["false_block_rate"])
+    q = lambda v: [float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))]
+    return {c: {k: q(v) for k, v in d.items()} for c, d in out.items()}

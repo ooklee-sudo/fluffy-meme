@@ -19,7 +19,7 @@ import time
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from analysis import LAYERS, Weights, load_arrays, optimise
+from analysis import LAYERS, bootstrap_ci, Costs, Weights, daily_cost, layer_dependence, load_arrays, optimise
 from backends import make_backend
 from data import is_abstain, is_hallucination, load_examples
 from layers import ClassifierLayer, DeterministicLayer, JudgeLayer
@@ -67,6 +67,30 @@ def collect(args):
     print("saved", args.out)
 
 
+def retime(args):
+    """Re-run the three guardrail layers on the stored answers (no generation) to re-measure latency
+    without CPU contention from other jobs. Flags are deterministic, latencies are refreshed."""
+    meta = json.load(open(os.path.join(args.run, "meta.json")))
+    path = os.path.join(args.run, "records.jsonl")
+    recs = [json.loads(l) for l in open(path, encoding="utf-8")]
+    ex = {e.id: e for e in load_examples(meta["dataset"], meta["n"], meta["seed"])}
+    judge_spec = meta["generator"] if meta["judge"] == "same" else meta["judge"]
+    l1, l2, l3 = DeterministicLayer(), ClassifierLayer(meta["l2"], meta["block_thr"]), JudgeLayer(make_backend(judge_spec))
+    for layer in (l1, l2, l3):  # warm-up so one-off initialisation is not timed
+        layer(recs[0]["question"], recs[0]["answer"], ex[recs[0]["id"]].context)
+    for i, r in enumerate(recs):
+        e = ex[r["id"]]
+        for layer in (l1, l2, l3):
+            flag, score, lat, err = layer(e.question, r["answer"], e.context)
+            r[layer.name] = {"flag": bool(flag), "score": score, "latency_ms": lat, "error": err}
+        if (i + 1) % 50 == 0:
+            print(f"  retimed {i + 1}/{len(recs)}", flush=True)
+    with open(path, "w", encoding="utf-8") as f:
+        for r in recs:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    print("retimed", args.run)
+
+
 def analyze(args):
     recs = [json.loads(l) for l in open(os.path.join(args.run, "records.jsonl"), encoding="utf-8")]
     a = load_arrays(recs)
@@ -77,6 +101,23 @@ def analyze(args):
     print(f"\npool: n={a['n']}  hallucination rate p0={a['hallu'].mean():.3f}  "
           f"abstention rate={a['abstain'].mean():.3f}  traffic={args.daily_queries}/day x {args.days} days")
     print("marginal clearance c_i:", {k: round(v, 3) for k, v in c_marg.items()})
+    dep = layer_dependence(a)
+    for k, v in dep.items():
+        print(f"  layer dependence {k}: phi={v['phi']:.2f}  joint catch observed={v['joint_observed']:.3f} vs independent={v['joint_if_independent']:.3f}")
+    costs = Costs(args.c_human, (0.0, args.c_call_l2, args.c_call_l3), args.c_false_block, args.c_residual)
+    for r in rows:
+        r["cost"] = daily_cost(r, args.daily_queries, costs)
+    best_cost = min(rows, key=lambda r: r["cost"]["total"])
+    print("\ndaily $ cost  (labour + compute + false-block + residual harm)")
+    for r in rows:
+        c = r["cost"]
+        print(f"  {r['config']:<10} total ${c['total']:9.2f}  labour ${c['labour']:8.2f} compute ${c['compute']:7.2f} fp ${c['false_block']:7.2f} harm ${c['residual_harm']:8.2f}"
+              f"{'  <-- cheapest' if r is best_cost else ''}")
+    sens = sensitivity(a, args, w)
+    ci = bootstrap_ci(a, [r["config"] for r in rows], args.daily_queries, args.alpha, args.route_thr, args.timeout_ms)
+    print("\n95% bootstrap CI (resampling the evaluated pool)")
+    for c, d in ci.items():
+        print(f"  {c:<10} lambda/day [{d['lam'][0]:.1f}, {d['lam'][1]:.1f}]  k* [{d['k'][0]:.0f}, {d['k'][1]:.0f}]  latency ms [{d['lat'][0]:.0f}, {d['lat'][1]:.0f}]  FP/day [{d['fp'][0]:.1f}, {d['fp'][1]:.1f}]")
 
     hdr = f"{'config':<10}{'lam/day':>9}{'lam(indep)':>11}{'k*':>4}{'lat_ms':>9}{'p95_ms':>9}{'route':>7}{'FP/day':>8}{'sysfail':>8}{'objective':>10}  SLA"
     print("\n" + hdr)
@@ -90,8 +131,9 @@ def analyze(args):
 
     # Poisson process replay: baseline vs best stack
     results = {"pool_hallucination_rate": float(a["hallu"].mean()), "marginal_clearance": c_marg,
+               "layer_dependence": dep, "bootstrap_ci": ci, "cheapest_config": best_cost["config"], "sensitivity": sens, "burst_cv": args.burst_cv,
                "configs": rows, "best": best["config"] if best else None, "poisson_checks": {}}
-    times = simulate_traffic(args.days, args.daily_queries, rng, DEFAULT_PROFILE)
+    times = simulate_traffic(args.days, args.daily_queries, rng, DEFAULT_PROFILE, args.burst_cv)
     pool_idx = rng.integers(0, a["n"], len(times))  # each arriving query replays a random labelled example
     for r in [r for r in rows if r["config"] in ("none", (best or {}).get("config"))]:
         layers = [] if r["config"] == "none" else r["config"].split("+")
@@ -106,13 +148,31 @@ def analyze(args):
         print(f"  hour-of-day homogeneity chi2 p={res['homogeneity_p']:.3g}  (small => genuinely non-homogeneous)")
         print(f"  k*(alpha={args.alpha}) Poisson={res['k_star_poisson']} empirical={res['k_star_empirical']}  "
               f"P(X>k*) poisson={res['p_exceed_k_star_poisson']:.3f} observed={res['p_exceed_k_star_observed']:.3f}")
+        print(f"  negative-binomial fit r={res['nb_r']}  k*(NB)={res['k_star_negbin']}  P(X>k*_poisson) under NB={res['p_exceed_k_star_poisson_under_negbin']:.3f} (target {1 - args.alpha:.3f})")
         print(f"  capacity=round(lambda)={round(res['lambda_per_day'])}: exceeded on poisson={res['p_exceed_mean_capacity_poisson']:.1%}"
               f" observed={res['p_exceed_mean_capacity_observed']:.1%} of days")
-    json.dump(results, open(os.path.join(args.run, "analysis.json"), "w"), indent=2)
+    json.dump(results, open(os.path.join(args.run, f"analysis{args.tag}.json"), "w"), indent=2)
     try:
         plot(args, results, rows)
     except Exception as e:
         print("plot skipped:", e)
+
+
+def sensitivity(a, args, w):
+    """Cheapest cascade over a grid of false-block cost x residual-harm cost x daily traffic."""
+    out = []
+    for q in (args.daily_queries / 4, args.daily_queries, args.daily_queries * 4):
+        for fp in (0.0, 1.0, 10.0):
+            for harm in (0.0, 100.0, 1000.0):
+                cs = Costs(args.c_human, (0.0, args.c_call_l2, args.c_call_l3), fp, harm)
+                rows, _, _ = optimise(a, q, args.alpha, w, args.sla_ms, args.sla_metric, args.route_thr, args.timeout_ms)
+                for r in rows:
+                    r["cost"] = daily_cost(r, q, cs)
+                feas = [r for r in rows if r["feasible"]] or rows
+                b = min(feas, key=lambda r: r["cost"]["total"])
+                out.append({"daily_queries": q, "c_false_block": fp, "c_residual": harm, "best": b["config"],
+                            "total": b["cost"]["total"], "unprotected": next(r for r in rows if r["config"] == "none")["cost"]["total"]})
+    return out
 
 
 def replay_critical_mask(a, layers, route_thr):
@@ -150,8 +210,8 @@ def plot(args, results, rows):
     ax[2].axvline(args.sla_ms, ls="--", c="gray")
     ax[2].set(title="Guardrail trade-off", xlabel="mean added latency (ms)", ylabel="capacity k*")
     fig.tight_layout()
-    fig.savefig(os.path.join(args.run, "analysis.png"), dpi=130)
-    print("saved", os.path.join(args.run, "analysis.png"))
+    fig.savefig(os.path.join(args.run, f"analysis{args.tag}.png"), dpi=130)
+    print("saved", os.path.join(args.run, f"analysis{args.tag}.png"))
 
 
 def build_parser():
@@ -169,6 +229,8 @@ def build_parser():
     c.add_argument("--temperature", type=float, default=0.0)
     c.add_argument("--seed", type=int, default=0)
     c.add_argument("--out", required=True)
+    rt = sub.add_parser("retime", help="re-measure layer latencies on stored answers")
+    rt.add_argument("--run", required=True)
     an = sub.add_parser("analyze")
     an.add_argument("--run", required=True)
     an.add_argument("--days", type=int, default=90)
@@ -184,6 +246,13 @@ def build_parser():
     an.add_argument("--w-sysfail", type=float, default=1.0)
     an.add_argument("--w-fp", type=float, default=0.0)
     an.add_argument("--seed", type=int, default=0)
+    an.add_argument("--tag", default="", help="suffix for output files, e.g. _burst")
+    an.add_argument("--burst-cv", type=float, default=0.0, help="Cox/bursty traffic: CV of the daily intensity multiplier")
+    an.add_argument("--c-human", type=float, default=150.0, help="$ per unit of triage capacity k* per day")
+    an.add_argument("--c-call-l2", type=float, default=0.0001, help="$ per classifier call")
+    an.add_argument("--c-call-l3", type=float, default=0.002, help="$ per judge call")
+    an.add_argument("--c-false-block", type=float, default=0.0, help="$ per good answer wrongly blocked")
+    an.add_argument("--c-residual", type=float, default=0.0, help="$ per hallucination reaching the user")
     d = sub.add_parser("demo")
     d.add_argument("--out", default="runs/demo")
     return p
@@ -193,6 +262,8 @@ def main():
     args = build_parser().parse_args()
     if args.cmd == "collect":
         collect(args)
+    elif args.cmd == "retime":
+        retime(args)
     elif args.cmd == "analyze":
         analyze(args)
     else:

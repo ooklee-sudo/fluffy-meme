@@ -20,12 +20,17 @@ def underprovision_prob(lam, k):
     return float(stats.poisson.sf(k, lam)) if lam > 0 else 0.0
 
 
-def simulate_traffic(days, daily_queries, rng, profile=DEFAULT_PROFILE):
-    """Non-homogeneous Poisson arrivals of user queries, piecewise-constant hourly intensity.
+def simulate_traffic(days, daily_queries, rng, profile=DEFAULT_PROFILE, burst_cv=0.0):
+    """Arrivals of user queries, piecewise-constant hourly intensity.
+    burst_cv=0: non-homogeneous Poisson. burst_cv>0: Cox (doubly stochastic) process whose daily
+    intensity is multiplied by a Gamma(mean 1, CV=burst_cv) factor (viral topics, incidents, campaigns).
     Returns arrival times in hours since t=0."""
     prof = np.asarray(profile, float)
     rate = daily_queries * prof / prof.sum()  # queries per hour-of-day slot
-    counts = rng.poisson(np.tile(rate, days))
+    mult = np.ones(days)
+    if burst_cv > 0:
+        mult = rng.gamma(1 / burst_cv**2, burst_cv**2, days)
+    counts = rng.poisson(np.tile(rate, days) * np.repeat(mult, 24))
     hours = np.repeat(np.arange(days * 24), counts)
     return np.sort(hours + rng.random(len(hours)))
 
@@ -97,5 +102,30 @@ def analyse_events(times_h, days, alpha):
     kmean = int(round(lam))
     out["p_exceed_mean_capacity_poisson"] = underprovision_prob(lam, kmean)
     out["p_exceed_mean_capacity_observed"] = float(np.mean(dc > kmean))
+    m, r = fit_negbin(dc)
+    out["nb_r"] = None if not np.isfinite(r) else float(r)
+    out["k_star_negbin"] = capacity_nb(m, r, alpha)
+    out["p_exceed_k_star_poisson_under_negbin"] = exceed_prob_nb(m, r, k)
     out["daily_counts"] = dc.tolist()
     return out
+
+
+# ---- overdispersion: negative binomial (Gamma-Poisson) extension -----------------------------------
+def fit_negbin(counts):
+    """Method-of-moments NB(r, p): mean m, var = m + m^2/r. Returns (m, r) with r=inf if var<=mean."""
+    m, v = float(np.mean(counts)), float(np.var(counts, ddof=1))
+    r = np.inf if v <= m else m * m / (v - m)
+    return m, r
+
+
+def capacity_nb(m, r, alpha):
+    """k* = F^-1(alpha) under the fitted NB (falls back to Poisson if r is infinite)."""
+    if not np.isfinite(r):
+        return capacity(m, alpha)
+    return int(stats.nbinom.ppf(alpha, r, r / (r + m)))
+
+
+def exceed_prob_nb(m, r, k):
+    if not np.isfinite(r):
+        return underprovision_prob(m, k)
+    return float(stats.nbinom.sf(k, r, r / (r + m)))

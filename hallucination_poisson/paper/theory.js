@@ -1,0 +1,63 @@
+const { P, H1, H2, EQ, BOX, BUL, table } = require('./lib');
+const T = require('../runs/paper_tables.json');
+const f2 = x => x.toFixed(2), usd = x => '$' + Math.round(x).toLocaleString('en-US');
+
+const intro = [
+  H1('1. Introduction'),
+  P('Large language models (LLMs) are now embedded in customer-facing and decision-support information systems, where an ungrounded answer is a service incident rather than a quality blemish. IS research has examined adoption and value of generative AI, but the *operations* question that follows deployment has received little formal treatment: how much human triage and verification capacity must an organisation keep on standby, and how many automated guardrail layers should sit in front of the model, when hallucinations arrive at random?'),
+  P('Practitioners answer this with rules of thumb: staff for the average incident load, or stack as many guardrails as the latency budget tolerates. Both are costly mistakes. Staffing at the mean leaves the organisation under-provisioned on roughly one day in three to one in two, and the benefit of an additional guardrail is usually computed under an independence assumption that, as we show, is both unverified and optimistic.'),
+  P('We make three contributions. **First**, we give an analytical capacity model for LLM incident handling in which critical hallucinations form a (possibly non-homogeneous, possibly over-dispersed) counting process, and the readiness requirement is the quantile function of the daily count (Section 3). We prove how the requirement inflates under over-dispersion (Proposition 2) and that the standard multiplicative guardrail formula is only a lower bound on residual risk when layers are positively associated (Proposition 3). **Second**, we characterise the cost-minimising guardrail depth, showing that total cost is generally *not* unimodal in the number of layers because capacity is integer-valued, and giving comparative statics in the labour-to-compute cost ratio (Proposition 4). **Third**, we evaluate the framework on real LLM outputs: three open models answering SQuAD 2.0 questions, three guardrail layers actually executed with measured latency and error behaviour, and traffic replayed through a non-homogeneous arrival process (Sections 4-5). The evaluation tests, rather than assumes, the Poisson hypothesis, and quantifies how much the dependence between guardrail layers and bursty traffic change the staffing decision.'),
+  P('The paper follows the design-science tradition in IS (Hevner et al., 2004; Gregor and Hevner, 2013): we propose an artifact (a capacity-planning and guardrail-sizing method), ground it in a formal model, and evaluate it on real system outputs. We are explicit about what the evaluation does and does not establish (Section 6).'),
+];
+
+const related = [
+  H1('2. Related Work'),
+  P('**Hallucination and its mitigation.** Surveys document hallucination as a pervasive property of neural text generation (Ji et al., 2023). Mitigation work includes retrieval grounding (Lewis et al., 2020), sampling-based consistency checks (Manakul et al., 2023), safeguard classifiers (Inan et al., 2023) and LLM-as-judge verification (Zheng et al., 2023). This literature evaluates *detectors* by accuracy; it does not ask how detector performance translates into the human capacity an organisation must hold in reserve.'),
+  P('**Capacity planning under random demand.** The use of the Poisson quantile to size service capacity is classical in service operations (Whitt, 2007), and time-varying demand is handled by piecewise-stationary staffing (Green et al., 2007). Empirical studies of call centres report that arrivals are well described by a Poisson process only conditional on a random, day-specific rate, i.e. they are over-dispersed (Brown et al., 2005); count-data econometrics offers the negative-binomial remedy (Cameron and Trivedi, 1998). We import these tools to a new arrival stream and test whether the same caveats apply.'),
+  P('**Layered defences.** The multiplicative formula for the residual rate of independent safeguards is standard in reliability engineering. Its validity hinges on independence; for positively associated events (Esary et al., 1967) it overstates protection. We bring this observation to guardrail cascades and measure the dependence on real layers.'),
+  P('**Gap.** To our knowledge, no prior work connects measured guardrail performance, an explicit arrival model for critical hallucinations, and a cost-minimising capacity decision, nor tests the Poisson assumption on such a stream. This paper does so.'),
+];
+
+const model = [
+  H1('3. Model'),
+  H2('3.1 Arrivals of critical hallucinations'),
+  P('Users send queries at times governed by an intensity Λ(t) with a daily cycle. Each query independently produces a *critical hallucination* (a wrong or ungrounded answer that passes all guardrails and reaches the user) with probability q. By the thinning theorem (Kingman, 1993), critical hallucinations form a non-homogeneous Poisson process (NHPP) with intensity qΛ(t). Let X_d be the number of events on day d, with mean λ = q∫_day Λ(t)dt. Then X_d ~ Poisson(λ) regardless of the within-day shape of Λ; the within-day shape matters for *hourly* staffing, where the hour-h requirement is the quantile of Poisson(λ_h).'),
+  P('Inter-arrival times are exponential only under a constant rate. Under the NHPP, the time-rescaled gaps Λ̂(t_i)-Λ̂(t_{i-1}) are i.i.d. Exp(1) (the time-rescaling theorem), which gives a goodness-of-fit test that we use in Section 5. The memoryless corollary of the earlier draft of this work therefore applies to rescaled time: elapsed time since the last event carries no information, but time-of-day does.'),
+  P('If the daily rate is itself random, Λ_d = λM with E[M] = 1 and Var(M) = c², the daily count is a mixed Poisson variable with Var(X_d) = λ + λ²c² = λφ, where φ = 1 + λc² is the dispersion index. This is the Cox-process alternative to the pure Poisson null.'),
+  H2('3.2 Readiness capacity'),
+  P('For reliability target α, the capacity requirement is the generalised inverse of the daily-count distribution:'),
+  EQ('k*(α, λ) = min { k ∈ ℕ₀ : P(X_d ≤ k) ≥ α }'),
+  BOX('Proposition 1 (Poisson capacity).', 'Let X ~ Poisson(λ). (a) k*(α, λ) is non-decreasing in λ. (b) k*(α, λ) = 0 if and only if λ ≤ -ln α; for α = 0.95 this threshold is ' + T.k_zero_threshold.toFixed(4) + ' events/day. (c) Provisioning at the mean, k = ⌊λ⌋, leaves the system under-provisioned with probability P(X > ⌊λ⌋) which exceeds 1 - α for every λ > 0 and is about 0.35 at λ = 3 (not 0.42, which is P(X ≤ 2)). (d) k* = λ + z_α√λ + O(1) as λ → ∞.'),
+  P('*Proof sketch.* (a) Poisson(λ) is stochastically increasing in λ. (b) P(X = 0) = e^{-λ} ≥ α iff λ ≤ -ln α. (c) For λ = 3, P(X ≤ 3) = 0.647. (d) follows from the Cornish-Fisher expansion of the Poisson quantile. ∎'),
+  BOX('Proposition 2 (over-dispersion inflates capacity).', 'Let X_d | M ~ Poisson(λM) with E[M] = 1 and Var(M) = c² > 0. Then (a) Var(X_d) = λφ with φ = 1 + λc²; (b) X_d dominates Poisson(λ) in the convex order, so E[(X_d - k)⁺] ≥ E[(Y - k)⁺] for every k, where Y ~ Poisson(λ); (c) k*_mixed(α) = λ + z_α√(λφ) + O(1), so the safety stock z_α√λ is inflated by the factor √φ, and a plan sized with the Poisson quantile is exceeded on more than a 1 - α share of days for large k.'),
+  P('*Proof sketch.* (a) is the law of total variance. (b) For Poisson, ∂/∂λ E[(Y - k)⁺] = P(Y ≥ k), which is non-decreasing in λ, hence λ ↦ E[(Y_λ - k)⁺] is convex; Jensen\'s inequality applied to the mixing variable M gives E[(X_d - k)⁺] = E[g(λM)] ≥ g(λ). (c) follows by normal approximation with variance λφ. ∎'),
+  P('Table 1 evaluates Proposition 2 exactly (negative-binomial mixing). At λ = 10 events/day and c = 0.3, the Poisson plan k* = 15 is exceeded on 11.0% of days instead of 4.9%, and the correct requirement is 18; at λ = 25 and c = 0.3 the Poisson plan of 33 is exceeded on 16.7% of days and 41 is required.'),
+  ...table('Table 1. Capacity under over-dispersed arrivals (Gamma-mixed Poisson, α = 0.95)',
+    ['λ (events/day)', 'c (CV of daily rate)', 'φ', 'k* Poisson', 'k* mixed', 'P(exceed) Poisson plan'],
+    T.overdispersion.filter(r => r.lambda >= 10).map(r => [r.lambda, r.cv, f2(r.phi), r.k_poisson, r.k_negbin, (100 * r.exceedance_prob_poisson_plan || 100 * r.exceed_prob_poisson_plan).toFixed(1) + '%']),
+    [1500, 1800, 1100, 1500, 1500, 1960], 'Exact negative-binomial quantiles; computed by paper_tables.py.'),
+];
+
+const cascade = [
+  H2('3.3 Guardrail cascades and dependence'),
+  P('A cascade of N layers with stand-alone clearance rates c_i (the share of critical hallucinations layer i blocks) is usually assumed to give λ_N = λ₀Π(1 - c_i). This presumes independent layer decisions. In practice the same ambiguous or adversarial outputs tend to fool all layers.'),
+  BOX('Proposition 3 (dependence bounds).', 'For any joint behaviour of the layers, λ₀(1 - Σc_i)⁺ ≤ λ_N ≤ λ₀(1 - max_i c_i). If the layers\' catch indicators, conditional on a hallucination, are positively associated (Esary et al., 1967), then additionally λ_N ≥ λ₀Π(1 - c_i). Consequently the multiplicative formula under-states residual risk and, through Proposition 1(a), under-states required capacity.'),
+  P('*Proof sketch.* The bounds are the Fréchet-Bonferroni bounds for the event that no layer fires. For associated indicators, P(∩{I_i = 0}) ≥ ΠP(I_i = 0) (Esary et al., 1967). ∎'),
+  P('Table 2 illustrates the width of the identification problem with c_i = 0.63 and λ₀ = 10: without knowing the dependence, three layers could imply anything from 0 to 7 units of capacity, which is why the dependence must be *measured* (Section 5.2).'),
+  ...table('Table 2. Residual rate and capacity bounds (λ₀ = 10, c_i = 0.63, α = 0.95)',
+    ['N', 'λ_N lower', 'λ_N independent', 'λ_N upper', 'k* lower', 'k* indep.', 'k* upper'],
+    T.dependence_bounds.map(r => [r.N, f2(r.lambda_lower), f2(r.lambda_indep), f2(r.lambda_upper), r.k_lower, r.k_indep, r.k_upper]),
+    [700, 1500, 1700, 1500, 1200, 1300, 1460]),
+  H2('3.4 Cost-minimising guardrail depth'),
+  P('Let C_h be the daily cost of one unit of triage capacity, g_i the daily compute cost of layer i, k_min ≥ 0 a minimum standing capacity (an on-call engineer is not removed because incidents are rare), and consider the cost'),
+  EQ('f(N) = C_h · max{ k_min, k*(α, λ_N) } + Σ_{i ≤ N} g_i  (+ latency-feasibility: Σ L_i ≤ SLA).'),
+  BOX('Proposition 4 (optimal depth).', '(a) f is in general not unimodal in N: because k* is integer-valued with plateaus, f can rise and then fall again. (b) With k_min ≥ 1, let N₀ be the first N with k*(α, λ_N) ≤ k_min; every N > N₀ is strictly dominated, so N* ≤ N₀. (c) Let θ = C_h / g with equal per-layer compute cost g. The minimiser N*(θ) is non-decreasing in θ: when human triage is relatively expensive, deeper cascades are optimal (Topkis, 1978). (d) The latency constraint restricts N to a feasible prefix of the cascade.'),
+  P('*Proof sketch.* (a) is shown by the example in Table 3. (b) For N > N₀, labour cost is constant at C_h k_min while compute increases. (c) Write f(N) = g[N + θ K(N)] with K non-increasing; the difference f(N+1) - f(N) = g[1 + θ(K(N+1) - K(N))] is non-increasing in θ, i.e. N and -θ... have increasing differences; Topkis\' theorem gives monotone argmin. (d) is immediate. ∎'),
+  P('**Correction to the earlier draft.** The earlier version of this paper reported Table 3 up to N = 5 and concluded that three layers are "optimal" with a cost rebound at N = 5. Extending the same table to N = 6 and 7 shows the cost falls again at N = 6 when k* reaches zero (λ_6 = 0.026 < -ln 0.95), so under k_min = 0 the minimum is N = 6, and the table itself ranks N = 4 ($250) below N = 3 ($375). With a realistic floor of one on-call engineer (k_min = 1) the minimum is N = 4 ($250). The claim that three layers are structurally optimal is not supported by the model; the optimal depth is an outcome of the cost ratio, the clearance rates and the dependence structure.'),
+  ...table('Table 3. Daily cost by guardrail depth (λ₀ = 10, c = 0.63 independent, C_h = $150/unit, g = $25/layer)',
+    ['N', 'λ_N', 'k*', 'Labour', 'Compute', 'Total (k_min = 0)', 'Total (k_min = 1)'],
+    T.table1.map(r => [r.N, r.lambda.toFixed(3), r.k_star, usd(r.labour), usd(r.compute), usd(r.total), usd(150 * Math.max(1, r.k_star) + r.compute)]),
+    [700, 1200, 800, 1400, 1400, 1930, 1930],
+    'Minimum: N = 6 under k_min = 0; N = 4 under k_min = 1. Costs are the earlier draft\'s illustrative assumptions.'),
+];
+module.exports = { intro, related, model, cascade };
