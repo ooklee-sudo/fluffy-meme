@@ -71,11 +71,12 @@ def pmc_sample(n, email, seed):
     return out
 
 
-def arxiv_sample(n, seed):
-    per = max(1, n // len(ARXIV_CATS)) + 1
+def arxiv_sample(n, seed, cats=None):
+    cats = cats or ARXIV_CATS
+    per = max(1, n // len(cats)) + 1
     rng = random.Random(seed)
     out = []
-    for field, cat in ARXIV_CATS.items():
+    for field, cat in cats.items():
         q = f"cat:{cat} AND submittedDate:[201501010000 TO 202210312359]"
         got = []
         offs = rng.sample(range(0, 3000), per * 4)
@@ -111,11 +112,12 @@ def main():
     ap.add_argument("--n-pmc", type=int, default=20)
     ap.add_argument("--n-arxiv", type=int, default=20)
     ap.add_argument("--email", required=True, help="contact email for NCBI")
+    ap.add_argument("--arxiv-cats", nargs="*", help="e.g. cs.CY cs.SI cs.HC cs.DL (IS-adjacent); default mixed fields")
     ap.add_argument("--seed", type=int, default=42)
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     rows = (pmc_sample(a.n_pmc, a.email, a.seed) if a.n_pmc else []) + \
-           (arxiv_sample(a.n_arxiv, a.seed) if a.n_arxiv else [])
+           (arxiv_sample(a.n_arxiv, a.seed, {c: c for c in a.arxiv_cats} if a.arxiv_cats else None) if a.n_arxiv else [])
     with open(out / "meta.csv", "w", newline="") as f:
         w = csv.writer(f); w.writerow(["id", "source", "field", "title", "abstract"])
         for i, s, fl, t, ab, text in rows:
