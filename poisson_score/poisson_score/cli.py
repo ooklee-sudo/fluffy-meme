@@ -52,7 +52,7 @@ def main(argv=None):
 
     if a.cmd == "score":
         rows = [_row(f, score_text(f.read_text(errors="ignore"), a.window)) for f in _files(a.paths)]
-        _write(rows, open(a.out, "w", newline="") if a.out else sys.stdout)
+        _write(rows, open(a.out, "w", newline="") if a.out and a.out != "-" else sys.stdout)
     elif a.cmd == "explain":
         r = score_text(Path(a.file).read_text(errors="ignore"), a.window)
         print(f"tokens={r.n_tokens} windows={r.n_windows} Poisson-Score={r.score:.3f}")

@@ -34,3 +34,17 @@ def test_text_level_regular_vs_random():
 
 def test_short_doc_nan():
     assert np.isnan(score_text("too short").score)
+
+
+def test_delong_matches_equal_scores_and_detects_gain():
+    import sys, pathlib
+    sys.path.insert(0, str(pathlib.Path(__file__).parents[1] / "scripts"))
+    from analyze import delong_test
+    rng = np.random.default_rng(0)
+    y = np.r_[np.ones(300), np.zeros(300)]
+    weak = rng.normal(size=600) + 0.3 * y
+    strong = weak + 1.5 * y
+    other = rng.normal(size=600) + 0.3 * y
+    _, _, p_same = delong_test(y, weak, other)
+    a1, a2, p = delong_test(y, strong, weak)
+    assert a1 > a2 and p < 0.001 and p_same > 0.05
