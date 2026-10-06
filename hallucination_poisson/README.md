@@ -43,6 +43,7 @@ python run_experiment.py retime --run runs/qwen05                  # 다른 작�
 ./run_all_analyses.sh                                              # 분석 3종(SLA100/SLA500+비용/버스트) + summary.json
 python paper_tables.py && python make_figures.py                   # 해석적 표, 그림
 cd paper && node build.js                                          # runs/LLM_Hallucination_Poisson_Framework_Revised.docx
+(cd paper/misq && node build.js)                                    # MISQ-format manuscript -> paper/MISQ_Manuscript.docx (double-spaced, blind-review front page, proofs in appendices)
 ```
 
 - `runs/<model>/records_nli.jsonl`: 초기 NLI 분류기(L2) 결과(AUC 0.52~0.58, 사실상 무정보)를 부정적 결과로 보존.
