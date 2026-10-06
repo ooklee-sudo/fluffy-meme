@@ -141,7 +141,7 @@ def analyze(args):
     results = {"pool_hallucination_rate": float(a["hallu"].mean()), "marginal_clearance": c_marg,
                "layer_dependence": dep, "bootstrap_ci": ci, "cheapest_config": best_cost["config"], "sensitivity": sens, "burst_cv": args.burst_cv,
                "configs": rows, "best": best["config"] if best else None, "poisson_checks": {}}
-    times = simulate_traffic(args.days, args.daily_queries, rng, DEFAULT_PROFILE, args.burst_cv)
+    times = simulate_traffic(args.days, args.daily_queries, rng, load_profile(args.profile_file), args.burst_cv)
     pool_idx = rng.integers(0, a["n"], len(times))  # each arriving query replays a random labelled example
     for r in [r for r in rows if r["config"] in ("none", (best or {}).get("config"))]:
         layers = [] if r["config"] == "none" else r["config"].split("+")
@@ -181,6 +181,15 @@ def sensitivity(a, args, w):
                 out.append({"daily_queries": q, "c_false_block": fp, "c_residual": harm, "best": b["config"],
                             "total": b["cost"]["total"], "unprotected": next(r for r in rows if r["config"] == "none")["cost"]["total"]})
     return out
+
+
+def load_profile(path):
+    """24 hour-of-day weights from a JSON list or from runs/real_data.json (BurstGPT hourly profile); default if None."""
+    if not path:
+        return DEFAULT_PROFILE
+    d = json.load(open(path))
+    p = d["burstgpt"]["hourly_profile"] if isinstance(d, dict) else d
+    return np.asarray(p, float)
 
 
 def replay_critical_mask(a, layers, route_thr):
@@ -256,6 +265,7 @@ def build_parser():
     an.add_argument("--w-sysfail", type=float, default=1.0)
     an.add_argument("--w-fp", type=float, default=0.0)
     an.add_argument("--seed", type=int, default=0)
+    an.add_argument("--profile-file", default=None, help="JSON with 24 hourly weights, or runs/real_data.json (BurstGPT profile)")
     an.add_argument("--tag", default="", help="suffix for output files, e.g. _burst")
     an.add_argument("--burst-cv", type=float, default=0.0, help="Cox/bursty traffic: CV of the daily intensity multiplier")
     an.add_argument("--c-human", type=float, default=150.0, help="$ per unit of triage capacity k* per day")

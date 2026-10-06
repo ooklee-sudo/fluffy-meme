@@ -37,9 +37,13 @@ for r in ("qwen05", "smol360", "qwen15"):
         "sla500": json.load(open(f"runs/{r}/analysis_sla500.json")),
         "sla100": json.load(open(f"runs/{r}/analysis.json")) if False else None,
         "burst": json.load(open(f"runs/{r}/analysis_burst.json")),
+        "burst044": json.load(open(f"runs/{r}/analysis_burst044.json")),
     }
 json.dump(out, open("runs/summary.json", "w"), indent=1, default=float)
 for r, d in out.items():
     print(r, round(d["p_halluc"], 3), {k: round(v, 3) for k, v in d["marginal_clearance"].items()})
     print("  residual share", {k: {kk: round(vv, 3) for kk, vv in v.items()} for k, v in d["residual_share"].items()})
     print("  latency", {k: round(v["mean"], 1) for k, v in d["layer_latency_ms"].items()}, "timeouts", d["layer_timeouts_share"], "FP of good", {k: round(v, 3) for k, v in d["false_block_share_of_good"].items()})
+
+out["real_data"] = json.load(open("runs/real_data.json"))
+json.dump(out, open("runs/summary.json", "w"), indent=1, default=float)

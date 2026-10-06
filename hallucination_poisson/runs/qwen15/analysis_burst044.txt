@@ -1,0 +1,55 @@
+
+pool: n=300  hallucination rate p0=0.470  abstention rate=0.077  traffic=200.0/day x 90 days
+marginal clearance c_i: {'L1': 0.007, 'L2': 0.816, 'L3': 0.787}
+  layer dependence L1-L2: phi=0.04  joint catch observed=0.007 vs independent=0.006
+  layer dependence L1-L3: phi=0.04  joint catch observed=0.007 vs independent=0.006
+  layer dependence L2-L3: phi=0.15  joint catch observed=0.667 vs independent=0.642
+
+daily $ cost  (labour + compute + false-block + residual harm)
+  none       total $ 16500.00  labour $16500.00 compute $   0.00 fp $   0.00 harm $    0.00
+  L1         total $ 16350.00  labour $16350.00 compute $   0.00 fp $   0.00 harm $    0.00
+  L2         total $  3600.02  labour $ 3600.00 compute $   0.02 fp $   0.00 harm $    0.00
+  L3         total $  4200.37  labour $ 4200.00 compute $   0.37 fp $   0.00 harm $    0.00
+  L1+L2      total $  3600.02  labour $ 3600.00 compute $   0.02 fp $   0.00 harm $    0.00
+  L1+L3      total $  4200.37  labour $ 4200.00 compute $   0.37 fp $   0.00 harm $    0.00
+  L2+L3      total $  3150.06  labour $ 3150.00 compute $   0.06 fp $   0.00 harm $    0.00
+  L1+L2+L3   total $  3150.06  labour $ 3150.00 compute $   0.06 fp $   0.00 harm $    0.00  <-- cheapest
+
+95% bootstrap CI (resampling the evaluated pool)
+  none       lambda/day [82.3, 106.0]  k* [97, 123]  latency ms [0, 0]  FP/day [0.0, 0.0]
+  L1         lambda/day [81.3, 105.3]  k* [96, 122]  latency ms [0, 0]  FP/day [0.0, 0.0]
+  L2         lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 93]  FP/day [8.7, 20.3]
+  L3         lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1675, 1839]  FP/day [27.3, 43.3]
+  L1+L2      lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 92]  FP/day [8.7, 20.3]
+  L1+L3      lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1669, 1831]  FP/day [27.3, 43.3]
+  L2+L3      lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
+  L1+L2+L3   lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
+
+config      lam/day lam(indep)  k*   lat_ms   p95_ms  route  FP/day sysfail objective  SLA
+none          94.00      94.00 110      0.0      0.0   0.00     0.0    0.00    110.00  ok
+L1            93.33      93.33 109      0.0      0.1   0.00     0.0    0.00    109.00  ok
+L2            17.33      17.33  24     87.6    155.7   0.00    14.0    0.00     25.75  ok
+L3            20.00      20.00  28   1752.4   2957.0   0.92    35.3   49.33    112.38  VIOLATES
+L1+L2         17.33      17.21  24     87.3    155.7   0.00    14.0    0.00     25.75  ok
+L1+L3         20.00      19.86  28   1746.8   2957.1   0.92    35.3   49.33    112.27  VIOLATES
+L2+L3         14.67       3.69  21    295.6   1797.2   0.11    22.0    6.67     33.58  ok
+L1+L2+L3      14.67       3.66  21    295.3   1797.3   0.11    22.0    6.67     33.57  ok
+
+Best stack under mean latency <= 500.0 ms: L1+L2
+
+[none] critical failures: 8149 in 90 days  lambda_hat=90.54/day
+  daily-count dispersion D=1470.3 p=0.000   (Poisson => D~chi2(n-1), p not tiny)
+  inter-arrival KS vs Exp  raw p=3.94e-18 | time-rescaled (NHPP) p=9.64e-11
+  hour-of-day homogeneity chi2 p=9.93e-82  (small => genuinely non-homogeneous)
+  k*(alpha=0.95) Poisson=106 empirical=160  P(X>k*) poisson=0.050 observed=0.300
+  negative-binomial fit r=5.834112862326609  k*(NB)=162  P(X>k*_poisson) under NB=0.299 (target 0.050)
+  capacity=round(lambda)=91: exceeded on poisson=45.3% observed=43.3% of days
+
+[L1+L2] critical failures: 1526 in 90 days  lambda_hat=16.96/day
+  daily-count dispersion D=348.8 p=0.000   (Poisson => D~chi2(n-1), p not tiny)
+  inter-arrival KS vs Exp  raw p=0.0054 | time-rescaled (NHPP) p=0.0188
+  hour-of-day homogeneity chi2 p=8.04e-12  (small => genuinely non-homogeneous)
+  k*(alpha=0.95) Poisson=24 empirical=33  P(X>k*) poisson=0.040 observed=0.156
+  negative-binomial fit r=5.808848528673971  k*(NB)=32  P(X>k*_poisson) under NB=0.168 (target 0.050)
+  capacity=round(lambda)=17: exceeded on poisson=43.2% observed=43.3% of days
+saved runs/qwen15/analysis_burst044.png

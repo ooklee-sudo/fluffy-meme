@@ -48,3 +48,20 @@ cd paper && node build.js                                          # runs/LLM_Ha
 - `runs/<model>/records_nli.jsonl`: 초기 NLI 분류기(L2) 결과(AUC 0.52~0.58, 사실상 무정보)를 부정적 결과로 보존.
 - `runs/summary.json`: 논문 표·그림의 모든 수치.
 - 도착 시점은 시뮬레이션(NHPP/Cox), 환각·가드레일 판정·지연은 실측입니다.
+
+## 공개 운영 데이터 검증 (real_data.py)
+
+`real_data.py`는 공개 운영 데이터로 포아송 가정을 직접 검정합니다 (환각 로그는 아님).
+
+```bash
+mkdir -p data && cd data
+for i in 1 2 3; do curl -sSL -O https://github.com/HPMLL/BurstGPT/releases/download/v2.0/BurstGPT_$i.csv; done   # CC BY 4.0, 10.6M 요청
+curl -sSL -o outages.zip "https://zenodo.org/records/14018219/files/LLM%20Service%20Outages%20and%20Incident%20Reports.zip?download=1" && unzip -oq outages.zip -d out   # CC BY 4.0
+cd .. && python -I real_data.py --burstgpt data \
+  --incidents "data/out/LLM Service Outages and Incident Reports/clean_data/incident/2024-08-31/incident_stages.csv" --out runs/real_data.json
+./run_all_analyses.sh   # runs/real_data.json 의 시간대 프로파일을 시뮬레이터에 사용 (--profile-file)
+```
+
+- BurstGPT (Wang et al., KDD'25): Azure OpenAI 요청, 1초 해상도. 시간대 프로파일, 분 단위 군집성(Fano), 일별 변동성.
+- LLM Service Outages and Incident Reports (Chu et al., ICPE'25): OpenAI/Anthropic/Character.AI 상태 페이지 사건. 요일·시간대 층화 과산포 검정, 시간재척도 KS, 지속 시간, M/G/∞ 동시 열린 사건 수.
+- 원본 데이터(수백 MB)는 저장소에 포함하지 않습니다.
