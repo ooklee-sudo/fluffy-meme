@@ -115,4 +115,4 @@ python checks/check_thinning.py; python checks/check_hawkes_recovery.py   # sani
 ```
 
 - 논문의 모든 수치는 `runs/*.json`에서 `paper/*.js`가 계산해 넣습니다(손으로 쓴 숫자는 일부 문구에 한정).
-- 2026년 arXiv 인용 7편은 저자를 성(surname)만 표기했습니다(이름 약어가 불완전해서). 투고 전에 원문으로 제목·저자·번호를 확인하세요.
+- 2026년 arXiv 인용 7편은 저자를 성(surname)만 표기했습니다. 'et al.'은 쓰지 않았고, 저자 전체를 확인하지 못한 항목(Abraham, Ji, Wang, Allal)은 'and co-authors'로 표기했습니다. 투고 전에 원문으로 제목·저자·번호를 확인해 전체 저자를 채우세요.
