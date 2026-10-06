@@ -72,3 +72,32 @@ for ch in (25, 50, 100, 150, 300, 600, 1200):
 out["factor_substitution"] = sub
 json.dump(out, open("runs/econ_tables.json", "w"), indent=1)
 print(json.dumps(out, indent=1)[:3000])
+
+# (4) moral hazard in review: per-item effort e in [0,1], cost psi*e^2/2 per reviewed item, reward r per error found
+M, psi, r, h = 1000.0, 0.3, 7.5, 100.0       # items reviewed/day, effort cost scale ($/item), reward per error found ($), harm per undetected error ($)
+lam0, ci2, g2 = 100.0, 0.63, 25.0
+mh = []
+for N in range(0, 7):
+    lam = lam0 * (1 - ci2) ** N
+    rho = lam / M
+    e = min(1.0, r * rho / psi)
+    handled, undet = e * lam, (1 - e) * lam
+    k_naive = pq(stats.poisson(lam), ALPHA)
+    k_true = pq(stats.poisson(max(handled, 1e-9)), ALPHA)
+    mh.append(dict(N=N, lam=lam, prevalence=rho, effort=e, handled=handled, undetected=undet,
+                   k_naive=k_naive, k_true=k_true,
+                   cost_believed=CH * k_naive + g2 * N,
+                   cost_true_fixed_reward=CH * k_true + h * undet + g2 * N + r * handled,
+                   cost_full_vigilance=CH * k_naive + psi * M + g2 * N,
+                   reward_needed_full_vigilance=psi / rho))
+best = lambda key: int(min(mh, key=lambda x: x[key])["N"])
+gate = {}
+N = 3; lam = lam0 * (1 - ci2) ** N
+for s, gm in ((0.7, 0.2), (0.9, 0.2)):
+    e_ng = min(1, r * lam / M / psi); e_g = min(1, r * s * lam / (gm * M) / psi)
+    gate[f"s={s},gamma={gm}"] = dict(detected_no_gate=lam * e_ng, detected_gate=s * lam * e_g, ratio=(s * lam * e_g) / (lam * e_ng), s2_over_gamma=s * s / gm)
+out["moral_hazard"] = dict(params=dict(M=M, psi=psi, r=r, h=h, lam0=lam0, clearance=ci2, g=g2, alpha=ALPHA),
+                           rows=mh, N_star_believed=best("cost_believed"), N_star_true_fixed_reward=best("cost_true_fixed_reward"),
+                           N_star_full_vigilance=best("cost_full_vigilance"), gate_N3=gate)
+json.dump(out, open("runs/econ_tables.json", "w"), indent=1)
+print(json.dumps(out["moral_hazard"], indent=1))
