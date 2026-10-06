@@ -71,7 +71,15 @@ def retime(args):
     """Re-run the three guardrail layers on the stored answers (no generation) to re-measure latency
     without CPU contention from other jobs. Flags are deterministic, latencies are refreshed."""
     meta = json.load(open(os.path.join(args.run, "meta.json")))
+    if args.l2:
+        meta["l2_previous"], meta["l2"] = meta.get("l2"), args.l2
+        meta["block_thr"] = args.block_thr
+        json.dump(meta, open(os.path.join(args.run, "meta.json"), "w"), indent=2, default=str)
     path = os.path.join(args.run, "records.jsonl")
+    import shutil
+    backup = os.path.join(args.run, f"records_{(meta.get('l2_previous') or meta['l2']).split(':')[0]}.jsonl")
+    if args.l2 and not os.path.exists(backup):
+        shutil.copy(path, backup)  # keep the previous layer outputs for the record
     recs = [json.loads(l) for l in open(path, encoding="utf-8")]
     ex = {e.id: e for e in load_examples(meta["dataset"], meta["n"], meta["seed"])}
     judge_spec = meta["generator"] if meta["judge"] == "same" else meta["judge"]
@@ -220,7 +228,7 @@ def build_parser():
     c = sub.add_parser("collect")
     c.add_argument("--generator", required=True, help="LLM under test, e.g. hf:Qwen/Qwen2.5-0.5B-Instruct")
     c.add_argument("--judge", default="same", help="L3 judge backend spec, or 'same'")
-    c.add_argument("--l2", default="nli:cross-encoder/nli-deberta-v3-small", help="'nli:<hf id>' or 'overlap'")
+    c.add_argument("--l2", default="qa:deepset/roberta-base-squad2", help="'qa:<hf extractive-QA id>' | 'nli:<hf id>' | 'overlap'")
     c.add_argument("--block-thr", type=float, default=0.5, help="L2 blocks if P(entail) < this")
     c.add_argument("--dataset", default="hf:rajpurkar/squad_v2", help="builtin | file.jsonl | hf:rajpurkar/squad_v2")
     c.add_argument("--mode", choices=["rag", "closed"], default="rag", help="give the generator the passage or not")
@@ -231,6 +239,8 @@ def build_parser():
     c.add_argument("--out", required=True)
     rt = sub.add_parser("retime", help="re-measure layer latencies on stored answers")
     rt.add_argument("--run", required=True)
+    rt.add_argument("--l2", default=None, help="replace the L2 layer, e.g. qa:deepset/roberta-base-squad2")
+    rt.add_argument("--block-thr", type=float, default=0.5)
     an = sub.add_parser("analyze")
     an.add_argument("--run", required=True)
     an.add_argument("--days", type=int, default=90)

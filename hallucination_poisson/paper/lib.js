@@ -4,6 +4,7 @@ const FONT = 'Times New Roman';
 const run = (t, o = {}) => new TextRun({ text: t, font: FONT, size: 22, ...o });
 // inline markup: *italic* and **bold**
 function runs(text) {
+  text = text.replace(/k\*/g, 'k\u2217');
   const out = []; const re = /(\*\*[^*]+\*\*|\*[^*]+\*)/g; let last = 0, m;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(run(text.slice(last, m.index)));
@@ -28,7 +29,7 @@ function table(caption, header, rows, widths, note) {
   const cell = (t, w, hdr) => new TableCell({ width: { size: w, type: WidthType.DXA }, borders,
     shading: hdr ? { fill: 'E8E8E8', type: ShadingType.CLEAR, color: 'auto' } : undefined,
     margins: { top: 40, bottom: 40, left: 80, right: 80 },
-    children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run(String(t), { size: 18, bold: hdr })] })] });
+    children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run(String(t).replace(/k\*/g, 'k\u2217'), { size: 18, bold: hdr })] })] });
   const out = [new Paragraph({ children: [run(caption, { bold: true, size: 20 })], spacing: { before: 160, after: 60 }, keepNext: true }),
     new Table({ width: { size: total, type: WidthType.DXA }, columnWidths: widths,
       rows: [new TableRow({ tableHeader: true, children: header.map((h, i) => cell(h, widths[i], true)) }),

@@ -32,3 +32,19 @@ python run_experiment.py analyze --run runs/qwen --days 90 --daily-queries 200 -
 - 트래픽(질의 수/일)은 시뮬레이션이고, 환각 여부·가드레일 성능·지연은 실측입니다.
 - 문서의 "k=3이면 42.3% 부족"은 P(X≤2)이며 실제 P(X>3)=35.3%입니다(k*=6은 맞음). 코드는 후자를 계산합니다.
 - 가중치 ω와 SLA 기준(mean/p95/sum)은 목적에 맞게 조정하세요.
+
+
+## 논문 재현 (hallucination_poisson/paper)
+
+```bash
+python run_experiment.py collect --generator hf:Qwen/Qwen2.5-0.5B-Instruct --judge hf:Qwen/Qwen2.5-1.5B-Instruct \
+    --dataset hf:rajpurkar/squad_v2 --n 300 --out runs/qwen05      # 기본 L2 = qa:deepset/roberta-base-squad2
+python run_experiment.py retime --run runs/qwen05                  # 다른 작업 없이 지연시간 재측정 (--l2 로 L2 교체 가능)
+./run_all_analyses.sh                                              # 분석 3종(SLA100/SLA500+비용/버스트) + summary.json
+python paper_tables.py && python make_figures.py                   # 해석적 표, 그림
+cd paper && node build.js                                          # runs/LLM_Hallucination_Poisson_Framework_Revised.docx
+```
+
+- `runs/<model>/records_nli.jsonl`: 초기 NLI 분류기(L2) 결과(AUC 0.52~0.58, 사실상 무정보)를 부정적 결과로 보존.
+- `runs/summary.json`: 논문 표·그림의 모든 수치.
+- 도착 시점은 시뮬레이션(NHPP/Cox), 환각·가드레일 판정·지연은 실측입니다.

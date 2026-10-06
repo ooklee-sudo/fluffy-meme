@@ -1,0 +1,55 @@
+
+pool: n=300  hallucination rate p0=0.470  abstention rate=0.077  traffic=200.0/day x 90 days
+marginal clearance c_i: {'L1': 0.007, 'L2': 0.816, 'L3': 0.787}
+  layer dependence L1-L2: phi=0.04  joint catch observed=0.007 vs independent=0.006
+  layer dependence L1-L3: phi=0.04  joint catch observed=0.007 vs independent=0.006
+  layer dependence L2-L3: phi=0.15  joint catch observed=0.667 vs independent=0.642
+
+daily $ cost  (labour + compute + false-block + residual harm)
+  none       total $ 25900.00  labour $16500.00 compute $   0.00 fp $   0.00 harm $ 9400.00
+  L1         total $ 25683.33  labour $16350.00 compute $   0.00 fp $   0.00 harm $ 9333.33
+  L2         total $  5347.35  labour $ 3600.00 compute $   0.02 fp $  14.00 harm $ 1733.33
+  L3         total $  6235.70  labour $ 4200.00 compute $   0.37 fp $  35.33 harm $ 2000.00
+  L1+L2      total $  5347.35  labour $ 3600.00 compute $   0.02 fp $  14.00 harm $ 1733.33
+  L1+L3      total $  6235.70  labour $ 4200.00 compute $   0.37 fp $  35.33 harm $ 2000.00
+  L2+L3      total $  4638.73  labour $ 3150.00 compute $   0.06 fp $  22.00 harm $ 1466.67
+  L1+L2+L3   total $  4638.73  labour $ 3150.00 compute $   0.06 fp $  22.00 harm $ 1466.67  <-- cheapest
+
+95% bootstrap CI (resampling the evaluated pool)
+  none       lambda/day [82.3, 106.0]  k* [97, 123]  latency ms [0, 0]  FP/day [0.0, 0.0]
+  L1         lambda/day [81.3, 105.3]  k* [96, 122]  latency ms [0, 0]  FP/day [0.0, 0.0]
+  L2         lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 93]  FP/day [8.7, 20.3]
+  L3         lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1675, 1839]  FP/day [27.3, 43.3]
+  L1+L2      lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 92]  FP/day [8.7, 20.3]
+  L1+L3      lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1669, 1831]  FP/day [27.3, 43.3]
+  L2+L3      lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
+  L1+L2+L3   lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
+
+config      lam/day lam(indep)  k*   lat_ms   p95_ms  route  FP/day sysfail objective  SLA
+none          94.00      94.00 110      0.0      0.0   0.00     0.0    0.00    110.00  ok
+L1            93.33      93.33 109      0.0      0.1   0.00     0.0    0.00    109.00  ok
+L2            17.33      17.33  24     87.6    155.7   0.00    14.0    0.00     25.75  ok
+L3            20.00      20.00  28   1752.4   2957.0   0.92    35.3   49.33    112.38  VIOLATES
+L1+L2         17.33      17.21  24     87.3    155.7   0.00    14.0    0.00     25.75  ok
+L1+L3         20.00      19.86  28   1746.8   2957.1   0.92    35.3   49.33    112.27  VIOLATES
+L2+L3         14.67       3.69  21    295.6   1797.2   0.11    22.0    6.67     33.58  ok
+L1+L2+L3      14.67       3.66  21    295.3   1797.3   0.11    22.0    6.67     33.57  ok
+
+Best stack under mean latency <= 500.0 ms: L1+L2
+
+[none] critical failures: 8506 in 90 days  lambda_hat=94.51/day
+  daily-count dispersion D=97.0 p=0.529   (Poisson => D~chi2(n-1), p not tiny)
+  inter-arrival KS vs Exp  raw p=3.51e-101 | time-rescaled (NHPP) p=0.853
+  hour-of-day homogeneity chi2 p=0  (small => genuinely non-homogeneous)
+  k*(alpha=0.95) Poisson=111 empirical=113  P(X>k*) poisson=0.043 observed=0.089
+  negative-binomial fit r=1055.749217779089  k*(NB)=112  P(X>k*_poisson) under NB=0.050 (target 0.050)
+  capacity=round(lambda)=95: exceeded on poisson=45.3% observed=41.1% of days
+
+[L1+L2] critical failures: 1583 in 90 days  lambda_hat=17.59/day
+  daily-count dispersion D=75.1 p=0.295   (Poisson => D~chi2(n-1), p not tiny)
+  inter-arrival KS vs Exp  raw p=5e-18 | time-rescaled (NHPP) p=0.961
+  hour-of-day homogeneity chi2 p=4.19e-150  (small => genuinely non-homogeneous)
+  k*(alpha=0.95) Poisson=25 empirical=24  P(X>k*) poisson=0.036 observed=0.033
+  negative-binomial fit r=None  k*(NB)=25  P(X>k*_poisson) under NB=0.036 (target 0.050)
+  capacity=round(lambda)=18: exceeded on poisson=39.9% observed=37.8% of days
+saved runs/qwen15/analysis_sla500.png

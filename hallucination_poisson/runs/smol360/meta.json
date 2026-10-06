@@ -2,7 +2,7 @@
   "cmd": "collect",
   "generator": "hf:HuggingFaceTB/SmolLM2-360M-Instruct",
   "judge": "hf:Qwen/Qwen2.5-1.5B-Instruct",
-  "l2": "nli:cross-encoder/nli-deberta-v3-small",
+  "l2": "qa:deepset/roberta-base-squad2",
   "block_thr": 0.5,
   "dataset": "hf:rajpurkar/squad_v2",
   "mode": "rag",
@@ -11,5 +11,6 @@
   "temperature": 0.0,
   "seed": 0,
   "out": "runs/smol360",
-  "n_collected": 300
+  "n_collected": 300,
+  "l2_previous": "nli:cross-encoder/nli-deberta-v3-small"
 }
