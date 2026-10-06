@@ -33,6 +33,21 @@ def incidents_block(path, n_boot):
         s = fit_profile(profile_slots(pd.DatetimeIndex(x["start"])), slot_hours)
         seas = Seasonal(np.datetime64(t0), T, s / (np.sum(s * slot_hours) / slot_hours.sum()))
         out[name] = hawkes_test(th, seas, T, n_boot=n_boot, rng=np.random.default_rng(1))
+        # level-adjusted baseline: seasonal profile x monthly level (absorbs slow changes of the incident rate that would otherwise look like excitation)
+        months = pd.period_range(t0, t1 - pd.Timedelta(hours=1), freq="M")
+        hr_idx = pd.date_range(t0, t1, freq="h", inclusive="left")
+        mon_of_hour = np.searchsorted(np.array([m.start_time for m in months]), hr_idx.values, side="right") - 1
+        exp_prof = np.array([np.sum(s[profile_slots(hr_idx[mon_of_hour == k])]) for k in range(len(months))])
+        cnt_m = np.bincount(np.searchsorted(np.array([m.start_time for m in months]), x["start"].values, side="right") - 1, minlength=len(months)).astype(float)
+        lvl = np.maximum(cnt_m / np.maximum(exp_prof, 1e-9), 1e-4)
+        lvl = lvl / (np.sum(lvl * np.array([np.sum(mon_of_hour == k) for k in range(len(months))])) / len(hr_idx))
+        hourly_mult = lvl[mon_of_hour]
+        seas_l = Seasonal(np.datetime64(t0), T, s / (np.sum(s * slot_hours) / slot_hours.sum()), hourly_mult=hourly_mult)
+        out[name + "__level_adjusted"] = hawkes_test(th, seas_l, T, n_boot=n_boot, rng=np.random.default_rng(1))
+        if name == "all providers":
+            exp_m = cnt_m.sum() * (exp_prof / exp_prof.sum())
+            chi, pv = stats.chisquare(cnt_m, f_exp=exp_m)
+            out["monthly_counts_all"] = {"months": [str(m) for m in months], "counts": cnt_m.astype(int).tolist(), "homogeneity_chi2": float(chi), "df": int(len(months) - 1), "p": float(pv)}
     return out
 
 
@@ -81,6 +96,21 @@ def burst_block(path, n_boot):
     seas = Seasonal(np.datetime64("2000-01-03"), T, s48 / s48.mean())
     out["hawkes_episodes"] = hawkes_test(start_h + np.arange(len(start_h)) * 1e-6, seas, T, n_boot=n_boot, rng=np.random.default_rng(2))
     out["episode_arrivals_daily_series"] = days.tolist()
+    # ---- volume-conditional analyses (request volume ranges over two orders of magnitude)
+    req_day = np.bincount(sec // 86400, minlength=int(nmin // 1440) + 1).astype(float)
+    ep_day = np.bincount((st // 1440).astype(int), minlength=len(req_day)).astype(float)
+    exp_ep = ep_day.sum() * req_day / req_day.sum()
+    okd = exp_ep >= 1.0
+    out["episodes_conditional_on_volume"] = {"pearson_dispersion_daily": float(np.sum((ep_day[okd] - exp_ep[okd]) ** 2 / exp_ep[okd]) / (okd.sum() - 1)), "days_used": int(okd.sum())}
+    fail_day = np.bincount(sec[fail] // 86400, minlength=len(req_day)).astype(float)
+    exp_f = fail_day.sum() * req_day / req_day.sum()
+    okf = exp_f >= 1.0
+    out["failed_requests_conditional_on_volume"] = {"pearson_dispersion_daily": float(np.sum((fail_day[okf] - exp_f[okf]) ** 2 / exp_f[okf]) / (okf.sum() - 1)), "days_used": int(okf.sum())}
+    out["episode_size_second_moment_ratio"] = {"empirical_EX2_over_EX": float(np.mean(sz ** 2) / np.mean(sz)), "lognormal_implied": float(np.exp(ls.mean() + 1.5 * ls.var(ddof=1)))}
+    hour_vol = np.bincount(sec // 3600, minlength=int(nmin // 60) + 1).astype(float)
+    hv = hour_vol / hour_vol[hour_vol > 0].mean()
+    seas_x = Seasonal(np.datetime64("2000-01-03"), T, np.ones(48), hourly_mult=hv)
+    out["hawkes_episodes_exposure_adjusted"] = hawkes_test(start_h + np.arange(len(start_h)) * 1e-6, seas_x, T, n_boot=n_boot, rng=np.random.default_rng(3))
     # sensitivity of the episode definition
     sens = []
     for rt, mf, mg in ((0.2, 5, 10), (0.2, 5, 60), (0.1, 5, 30), (0.5, 5, 10), (0.2, 20, 30)):
@@ -96,24 +126,30 @@ def burst_block(path, n_boot):
 
 
 def typed_scenarios(res):
-    """Illustrative organisation with three human-handled classes, parameters from our estimates:
-    H hallucinations after the best cascade (Qwen2.5-0.5B, L1+L2: measured lambda; daily-rate CV 0.40 from ticket streams),
-    P provider incidents that affect the organisation (lambda and stratified dispersion index of the incident history),
-    S own serving-failure episodes (episode rate and daily dispersion index of the BurstGPT failure episodes, coarse and fine definitions)."""
-    summ = json.load(open("runs/summary.json"))
-    lam_h = next(c["lambda_per_day"] for c in summ["qwen05"]["sla500"]["configs"] if c["config"] == "L1+L2")
-    c_h = 0.40
-    phi_h = 1 + lam_h * c_h ** 2
+    """Illustrative organisation with three human-handled classes (parameters from our estimates; classes assumed independent):
+    H hallucinations after the classifier-only cascade L1+L2 (Qwen2.5-0.5B run: measured lambda; daily-rate CV c_H assumed within the range
+       estimated from the steady ticket streams),
+    P provider incidents that affect the organisation (lambda and day-of-week-stratified dispersion index of the incident history),
+    S own serving-failure episodes (episode rate and daily dispersion index of the BurstGPT episodes; fine and coarse definitions; and the
+       volume-conditional dispersion as a third value)."""
+    tri = json.load(open("runs/triage_data.json"))
+    cs = [tri["software_company"]["arrivals"]["detrended"]["implied_daily_rate_cv"], tri["italian_helpdesk"]["arrivals"]["detrended"]["implied_daily_rate_cv"]]
+    lam_h = next(c["lambda_per_day"] for c in json.load(open("runs/qwen05/analysis_sla500.json"))["configs"] if c["config"] == "L1+L2")
     inc = json.load(open("runs/real_data.json"))["incidents"]["counts"]["all providers"]
     P = (inc["lambda_per_day"], inc["stratified_dispersion_index"])
     sens = res["burstgpt"]["sensitivity"]
-    out = {"H": {"lambda": lam_h, "phi": phi_h, "cv": c_h}, "P": {"lambda": P[0], "phi": P[1]}, "scenarios": {}}
-    days_rec = 231.0
-    for name, sc in (("fine (10-min merge)", sens[0]), ("coarse (60-min merge)", sens[1])):
-        lam_s = sc["n_episodes"] / days_rec
-        out["scenarios"][name] = {"S_lambda": lam_s, "S_phi": sc["dispersion_index_daily"],
-                                  "all_classes": typed_capacity({"H": (lam_h, phi_h), "P": P, "S": (lam_s, sc["dispersion_index_daily"])}),
-                                  "H_only": typed_capacity({"H": (lam_h, phi_h)})}
+    vol_phi = res["burstgpt"]["episodes_conditional_on_volume"]["pearson_dispersion_daily"]
+    DAYS_REC = 231.0                                   # recorded days in BurstGPT
+    out = {"lambda_H": lam_h, "cv_H_range_from_steady_ticket_streams": cs, "P": {"lambda": P[0], "phi": P[1]}, "days_recorded": DAYS_REC, "mc_days": 400000, "mc_seed": 0, "scenarios": []}
+    for c_h in (0.3, float(np.mean(cs)), 0.45):
+        phi_h = 1 + lam_h * c_h ** 2
+        for name, sc, phi_s in (("fine (10-min merge)", sens[0], sens[0]["dispersion_index_daily"]), ("coarse (60-min merge)", sens[1], sens[1]["dispersion_index_daily"]),
+                                ("coarse episodes, volume-conditional dispersion", sens[1], max(1.0, vol_phi))):
+            lam_s = sc["n_episodes"] / DAYS_REC
+            out["scenarios"].append({"c_H": c_h, "phi_H": phi_h, "S_definition": name, "S_lambda": lam_s, "S_phi": phi_s,
+                                     "H_only": typed_capacity({"H": (lam_h, phi_h)}),
+                                     "H_plus_P": typed_capacity({"H": (lam_h, phi_h), "P": P}),
+                                     "all_classes": typed_capacity({"H": (lam_h, phi_h), "P": P, "S": (lam_s, phi_s)})})
     return out
 
 
@@ -127,4 +163,6 @@ if __name__ == "__main__":
     json.dump(res, open(a.out, "w"), indent=1, default=float)
     print(json.dumps({k: v for k, v in res["burstgpt"].items() if k != "episode_arrivals_daily_series"}, indent=1, default=float)[:6000])
     for k, v in res["incidents"].items():
+        if k == "monthly_counts_all":
+            continue
         print(k, {x: (round(y, 3) if isinstance(y, float) else y) for x, y in v.items() if x in ("n", "lr", "bootstrap_p", "mean_cluster_size", "excitation_halflife_hours", "ks_rescaled_p_nhpp", "ks_rescaled_p_hawkes")}, v["hawkes"], v["aic"])

@@ -20,6 +20,71 @@
    "mean_cluster_size": 1.194012858583076,
    "excitation_halflife_hours": 7.092902887395724
   },
+  "all providers__level_adjusted": {
+   "n": 457,
+   "hawkes": {
+    "mu0": 0.03232075629427684,
+    "alpha": 0.06932013398088455,
+    "beta": 0.24197863910397005,
+    "ll": -1800.4601257724441
+   },
+   "nhpp_mu0": 0.03472579146105658,
+   "lr": 7.517570942749444,
+   "bootstrap_p": 0.024875621890547265,
+   "aic": {
+    "nhpp": 3610.4378224876377,
+    "hawkes": 3606.9202515448883
+   },
+   "ks_rescaled_p_nhpp": 0.16623327824233547,
+   "ks_rescaled_p_hawkes": 0.9108249498445595,
+   "mean_cluster_size": 1.0744833282763429,
+   "excitation_halflife_hours": 2.8644973916979644
+  },
+  "monthly_counts_all": {
+   "months": [
+    "2023-03",
+    "2023-04",
+    "2023-05",
+    "2023-06",
+    "2023-07",
+    "2023-08",
+    "2023-09",
+    "2023-10",
+    "2023-11",
+    "2023-12",
+    "2024-01",
+    "2024-02",
+    "2024-03",
+    "2024-04",
+    "2024-05",
+    "2024-06",
+    "2024-07",
+    "2024-08"
+   ],
+   "counts": [
+    24,
+    12,
+    16,
+    19,
+    23,
+    19,
+    19,
+    11,
+    27,
+    16,
+    22,
+    20,
+    54,
+    43,
+    35,
+    35,
+    27,
+    35
+   ],
+   "homogeneity_chi2": 86.53448943290933,
+   "df": 17,
+   "p": 2.5915771044413525e-11
+  },
   "OpenAI": {
    "n": 280,
    "hawkes": {
@@ -39,6 +104,26 @@
    "ks_rescaled_p_hawkes": 0.26284504936112185,
    "mean_cluster_size": 1.1209032245392192,
    "excitation_halflife_hours": 3.7776929540629713
+  },
+  "OpenAI__level_adjusted": {
+   "n": 280,
+   "hawkes": {
+    "mu0": 0.020127820979567085,
+    "alpha": 0.05441735237824256,
+    "beta": 0.4591956769349405,
+    "ll": -1222.4187352268996
+   },
+   "nhpp_mu0": 0.021286162597609973,
+   "lr": 6.63766362399565,
+   "bootstrap_p": 0.01990049751243781,
+   "aic": {
+    "nhpp": 2453.475134077795,
+    "hawkes": 2450.837470453799
+   },
+   "ks_rescaled_p_nhpp": 0.1352209841448203,
+   "ks_rescaled_p_hawkes": 0.8230558979585855,
+   "mean_cluster_size": 1.057549017545011,
+   "excitation_halflife_hours": 1.5094810673885142
   },
   "Anthropic": {
    "n": 141,
@@ -60,6 +145,26 @@
    "mean_cluster_size": 1.2737650160106726,
    "excitation_halflife_hours": 4.164514852486702
   },
+  "Anthropic__level_adjusted": {
+   "n": 141,
+   "hawkes": {
+    "mu0": 0.009764046459121357,
+    "alpha": 0.08852937588173171,
+    "beta": 0.18076480513594542,
+    "ll": -663.331292660816
+   },
+   "nhpp_mu0": 0.010708630028188086,
+   "lr": 6.237858404600956,
+   "bootstrap_p": 0.024875621890547265,
+   "aic": {
+    "nhpp": 1334.9004437262329,
+    "hawkes": 1332.662585321632
+   },
+   "ks_rescaled_p_nhpp": 0.015925540782884037,
+   "ks_rescaled_p_hawkes": 0.18658774240505283,
+   "mean_cluster_size": 1.0971280626486153,
+   "excitation_halflife_hours": 3.8345250893206737
+  },
   "impact>=2": {
    "n": 198,
    "hawkes": {
@@ -79,6 +184,26 @@
    "ks_rescaled_p_hawkes": 0.12651424266928746,
    "mean_cluster_size": 1.143551202498489,
    "excitation_halflife_hours": 5.7948427612847775
+  },
+  "impact>=2__level_adjusted": {
+   "n": 198,
+   "hawkes": {
+    "mu0": 0.014148413611345615,
+    "alpha": 0.056443969014494826,
+    "beta": 0.47093690408977823,
+    "ll": -919.5912535450526
+   },
+   "nhpp_mu0": 0.01499398458076199,
+   "lr": 7.88161740147757,
+   "bootstrap_p": 0.014925373134328358,
+   "aic": {
+    "nhpp": 1849.0641244915828,
+    "hawkes": 1845.1825070901052
+   },
+   "ks_rescaled_p_nhpp": 0.11458843480942038,
+   "ks_rescaled_p_hawkes": 0.4357996326964957,
+   "mean_cluster_size": 1.059820473995107,
+   "excitation_halflife_hours": 1.4718472358832286
   }
  },
  "burstgpt": {
@@ -372,6 +497,38 @@
    0,
    0
   ],
+  "episodes_conditional_on_volume": {
+   "pearson_dispersion_daily": 16.31835040757467,
+   "days_used": 123
+  },
+  "failed_requests_conditional_on_volume": {
+   "pearson_dispersion_daily": 5960.686980150314,
+   "days_used": 231
+  },
+  "episode_size_second_moment_ratio": {
+   "empirical_EX2_over_EX": 11373.964425401738,
+   "lognormal_implied": 5837.601804506521
+  },
+  "hawkes_episodes_exposure_adjusted": {
+   "n": 672,
+   "hawkes": {
+    "mu0": 0.03226557564303269,
+    "alpha": 0.7436029552930532,
+    "beta": 0.35032866696962683,
+    "ll": -1159.8629130322856
+   },
+   "nhpp_mu0": 0.12584269662921427,
+   "lr": 1044.7642936492557,
+   "bootstrap_p": 0.004975124378109453,
+   "aic": {
+    "nhpp": 3366.490119713827,
+    "hawkes": 2325.7258260645713
+   },
+   "ks_rescaled_p_nhpp": 2.5897995578584068e-93,
+   "ks_rescaled_p_hawkes": 9.04804728903272e-10,
+   "mean_cluster_size": 3.900200960361951,
+   "excitation_halflife_hours": 1.9785625497214605
+  },
   "sensitivity": [
    {
     "rate_thr": 0.2,
@@ -446,60 +603,325 @@
   ]
  },
  "typed_capacity": {
-  "H": {
-   "lambda": 12.666666666666668,
-   "phi": 3.0266666666666673,
-   "cv": 0.4
-  },
+  "lambda_H": 12.666666666666668,
+  "cv_H_range_from_steady_ticket_streams": [
+   0.324198208525415,
+   0.4063128472758081
+  ],
   "P": {
    "lambda": 0.8324225865209471,
    "phi": 1.30040671019818
   },
-  "scenarios": {
-   "fine (10-min merge)": {
+  "days_recorded": 231.0,
+  "mc_days": 400000,
+  "mc_seed": 0,
+  "scenarios": [
+   {
+    "c_H": 0.3,
+    "phi_H": 2.14,
+    "S_definition": "fine (10-min merge)",
     "S_lambda": 2.909090909090909,
     "S_phi": 19.91847041847042,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 22,
+     "naive_plan_exceeded_share": 0.10272,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.14,
+     "k_normal_approx": 21.230442969346832
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.10123,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.088226402180619,
+     "k_normal_approx": 22.23218622167203
+    },
+    "all_classes": {
+     "lambda_total": 16.408180162278523,
+     "k_naive_poisson": 23,
+     "k_typed": 32,
+     "naive_plan_exceeded_share": 0.1397175,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 5.2494423482309305,
+     "k_normal_approx": 31.673786190422653
+    }
+   },
+   {
+    "c_H": 0.3,
+    "phi_H": 2.14,
+    "S_definition": "coarse (60-min merge)",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 2.1281262181736116,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 22,
+     "naive_plan_exceeded_share": 0.10272,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.14,
+     "k_normal_approx": 21.230442969346832
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.10123,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.088226402180619,
+     "k_normal_approx": 22.23218622167203
+    },
+    "all_classes": {
+     "lambda_total": 14.412509166607528,
+     "k_naive_poisson": 21,
+     "k_typed": 24,
+     "naive_plan_exceeded_share": 0.1053075,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.0907551281677796,
+     "k_normal_approx": 23.44169601643064
+    }
+   },
+   {
+    "c_H": 0.3,
+    "phi_H": 2.14,
+    "S_definition": "coarse episodes, volume-conditional dispersion",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 16.31835040757467,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 22,
+     "naive_plan_exceeded_share": 0.10272,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.14,
+     "k_normal_approx": 21.230442969346832
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.10123,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.088226402180619,
+     "k_normal_approx": 22.23218622167203
+    },
+    "all_classes": {
+     "lambda_total": 14.412509166607528,
+     "k_naive_poisson": 21,
+     "k_typed": 25,
+     "naive_plan_exceeded_share": 0.113645,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.990087312498514,
+     "k_normal_approx": 25.210401434769246
+    }
+   },
+   {
+    "c_H": 0.36525552790061155,
+    "phi_H": 2.689880275051423,
+    "S_definition": "fine (10-min merge)",
+    "S_lambda": 2.909090909090909,
+    "S_phi": 19.91847041847042,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.1252,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.689880275051423,
+     "k_normal_approx": 22.26785310164609
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 24,
+     "naive_plan_exceeded_share": 0.122885,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.6041982592454684,
+     "k_normal_approx": 23.25160170167176
+    },
     "all_classes": {
      "lambda_total": 16.408180162278523,
      "k_naive_poisson": 23,
      "k_typed": 33,
-     "naive_plan_exceeded_share": 0.1613875,
+     "naive_plan_exceeded_share": 0.1543175,
      "target": 0.050000000000000044,
-     "effective_dispersion": 5.933924783213623,
-     "k_normal_approx": 32.638552510299235
-    },
+     "effective_dispersion": 5.6739348929107996,
+     "k_normal_approx": 32.27901012808046
+    }
+   },
+   {
+    "c_H": 0.36525552790061155,
+    "phi_H": 2.689880275051423,
+    "S_definition": "coarse (60-min merge)",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 2.1281262181736116,
     "H_only": {
      "lambda_total": 12.666666666666668,
      "k_naive_poisson": 19,
-     "k_typed": 24,
-     "naive_plan_exceeded_share": 0.135,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.1252,
      "target": 0.050000000000000044,
-     "effective_dispersion": 3.0266666666666673,
-     "k_normal_approx": 22.851190401787093
-    }
-   },
-   "coarse (60-min merge)": {
-    "S_lambda": 0.9134199134199135,
-    "S_phi": 2.1281262181736116,
+     "effective_dispersion": 2.689880275051423,
+     "k_normal_approx": 22.26785310164609
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 24,
+     "naive_plan_exceeded_share": 0.122885,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.6041982592454684,
+     "k_normal_approx": 23.25160170167176
+    },
     "all_classes": {
      "lambda_total": 14.412509166607528,
      "k_naive_poisson": 21,
-     "k_typed": 26,
-     "naive_plan_exceeded_share": 0.135685,
+     "k_typed": 25,
+     "naive_plan_exceeded_share": 0.1258225,
      "target": 0.050000000000000044,
-     "effective_dispersion": 2.8700164615886514,
-     "k_normal_approx": 24.99137840286825
-    },
+     "effective_dispersion": 2.574026296993051,
+     "k_normal_approx": 24.431028596438715
+    }
+   },
+   {
+    "c_H": 0.36525552790061155,
+    "phi_H": 2.689880275051423,
+    "S_definition": "coarse episodes, volume-conditional dispersion",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 16.31835040757467,
     "H_only": {
      "lambda_total": 12.666666666666668,
      "k_naive_poisson": 19,
-     "k_typed": 24,
-     "naive_plan_exceeded_share": 0.135,
+     "k_typed": 23,
+     "naive_plan_exceeded_share": 0.1252,
      "target": 0.050000000000000044,
-     "effective_dispersion": 3.0266666666666673,
-     "k_normal_approx": 22.851190401787093
+     "effective_dispersion": 2.689880275051423,
+     "k_normal_approx": 22.26785310164609
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 24,
+     "naive_plan_exceeded_share": 0.122885,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 2.6041982592454684,
+     "k_normal_approx": 23.25160170167176
+    },
+    "all_classes": {
+     "lambda_total": 14.412509166607528,
+     "k_naive_poisson": 21,
+     "k_typed": 27,
+     "naive_plan_exceeded_share": 0.13269,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.4733584813237854,
+     "k_normal_approx": 26.050335159107725
+    }
+   },
+   {
+    "c_H": 0.45,
+    "phi_H": 3.5650000000000004,
+    "S_definition": "fine (10-min merge)",
+    "S_lambda": 2.909090909090909,
+    "S_phi": 19.91847041847042,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 25,
+     "naive_plan_exceeded_share": 0.1491225,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.5650000000000004,
+     "k_normal_approx": 23.719870903844615
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 26,
+     "naive_plan_exceeded_share": 0.14678,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.425353645467625,
+     "k_normal_approx": 24.683991667038796
+    },
+    "all_classes": {
+     "lambda_total": 16.408180162278523,
+     "k_naive_poisson": 23,
+     "k_typed": 34,
+     "naive_plan_exceeded_share": 0.17225,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 6.349503404453114,
+     "k_normal_approx": 33.197277420705866
+    }
+   },
+   {
+    "c_H": 0.45,
+    "phi_H": 3.5650000000000004,
+    "S_definition": "coarse (60-min merge)",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 2.1281262181736116,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 25,
+     "naive_plan_exceeded_share": 0.1491225,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.5650000000000004,
+     "k_normal_approx": 23.719870903844615
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 26,
+     "naive_plan_exceeded_share": 0.14678,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.425353645467625,
+     "k_normal_approx": 24.683991667038796
+    },
+    "all_classes": {
+     "lambda_total": 14.412509166607528,
+     "k_naive_poisson": 21,
+     "k_typed": 27,
+     "naive_plan_exceeded_share": 0.1488575,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.3431394140227515,
+     "k_normal_approx": 25.830095361396722
+    }
+   },
+   {
+    "c_H": 0.45,
+    "phi_H": 3.5650000000000004,
+    "S_definition": "coarse episodes, volume-conditional dispersion",
+    "S_lambda": 0.9134199134199135,
+    "S_phi": 16.31835040757467,
+    "H_only": {
+     "lambda_total": 12.666666666666668,
+     "k_naive_poisson": 19,
+     "k_typed": 25,
+     "naive_plan_exceeded_share": 0.1491225,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.5650000000000004,
+     "k_normal_approx": 23.719870903844615
+    },
+    "H_plus_P": {
+     "lambda_total": 13.499089253187615,
+     "k_naive_poisson": 20,
+     "k_typed": 26,
+     "naive_plan_exceeded_share": 0.14678,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 3.425353645467625,
+     "k_normal_approx": 24.683991667038796
+    },
+    "all_classes": {
+     "lambda_total": 14.412509166607528,
+     "k_naive_poisson": 21,
+     "k_typed": 28,
+     "naive_plan_exceeded_share": 0.154785,
+     "target": 0.050000000000000044,
+     "effective_dispersion": 4.242471598353486,
+     "k_normal_approx": 27.274450574546258
     }
    }
-  }
+  ]
  }
 }

@@ -23,18 +23,22 @@ def fit_profile(slot_of_event, slot_hours):
 
 
 class Seasonal:
-    """Piecewise-constant intensity multiplier over a 48-slot (weekday/weekend x hour) cycle, time in hours from t0."""
-    def __init__(self, t0, T, s):
+    """Piecewise-constant intensity multiplier over a 48-slot (weekday/weekend x hour) cycle, time in hours from t0.
+    hourly_mult: optional array with one multiplier per hour of the observation window (a slowly varying level, or an exposure such as
+    the request volume), so that the baseline is s(slot(t)) * hourly_mult(t)."""
+    def __init__(self, t0, T, s, hourly_mult=None):
         self.t0, self.T, self.s = t0, T, s
         grid = np.arange(0, int(np.ceil(T)) + 1)
         idx = t0 + np.array(grid, dtype="timedelta64[h]")
         import pandas as pd
         self.slot = profile_slots(pd.DatetimeIndex(idx))
-        self.cum = np.concatenate([[0.0], np.cumsum(s[self.slot])])   # integral of s on hour grid
+        self.mult = np.ones(len(grid)) if hourly_mult is None else np.resize(np.asarray(hourly_mult, float), len(grid))
+        self.val = s[self.slot] * self.mult
+        self.cum = np.concatenate([[0.0], np.cumsum(self.val)])   # integral of the baseline multiplier on the hour grid
         self.grid = grid
 
     def at(self, th):
-        return self.s[self.slot[np.minimum(np.floor(th).astype(int), len(self.slot) - 1)]]
+        return self.val[np.minimum(np.floor(th).astype(int), len(self.val) - 1)]
 
     def integral(self, th):
         return np.interp(th, np.arange(len(self.cum)), self.cum)
@@ -69,7 +73,7 @@ def fit_hawkes(th, seas, T, fix_alpha_zero=False, starts=None):
 
 def simulate_nhpp(mu0, seas, T, rng):
     """Thinning simulation of the seasonal NHPP on [0, T] hours."""
-    smax = seas.s.max()
+    smax = seas.val.max()
     n = rng.poisson(mu0 * smax * T)
     t = np.sort(rng.random(n) * T)
     keep = rng.random(n) < seas.at(t) / smax
@@ -87,7 +91,7 @@ def hawkes_test(th, seas, T, n_boot=200, rng=None):
         ts = simulate_nhpp(n0["mu0"], seas, T, rng)
         if len(ts) < 5:
             continue
-        hb = fit_hawkes(ts, seas, T, starts=(0.5,))
+        hb = fit_hawkes(ts, seas, T)
         nb = fit_hawkes(ts, seas, T, fix_alpha_zero=True)
         sims.append(2 * (hb["ll"] - nb["ll"]))
     sims = np.array(sims)
@@ -135,7 +139,7 @@ def hill_tail_index(x, k=None):
 
 # ------------------------------------------------------------------ superposition simulator
 def simulate_typed_days(days, classes, rng):
-    """classes: list of dict(kind='poisson'|'negbin'|'hawkes_days'|'compound', params). Returns array days x classes of daily event counts."""
+    """classes: list of dict(kind='poisson'|'negbin'|'compound', params). Returns array days x classes of daily event counts."""
     out = np.zeros((days, len(classes)))
     for j, c in enumerate(classes):
         if c["kind"] == "poisson":
@@ -143,9 +147,6 @@ def simulate_typed_days(days, classes, rng):
         elif c["kind"] == "negbin":          # Gamma-mixed Poisson: daily multiplier with CV c
             m = rng.gamma(1 / c["cv"] ** 2, c["cv"] ** 2, days)
             out[:, j] = rng.poisson(c["lam"] * m)
-        elif c["kind"] == "hawkes_days":     # cluster (Hawkes branching) process: Poisson parents x geometric cluster sizes
-            parents = rng.poisson(c["lam"] * (1 - c["alpha"]), days)
-            out[:, j] = [np.sum(rng.geometric(1 - c["alpha"], p)) if p else 0 for p in parents]
         elif c["kind"] == "compound":        # episodes (Poisson) x heavy-tailed sizes (lognormal)
             ep = rng.poisson(c["lam"], days)
             out[:, j] = [np.sum(np.ceil(rng.lognormal(c["mu"], c["sigma"], e))) if e else 0 for e in ep]

@@ -1,5 +1,11 @@
 {
  "software_company": {
+  "filters": {
+   "rows_in_file": 66691,
+   "issue_type=Ticket": 45275,
+   "and created>=2017": 23871,
+   "and resolution=Done (analysed)": 22016
+  },
   "arrivals": {
    "label": "customer tickets 2017-2023",
    "n": 22016,
@@ -10,14 +16,21 @@
    "days": 2264,
    "lambda_per_day": 9.724381625441696,
    "how_chi2_p": 0.0,
-   "weekday_share": 0.7673510174418605,
-   "weekend_to_weekday_daily_ratio": 0.7579614064164791,
-   "weekday_dispersion_index_stratified": 3.1203767753909752,
+   "workdays": [
+    0,
+    1,
+    2,
+    3,
+    6
+   ],
+   "weekday_share": 0.9660701308139535,
+   "weekend_to_weekday_daily_ratio": 0.08780384597301236,
+   "weekday_dispersion_index_stratified": 3.512823814146192,
    "weekday_dispersion_p": 0.0,
-   "implied_daily_rate_cv": 0.5759878044735802,
-   "mean_weekday_tickets": 10.44774273345702,
-   "poisson_plan_exceeded_share": 0.1341991341991342,
-   "negbin_plan_exceeded_share": 0.04019789734075448,
+   "implied_daily_rate_cv": 0.437097413184156,
+   "mean_weekday_tickets": 13.145241038318913,
+   "poisson_plan_exceeded_share": 0.15327564894932014,
+   "negbin_plan_exceeded_share": 0.03955500618046971,
    "per_dow": [
     {
      "dow": 0,
@@ -56,21 +69,26 @@
      "negbin_plan_exceeded": 0.04643962848297214
     },
     {
-     "dow": 4,
-     "mean": 1.065015479876161,
-     "var_over_mean": 1.964321825798064,
-     "k_poisson": 3,
-     "k_negbin": 4,
-     "poisson_plan_exceeded": 0.04953560371517028,
-     "negbin_plan_exceeded": 0.030959752321981424
+     "dow": 6,
+     "mean": 14.564814814814815,
+     "var_over_mean": 3.9277061244412774,
+     "k_poisson": 21,
+     "k_negbin": 29,
+     "poisson_plan_exceeded": 0.14506172839506173,
+     "negbin_plan_exceeded": 0.027777777777777776
     }
    ],
    "detrended": {
-    "pearson_dispersion": 2.128336745319098,
-    "implied_daily_rate_cv": 0.32846281849679,
-    "poisson_local_plan_exceeded": 0.09338280766852196,
-    "negbin_local_plan_exceeded": 0.04081632653061224,
-    "mean_weekday_tickets": 10.44774273345702
+    "pearson_dispersion": 2.3830524366039145,
+    "implied_daily_rate_cv": 0.324198208525415,
+    "poisson_local_plan_exceeded": 0.09023485784919653,
+    "negbin_local_plan_exceeded": 0.033992583436341164,
+    "mean_weekday_tickets": 13.145241038318913
+   },
+   "causal": {
+    "poisson_plan_exceeded": 0.0962772785622593,
+    "negbin_plan_exceeded": 0.018613607188703467,
+    "n_eval_days": 1558
    },
    "interarrival_ks_p_time_rescaled": 9.184182223582489e-122,
    "rescaled_gap_cv": 1.344171428886618
@@ -139,14 +157,21 @@
     "days": 2025,
     "lambda_per_day": 2.5960493827160493,
     "how_chi2_p": 0.0,
-    "weekday_share": 0.7658360281529389,
-    "weekend_to_weekday_daily_ratio": 0.7644063586686537,
-    "weekday_dispersion_index_stratified": 6.335283260185608,
+    "workdays": [
+     0,
+     1,
+     2,
+     3,
+     6
+    ],
+    "weekday_share": 0.9571999239109759,
+    "weekend_to_weekday_daily_ratio": 0.11178457869634341,
+    "weekday_dispersion_index_stratified": 7.629243781058772,
     "weekday_dispersion_p": 0.0,
-    "implied_daily_rate_cv": 1.4257995071323721,
-    "mean_weekday_tickets": 2.784232365145228,
-    "poisson_plan_exceeded_share": 0.21991701244813278,
-    "negbin_plan_exceeded_share": 0.042185338865836794,
+    "implied_daily_rate_cv": 1.380493727001372,
+    "mean_weekday_tickets": 3.4775397373876986,
+    "poisson_plan_exceeded_share": 0.25777470628887356,
+    "negbin_plan_exceeded_share": 0.042156185210780926,
     "per_dow": [
      {
       "dow": 0,
@@ -185,21 +210,26 @@
       "negbin_plan_exceeded": 0.03460207612456748
      },
      {
-      "dow": 4,
-      "mean": 0.3217993079584775,
-      "var_over_mean": 1.824298088410992,
-      "k_poisson": 1,
-      "k_negbin": 2,
-      "poisson_plan_exceeded": 0.08996539792387544,
-      "negbin_plan_exceeded": 0.03460207612456748
+      "dow": 6,
+      "mean": 3.7896551724137932,
+      "var_over_mean": 8.296277521874242,
+      "k_poisson": 7,
+      "k_negbin": 15,
+      "poisson_plan_exceeded": 0.2793103448275862,
+      "negbin_plan_exceeded": 0.034482758620689655
      }
     ],
     "detrended": {
-     "pearson_dispersion": 1.6001983222650444,
-     "implied_daily_rate_cv": 0.4110060115773829,
-     "poisson_local_plan_exceeded": 0.047619047619047616,
-     "negbin_local_plan_exceeded": 0.025573192239858905,
-     "mean_weekday_tickets": 2.784232365145228
+     "pearson_dispersion": 1.483812716213085,
+     "implied_daily_rate_cv": 0.33292771599084364,
+     "poisson_local_plan_exceeded": 0.04852686308492201,
+     "negbin_local_plan_exceeded": 0.02339688041594454,
+     "mean_weekday_tickets": 3.4775397373876986
+    },
+    "causal": {
+     "poisson_plan_exceeded": 0.05335255948089401,
+     "negbin_plan_exceeded": 0.05335255948089401,
+     "n_eval_days": 1387
     },
     "interarrival_ks_p_time_rescaled": 0.0,
     "rescaled_gap_cv": 17.155567316059017
@@ -226,79 +256,91 @@
  },
  "servicenow": {
   "arrivals": {
-   "label": "incidents (2016)",
-   "n": 24918,
+   "label": "incidents, stationary segment 2016-03-07 to 2016-05-27",
+   "n": 22035,
    "span": [
-    "2016-02-29 01:16:00",
-    "2017-02-16 14:17:00"
+    "2016-03-07 00:08:00",
+    "2016-05-27 22:14:00"
    ],
-   "days": 354,
-   "lambda_per_day": 70.38983050847457,
+   "days": 82,
+   "lambda_per_day": 268.719512195122,
    "how_chi2_p": 0.0,
-   "weekday_share": 0.9517617786339193,
-   "weekend_to_weekday_daily_ratio": 0.12670770787653904,
-   "weekday_dispersion_index_stratified": 281.20121946021175,
-   "weekday_dispersion_p": 0.0,
-   "implied_daily_rate_cv": 1.7444627823084666,
-   "mean_weekday_tickets": 93.37007874015748,
-   "poisson_plan_exceeded_share": 0.24803149606299213,
-   "negbin_plan_exceeded_share": 0.051181102362204724,
+   "workdays": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "weekday_share": 0.9536646244610847,
+   "weekend_to_weekday_daily_ratio": 0.1214666412867612,
+   "weekday_dispersion_index_stratified": 25.213109722932817,
+   "weekday_dispersion_p": 1.450132154385237e-253,
+   "implied_daily_rate_cv": 0.28232477386819377,
+   "mean_weekday_tickets": 350.23333333333335,
+   "poisson_plan_exceeded_share": 0.3333333333333333,
+   "negbin_plan_exceeded_share": 0.03333333333333333,
    "per_dow": [
     {
      "dow": 0,
-     "mean": 116.6078431372549,
-     "var_over_mean": 324.8546763073819,
-     "k_poisson": 135,
-     "k_negbin": 503,
-     "poisson_plan_exceeded": 0.27450980392156865,
-     "negbin_plan_exceeded": 0.0196078431372549
+     "mean": 443.0833333333333,
+     "var_over_mean": 10.308119753107528,
+     "k_poisson": 478,
+     "k_negbin": 560,
+     "poisson_plan_exceeded": 0.16666666666666666,
+     "negbin_plan_exceeded": 0.08333333333333333
     },
     {
      "dow": 1,
-     "mean": 97.07843137254902,
-     "var_over_mean": 258.70704100181786,
-     "k_poisson": 114,
-     "k_negbin": 412,
-     "poisson_plan_exceeded": 0.27450980392156865,
-     "negbin_plan_exceeded": 0.0196078431372549
+     "mean": 356.3333333333333,
+     "var_over_mean": 5.919040734756358,
+     "k_poisson": 388,
+     "k_negbin": 435,
+     "poisson_plan_exceeded": 0.25,
+     "negbin_plan_exceeded": 0.0
     },
     {
      "dow": 2,
-     "mean": 95.76470588235294,
-     "var_over_mean": 280.88034398034404,
-     "k_poisson": 112,
-     "k_negbin": 420,
-     "poisson_plan_exceeded": 0.2549019607843137,
-     "negbin_plan_exceeded": 0.0392156862745098
+     "mean": 363.3333333333333,
+     "var_over_mean": 2.989658048373645,
+     "k_poisson": 395,
+     "k_negbin": 419,
+     "poisson_plan_exceeded": 0.08333333333333333,
+     "negbin_plan_exceeded": 0.08333333333333333
     },
     {
      "dow": 3,
-     "mean": 80.49019607843137,
-     "var_over_mean": 272.72607064555416,
-     "k_poisson": 96,
-     "k_negbin": 370,
-     "poisson_plan_exceeded": 0.21568627450980393,
-     "negbin_plan_exceeded": 0.09803921568627451
+     "mean": 304.75,
+     "var_over_mean": 47.62599746438959,
+     "k_poisson": 334,
+     "k_negbin": 526,
+     "poisson_plan_exceeded": 0.5833333333333334,
+     "negbin_plan_exceeded": 0.0
     },
     {
      "dow": 4,
-     "mean": 76.58,
-     "var_over_mean": 268.58565405791467,
-     "k_poisson": 91,
-     "k_negbin": 356,
-     "poisson_plan_exceeded": 0.22,
-     "negbin_plan_exceeded": 0.08
+     "mean": 283.6666666666667,
+     "var_over_mean": 59.22273261403696,
+     "k_poisson": 312,
+     "k_negbin": 525,
+     "poisson_plan_exceeded": 0.5833333333333334,
+     "negbin_plan_exceeded": 0.0
     }
    ],
    "detrended": {
-    "pearson_dispersion": 14.448789012345133,
-    "implied_daily_rate_cv": 0.37920393583865447,
-    "poisson_local_plan_exceeded": 0.16535433070866143,
-    "negbin_local_plan_exceeded": 0.03543307086614173,
-    "mean_weekday_tickets": 93.37007874015748
+    "pearson_dispersion": 22.32059377286336,
+    "implied_daily_rate_cv": 0.24546546268530428,
+    "poisson_local_plan_exceeded": 0.35,
+    "negbin_local_plan_exceeded": 0.016666666666666666,
+    "mean_weekday_tickets": 350.23333333333335
+   },
+   "causal": {
+    "poisson_plan_exceeded": 0.15,
+    "negbin_plan_exceeded": 0.0,
+    "n_eval_days": 20
    },
    "interarrival_ks_p_time_rescaled": 0.0,
-   "rescaled_gap_cv": 12.429684290189991
+   "rescaled_gap_cv": 1.1231080441720553
   },
   "resolution_calendar_hours": {
    "label": "opened to resolved",
@@ -318,16 +360,9 @@
    "weibull_shape": 0.3635879351009946,
    "ks_exponential_p": 0.0
   },
-  "concurrency": {
-   "label": "open incidents",
-   "time_avg_open": 478.06805641383,
-   "var_over_mean": 601.059630699154,
-   "q95_observed": 1533,
-   "q95_poisson_same_mean": 514,
-   "q99_observed": 1775,
-   "q99_poisson_same_mean": 530
-  },
   "n_incidents": 24918,
+  "share_opened_before_2016-06-02": 0.9890039328999117,
+  "note": "concurrency not reported: the log starts and stops abruptly (build-up and cut-off artefacts)",
   "high_priority": {
    "resolution_calendar_hours": {
     "label": "Critical/High",
@@ -361,6 +396,13 @@
    "days": 990,
    "lambda_per_day": 3.8424242424242423,
    "how_chi2_p": 0.0,
+   "workdays": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
    "weekday_share": 0.9852786540483701,
    "weekend_to_weekday_daily_ratio": 0.03735325506937033,
    "weekday_dispersion_index_stratified": 2.494251808603421,
@@ -422,6 +464,11 @@
     "poisson_local_plan_exceeded": 0.0748587570621469,
     "negbin_local_plan_exceeded": 0.03672316384180791,
     "mean_weekday_tickets": 5.293785310734464
+   },
+   "causal": {
+    "poisson_plan_exceeded": 0.09722222222222222,
+    "negbin_plan_exceeded": 0.029320987654320986,
+    "n_eval_days": 648
    },
    "interarrival_ks_p_time_rescaled": 7.611168627824735e-91,
    "rescaled_gap_cv": 1.5913492311399762

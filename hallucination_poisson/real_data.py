@@ -89,15 +89,15 @@ def burst_analysis(df):
     out["robust_daily_variability"] = {"log_sd_vs_rolling_median(MAD)": float(1.4826 * np.median(np.abs(resid - np.median(resid)))),
                                        "median_abs_day_to_day_log_change": float(np.median(np.abs(d1))),
                                        "share_of_days_changing_by_over_30pct": float(np.mean(np.abs(d1) > np.log(1.3)))}
-    best = None
+    best = None; cvs = []
     for st in range(int(sv.index.min()), int(sv.index.max()) - 13):
         w = sv.loc[st:st + 13]
         if w.isna().any() or (w < 1000).any():
             continue
-        cv = float(w.std(ddof=1) / w.mean())
+        cv = float(w.std(ddof=1) / w.mean()); cvs.append(cv)
         if best is None or cv < best[0]:
             best = (cv, st, float(w.mean()))
-    out["calmest_14day_window"] = {"cv": best[0], "start_day": best[1], "mean_per_day": best[2]} if best else None
+    out["calmest_14day_window"] = {"cv": best[0], "start_day": best[1], "mean_per_day": best[2], "n_windows": len(cvs), "median_window_cv": float(np.median(cvs))} if best else None
     # near-duplicate days (identical or <1% different counts exactly 6 days apart) - a data artefact to disclose
     c = sv.values
     dup = [(i, i + 6) for i in range(len(c) - 6) if not np.isnan(c[i]) and not np.isnan(c[i + 6]) and c[i] > 1000 and abs(c[i] - c[i + 6]) / c[i] < 0.01]
@@ -129,19 +129,21 @@ def burst_analysis(df):
 
 
 def capacity_replay(daily, alpha=0.95):
-    """Capacity implications of the *measured* daily variability: take the daily request counts of a
-    stable window, scale to the unprotected 120 hallucinations/day scenario, compare Poisson vs NB k*."""
+    """Stress test: replay the measured day-to-day multipliers (day count / mean of the 14 neighbouring days, rescaled to mean 1 so that lambda is
+    the true mean rate) on an event stream with mean lambda; report the share of days on which the Poisson plan is exceeded and the empirical
+    95% quantile of the replayed counts (not a moment-matched model)."""
     res = {}
     for name, (a, b) in {"files 1-2": (0, 120), "file 3": (225, 334)}.items():
         s = daily[(daily.index >= a) & (daily.index <= b)].values.astype(float)
-        cv, ratio = detrended_daily_cv(s, 14)
+        cv_raw, ratio = detrended_daily_cv(s, 14)
+        ratio = ratio / ratio.mean()
+        cv = float(ratio.std(ddof=1))
         for lam in (10.0, 120.0):
-            r = lam * ratio                      # daily intensity = lam x measured multiplier
             rng = np.random.default_rng(0)
-            draws = rng.poisson(np.tile(r, 200))  # Poisson given the day's intensity
+            draws = rng.poisson(np.tile(lam * ratio, 200))
             kp = capacity(lam, alpha)
-            m, rr = fit_negbin(draws)
-            res[f"{name}, lambda={lam:g}"] = {"cv": cv, "k_poisson": kp, "k_negbin": capacity_nb(m, rr, alpha),
+            res[f"{name}, lambda={lam:g}"] = {"cv_of_multiplier": cv, "mean_multiplier_before_rescaling": float(np.mean(detrended_daily_cv(s, 14)[1])),
+                                              "k_poisson": kp, "k_empirical": int(np.quantile(draws, alpha, method="higher")),
                                               "poisson_plan_exceeded_share": float(np.mean(draws > kp)), "target": 1 - alpha}
     return res
 

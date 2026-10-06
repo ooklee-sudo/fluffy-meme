@@ -55,6 +55,38 @@
   "mean_cluster_size": 6.540948572865285,
   "excitation_halflife_hours": 2.4338753723167845
  },
+ "episodes_conditional_on_volume": {
+  "pearson_dispersion_daily": 16.31835040757467,
+  "days_used": 123
+ },
+ "failed_requests_conditional_on_volume": {
+  "pearson_dispersion_daily": 5960.686980150314,
+  "days_used": 231
+ },
+ "episode_size_second_moment_ratio": {
+  "empirical_EX2_over_EX": 11373.964425401738,
+  "lognormal_implied": 5837.601804506521
+ },
+ "hawkes_episodes_exposure_adjusted": {
+  "n": 672,
+  "hawkes": {
+   "mu0": 0.03226557564303269,
+   "alpha": 0.7436029552930532,
+   "beta": 0.35032866696962683,
+   "ll": -1159.8629130322856
+  },
+  "nhpp_mu0": 0.12584269662921427,
+  "lr": 1044.7642936492557,
+  "bootstrap_p": 0.004975124378109453,
+  "aic": {
+   "nhpp": 3366.490119713827,
+   "hawkes": 2325.7258260645713
+  },
+  "ks_rescaled_p_nhpp": 2.5897995578584068e-93,
+  "ks_rescaled_p_hawkes": 9.04804728903272e-10,
+  "mean_cluster_size": 3.900200960361951,
+  "excitation_halflife_hours": 1.9785625497214605
+ },
  "sensitivity": [
   {
    "rate_thr": 0.2,
@@ -129,6 +161,10 @@
  ]
 }
 all providers {'n': 457, 'lr': 23.693, 'bootstrap_p': 0.005, 'ks_rescaled_p_nhpp': 0.001, 'ks_rescaled_p_hawkes': 0.473, 'mean_cluster_size': 1.194, 'excitation_halflife_hours': 7.093} {'mu0': 0.029057222472112218, 'alpha': 0.16248808142092305, 'beta': 0.09772404776494067, 'll': -1832.2700399868133} {'nhpp': 3690.232842967166, 'hawkes': 3670.5400799736267}
+all providers__level_adjusted {'n': 457, 'lr': 7.518, 'bootstrap_p': 0.025, 'ks_rescaled_p_nhpp': 0.166, 'ks_rescaled_p_hawkes': 0.911, 'mean_cluster_size': 1.074, 'excitation_halflife_hours': 2.864} {'mu0': 0.03232075629427684, 'alpha': 0.06932013398088455, 'beta': 0.24197863910397005, 'll': -1800.4601257724441} {'nhpp': 3610.4378224876377, 'hawkes': 3606.9202515448883}
 OpenAI {'n': 280, 'lr': 14.769, 'bootstrap_p': 0.005, 'ks_rescaled_p_nhpp': 0.076, 'ks_rescaled_p_hawkes': 0.263, 'mean_cluster_size': 1.121, 'excitation_halflife_hours': 3.778} {'mu0': 0.018958601994926716, 'alpha': 0.10786232200279376, 'beta': 0.18348425586427133, 'll': -1239.4945994214972} {'nhpp': 2495.7586800022596, 'hawkes': 2484.9891988429945}
+OpenAI__level_adjusted {'n': 280, 'lr': 6.638, 'bootstrap_p': 0.02, 'ks_rescaled_p_nhpp': 0.135, 'ks_rescaled_p_hawkes': 0.823, 'mean_cluster_size': 1.058, 'excitation_halflife_hours': 1.509} {'mu0': 0.020127820979567085, 'alpha': 0.05441735237824256, 'beta': 0.4591956769349405, 'll': -1222.4187352268996} {'nhpp': 2453.475134077795, 'hawkes': 2450.837470453799}
 Anthropic {'n': 141, 'lr': 30.241, 'bootstrap_p': 0.005, 'ks_rescaled_p_nhpp': 0.0, 'ks_rescaled_p_hawkes': 0.133, 'mean_cluster_size': 1.274, 'excitation_halflife_hours': 4.165} {'mu0': 0.008410106821861812, 'alpha': 0.21492583998584144, 'beta': 0.16644127950367507, 'll': -702.490182800402} {'nhpp': 1437.221633790452, 'hawkes': 1410.980365600804}
+Anthropic__level_adjusted {'n': 141, 'lr': 6.238, 'bootstrap_p': 0.025, 'ks_rescaled_p_nhpp': 0.016, 'ks_rescaled_p_hawkes': 0.187, 'mean_cluster_size': 1.097, 'excitation_halflife_hours': 3.835} {'mu0': 0.009764046459121357, 'alpha': 0.08852937588173171, 'beta': 0.18076480513594542, 'll': -663.331292660816} {'nhpp': 1334.9004437262329, 'hawkes': 1332.662585321632}
 impact>=2 {'n': 198, 'lr': 13.363, 'bootstrap_p': 0.005, 'ks_rescaled_p_nhpp': 0.001, 'ks_rescaled_p_hawkes': 0.127, 'mean_cluster_size': 1.144, 'excitation_halflife_hours': 5.795} {'mu0': 0.013147072236674565, 'alpha': 0.12553106689481944, 'beta': 0.11961449328545151, 'll': -942.6780966679983} {'nhpp': 1900.7187694858324, 'hawkes': 1891.3561933359965}
+impact>=2__level_adjusted {'n': 198, 'lr': 7.882, 'bootstrap_p': 0.015, 'ks_rescaled_p_nhpp': 0.115, 'ks_rescaled_p_hawkes': 0.436, 'mean_cluster_size': 1.06, 'excitation_halflife_hours': 1.472} {'mu0': 0.014148413611345615, 'alpha': 0.056443969014494826, 'beta': 0.47093690408977823, 'll': -919.5912535450526} {'nhpp': 1849.0641244915828, 'hawkes': 1845.1825070901052}

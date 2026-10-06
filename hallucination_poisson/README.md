@@ -93,6 +93,26 @@ python -I run_failure_models.py --burstgpt data \
 python summarize.py && cd paper && node build.js
 ```
 
-- 공급자 장애: 계절성 NHPP 대비 Hawkes 개선 (분기비 α≈0.11~0.22), 시간재척도 검정 회복.
+- 공급자 장애: 계절성 NHPP 대비 Hawkes 개선 (분기비 α≈0.11~0.22, 월별 수준 보정 후 0.05~0.09).
 - BurstGPT 실패 요청: 활성 분의 약 4%에 실패의 68%가 몰리는 에피소드, 크기 heavy-tail, 정의 민감도(표 10).
 - 용량 비교: 단일 포아송 vs 타입별 중첩 (예시 조직, 클래스 독립 가정).
+
+
+## 전체 재현 순서 (논문 수치)
+
+```bash
+pip install -r requirements.txt && (cd . && npm install)            # npm: docx (논문 빌더)
+# 1) 모델 실행 (한 번): collect -> retime (3개 generator; 위 "논문 재현" 참고)
+# 2) 공개 데이터 내려받기 (data/): BurstGPT, 장애 이력, 티켓 3종, Charlotin CSV (각 절의 curl 명령)
+python -I real_data.py --burstgpt data --incidents "data/out/.../incident_stages.csv" --out runs/real_data.json
+python -I triage_data.py --issues data/issues.csv --uci data/uci/incident_event_log.csv --italian data/helpdesk_it.csv --out runs/triage_data.json
+python -I hallucination_cases.py data/charlotin.csv --out runs/hallucination_cases.json   # https://www.damiencharlotin.com/hallucinations/hallucinations/download.csv
+./run_all_analyses.sh                                               # runs/<model>/analysis_*.json, paper_tables.json, summary.json
+python -I run_failure_models.py --burstgpt data --incidents "data/out/.../incident_stages.csv" --out runs/failure_models.json --boot 200   # ~30 min
+python summarize.py && python make_figures.py                        # summary.json (+ failure/triage/cases), figures
+(cd paper && node build.js)                                          # -> runs/LLM_Hallucination_Poisson_Framework_Revised.docx (copy to paper/)
+python checks/check_thinning.py; python checks/check_hawkes_recovery.py   # sanity checks of Prop. 3 and the Hawkes estimator
+```
+
+- 논문의 모든 수치는 `runs/*.json`에서 `paper/*.js`가 계산해 넣습니다(손으로 쓴 숫자는 일부 문구에 한정).
+- 참고문헌 일부(2026 arXiv 항목)는 저자 이름이 불완전합니다. 투고 전에 원문으로 확인하세요.

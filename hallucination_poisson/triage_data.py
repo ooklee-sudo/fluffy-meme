@@ -21,11 +21,22 @@ from stats_model import capacity, capacity_nb, exceed_prob_nb, fit_negbin  # noq
 DAY = 86400.0
 
 
-def arrival_block(start, label, min_year=None):
-    """start: tz-naive pandas datetime Series of ticket creation times."""
+def detect_workdays(s):
+    """The five days of the week with the most tickets (work week differs by country: e.g. Sunday-Thursday)."""
+    cnt = np.bincount(pd.Series(s).dt.dayofweek, minlength=7)
+    return sorted(np.argsort(cnt)[-5:].tolist())
+
+
+def arrival_block(start, label, min_year=None, workdays=None, window=None):
+    """start: tz-naive pandas datetime Series of ticket creation times. workdays: day-of-week numbers (0=Mon) of the work week;
+    detected from the data if None. window: optional (start, end) restriction (stationary segment)."""
     s = pd.Series(pd.to_datetime(start)).dropna().sort_values()
     if min_year:
         s = s[s.dt.year >= min_year]
+    if window:
+        s = s[(s >= window[0]) & (s < window[1])]
+    workdays = workdays if workdays is not None else detect_workdays(s)
+    weekend = [k for k in range(7) if k not in workdays]
     days = pd.date_range(s.min().floor("D"), s.max().floor("D"), freq="D")
     dc = s.dt.floor("D").value_counts().reindex(days, fill_value=0)
     out = {"label": label, "n": int(len(s)), "span": [str(s.min()), str(s.max())], "days": int(len(days)), "lambda_per_day": float(len(s) / len(days))}
@@ -34,15 +45,16 @@ def arrival_block(start, label, min_year=None):
     obs = np.bincount(how, minlength=168).astype(float)
     out["how_chi2_p"] = float(stats.chisquare(obs).pvalue)
     dow_counts = np.bincount(s.dt.dayofweek, minlength=7)
-    out["weekday_share"] = float(dow_counts[:5].sum() / dow_counts.sum())
-    out["weekend_to_weekday_daily_ratio"] = float((dow_counts[5:].sum() / 2) / (dow_counts[:5].sum() / 5))
+    out["workdays"] = [int(k) for k in workdays]
+    out["weekday_share"] = float(dow_counts[workdays].sum() / dow_counts.sum())
+    out["weekend_to_weekday_daily_ratio"] = float((dow_counts[weekend].sum() / 2) / (dow_counts[workdays].sum() / 5))
     # restrict the count analysis to weekdays with count>0 stream (weekends are a different regime); stratify by day of week
-    wd = dc[dc.index.dayofweek < 5]
+    wd = dc[dc.index.dayofweek.isin(workdays)]
     chi, df_ = 0.0, 0
     c2_num, c2_den = 0.0, 0.0
     exceed_p, exceed_nb_plan, n_days = 0.0, 0.0, 0
     per_dow = []
-    for k in range(5):
+    for k in workdays:
         v = wd[wd.index.dayofweek == k].values.astype(float)
         m, var = v.mean(), v.var(ddof=1)
         chi += (len(v) - 1) * var / m; df_ += len(v) - 1
@@ -65,9 +77,12 @@ def arrival_block(start, label, min_year=None):
     ok = mu > 0
     # day-of-week multiplicative effect removed first so the local mean is not biased by the weekly cycle
     dowv = wd.index.dayofweek.values
-    eff = np.array([v[dowv == k].mean() for k in range(5)]); eff = eff / eff.mean()
-    vv = v / eff[dowv]
-    mu = np.array([np.mean(np.concatenate([vv[max(0, i - w):i], vv[i + 1:i + w + 1]])) for i in range(n)]) * eff[dowv]
+    eff7 = np.ones(7)
+    for k in workdays:
+        eff7[k] = v[dowv == k].mean()
+    eff = eff7 / np.mean([eff7[k] for k in workdays]); eff = eff[dowv]
+    vv = v / eff
+    mu = np.array([np.mean(np.concatenate([vv[max(0, i - w):i], vv[i + 1:i + w + 1]])) for i in range(n)]) * eff
     pearson = float(np.mean((v[ok] - mu[ok]) ** 2 / mu[ok]))
     infl = 1 + 1.0 / (2 * w)            # inflation of Pearson dispersion from estimating mu with 2w neighbours
     phi = pearson / infl
@@ -76,6 +91,18 @@ def arrival_block(start, label, min_year=None):
                         "poisson_local_plan_exceeded": float(np.mean(v[ok] > stats.poisson.ppf(0.95, mu[ok]))),
                         "negbin_local_plan_exceeded": float(np.mean(v[ok] > np.array([capacity_nb(m_, (1 / c2) if c2 > 0 else np.inf, 0.95) for m_ in mu[ok]]))),
                         "mean_weekday_tickets": float(v.mean())}
+    # ---- causal (feasible) plan: trailing 20-workday mean (weekday effect removed), c estimated on earlier days only, rolling origin
+    start_i = 60 if n >= 120 else w + 20; ex_p = ex_nb = n_eval = 0
+    for i in range(start_i, n):
+        mu_i = np.mean(vv[i - w:i]) * eff[i]
+        prev = np.array([np.mean(vv[j - w:j]) * eff[j] for j in range(w, i)])
+        pv = (v[w:i] - prev) ** 2 / prev
+        phi_i = max(1.0, float(np.mean(pv)) / (1 + 1.0 / w))
+        c2_i = max(0.0, (phi_i - 1) / float(np.mean(prev)))
+        kp = stats.poisson.ppf(0.95, mu_i)
+        kn = capacity_nb(mu_i, (1 / c2_i) if c2_i > 0 else np.inf, 0.95)
+        ex_p += v[i] > kp; ex_nb += v[i] > kn; n_eval += 1
+    out["causal"] = {"poisson_plan_exceeded": float(ex_p / n_eval) if n_eval else None, "negbin_plan_exceeded": float(ex_nb / n_eval) if n_eval else None, "n_eval_days": int(n_eval)}
     # time-rescaled inter-arrival test with a fitted hour-of-week intensity (arrivals as events)
     t0 = s.iloc[0].floor("D")
     th = ((s - t0).dt.total_seconds() / 3600).values
@@ -149,15 +176,18 @@ if __name__ == "__main__":
     res = {}
 
     d = load_mendeley(a.issues)
+    n_all = len(d)
     t = d[(d.issue_type == "Ticket") & (d.issue_created.dt.year >= 2017) & (d.issue_resolution == "Done")].copy()   # customer tickets, steady years
+    filters = {"rows_in_file": int(n_all), "issue_type=Ticket": int((d.issue_type == "Ticket").sum()), "and created>=2017": int(((d.issue_type == "Ticket") & (d.issue_created.dt.year >= 2017)).sum()), "and resolution=Done (analysed)": int(len(t))}
     t["res_h"] = (t.issue_resolution_date - t.issue_created).dt.total_seconds() / 3600
     res["software_company"] = {
+        "filters": filters,
         "arrivals": arrival_block(t.issue_created, "customer tickets 2017-2023"),
         "resolution_calendar_hours": service_block(t.res_h, "creation to resolution"),
         "in_progress_hours": service_block(t.wf_in_progress / 3600, "time in 'in progress' state"),
         "concurrency": concurrency_block(t.issue_created, t.issue_resolution_date, "open tickets"),
         "workload": workload_block(t.issue_created, t.wf_in_progress / 3600, "in-progress hours per creation day"),
-        "high_priority": {"arrivals": arrival_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].issue_created, "High/Highest/Blocker"),
+        "high_priority": {"arrivals": arrival_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].issue_created, "High/Highest/Blocker", workdays=detect_workdays(t.issue_created)),
                           "resolution_calendar_hours": service_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].res_h, "High/Highest/Blocker")},
     }
 
@@ -166,8 +196,11 @@ if __name__ == "__main__":
         u[c] = pd.to_datetime(u[c].replace("?", np.nan), format="%d/%m/%Y %H:%M", errors="coerce")
     g = u.groupby("number").agg(opened=("opened_at", "min"), resolved=("resolved_at", "max"), prio=("priority", "first"))
     g["res_h"] = (g.resolved - g.opened).dt.total_seconds() / 3600
-    res["servicenow"] = {"arrivals": arrival_block(g.opened, "incidents (2016)"), "resolution_calendar_hours": service_block(g.res_h, "opened to resolved"),
-                         "concurrency": concurrency_block(g.opened, g.resolved, "open incidents"), "n_incidents": int(len(g)),
+    seg = (pd.Timestamp("2016-03-07"), pd.Timestamp("2016-05-28"))          # 98.9% of incidents are opened Feb 29 - Jun 1 2016; use the stationary middle weeks
+    res["servicenow"] = {"arrivals": arrival_block(g.opened, "incidents, stationary segment 2016-03-07 to 2016-05-27", window=seg),
+                         "resolution_calendar_hours": service_block(g.res_h, "opened to resolved"), "n_incidents": int(len(g)),
+                         "share_opened_before_2016-06-02": float((g.opened < "2016-06-02").mean()),
+                         "note": "concurrency not reported: the log starts and stops abruptly (build-up and cut-off artefacts)",
                          "high_priority": {"resolution_calendar_hours": service_block(g[g.prio.isin(["1 - Critical", "2 - High"])].res_h, "Critical/High"), "n": int(g.prio.isin(["1 - Critical", "2 - High"]).sum())}}
 
     h = pd.read_csv(a.italian)
