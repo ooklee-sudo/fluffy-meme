@@ -113,4 +113,4 @@ const appendixEnd = [
   H1('Appendix E. Use of Generative AI Tools'),
   P(`[Template to be completed by the authors in line with the journal's policy.] Generative AI tools were used in the development of the analysis code and in drafting and language editing of the manuscript. The authors specified the research design, reviewed and verified all code, analyses, numerical results and references, revised the text, and take full responsibility for the content of the paper. The tools are not listed as authors.`),
 ];
-module.exports = { discussion, conclusion, appendix, REFS, appendixEnd };
+module.exports = { discussion, conclusion, appendix, REFS, appendixEnd, refs };
