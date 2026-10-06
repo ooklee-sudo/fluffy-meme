@@ -46,4 +46,5 @@ for r, d in out.items():
     print("  latency", {k: round(v["mean"], 1) for k, v in d["layer_latency_ms"].items()}, "timeouts", d["layer_timeouts_share"], "FP of good", {k: round(v, 3) for k, v in d["false_block_share_of_good"].items()})
 
 out["real_data"] = json.load(open("runs/real_data.json"))
+out["triage"] = json.load(open("runs/triage_data.json"))
 json.dump(out, open("runs/summary.json", "w"), indent=1, default=float)

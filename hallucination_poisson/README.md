@@ -65,3 +65,19 @@ cd .. && python -I real_data.py --burstgpt data \
 - BurstGPT (Wang et al., KDD'25): Azure OpenAI 요청, 1초 해상도. 시간대 프로파일, 분 단위 군집성(Fano), 일별 변동성.
 - LLM Service Outages and Incident Reports (Chu et al., ICPE'25): OpenAI/Anthropic/Character.AI 상태 페이지 사건. 요일·시간대 층화 과산포 검정, 시간재척도 KS, 지속 시간, M/G/∞ 동시 열린 사건 수.
 - 원본 데이터(수백 MB)는 저장소에 포함하지 않습니다.
+
+## 사람 triage 데이터 (triage_data.py)
+
+기업 티켓 데이터로 도착 변동성, 서비스(해결) 시간 분포, 작업량 안전계수, 동시 열린 티켓 수를 분석합니다.
+
+```bash
+cd data
+# 1) 소프트웨어 회사 Help Desk Tickets (Mendeley, CC BY 4.0, doi:10.17632/btm76zndnt.3)
+curl -sSL -o issues.csv "https://data.mendeley.com/public-files/datasets/btm76zndnt/files/2018b884-181a-482b-8a06-a86bbf41f4e7/file_downloaded"
+# 2) ServiceNow 인시던트 이벤트 로그 (UCI #498)
+curl -sSL -o uci.zip "https://archive.ics.uci.edu/static/public/498/incident+management+process+enriched+event+log.zip" && unzip -oq uci.zip -d uci
+# 3) 이탈리아 소프트웨어 회사 Helpdesk (Mendeley, doi:10.17632/39bp3vv62t.1)
+curl -sSL -o helpdesk_it.csv "https://data.mendeley.com/public-files/datasets/39bp3vv62t/files/20b5d03f-c6f7-4fdc-91c3-67defd4c67bb/file_downloaded"
+cd .. && python -I triage_data.py --issues data/issues.csv --uci data/uci/incident_event_log.csv --italian data/helpdesk_it.csv --out runs/triage_data.json
+python summarize.py && cd paper && node build.js
+```
