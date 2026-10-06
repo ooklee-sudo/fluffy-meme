@@ -115,4 +115,4 @@ python checks/check_thinning.py; python checks/check_hawkes_recovery.py   # sani
 ```
 
 - 논문의 모든 수치는 `runs/*.json`에서 `paper/*.js`가 계산해 넣습니다(손으로 쓴 숫자는 일부 문구에 한정).
-- 참고문헌 일부(2026 arXiv 항목)는 저자 이름이 불완전합니다. 투고 전에 원문으로 확인하세요.
+- 2026년 문헌 인용(arXiv 사전출판물)은 제거했습니다. 데이터 출처 표기(Abdellatif 2026, Charlotin 2026)만 남아 있습니다.
