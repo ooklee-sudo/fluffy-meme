@@ -115,4 +115,4 @@ python checks/check_thinning.py; python checks/check_hawkes_recovery.py   # sani
 ```
 
 - 논문의 모든 수치는 `runs/*.json`에서 `paper/*.js`가 계산해 넣습니다(손으로 쓴 숫자는 일부 문구에 한정).
-- 인용 저자는 성(surname)만 표기하고 'et al.'은 쓰지 않았습니다. arXiv 항목(2026년 7편 포함 18편)의 저자·제목은 arXiv API로 대조했습니다(2026-10-06). 저널판(예: Ji 외 CSUR)은 arXiv판과 저자 목록이 다를 수 있으니 최종본에서 확인하세요.
+- 본문 인용은 'et al.'(저자 3명 이상), 참고문헌에는 arXiv API로 대조한 전체 저자(성만)를 적었습니다(2026-10-06; 18편). 저널판(예: Ji 외 CSUR)은 arXiv판과 저자 목록이 다를 수 있으니 최종본에서 확인하세요.
