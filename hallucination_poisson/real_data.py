@@ -42,7 +42,7 @@ def detrended_daily_cv(counts, window):
         nb = np.concatenate([c[i - h:i], c[i + 1:i + h + 1]])
         ratio.append(c[i] / nb.mean())
     ratio = np.array(ratio)
-    return float(ratio.std(ddof=1)), ratio
+    return float(ratio.std(ddof=1) / ratio.mean()), ratio
 
 
 def burst_analysis(df):
@@ -77,7 +77,7 @@ def burst_analysis(df):
         wk = np.array([ratio[pos == k].mean() for k in range(7)])
         res["weekly_cycle_amplitude(max/min)"] = float(wk.max() / wk.min())
         resid = ratio / wk[pos]
-        res["cv_after_weekly_cycle_removed"] = float(resid.std(ddof=1))
+        res["cv_after_weekly_cycle_removed"] = float(resid.std(ddof=1) / resid.mean())
         out["daily_cv"][name] = res
 
     # ---- robust day-to-day variability and the calmest 14-day window (guards against regime shifts / artefacts)

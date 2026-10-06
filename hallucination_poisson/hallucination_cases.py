@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stats_model import capacity, capacity_nb  # noqa: E402
 from triage_data import arrival_block  # noqa: E402
 
 ap = argparse.ArgumentParser()
@@ -26,8 +27,18 @@ out["monthly_counts_last_12"] = {str(k): int(v) for k, v in monthly.tail(12).ite
 seg = d[(d.Date >= "2025-10-01") & (d.Date < "2026-09-01")]   # the latest month is incomplete (reporting lag)
 ts = seg.Date + pd.Timedelta(hours=12)            # date only: all cases at noon (hour-of-day fields are not meaningful)
 blk = arrival_block(ts, "court decisions Oct 2025 - Aug 2026", workdays=[0, 1, 2, 3, 4])
+from pandas.tseries.holiday import USFederalHolidayCalendar  # noqa: E402
+hol = USFederalHolidayCalendar().holidays(start="2025-10-01", end="2026-09-01")
+blk_x = arrival_block(ts, "court decisions Oct 2025 - Aug 2026, US federal holidays excluded", workdays=[0, 1, 2, 3, 4], exclude=hol)
 keep = ["label", "n", "span", "days", "workdays", "mean_weekday_tickets", "weekend_to_weekday_daily_ratio", "weekday_dispersion_index_stratified", "weekday_dispersion_p",
         "implied_daily_rate_cv", "poisson_plan_exceeded_share", "negbin_plan_exceeded_share", "detrended", "causal"]
 out["segment"] = {k: blk[k] for k in keep}
+out["segment_excl_holidays"] = {k: blk_x[k] for k in keep + ["excluded_work_days"]}
+sep = d[(d.Date >= "2026-09-01") & (d.Date < "2026-10-01")]
+out["excluded_months"] = {"2026-09": int(len(sep)), "2026-10 (data end 2026-10-01)": int((d.Date >= "2026-10-01").sum()), "reason": "recent months are incomplete because of reporting lag"}
+for key in ("segment", "segment_excl_holidays"):
+    blk_k = out[key]; lam = blk_k["mean_weekday_tickets"]; phi = max(1.0, blk_k["weekday_dispersion_index_stratified"])
+    r_ = lam / (phi - 1.0) if phi > 1.0 else float("inf")
+    blk_k["k95_poisson"] = int(capacity(lam, 0.95)); blk_k["k95_negbin_stratified_index"] = int(capacity_nb(lam, r_, 0.95))
 json.dump(out, open(a.out, "w"), indent=1, default=float)
 print(json.dumps(out, indent=1, default=float)[:3000])

@@ -101,7 +101,7 @@ def retime(args):
 
 def analyze(args):
     recs = [json.loads(l) for l in open(os.path.join(args.run, "records.jsonl"), encoding="utf-8")]
-    a = load_arrays(recs)
+    a = load_arrays(recs, args.timeout_ms)
     rng = np.random.default_rng(args.seed)
     w = Weights(args.w_capacity, args.w_latency, args.w_sysfail, args.w_fp)
     rows, best, c_marg = optimise(a, args.daily_queries, args.alpha, w, args.sla_ms, args.sla_metric,

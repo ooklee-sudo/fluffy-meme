@@ -117,9 +117,11 @@ def burst_block(path, n_boot):
         st2, en2, sz2 = episodes_from_minutes(m_f, m_all, rate_thr=rt, min_fail=mf, merge_gap=mg)
         sh2 = np.sort(st2 / 60.0)
         d2 = np.bincount((st2 // 1440).astype(int), minlength=int(nmin // 1440) + 1)
+        exp2 = d2.sum() * req_day / req_day.sum(); ok2 = exp2 >= 1.0
+        phi_vol2 = float(np.sum((d2[ok2].astype(float) - exp2[ok2]) ** 2 / exp2[ok2]) / max(1, ok2.sum() - 1))
         hh = hawkes_test(sh2 + np.arange(len(sh2)) * 1e-6, seas, T, n_boot=30, rng=np.random.default_rng(5))
         sens.append({"rate_thr": rt, "min_fail": mf, "merge_gap_min": mg, "n_episodes": int(len(st2)), "share_of_failures": float(sz2.sum() / fail.sum()),
-                     "dispersion_index_daily": float(d2.var(ddof=1) / d2.mean()), "hawkes_alpha": hh["hawkes"]["alpha"], "halflife_h": hh["excitation_halflife_hours"],
+                     "dispersion_index_daily": float(d2.var(ddof=1) / d2.mean()), "phi_volume_conditional": phi_vol2, "days_used_volume_conditional": int(ok2.sum()), "hawkes_alpha": hh["hawkes"]["alpha"], "halflife_h": hh["excitation_halflife_hours"],
                      "boot_p": hh["bootstrap_p"], "ks_hawkes_p": hh["ks_rescaled_p_hawkes"], "median_size": float(np.median(sz2)), "p99_size": float(np.percentile(sz2, 99))})
     out["sensitivity"] = sens
     return out
@@ -138,13 +140,12 @@ def typed_scenarios(res):
     inc = json.load(open("runs/real_data.json"))["incidents"]["counts"]["all providers"]
     P = (inc["lambda_per_day"], inc["stratified_dispersion_index"])
     sens = res["burstgpt"]["sensitivity"]
-    vol_phi = res["burstgpt"]["episodes_conditional_on_volume"]["pearson_dispersion_daily"]
     DAYS_REC = 231.0                                   # recorded days in BurstGPT
     out = {"lambda_H": lam_h, "cv_H_range_from_steady_ticket_streams": cs, "P": {"lambda": P[0], "phi": P[1]}, "days_recorded": DAYS_REC, "mc_days": 400000, "mc_seed": 0, "scenarios": []}
     for c_h in (0.3, float(np.mean(cs)), 0.45):
         phi_h = 1 + lam_h * c_h ** 2
         for name, sc, phi_s in (("fine (10-min merge)", sens[0], sens[0]["dispersion_index_daily"]), ("coarse (60-min merge)", sens[1], sens[1]["dispersion_index_daily"]),
-                                ("coarse episodes, volume-conditional dispersion", sens[1], max(1.0, vol_phi))):
+                                ("coarse (60-min merge), volume-conditional dispersion", sens[1], max(1.0, sens[1]["phi_volume_conditional"]))):
             lam_s = sc["n_episodes"] / DAYS_REC
             out["scenarios"].append({"c_H": c_h, "phi_H": phi_h, "S_definition": name, "S_lambda": lam_s, "S_phi": phi_s,
                                      "H_only": typed_capacity({"H": (lam_h, phi_h)}),

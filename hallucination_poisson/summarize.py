@@ -29,7 +29,7 @@ def dependence_stats(a, reps=1000, seed=0):
     tab = np.array([[np.sum(x & y), np.sum(x & ~y)], [np.sum(~x & y), np.sum(~x & ~y)]])
     chi2, p, _, _ = sps.chi2_contingency(tab, correction=False)
     phi = float(np.sqrt(chi2 / tab.sum()) * np.sign(tab[0, 0] * tab[1, 1] - tab[0, 1] * tab[1, 0]))
-    out = {"table_L2xL3_among_hallucinated": tab.tolist(), "phi": phi, "chi2_p": float(p)}
+    out = {"table_L2xL3_among_hallucinated": tab.tolist(), "phi": phi, "chi2_p": float(p), "fisher_exact_p": float(sps.fisher_exact(tab)[1])}
     rng = np.random.default_rng(seed); n = a["n"]; keys = [k for k in a if k != "n"]
     phis, r_nr, r_r = [], [], []
     for _ in range(reps):
@@ -75,6 +75,14 @@ def cost_saving_ci(a, reps=500, seed=0):
     return out
 
 
+def late_credit(recs):
+    """Sensitivity: wait for slow judge calls and credit their verdicts (no 2 s timeout)."""
+    a2 = load_arrays(recs, timeout_ms=1e12)
+    e = evaluate_cascade(a2, ["L2", "L3"], route_thr=0.9)
+    return {"c3": marginal_clearance(a2)["L3"], "k_star_L2_L3": capacity(200 * e["residual_rate"], 0.95), "lambda_L2_L3": 200 * e["residual_rate"],
+            "saving_L1L2L3_vs_L1L2": cost_saving_ci(a2)["L1+L2+L3 vs L1+L2"]}
+
+
 out = {}
 for r in ("qwen05", "smol360", "qwen15"):
     recs = [json.loads(l) for l in open(f"runs/{r}/records.jsonl", encoding="utf-8")]
@@ -96,10 +104,10 @@ for r in ("qwen05", "smol360", "qwen15"):
         "gen_latency_ms_mean": float(np.mean([x["gen_latency_ms"] for x in recs])),
         "marginal_clearance": c, "dependence": layer_dependence(a), "residual_share": rows,
         "layer_latency_ms": {L: {"mean": float(a[f"{L}_lat"][~a["abstain"]].mean()), "p95": float(np.percentile(a[f"{L}_lat"][~a["abstain"]], 95))} for L in ("L1", "L2", "L3")},
-        "layer_timeouts_share": {L: float(np.mean((a[f"{L}_lat"] > 2000)[~a["abstain"]])) for L in ("L1", "L2", "L3")},
+        "layer_timeouts_share": {L: float(np.mean(a[f"{L}_late"][~a["abstain"]])) for L in ("L1", "L2", "L3")},
         "false_block_share_of_good": {L: float(np.mean(a[f"{L}_flag"][~a["hallu"] & ~a["abstain"]])) for L in ("L1", "L2", "L3")},
         "n_good_non_abstained": int((~a["hallu"] & ~a["abstain"]).sum()), "n_abstained": int(a["abstain"].sum()), "n_hallucinated": int(a["hallu"].sum()),
-        "dependence_stats": dependence_stats(a), "cost_saving_ci": cost_saving_ci(a),
+        "dependence_stats": dependence_stats(a), "cost_saving_ci": cost_saving_ci(a), "late_credit_sensitivity": late_credit(recs),
         "sla500": json.load(open(f"runs/{r}/analysis_sla500.json")),
         "sla100": json.load(open(f"runs/{r}/analysis.json")) if False else None,
         "burst": json.load(open(f"runs/{r}/analysis_burst.json")),

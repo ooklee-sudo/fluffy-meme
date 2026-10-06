@@ -27,7 +27,7 @@ def detect_workdays(s):
     return sorted(np.argsort(cnt)[-5:].tolist())
 
 
-def arrival_block(start, label, min_year=None, workdays=None, window=None):
+def arrival_block(start, label, min_year=None, workdays=None, window=None, exclude=None):
     """start: tz-naive pandas datetime Series of ticket creation times. workdays: day-of-week numbers (0=Mon) of the work week;
     detected from the data if None. window: optional (start, end) restriction (stationary segment)."""
     s = pd.Series(pd.to_datetime(start)).dropna().sort_values()
@@ -37,6 +37,8 @@ def arrival_block(start, label, min_year=None, workdays=None, window=None):
         s = s[(s >= window[0]) & (s < window[1])]
     workdays = workdays if workdays is not None else detect_workdays(s)
     weekend = [k for k in range(7) if k not in workdays]
+    # exclude: None | 'auto_low' (work days with a count below 35% of the centred 41-work-day rolling median; for high-rate streams only)
+    #          | iterable of dates (public holidays)
     days = pd.date_range(s.min().floor("D"), s.max().floor("D"), freq="D")
     dc = s.dt.floor("D").value_counts().reindex(days, fill_value=0)
     out = {"label": label, "n": int(len(s)), "span": [str(s.min()), str(s.max())], "days": int(len(days)), "lambda_per_day": float(len(s) / len(days))}
@@ -50,6 +52,14 @@ def arrival_block(start, label, min_year=None, workdays=None, window=None):
     out["weekend_to_weekday_daily_ratio"] = float((dow_counts[weekend].sum() / 2) / (dow_counts[workdays].sum() / 5))
     # restrict the count analysis to weekdays with count>0 stream (weekends are a different regime); stratify by day of week
     wd = dc[dc.index.dayofweek.isin(workdays)]
+    excl = set()
+    if isinstance(exclude, str) and exclude == "auto_low":
+        med = wd.rolling(41, center=True, min_periods=10).median()
+        excl = set(wd.index[wd < 0.35 * med])
+    elif exclude is not None:
+        excl = set(pd.DatetimeIndex(list(exclude)).normalize())
+    wd = wd[~wd.index.isin(excl)]
+    out["excluded_work_days"] = int(len(excl & set(dc.index)))
     chi, df_ = 0.0, 0
     c2_num, c2_den = 0.0, 0.0
     exceed_p, exceed_nb_plan, n_days = 0.0, 0.0, 0
@@ -118,11 +128,11 @@ def arrival_block(start, label, min_year=None, workdays=None, window=None):
     return out
 
 
-def workload_block(created, work_hours, label):
+def workload_block(created, work_hours, label, workdays):
     """Daily handling workload (sum of per-ticket hours of tickets created that day), weekdays only: safety factor q95/mean
     against the arrival-count safety factor q95/mean."""
     d = pd.DataFrame({"day": pd.to_datetime(created).dt.floor("D"), "w": np.asarray(work_hours, float)}).dropna()
-    d = d[d.day.dt.dayofweek < 5]
+    d = d[d.day.dt.dayofweek.isin(workdays)]
     ww = d.groupby("day")["w"].sum(); cc = d.groupby("day").size()
     return {"label": label, "workload_q95_over_mean": float(np.percentile(ww, 95) / ww.mean()), "count_q95_over_mean": float(np.percentile(cc, 95) / cc.mean()),
             "workload_cv": float(ww.std() / ww.mean()), "count_cv": float(cc.std() / cc.mean()), "mean_daily_workload_hours": float(ww.mean())}
@@ -186,9 +196,10 @@ if __name__ == "__main__":
         "resolution_calendar_hours": service_block(t.res_h, "creation to resolution"),
         "in_progress_hours": service_block(t.wf_in_progress / 3600, "time in 'in progress' state"),
         "concurrency": concurrency_block(t.issue_created, t.issue_resolution_date, "open tickets"),
-        "workload": workload_block(t.issue_created, t.wf_in_progress / 3600, "in-progress hours per creation day"),
-        "high_priority": {"arrivals": arrival_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].issue_created, "High/Highest/Blocker", workdays=detect_workdays(t.issue_created)),
-                          "resolution_calendar_hours": service_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].res_h, "High/Highest/Blocker")},
+        "workload": workload_block(t.issue_created, t.wf_in_progress / 3600, "in-progress hours per creation day", detect_workdays(t.issue_created)),
+        "arrivals_excl_low_days": arrival_block(t.issue_created, "customer tickets 2017-2023, low-volume days excluded", exclude="auto_low"),
+        "high_priority": {"resolution_calendar_hours": service_block(t[t.issue_priority.isin(["High", "Highest", "Blocker"])].res_h, "High/Highest/Blocker"),
+                          "note": "the High/Highest/Blocker share rises from about 0 to 11 tickets per work day over 2017-2023 (a change of the priority field), so its arrival stream is not stationary and is not analysed"},
     }
 
     u = pd.read_csv(a.uci, encoding="latin-1", low_memory=False)
@@ -198,6 +209,7 @@ if __name__ == "__main__":
     g["res_h"] = (g.resolved - g.opened).dt.total_seconds() / 3600
     seg = (pd.Timestamp("2016-03-07"), pd.Timestamp("2016-05-28"))          # 98.9% of incidents are opened Feb 29 - Jun 1 2016; use the stationary middle weeks
     res["servicenow"] = {"arrivals": arrival_block(g.opened, "incidents, stationary segment 2016-03-07 to 2016-05-27", window=seg),
+                         "arrivals_excl_low_days": arrival_block(g.opened, "incidents, stationary segment, low-volume days excluded", window=seg, exclude="auto_low"),
                          "resolution_calendar_hours": service_block(g.res_h, "opened to resolved"), "n_incidents": int(len(g)),
                          "share_opened_before_2016-06-02": float((g.opened < "2016-06-02").mean()),
                          "note": "concurrency not reported: the log starts and stops abruptly (build-up and cut-off artefacts)",
@@ -207,7 +219,12 @@ if __name__ == "__main__":
     h["ts"] = pd.to_datetime(h.CompleteTimestamp)
     c = h.groupby("CaseID").agg(start=("ts", "min"), end=("ts", "max"))
     c["res_h"] = (c.end - c.start).dt.total_seconds() / 3600
-    res["italian_helpdesk"] = {"arrivals": arrival_block(c.start, "cases 2010-2012"), "resolution_calendar_hours": service_block(c.res_h[c.res_h > 0], "first to last event"),
+    from dateutil.easter import easter
+    it_hol = []
+    for y in (2010, 2011, 2012):
+        it_hol += [pd.Timestamp(y, m, d) for m, d in ((1, 1), (1, 6), (4, 25), (5, 1), (6, 2), (8, 15), (11, 1), (12, 8), (12, 25), (12, 26))]
+        it_hol.append(pd.Timestamp(easter(y)) + pd.Timedelta(days=1))
+    res["italian_helpdesk"] = {"arrivals": arrival_block(c.start, "cases 2010-2012"), "arrivals_excl_holidays": arrival_block(c.start, "cases 2010-2012, Italian national holidays excluded", exclude=it_hol), "resolution_calendar_hours": service_block(c.res_h[c.res_h > 0], "first to last event"),
                                "concurrency": concurrency_block(c.start, c.end, "open cases"), "n_cases": int(len(c))}
     json.dump(res, open(a.out, "w"), indent=1, default=float)
     print(json.dumps(res, indent=1, default=float)[:12000])

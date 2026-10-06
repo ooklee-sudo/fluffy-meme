@@ -18,7 +18,7 @@ function runs(text) {
 const P = (t, o = {}) => new Paragraph({ children: runs(t), spacing: { after: 120, line: 300 }, alignment: AlignmentType.JUSTIFIED, ...o });
 const H1 = t => new Paragraph({ heading: HeadingLevel.HEADING_1, spacing: { before: 280, after: 120 }, children: [run(t, { bold: true, size: 26 })] });
 const H2 = t => new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 100 }, children: [run(t, { bold: true, italics: true, size: 23 })] });
-const EQ = t => new Paragraph({ children: [run(t, { italics: true })], alignment: AlignmentType.CENTER, spacing: { before: 80, after: 120 } });
+const EQ = t => new Paragraph({ children: [run(t.replace(/k\*/g, 'k\u2217'), { italics: true })], alignment: AlignmentType.CENTER, spacing: { before: 80, after: 120 } });
 const BOX = (label, t) => new Paragraph({ children: [run(label + ' ', { bold: true }), ...runs(t)], spacing: { after: 120, line: 300 }, indent: { left: 360, right: 360 }, alignment: AlignmentType.JUSTIFIED,
   border: { left: { style: BorderStyle.SINGLE, size: 12, color: '888888', space: 8 } } });
 const BUL = t => new Paragraph({ children: runs(t), numbering: { reference: 'bul', level: 0 }, spacing: { after: 60, line: 288 } });
@@ -30,11 +30,11 @@ function table(caption, header, rows, widths, note) {
     shading: hdr ? { fill: 'E8E8E8', type: ShadingType.CLEAR, color: 'auto' } : undefined,
     margins: { top: 40, bottom: 40, left: 80, right: 80 },
     children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [run(String(t).replace(/k\*/g, 'k\u2217'), { size: 18, bold: hdr })] })] });
-  const out = [new Paragraph({ children: [run(caption, { bold: true, size: 20 })], spacing: { before: 160, after: 60 }, keepNext: true }),
+  const out = [new Paragraph({ children: [run(caption.replace(/k\*/g, 'k\u2217'), { bold: true, size: 20 })], spacing: { before: 160, after: 60 }, keepNext: true }),
     new Table({ width: { size: total, type: WidthType.DXA }, columnWidths: widths,
       rows: [new TableRow({ tableHeader: true, children: header.map((h, i) => cell(h, widths[i], true)) }),
         ...rows.map(r => new TableRow({ children: r.map((c, i) => cell(c, widths[i], false)) }))] })];
-  if (note) out.push(new Paragraph({ children: [run(note, { size: 18, italics: true })], spacing: { before: 40, after: 160 } }));
+  if (note) out.push(new Paragraph({ children: [run(note.replace(/k\*/g, 'k\u2217'), { size: 18, italics: true })], spacing: { before: 40, after: 160 } }));
   else out.push(new Paragraph({ children: [], spacing: { after: 120 } }));
   return out;
 }

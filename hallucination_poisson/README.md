@@ -116,3 +116,11 @@ python checks/check_thinning.py; python checks/check_hawkes_recovery.py   # sani
 
 - 논문의 모든 수치는 `runs/*.json`에서 `paper/*.js`가 계산해 넣습니다(손으로 쓴 숫자는 일부 문구에 한정).
 - 본문 인용은 'et al.'(저자 3명 이상), 참고문헌에는 arXiv API로 대조한 전체 저자(성만)를 적었습니다(2026-10-06; 18편). 저널판(예: Ji 외 CSUR)은 arXiv판과 저자 목록이 다를 수 있으니 최종본에서 확인하세요.
+
+## 2차 검토 반영 요약 (코드)
+
+- `analysis.load_arrays(records, timeout_ms)`: 2초 초과·예외 호출은 fail-open(판정 폐기, 지연 2초로 상한). 이전에는 시간 초과 호출의 판정도 반영했으나(낙관적), 논문 정의에 맞춰 수정. 민감도(느린 판정 대기)는 `summarize.py`의 `late_credit_sensitivity`.
+- `triage_data.py`: 근무일을 데이터에서 감지(워크로드 계산에도 적용), 저빈도 휴일/연휴 제외 변형(`arrivals_excl_low_days`, `arrivals_excl_holidays`), ServiceNow 12주 구간, 인과적 용량 계획, 비정상 High-priority 하위집합 제외.
+- `real_data.py`: `detrended_daily_cv`가 진짜 CV(표준편차/평균) 반환.
+- `hallucination_cases.py`: 미국 연방 공휴일 제외 변형, 최근 월(보고 지연) 제외 기록.
+- `run_failure_models.py`: 서빙 에피소드의 부하량 조건부 분산을 정의별로 계산.

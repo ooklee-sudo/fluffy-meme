@@ -20,8 +20,10 @@ class Weights:
     w_fp: float = 0.0         # per daily false block (not in the paper; 0 = ignore)
 
 
-def load_arrays(records):
-    """records -> dict of numpy arrays used by every function below."""
+def load_arrays(records, timeout_ms=2000.0):
+    """records -> dict of numpy arrays used by every function below.
+    Fail-open policy: a layer call that raised an exception or took longer than `timeout_ms` is counted as a system failure, its verdict is
+    discarded (the output passes that layer) and the added latency is capped at `timeout_ms`."""
     n = len(records)
     a = {"hallu": np.array([r["hallucinated"] for r in records], bool)}
     for L in LAYERS:
@@ -30,10 +32,17 @@ def load_arrays(records):
         a[f"{L}_err"] = np.array([bool(r[L]["error"]) for r in records], bool)
     a["abstain"] = np.array([r["abstained"] for r in records], bool)
     a["p_entail"] = np.array([np.nan if r["L2"]["score"] is None else r["L2"]["score"] for r in records], float)
+    for L in LAYERS:
+        a[f"{L}_lat_raw"] = a[f"{L}_lat"].copy()
+        late = a[f"{L}_err"] | (a[f"{L}_lat"] > timeout_ms)
+        a[f"{L}_late"] = late
+        a[f"{L}_flag"] = a[f"{L}_flag"] & ~late
+        a[f"{L}_lat"] = np.minimum(a[f"{L}_lat"], timeout_ms)
     # abstentions bypass the guardrails (nothing to verify): never blocked, no latency
     for L in LAYERS:
         a[f"{L}_flag"] &= ~a["abstain"]
         a[f"{L}_lat"] = np.where(a["abstain"], 0.0, a[f"{L}_lat"])
+        a[f"{L}_late"] = a[f"{L}_late"] & ~a["abstain"]
     a["n"] = n
     return a
 
@@ -55,7 +64,7 @@ def evaluate_cascade(a, layers, route_thr=0.9, timeout_ms=2000.0, route=True):
         run &= ~a["abstain"]
         calls[L] = run
         latency += np.where(run, a[f"{L}_lat"], 0.0)
-        sys_fail |= run & (a[f"{L}_err"] | (a[f"{L}_lat"] > timeout_ms))
+        sys_fail |= run & a[f"{L}_late"]
         flag = run & a[f"{L}_flag"]
         blocked |= flag
         alive &= ~flag

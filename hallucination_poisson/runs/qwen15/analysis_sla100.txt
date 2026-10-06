@@ -1,39 +1,39 @@
 
 pool: n=300  hallucination rate p0=0.470  abstention rate=0.077  traffic=200.0/day x 90 days
-marginal clearance c_i: {'L1': 0.007, 'L2': 0.816, 'L3': 0.787}
+marginal clearance c_i: {'L1': 0.007, 'L2': 0.816, 'L3': 0.589}
   layer dependence L1-L2: phi=0.04  joint catch observed=0.007 vs independent=0.006
-  layer dependence L1-L3: phi=0.04  joint catch observed=0.007 vs independent=0.006
-  layer dependence L2-L3: phi=0.15  joint catch observed=0.667 vs independent=0.642
+  layer dependence L1-L3: phi=0.07  joint catch observed=0.007 vs independent=0.004
+  layer dependence L2-L3: phi=0.12  joint catch observed=0.504 vs independent=0.480
 
 daily $ cost  (labour + compute + false-block + residual harm)
   none       total $ 16500.00  labour $16500.00 compute $   0.00 fp $   0.00 harm $    0.00
   L1         total $ 16350.00  labour $16350.00 compute $   0.00 fp $   0.00 harm $    0.00
   L2         total $  3600.02  labour $ 3600.00 compute $   0.02 fp $   0.00 harm $    0.00
-  L3         total $  4200.37  labour $ 4200.00 compute $   0.37 fp $   0.00 harm $    0.00
-  L1+L2      total $  3600.02  labour $ 3600.00 compute $   0.02 fp $   0.00 harm $    0.00
-  L1+L3      total $  4200.37  labour $ 4200.00 compute $   0.37 fp $   0.00 harm $    0.00
-  L2+L3      total $  3150.06  labour $ 3150.00 compute $   0.06 fp $   0.00 harm $    0.00
-  L1+L2+L3   total $  3150.06  labour $ 3150.00 compute $   0.06 fp $   0.00 harm $    0.00  <-- cheapest
+  L3         total $  7350.37  labour $ 7350.00 compute $   0.37 fp $   0.00 harm $    0.00
+  L1+L2      total $  3600.02  labour $ 3600.00 compute $   0.02 fp $   0.00 harm $    0.00  <-- cheapest
+  L1+L3      total $  7350.37  labour $ 7350.00 compute $   0.37 fp $   0.00 harm $    0.00
+  L2+L3      total $  3600.06  labour $ 3600.00 compute $   0.06 fp $   0.00 harm $    0.00
+  L1+L2+L3   total $  3600.06  labour $ 3600.00 compute $   0.06 fp $   0.00 harm $    0.00
 
 95% bootstrap CI (resampling the evaluated pool)
   none       lambda/day [82.3, 106.0]  k* [97, 123]  latency ms [0, 0]  FP/day [0.0, 0.0]
   L1         lambda/day [81.3, 105.3]  k* [96, 122]  latency ms [0, 0]  FP/day [0.0, 0.0]
   L2         lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 93]  FP/day [8.7, 20.3]
-  L3         lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1675, 1839]  FP/day [27.3, 43.3]
+  L3         lambda/day [29.3, 47.7]  k* [39, 60]  latency ms [1541, 1648]  FP/day [14.7, 27.0]
   L1+L2      lambda/day [12.0, 24.0]  k* [18, 32]  latency ms [83, 92]  FP/day [8.7, 20.3]
-  L1+L3      lambda/day [13.0, 25.7]  k* [19, 35]  latency ms [1669, 1831]  FP/day [27.3, 43.3]
-  L2+L3      lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
-  L1+L2+L3   lambda/day [9.3, 20.7]  k* [15, 28]  latency ms [231, 362]  FP/day [15.3, 30.0]
+  L1+L3      lambda/day [29.3, 47.7]  k* [39, 60]  latency ms [1536, 1643]  FP/day [14.7, 27.0]
+  L2+L3      lambda/day [11.0, 22.7]  k* [16, 31]  latency ms [222, 341]  FP/day [12.7, 26.3]
+  L1+L2+L3   lambda/day [11.0, 22.7]  k* [16, 31]  latency ms [221, 340]  FP/day [12.7, 26.3]
 
 config      lam/day lam(indep)  k*   lat_ms   p95_ms  route  FP/day sysfail objective  SLA
 none          94.00      94.00 110      0.0      0.0   0.00     0.0    0.00    110.00  ok
 L1            93.33      93.33 109      0.0      0.1   0.00     0.0    0.00    109.00  ok
 L2            17.33      17.33  24     87.6    155.7   0.00    14.0    0.00     25.75  ok
-L3            20.00      20.00  28   1752.4   2957.0   0.92    35.3   49.33    112.38  VIOLATES
+L3            38.67      38.67  49   1595.6   2000.0   0.92    20.7   49.33    130.25  VIOLATES
 L1+L2         17.33      17.21  24     87.3    155.7   0.00    14.0    0.00     25.75  ok
-L1+L3         20.00      19.86  28   1746.8   2957.1   0.92    35.3   49.33    112.27  VIOLATES
-L2+L3         14.67       3.69  21    295.6   1797.2   0.11    22.0    6.67     33.58  VIOLATES
-L1+L2+L3      14.67       3.66  21    295.3   1797.3   0.11    22.0    6.67     33.57  VIOLATES
+L1+L3         38.67      38.39  49   1590.0   2000.1   0.92    20.7   49.33    130.13  VIOLATES
+L2+L3         16.67       7.13  24    279.1   1797.2   0.11    19.3    6.67     36.25  VIOLATES
+L1+L2+L3      16.67       7.08  24    278.9   1797.3   0.11    19.3    6.67     36.24  VIOLATES
 
 Best stack under mean latency <= 100.0 ms: L1+L2
 
