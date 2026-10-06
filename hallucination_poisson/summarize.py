@@ -47,4 +47,5 @@ for r, d in out.items():
 
 out["real_data"] = json.load(open("runs/real_data.json"))
 out["triage"] = json.load(open("runs/triage_data.json"))
+out["failure"] = json.load(open("runs/failure_models.json"))
 json.dump(out, open("runs/summary.json", "w"), indent=1, default=float)

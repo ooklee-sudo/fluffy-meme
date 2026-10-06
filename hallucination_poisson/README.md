@@ -81,3 +81,18 @@ curl -sSL -o helpdesk_it.csv "https://data.mendeley.com/public-files/datasets/39
 cd .. && python -I triage_data.py --issues data/issues.csv --uci data/uci/incident_event_log.csv --italian data/helpdesk_it.csv --out runs/triage_data.json
 python summarize.py && cd paper && node build.js
 ```
+
+## 타입별 고장 모형 (failure_models.py, run_failure_models.py)
+
+고장을 종류별로 나눠 계절성 NHPP, Hawkes(자기흥분), 복합 포아송(에피소드 × 크기)으로 적합합니다.
+
+```bash
+python -I run_failure_models.py --burstgpt data \
+  --incidents "data/out/LLM Service Outages and Incident Reports/clean_data/incident/2024-08-31/incident_stages.csv" \
+  --out runs/failure_models.json --boot 200        # 약 10분 (parametric bootstrap 포함)
+python summarize.py && cd paper && node build.js
+```
+
+- 공급자 장애: 계절성 NHPP 대비 Hawkes 개선 (분기비 α≈0.11~0.22), 시간재척도 검정 회복.
+- BurstGPT 실패 요청: 활성 분의 약 4%에 실패의 68%가 몰리는 에피소드, 크기 heavy-tail, 정의 민감도(표 10).
+- 용량 비교: 단일 포아송 vs 타입별 중첩 (예시 조직, 클래스 독립 가정).
