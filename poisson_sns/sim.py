@@ -293,3 +293,51 @@ class Sim:
 
     def reply_delays(self):
         return np.array([e[0] - self.items[e[4]][1] for e in self.events if e[2] == "comment"])
+
+
+# ------------------------------------------------- coarse-state lookup tables
+PERIODS = {0: ("심야/새벽(0~6시)", 3), 1: ("오전(6~12시)", 9), 2: ("오후(12~18시)", 15), 3: ("저녁/밤(18~24시)", 21)}
+PERSONA_DESC = {
+    "early_adopter": "새로운 기술·제품을 남보다 먼저 써보고 공유하는 얼리어답터",
+    "cynic": "대체로 비판적이고 냉소적이며 댓글로 반박하기를 즐기는 사용자",
+    "trend_follower": "유행하는 주제를 따라가며 리트윗·공유를 자주 하는 트렌드 추종자",
+    "lurker": "주로 눈팅만 하고 글·댓글은 거의 쓰지 않는 사용자",
+    "news_junkie": "뉴스와 이슈를 늘 확인하고 의견을 자주 올리는 사용자",
+}
+EMO_KO = {"interested": "흥미로움", "indifferent": "무덤덤함", "annoyed": "짜증남", "excited": "들떠 있음"}
+BUCKET_KO = {1: "관심이 약간 있는 주제", 2: "관심 있는 주제", 3: "평소 매우 관심 많은 주제"}
+
+
+def coarse_key(persona, hour, emotion, rel_count, rel_bucket, notif):
+    period = 0 if hour < 6 else 1 if hour < 12 else 2 if hour < 18 else 3
+    return (persona, period, emotion, min(int(rel_count), 3), int(rel_bucket), min(int(notif), 1))
+
+
+def all_coarse_states():
+    out = []
+    for p in PERSONA_KEYS:
+        for per in PERIODS:
+            for e in EMOTIONS:
+                for rc, bks in ((0, (1,)), (1, (1, 2, 3)), (2, (1, 2, 3)), (3, (1, 2, 3))):
+                    for b in bks:
+                        for nf in (0, 1):
+                            out.append((p, per, e, rc, b, nf))
+    return out
+
+
+def coarse_prompt(key):
+    p, per, e, rc, b, nf = key
+    return (f"사용자 유형: {PERSONA_DESC[p]}. 현재 시간대: {PERIODS[per][0]}. 현재 감정: {EMO_KO[e]}. "
+            f"최근 1시간 내 피드에 올라온 관심권 글: {rc}개 (방금 본 글의 주제: {BUCKET_KO[b]}). "
+            f"알림: {'있음(내 글에 반응)' if nf else '없음'}.")
+
+
+class TableProvider:
+    """Lookup of precomputed intensities on coarse states (e.g. produced by an LLM)."""
+
+    def __init__(self, table, name="table"):
+        self.table, self.name, self.calls = table, name, 0
+
+    def __call__(self, persona, hour, emotion, rel_count, rel_bucket, notif):
+        self.calls += 1
+        return self.table[coarse_key(persona, hour, emotion, rel_count, rel_bucket, notif)], ""
