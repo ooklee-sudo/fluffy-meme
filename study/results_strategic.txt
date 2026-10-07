@@ -1,0 +1,16 @@
+measured detection (mixture, share flagged at 5% FPR) vs evasion effort e: {0.0: 0.53, 0.25: 0.25, 0.5: 0.15, 0.75: 0.1, 1.0: 0.08}
+
+Equilibrium evasion e* and detection d(e*) as the stakes-to-evasion-cost ratio m = (B+P)/kappa rises
+     m |  full screen: e*   d(e*) |  hard-to-edit only: e*   d(e*) | better design
+  0.05 |             0.06    0.47 |                   0.00    0.34 | full
+  0.10 |             0.11    0.41 |                   0.00    0.34 | full
+  0.25 |             0.25    0.25 |                   0.01    0.34 | hard-to-edit
+  0.50 |             0.25    0.25 |                   0.02    0.34 | hard-to-edit
+  1.00 |             0.41    0.19 |                   0.04    0.34 | hard-to-edit
+  2.00 |             0.50    0.15 |                   0.08    0.34 | hard-to-edit
+  4.00 |             0.75    0.10 |                   0.16    0.33 | hard-to-edit
+  8.00 |             0.78    0.10 |                   0.25    0.33 | hard-to-edit
+
+hard-to-edit design overtakes the full screen at m ~ 0.16
+
+linear case: d(e*) = d0 (1 - m d0) is maximised at d0 = 1/(2m); e.g. m=1 -> d0*=0.50, d(e*)=0.25 ; m=2 -> d0*=0.25, d(e*)=0.125
