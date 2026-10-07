@@ -15,6 +15,8 @@ KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together":
 key = (os.environ.get(KEY) or "").strip().strip('"').strip("'").strip()   # tolerate stray spaces/quotes from cmd `set`
 if not key: raise SystemExit(f"Set {KEY} first (e.g. `set {KEY}=...` in cmd).")
 print(f"key loaded: {len(key)} chars, starts with {key[:6]!r}", flush=True)
+if not key.isascii() or len(key) < 40:
+    raise SystemExit(f"The key looks wrong ({len(key)} chars, non-ASCII={not key.isascii()}). Replace the placeholder with your REAL key: set {KEY}=sk-or-v1-xxxxxxxx (no Korean text, no spaces).")
 
 def call(prompt):
     if a.provider == "anthropic":
