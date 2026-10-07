@@ -12,8 +12,9 @@ ap.add_argument("--model", required=True); ap.add_argument("--out", required=Tru
 ap.add_argument("--prompts", default="data/prompts.jsonl"); ap.add_argument("--limit", type=int, default=0); ap.add_argument("--workers", type=int, default=1)
 a = ap.parse_args()
 KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together": "TOGETHER_API_KEY", "openrouter": "OPENROUTER_API_KEY"}[a.provider]
-key = os.environ.get(KEY)
+key = (os.environ.get(KEY) or "").strip().strip('"').strip("'").strip()   # tolerate stray spaces/quotes from cmd `set`
 if not key: raise SystemExit(f"Set {KEY} first (e.g. `set {KEY}=...` in cmd).")
+print(f"key loaded: {len(key)} chars, starts with {key[:6]!r}", flush=True)
 
 def call(prompt):
     if a.provider == "anthropic":
