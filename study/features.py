@@ -24,9 +24,11 @@ def windows(text):
     toks = TOK.findall(text)
     return [" ".join(toks[i:i + WIN]) for i in range(0, len(toks) - WIN + 1, WIN)]
 
+MAXWIN = 4   # every document is truncated to the same length (4 x 500 tokens) so length cannot drive detection
+
 def counts(text):
     """matrix (n_windows, n_features) of event counts"""
-    w = windows(text)
+    w = windows(text)[:MAXWIN]
     return np.array([[f(s) for f in FEATURES.values()] for s in w], dtype=float).reshape(len(w), len(NAMES))
 
 def doc_stats(C):
