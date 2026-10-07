@@ -1,0 +1,43 @@
+"""Generate synthetic papers locally. Keys are read from environment variables, never from files.
+  set OPENAI_API_KEY=...      python generate_synthetic.py --provider openai    --model gpt-4o --out data/synthetic/gpt4o.jsonl
+  set ANTHROPIC_API_KEY=...   python generate_synthetic.py --provider anthropic --model <claude-model-id> --out data/synthetic/claude.jsonl
+  set TOGETHER_API_KEY=...    python generate_synthetic.py --provider together  --model <model-id> --out data/synthetic/llama3.jsonl
+Resumable: re-run the same command and finished prompts are skipped. Use --limit 20 for a cheap trial."""
+import argparse, json, os, time, requests
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--provider", required=True, choices=["openai", "anthropic", "together"])
+ap.add_argument("--model", required=True); ap.add_argument("--out", required=True)
+ap.add_argument("--prompts", default="data/prompts.jsonl"); ap.add_argument("--limit", type=int, default=0)
+a = ap.parse_args()
+KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together": "TOGETHER_API_KEY"}[a.provider]
+key = os.environ.get(KEY)
+if not key: raise SystemExit(f"Set {KEY} first (e.g. `set {KEY}=...` in cmd).")
+
+def call(prompt):
+    if a.provider == "anthropic":
+        r = requests.post("https://api.anthropic.com/v1/messages", timeout=300,
+            headers={"x-api-key": key, "anthropic-version": "2023-06-01"},
+            json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
+        j = r.json(); return "".join(b.get("text", "") for b in j["content"]), j["usage"]
+    url = "https://api.openai.com/v1/chat/completions" if a.provider == "openai" else "https://api.together.xyz/v1/chat/completions"
+    r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
+        json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
+    j = r.json(); return j["choices"][0]["message"]["content"], j["usage"]
+
+os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+done = {json.loads(l)["human_id"] for l in open(a.out)} if os.path.exists(a.out) else set()
+rows = [json.loads(l) for l in open(a.prompts)]
+rows = [r for r in rows if r["human_id"] not in done][: a.limit or None]
+for i, r in enumerate(rows, 1):
+    for attempt in range(4):
+        try:
+            t0 = time.time(); text, usage = call(r["prompt"]); dt = time.time() - t0; break
+        except Exception as e:
+            print("retry", attempt, e); time.sleep(2 ** attempt * 3)
+    else:
+        continue
+    with open(a.out, "a", encoding="utf-8") as f:
+        f.write(json.dumps(dict(human_id=r["human_id"], model=a.model, prompt_level=r["prompt_level"],
+                                text=text, seconds=dt, usage=usage), ensure_ascii=False) + "\n")
+    print(f"{i}/{len(rows)} {r['human_id']} {dt:.0f}s", flush=True)
