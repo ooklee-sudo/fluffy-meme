@@ -9,7 +9,7 @@ import argparse, json, os, time, requests
 ap = argparse.ArgumentParser()
 ap.add_argument("--provider", required=True, choices=["openai", "anthropic", "together", "openrouter"])
 ap.add_argument("--model", required=True); ap.add_argument("--out", required=True)
-ap.add_argument("--prompts", default="data/prompts.jsonl"); ap.add_argument("--limit", type=int, default=0)
+ap.add_argument("--prompts", default="data/prompts.jsonl"); ap.add_argument("--limit", type=int, default=0); ap.add_argument("--workers", type=int, default=1)
 a = ap.parse_args()
 KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together": "TOGETHER_API_KEY", "openrouter": "OPENROUTER_API_KEY"}[a.provider]
 key = os.environ.get(KEY)
@@ -50,15 +50,24 @@ def one_paper(prompt):
             if isinstance(v, (int, float)): tot[k] = tot.get(k, 0) + v
     return "\n\n".join(parts), tot, time.time() - t0
 
-for i, r in enumerate(rows, 1):
+import threading
+from concurrent.futures import ThreadPoolExecutor
+lock = threading.Lock(); counter = [0]
+
+def work(r):
     for attempt in range(4):
         try:
             text, usage, dt = one_paper(r["prompt"]); break
         except Exception as e:
-            print("retry", attempt, e); time.sleep(2 ** attempt * 3)
+            print("retry", attempt, e, flush=True); time.sleep(2 ** attempt * 3)
     else:
-        continue
-    with open(a.out, "a", encoding="utf-8") as f:
-        f.write(json.dumps(dict(human_id=r["human_id"], model=a.model, prompt_level=r["prompt_level"],
-                                text=text, seconds=dt, usage=usage), ensure_ascii=False) + "\n")
-    print(f"{i}/{len(rows)} {r['human_id']} {dt:.0f}s {len(text.split())} words", flush=True)
+        return
+    with lock:
+        with open(a.out, "a", encoding="utf-8") as f:
+            f.write(json.dumps(dict(human_id=r["human_id"], model=a.model, prompt_level=r["prompt_level"],
+                                    text=text, seconds=dt, usage=usage), ensure_ascii=False) + "\n")
+        counter[0] += 1
+        print(f"{counter[0]}/{len(rows)} {r['human_id']} {dt:.0f}s {len(text.split())} words", flush=True)
+
+with ThreadPoolExecutor(max_workers=a.workers) as ex:
+    list(ex.map(work, rows))
