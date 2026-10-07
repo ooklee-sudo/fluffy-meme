@@ -34,10 +34,26 @@ done = {json.loads(l)["human_id"] for l in open(a.out)} if os.path.exists(a.out)
 rows = [json.loads(l) for l in open(a.prompts)]
 import random; random.Random(2024).shuffle(rows)   # fixed seed: any --limit is a random subset across fields
 rows = [r for r in rows if r["human_id"] not in done][: a.limit or None]
+SECTIONS = ["Introduction (background, gap, research question, contributions)",
+            "Methods (data, design, procedures, statistical analysis)",
+            "Results (main quantitative findings, with specific numbers)",
+            "Discussion and Conclusion (interpretation, limitations, implications)"]
+
+def one_paper(prompt):
+    """One call per section, concatenated: a single call yields only ~800 words, too short for the analysis."""
+    parts, t0, tot = [], time.time(), {}
+    for sec in SECTIONS:
+        p = (prompt + f"\n\nWrite ONLY the {sec} section of this paper, about 900 words, as continuous academic prose "
+             "with in-text citations. Start with the section title on its own line. Do not write other sections or a reference list.")
+        text, usage = call(p); parts.append(text.strip())
+        for k, v in usage.items():
+            if isinstance(v, (int, float)): tot[k] = tot.get(k, 0) + v
+    return "\n\n".join(parts), tot, time.time() - t0
+
 for i, r in enumerate(rows, 1):
     for attempt in range(4):
         try:
-            t0 = time.time(); text, usage = call(r["prompt"]); dt = time.time() - t0; break
+            text, usage, dt = one_paper(r["prompt"]); break
         except Exception as e:
             print("retry", attempt, e); time.sleep(2 ** attempt * 3)
     else:
@@ -45,4 +61,4 @@ for i, r in enumerate(rows, 1):
     with open(a.out, "a", encoding="utf-8") as f:
         f.write(json.dumps(dict(human_id=r["human_id"], model=a.model, prompt_level=r["prompt_level"],
                                 text=text, seconds=dt, usage=usage), ensure_ascii=False) + "\n")
-    print(f"{i}/{len(rows)} {r['human_id']} {dt:.0f}s", flush=True)
+    print(f"{i}/{len(rows)} {r['human_id']} {dt:.0f}s {len(text.split())} words", flush=True)
