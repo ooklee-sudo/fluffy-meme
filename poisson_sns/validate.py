@@ -16,7 +16,16 @@ ap.add_argument("--n", type=int, default=800)
 ap.add_argument("--days", type=int, default=3)
 ap.add_argument("--real-times"); ap.add_argument("--real-delays")
 ap.add_argument("--out", default="results/validate.json")
+ap.add_argument("--provider", default="surrogate", choices=["surrogate", "surrogate-table", "llm"])
 a = ap.parse_args()
+
+
+def make_provider():
+    if a.provider == "surrogate":
+        return None
+    import llm_table
+    return llm_table.llm_provider() if a.provider == "llm" else llm_table.surrogate_table_provider()
+
 
 def ref_profile():
     h = np.arange(24) + 0.5
@@ -36,11 +45,11 @@ else:
 ref_d = np.loadtxt(a.real_delays) if a.real_delays else ref_delays(rng, 20000)
 
 res = {}
-for mode in ["ipp", "hpp", "periodic"]:
+for mode in (["ipp"] if a.provider != "surrogate" else ["ipp", "hpp", "periodic"]):
     chi, tv, rr, ks_d, ks_p, nposts = [], [], [], [], [], []
     ndel, med = [], []
     for r in range(a.reps):
-        s = Sim(n=a.n, horizon=24 * a.days, mode=mode, seed=r, start_hour=0.0).run()
+        s = Sim(n=a.n, horizon=24 * a.days, mode=mode, seed=r, start_hour=0.0, provider=make_provider()).run()
         pt = s.posting_times(); nposts.append(len(pt))
         obs = np.histogram(pt % 24, bins=24, range=(0, 24))[0]
         exp = prof * obs.sum()

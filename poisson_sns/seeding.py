@@ -12,7 +12,16 @@ ap.add_argument("--k", type=int, default=3, help="# influencers in the concentra
 ap.add_argument("--horizon", type=float, default=48.0)
 ap.add_argument("--start-hour", type=float, default=18.0)
 ap.add_argument("--out", default="results/seeding.json")
+ap.add_argument("--provider", default="surrogate", choices=["surrogate", "surrogate-table", "llm"])
 a = ap.parse_args()
+
+
+def make_provider():
+    if a.provider == "surrogate":
+        return None
+    import llm_table
+    return llm_table.llm_provider() if a.provider == "llm" else llm_table.surrogate_table_provider()
+
 
 
 def hawkes_fit(t, T):
@@ -76,7 +85,7 @@ def one_rep(r):
     res = {}
     for arm in arms:
         s = Sim(n=a.n, horizon=a.horizon, start_hour=a.start_hour, seed=r, network_seed=1000 + r,
-                followers=followers)
+                followers=followers, provider=make_provider())
         s.seed_campaign(seeds[arm])
         s.run()
         m = metrics(s); m["n_seeds"] = len(seeds[arm]); m["seed_reach"] = int(sum(deg[i] for i in seeds[arm]))
