@@ -1,0 +1,17 @@
+docs: human=474 gpt4o=245 claude=152
+
+== Supervised (human + one generator) ==
+feature set                         gpt4o->gpt4o        claude->claude         gpt4o->claude         claude->gpt4o
+baseline: rates+disp500        0.987 [0.98,0.99]     0.914 [0.89,0.94]     0.729 [0.69,0.78]     0.809 [0.77,0.84]
+baseline: disp500 only         0.856 [0.83,0.88]     0.751 [0.71,0.80]     0.704 [0.65,0.75]     0.808 [0.78,0.84]
+NEW: rates+(a,b)               0.991 [0.98,1.00]     0.946 [0.93,0.96]     0.755 [0.71,0.80]     0.849 [0.82,0.87]
+NEW: (a,b) only                0.927 [0.91,0.94]     0.794 [0.76,0.83]     0.730 [0.68,0.77]     0.858 [0.83,0.89]
+NEW: slope b only              0.820 [0.79,0.85]     0.713 [0.67,0.76]     0.671 [0.62,0.72]     0.761 [0.73,0.80]
+
+== One-class (human papers only; Mahalanobis) ==
+feature set                                gpt4o                claude
+baseline: rates+disp500        0.563 [0.52,0.60]     0.462 [0.41,0.52]
+baseline: disp500 only         0.507 [0.46,0.55]     0.510 [0.46,0.56]
+NEW: rates+(a,b)               0.589 [0.55,0.63]     0.485 [0.44,0.54]
+NEW: (a,b) only                0.550 [0.51,0.59]     0.511 [0.46,0.57]
+NEW: slope b only              0.467 [0.42,0.51]     0.491 [0.44,0.55]
