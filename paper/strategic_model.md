@@ -11,7 +11,7 @@ The cascade model treats authors as passive: machine papers have fixed character
 
 A machine-using author chooses an evasion effort e in [0, 1]. Effort is costly, at (κ/2)e², and it lowers the probability that the paper is detected to d(e), with d(0) = d₀ the detection rate against a non-adaptive author. If the paper passes, the author gains B; if it is detected, the author loses P. The author's payoff is u(e) = B(1 − d(e)) − P·d(e) − (κ/2)e². Let m = (B + P)/κ be the ratio of what is at stake to the cost of effort. The author then chooses e to minimize m·d(e) + e²/2. The organization, which anticipates this, cares about the detection rate d(e*) that remains in equilibrium, not d₀.
 
-**Proposition 5 (evasion rises with the stakes).** If d is differentiable and decreasing, the optimal effort e* satisfies m·|d′(e*)| = e*, or e* = 1 at the corner. Effort is therefore nondecreasing in m and in the steepness of d, so equilibrium detection d(e*) falls as stakes rise or evasion becomes cheaper.
+**Proposition 5 (evasion rises with the stakes).** If d is differentiable, decreasing, and convex (as the measured curve is), the optimal effort e* satisfies m·|d′(e*)| = e*, or e* = 1 at the corner. Effort is therefore nondecreasing in m and in the steepness of d, so equilibrium detection d(e*) falls as stakes rise or evasion becomes cheaper.
 
 **Proposition 6 (the detectability paradox).** If d(e) = d₀(1 − e), then e* = min(1, m·d₀) and d(e*) = d₀(1 − m·d₀) whenever m·d₀ ≤ 1. Equilibrium detection is maximized at d₀ = 1/(2m), where it equals 1/(4m), and *decreases* in d₀ beyond that point. A screen that is very effective against non-adaptive authors provokes more evasion, and past a point it ends up detecting less than a weaker screen would.
 
