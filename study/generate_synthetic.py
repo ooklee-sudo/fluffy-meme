@@ -19,10 +19,12 @@ def call(prompt):
         r = requests.post("https://api.anthropic.com/v1/messages", timeout=300,
             headers={"x-api-key": key, "anthropic-version": "2023-06-01"},
             json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
+        if r.status_code != 200: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:500]}")
         j = r.json(); return "".join(b.get("text", "") for b in j["content"]), j["usage"]
     url = "https://api.openai.com/v1/chat/completions" if a.provider == "openai" else "https://api.together.xyz/v1/chat/completions"
     r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
         json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
+    if r.status_code != 200: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:500]}")
     j = r.json(); return j["choices"][0]["message"]["content"], j["usage"]
 
 os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
