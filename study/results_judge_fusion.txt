@@ -1,0 +1,41 @@
+target     n(h/s)                method          AUC [95% CI]   TPR@5%FPR
+gpt4o      196/92           Poisson new       0.946 [0.92,0.97]        0.64
+gpt4o      196/92          Gemini judge       0.972 [0.95,0.99]        0.87
+gpt4o      196/92          GPT-4o judge       0.760 [0.70,0.81]        0.01
+gpt4o      196/92     F1 mean(P,Gemini)       0.994 [0.99,1.00]        0.98
+gpt4o      196/92      F2 max(P,Gemini)       0.971 [0.95,0.99]        0.87
+gpt4o      196/92    F3 mean(P,Gem,GPT)       0.987 [0.98,1.00]        0.91
+
+claude     196/94           Poisson new       0.775 [0.72,0.83]        0.17
+claude     196/94          Gemini judge       0.656 [0.59,0.72]        0.01
+claude     196/94          GPT-4o judge       0.450 [0.39,0.51]        0.00
+claude     196/94     F1 mean(P,Gemini)       0.790 [0.73,0.84]        0.39
+claude     196/94      F2 max(P,Gemini)       0.742 [0.68,0.80]        0.15
+claude     196/94    F3 mean(P,Gem,GPT)       0.726 [0.66,0.78]        0.10
+
+llama      196/95           Poisson new       0.933 [0.90,0.96]        0.73
+llama      196/95          Gemini judge       0.974 [0.95,0.99]        0.89
+llama      196/95          GPT-4o judge       0.846 [0.80,0.89]        0.06
+llama      196/95     F1 mean(P,Gemini)       0.989 [0.98,1.00]        0.96
+llama      196/95      F2 max(P,Gemini)       0.976 [0.96,0.99]        0.96
+llama      196/95    F3 mean(P,Gem,GPT)       0.988 [0.98,1.00]        0.96
+
+== Paired AUC differences: fusion minus component ==
+  gpt4o   F1 mean(P,Gemini)    - Poisson new  : +0.048 [+0.027,+0.071]
+  gpt4o   F1 mean(P,Gemini)    - Gemini judge : +0.022 [+0.008,+0.040]
+  gpt4o   F2 max(P,Gemini)     - Poisson new  : +0.025 [+0.007,+0.043]
+  gpt4o   F2 max(P,Gemini)     - Gemini judge : -0.001 [-0.021,+0.020]
+  gpt4o   F3 mean(P,Gem,GPT)   - Poisson new  : +0.041 [+0.018,+0.065]
+  gpt4o   F3 mean(P,Gem,GPT)   - Gemini judge : +0.015 [+0.002,+0.032]
+  claude  F1 mean(P,Gemini)    - Poisson new  : +0.015 [-0.028,+0.059]
+  claude  F1 mean(P,Gemini)    - Gemini judge : +0.134 [+0.092,+0.177]
+  claude  F2 max(P,Gemini)     - Poisson new  : -0.033 [-0.082,+0.016]
+  claude  F2 max(P,Gemini)     - Gemini judge : +0.086 [+0.034,+0.139]
+  claude  F3 mean(P,Gem,GPT)   - Poisson new  : -0.049 [-0.102,+0.005]
+  claude  F3 mean(P,Gem,GPT)   - Gemini judge : +0.070 [+0.023,+0.117]
+  llama   F1 mean(P,Gemini)    - Poisson new  : +0.055 [+0.032,+0.083]
+  llama   F1 mean(P,Gemini)    - Gemini judge : +0.014 [+0.001,+0.031]
+  llama   F2 max(P,Gemini)     - Poisson new  : +0.043 [+0.021,+0.066]
+  llama   F2 max(P,Gemini)     - Gemini judge : +0.002 [-0.017,+0.022]
+  llama   F3 mean(P,Gem,GPT)   - Poisson new  : +0.055 [+0.030,+0.084]
+  llama   F3 mean(P,Gem,GPT)   - Gemini judge : +0.014 [+0.002,+0.028]
