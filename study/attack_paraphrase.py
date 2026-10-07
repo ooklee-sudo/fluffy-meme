@@ -2,17 +2,17 @@
   set OPENROUTER_API_KEY=...
   python attack_paraphrase.py --level p1 --limit 3
 Levels:  p1 = plain paraphrase;  p2 = rewrite so that it reads as if written by an experienced human researcher.
-Each excerpt (cleaned exactly as for the judges, first 3,000 tokens) is rewritten in two chunks of 1,500 tokens and rejoined.
+Each excerpt (cleaned exactly as for the judges, up to the first 4,000 tokens) is rewritten in chunks of 1,000 tokens and rejoined.
 Outputs: data/attack/<level>_full.jsonl (id, text: used for the screen) and data/attack/<level>_judge.jsonl (id, text: first 2,000 tokens, input for judge.py).
 Resumable; fails fast on key/credit errors. Default attacker is an open-weight model (cheap)."""
 import argparse, json, os, re, time, threading, requests
 from concurrent.futures import ThreadPoolExecutor
 
 PROMPTS = {
- "p1": "Paraphrase the following passage from a scientific paper. Preserve the meaning, the technical content, and the approximate length. Return only the paraphrased passage.\n\nPassage:\n\n",
+ "p1": "Paraphrase the following passage from a scientific paper. Preserve the meaning, the technical content, and the approximate length. Return only the paraphrased passage.",
  "p2": ("Rewrite the following passage from a scientific paper so that it reads as if it were written by an experienced human researcher rather than by an AI "
         "model: vary sentence length and structure, use the natural discourse habits of academic prose, and keep the meaning, the technical content, and the "
-        "approximate length. Return only the rewritten passage.\n\nPassage:\n\n"),
+        "approximate length. Return only the rewritten passage."),
 }
 def clean(t):          # identical to make_judge_input.clean, with whitespace tokenization
     t = re.sub(r"(?m)^\s*#{1,6}\s.*$", " ", t)
@@ -42,23 +42,29 @@ if __name__ == "__main__":
     lock = threading.Lock(); n = [0]
 
     def rewrite(chunk):
-        for attempt in range(10):
+        """One chunk. Models tend to shorten a rewrite, which would push papers below the 2,000 tokens the screen needs and bias the test,
+        so the target length is stated, answers under 85% of it are retried, and the longest answer is kept if all attempts fall short."""
+        n_in = len(chunk.split()); best, best_u = "", {}
+        prompt = PROMPTS[a.level] + f" The passage below has about {n_in} words, and your version must be about as long.\n\nPassage:\n\n" + chunk
+        for attempt in range(8):
             try:
                 r = requests.post("https://openrouter.ai/api/v1/chat/completions", timeout=300, headers={"Authorization": f"Bearer {key}"},
-                                  json={"model": a.model, "temperature": 0.7, "max_tokens": 3500, "messages": [{"role": "user", "content": PROMPTS[a.level] + chunk}]})
+                                  json={"model": a.model, "temperature": 0.7, "max_tokens": 3000, "messages": [{"role": "user", "content": prompt}]})
                 if r.status_code != 200: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:300]}")
-                out = r.json()["choices"][0]["message"].get("content") or ""
-                if len(out.split()) < 0.5 * len(chunk.split()): raise RuntimeError("answer too short")
-                return out.strip(), r.json().get("usage", {})
+                out = (r.json()["choices"][0]["message"].get("content") or "").strip()
+                if len(out.split()) > len(best.split()): best, best_u = out, r.json().get("usage", {})
+                if len(out.split()) >= 0.85 * n_in: return out, r.json().get("usage", {})
+                print(f"  short answer ({len(out.split())}/{n_in} words), retrying", flush=True)
             except Exception as e:
                 if any(c in str(e)[:12] for c in ("401", "402", "403")): print("FATAL (key/credit problem), stopping:", str(e)[:300], flush=True); os._exit(1)
                 wait = 20 if "429" in str(e) else min(2 ** attempt * 3, 60); print(f"  wait {wait}s ({str(e)[:70]})", flush=True); time.sleep(wait)
+        if best: return best, best_u
         raise RuntimeError("giving up")
 
     def work(k):
-        toks = clean(texts[(k["source"], k["source_id"])])[:3000]; t0 = time.time(); parts, cost = [], 0.0
-        for i in range(0, len(toks), 1500):
-            out, u = rewrite(" ".join(toks[i:i + 1500])); parts.append(out); cost += u.get("cost", 0) or 0
+        toks = clean(texts[(k["source"], k["source_id"])])[:4000]; t0 = time.time(); parts, cost = [], 0.0
+        for i in range(0, len(toks), 1000):
+            out, u = rewrite(" ".join(toks[i:i + 1000])); parts.append(out); cost += u.get("cost", 0) or 0
         full = " ".join(parts); j = " ".join(full.split()[:2000])
         with lock:
             open(fo, "a", encoding="utf-8").write(json.dumps(dict(id=k["id"], text=full, seconds=time.time() - t0, cost=cost), ensure_ascii=False) + "\n")
