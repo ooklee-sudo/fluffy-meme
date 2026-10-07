@@ -32,6 +32,7 @@ def call(prompt):
 os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
 done = {json.loads(l)["human_id"] for l in open(a.out)} if os.path.exists(a.out) else set()
 rows = [json.loads(l) for l in open(a.prompts)]
+import random; random.Random(2024).shuffle(rows)   # fixed seed: any --limit is a random subset across fields
 rows = [r for r in rows if r["human_id"] not in done][: a.limit or None]
 for i, r in enumerate(rows, 1):
     for attempt in range(4):
