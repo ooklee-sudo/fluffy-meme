@@ -39,13 +39,23 @@ SECTIONS = ["Introduction (background, gap, research question, contributions)",
             "Results (main quantitative findings, with specific numbers)",
             "Discussion and Conclusion (interpretation, limitations, implications)"]
 
+def call_patient(p):
+    """Retry each section call on its own; wait out rate limits (429) instead of discarding finished sections."""
+    for attempt in range(12):
+        try:
+            return call(p)
+        except Exception as e:
+            wait = 20 if "429" in str(e) else min(2 ** attempt * 3, 60)
+            print(f"  wait {wait}s ({str(e)[:60]})", flush=True); time.sleep(wait)
+    raise RuntimeError("giving up on this section")
+
 def one_paper(prompt):
     """One call per section, concatenated: a single call yields only ~800 words, too short for the analysis."""
     parts, t0, tot = [], time.time(), {}
     for sec in SECTIONS:
         p = (prompt + f"\n\nWrite ONLY the {sec} section of this paper, about 900 words, as continuous academic prose "
              "with in-text citations. Start with the section title on its own line. Do not write other sections or a reference list.")
-        text, usage = call(p); parts.append(text.strip())
+        text, usage = call_patient(p); parts.append(text.strip())
         for k, v in usage.items():
             if isinstance(v, (int, float)): tot[k] = tot.get(k, 0) + v
     return "\n\n".join(parts), tot, time.time() - t0
