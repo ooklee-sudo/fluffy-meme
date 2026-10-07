@@ -45,6 +45,8 @@ def call_patient(p):
         try:
             return call(p)
         except Exception as e:
+            if any(c in str(e)[:12] for c in ("401", "402", "403")):
+                print("FATAL (key/credit problem), stopping:", str(e)[:300], flush=True); os._exit(1)
             wait = 20 if "429" in str(e) else min(2 ** attempt * 3, 60)
             print(f"  wait {wait}s ({str(e)[:60]})", flush=True); time.sleep(wait)
     raise RuntimeError("giving up on this section")
