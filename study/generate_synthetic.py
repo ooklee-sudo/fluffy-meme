@@ -30,8 +30,8 @@ def call(prompt):
     j = r.json(); return j["choices"][0]["message"]["content"], j["usage"]
 
 os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
-done = {json.loads(l)["human_id"] for l in open(a.out)} if os.path.exists(a.out) else set()
-rows = [json.loads(l) for l in open(a.prompts)]
+done = {json.loads(l)["human_id"] for l in open(a.out, encoding="utf-8")} if os.path.exists(a.out) else set()
+rows = [json.loads(l) for l in open(a.prompts, encoding="utf-8")]
 import random; random.Random(2024).shuffle(rows)   # fixed seed: any --limit is a random subset across fields
 rows = [r for r in rows if r["human_id"] not in done][: a.limit or None]
 SECTIONS = ["Introduction (background, gap, research question, contributions)",

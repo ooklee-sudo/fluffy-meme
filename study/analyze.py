@@ -7,7 +7,7 @@ from sklearn.model_selection import GroupKFold, cross_val_predict
 from sklearn.metrics import roc_auc_score, f1_score
 import features as F
 
-load = lambda p: [json.loads(l) for l in open(p)]
+load = lambda p: [json.loads(l) for l in open(p, encoding="utf-8")]
 human = load("data/human.jsonl")
 syn = {os.path.basename(p)[:-6]: load(p) for p in glob.glob("data/synthetic/*.jsonl")}
 
