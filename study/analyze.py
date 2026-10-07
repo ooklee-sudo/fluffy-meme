@@ -15,7 +15,7 @@ def prep(rows, label, model):
     out = []
     for r in rows:
         t0 = time.perf_counter(); C = F.counts(r["text"]); s = F.doc_stats(C); dt = time.perf_counter() - t0
-        if C.shape[0] >= 3:
+        if C.shape[0] >= F.MAXWIN:
             out.append(dict(id=r.get("id", r.get("human_id")), group=r.get("human_id", r.get("id")), label=label, model=model,
                             field=r.get("field"), n_win=C.shape[0], stat=s, sec=dt, words=len(r["text"].split())))
     return out
