@@ -1,22 +1,30 @@
-human n=474; synthetic n=245 models=['gpt4o']
-                   median_DI  pct_overdisp  pct_underdisp
-model feature                                            
-gpt4o brackets         1.333         0.364          0.000
-      markers          1.111         0.078          0.033
-      nominal          0.760         0.073          0.041
-      parentheses      1.784         0.286          0.016
-      passive          2.506         0.473          0.000
-      quotes           3.000         0.600          0.010
-      semicolons       1.000         0.124          0.000
-human brackets         2.533         0.488          0.003
-      markers          1.000         0.062          0.034
-      nominal          1.667         0.274          0.015
-      parentheses      2.218         0.422          0.019
-      passive          1.203         0.188          0.025
-      quotes           1.296         0.244          0.007
-      semicolons       2.000         0.362          0.010
-Poisson-Score (single index)     0.546
-Poisson components (logistic)    0.986
-dtype: float64 F1(logistic)= 0.913
-gpt4o AUC single: 0.546 AUC logistic: 0.986
-Poisson pipeline: 173.7 docs/s on one CPU core, USD/doc = 0 (no API)
+human n=474; synthetic n=397 models=['gpt4o', 'claude']
+                    median_DI  pct_overdisp  pct_underdisp
+model  feature                                            
+claude brackets         1.222         0.220          0.000
+       markers          1.222         0.046          0.020
+       nominal          1.097         0.151          0.072
+       parentheses      2.209         0.401          0.000
+       passive          1.794         0.375          0.033
+       quotes           2.000         0.377          0.000
+       semicolons       2.000         0.360          0.000
+gpt4o  brackets         1.333         0.364          0.000
+       markers          1.111         0.078          0.033
+       nominal          0.760         0.073          0.041
+       parentheses      1.784         0.286          0.016
+       passive          2.506         0.473          0.000
+       quotes           3.000         0.600          0.010
+       semicolons       1.000         0.124          0.000
+human  brackets         2.533         0.488          0.003
+       markers          1.000         0.062          0.034
+       nominal          1.667         0.274          0.015
+       parentheses      2.218         0.422          0.019
+       passive          1.203         0.188          0.025
+       quotes           1.296         0.244          0.007
+       semicolons       2.000         0.362          0.010
+Poisson-Score (single index)     0.533
+Poisson components (logistic)    0.933
+dtype: float64 F1(logistic)= 0.839
+gpt4o AUC single: 0.544 AUC logistic: 0.967
+claude AUC single: 0.515 AUC logistic: 0.878
+Poisson pipeline: 159.3 docs/s on one CPU core, USD/doc = 0 (no API)
