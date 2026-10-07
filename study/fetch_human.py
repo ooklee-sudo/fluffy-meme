@@ -19,7 +19,11 @@ def get(url, **kw):
         time.sleep(2 ** i)
     return None
 
-def pmc(n, rng):
+def emit(path, row):
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+def pmc(n, rng, path):
     ids = []
     for year in range(2015, 2020):
         term = f'open access[filter] AND {year}[pdat] AND journal article[pt] AND english[lang]'
@@ -46,11 +50,12 @@ def pmc(n, rng):
         abstract = " ".join("".join(root.xpath("string(//abstract)")).split())
         text = "\n\n".join(paras)
         if len(text.split()) < 1500: continue
-        out.append(dict(id=f"PMC{pid}", source="pubmed", field="medicine", title=title, abstract=abstract, text=text))
+        row = dict(id=f"PMC{pid}", source="pubmed", field="medicine", title=title, abstract=abstract, text=text)
+        out.append(row); emit(path, row)
         print("pmc", len(out), pid, flush=True)
     return out
 
-def arxiv(n, rng):
+def arxiv(n, rng, path):
     cats = ["cs.LG", "cs.CL", "cs.CV", "cs.SE", "cs.DB", "cs.IR", "cs.CR", "cs.SI"]
     cands = []
     for cat in cats:
@@ -86,8 +91,9 @@ def arxiv(n, rng):
         paras = [p for p in paras if len(p) > 120]
         text = "\n\n".join(paras)
         if len(text.split()) < 1500: continue
-        out.append(dict(id=f"arXiv:{c['id']}", source="arxiv", field="computer_science",
-                        title=c["title"], abstract=c["abstract"], text=text))
+        row = dict(id=f"arXiv:{c['id']}", source="arxiv", field="computer_science",
+                   title=c["title"], abstract=c["abstract"], text=text)
+        out.append(row); emit(path, row)
         print("arxiv", len(out), c["id"], flush=True)
     return out
 
@@ -97,8 +103,7 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="data/human.jsonl"); ap.add_argument("--seed", type=int, default=42)
     a = ap.parse_args()
     rng = random.Random(a.seed)
-    rows = pmc(a.pmc, rng) if a.pmc else []
-    rows += arxiv(a.arxiv, rng) if a.arxiv else []
-    with open(a.out, "w") as f:
-        for r in rows: f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print("wrote", len(rows))
+    open(a.out, "w").close()
+    if a.pmc: pmc(a.pmc, rng, a.out)
+    if a.arxiv: arxiv(a.arxiv, rng, a.out)
+    print("done", sum(1 for _ in open(a.out)))
