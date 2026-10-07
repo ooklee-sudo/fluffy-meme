@@ -1,16 +1,17 @@
 """Generate synthetic papers locally. Keys are read from environment variables, never from files.
   set OPENAI_API_KEY=...      python generate_synthetic.py --provider openai    --model gpt-4o --out data/synthetic/gpt4o.jsonl
   set ANTHROPIC_API_KEY=...   python generate_synthetic.py --provider anthropic --model <claude-model-id> --out data/synthetic/claude.jsonl
+  set OPENROUTER_API_KEY=...  python generate_synthetic.py --provider openrouter --model openai/gpt-4o --out data/synthetic/gpt4o.jsonl
   set TOGETHER_API_KEY=...    python generate_synthetic.py --provider together  --model <model-id> --out data/synthetic/llama3.jsonl
 Resumable: re-run the same command and finished prompts are skipped. Use --limit 20 for a cheap trial."""
 import argparse, json, os, time, requests
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--provider", required=True, choices=["openai", "anthropic", "together"])
+ap.add_argument("--provider", required=True, choices=["openai", "anthropic", "together", "openrouter"])
 ap.add_argument("--model", required=True); ap.add_argument("--out", required=True)
 ap.add_argument("--prompts", default="data/prompts.jsonl"); ap.add_argument("--limit", type=int, default=0)
 a = ap.parse_args()
-KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together": "TOGETHER_API_KEY"}[a.provider]
+KEY = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "together": "TOGETHER_API_KEY", "openrouter": "OPENROUTER_API_KEY"}[a.provider]
 key = os.environ.get(KEY)
 if not key: raise SystemExit(f"Set {KEY} first (e.g. `set {KEY}=...` in cmd).")
 
@@ -21,7 +22,8 @@ def call(prompt):
             json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
         if r.status_code != 200: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:500]}")
         j = r.json(); return "".join(b.get("text", "") for b in j["content"]), j["usage"]
-    url = "https://api.openai.com/v1/chat/completions" if a.provider == "openai" else "https://api.together.xyz/v1/chat/completions"
+    url = {"openai": "https://api.openai.com/v1/chat/completions", "together": "https://api.together.xyz/v1/chat/completions",
+           "openrouter": "https://openrouter.ai/api/v1/chat/completions"}[a.provider]
     r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
         json={"model": a.model, "max_tokens": 6000, "messages": [{"role": "user", "content": prompt}]})
     if r.status_code != 200: raise RuntimeError(f"HTTP {r.status_code}: {r.text[:500]}")
