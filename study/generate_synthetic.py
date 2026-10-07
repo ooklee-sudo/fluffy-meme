@@ -35,6 +35,7 @@ done = {json.loads(l)["human_id"] for l in open(a.out, encoding="utf-8")} if os.
 rows = [json.loads(l) for l in open(a.prompts, encoding="utf-8")]
 import random; random.Random(2024).shuffle(rows)   # fixed seed: any --limit is a random subset across fields
 rows = [r for r in rows if r["human_id"] not in done][: a.limit or None]
+print(f"already done: {len(done)}", flush=True)
 SECTIONS = ["Introduction (background, gap, research question, contributions)",
             "Methods (data, design, procedures, statistical analysis)",
             "Results (main quantitative findings, with specific numbers)",
@@ -58,7 +59,10 @@ def one_paper(prompt):
     for sec in SECTIONS:
         p = (prompt + f"\n\nWrite ONLY the {sec} section of this paper, about 900 words, as continuous academic prose "
              "with in-text citations. Start with the section title on its own line. Do not write other sections or a reference list.")
+        t1 = time.time()
+        print(f"  requesting: {sec.split(' ')[0]} ...", flush=True)
         text, usage = call_patient(p); parts.append(text.strip())
+        print(f"  got {sec.split(' ')[0]}: {len(text.split())} words in {time.time()-t1:.0f}s", flush=True)
         for k, v in usage.items():
             if isinstance(v, (int, float)): tot[k] = tot.get(k, 0) + v
     return "\n\n".join(parts), tot, time.time() - t0
@@ -82,5 +86,6 @@ def work(r):
         counter[0] += 1
         print(f"{counter[0]}/{len(rows)} {r['human_id']} {dt:.0f}s {len(text.split())} words", flush=True)
 
+print(f"{len(rows)} papers to generate with {a.model} (workers={a.workers})", flush=True)
 with ThreadPoolExecutor(max_workers=a.workers) as ex:
     list(ex.map(work, rows))
