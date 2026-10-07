@@ -43,7 +43,7 @@ We sampled English-language papers published between 2015 and 2019, before wides
 
 For each sampled paper we asked a generator to write a paper on the same topic, given the original title and abstract, using one of three prompts of increasing detail. We used two generators through a commercial API gateway: GPT-4o and Claude Sonnet 5.5. A single request yielded only about 800 words from GPT-4o, too short for window-based analysis, so each paper was generated in four requests (introduction, methods, results, discussion and conclusion) and concatenated. Prompts were presented in a fixed random order, so each subset is random across fields.
 
-GPT-4o produced 245 unique papers (one source had been generated twice during testing and we kept one record), with a median of about 2,750 words. Claude produced 152 papers, with a median of 4,566 words (range 3,667 to 5,134); generation was stopped at that number because of budget, not because of any property of the output. Because Claude wrote longer papers, all documents are truncated to the same length before analysis (Section 3.3). Both sets passed the length requirement.
+GPT-4o produced 245 unique papers (one source had been generated twice during testing and we kept one record), with a median of about 2,750 words. Claude produced 152 papers, with a median of 4,566 words (range 3,667 to 5,134); generation was capped at that number to limit cost, not because of any property of the output. Because Claude wrote longer papers, all documents are truncated to the same length before analysis (Section 3.3). Both sets passed the length requirement.
 
 ## 3.3 Events and windows
 
@@ -135,7 +135,7 @@ For governance, the practical value of these features is transparency and cost, 
 This is a pilot, and several limitations are material.
 
 1. **Two generators, both commercial.** The findings come from GPT-4o and Claude Sonnet 5.5. The large cross-generator drop is itself a warning that results for other models, including open-weight ones and future releases, may differ.
-2. **Sample sizes.** The Claude sample (152) is smaller than the GPT-4o sample (245) and was cut short by budget. Bootstrap intervals for cross-generator AUCs are about ±0.05.
+2. **Sample sizes.** The Claude sample (152) is smaller than the GPT-4o sample (245) because we capped generation to limit cost. Bootstrap intervals for cross-generator AUCs are about ±0.05.
 3. **Section-wise generation.** Papers were produced in four requests to reach analyzable length. This may introduce structural artifacts, including inflated passive dispersion, and it is not how most real users would produce a paper. Claude also wrote substantially longer sections than GPT-4o, and we did not control for that beyond truncating to the same length.
 4. **Extraction differences.** Human papers come from two pipelines (XML and PDF conversion) while synthetic papers are plain text. Differences in how citations, formulas, and figures appear in extracted text could affect counts.
 5. **Short windows and low power.** Four windows per document limit the power of dispersion tests and make per-document dispersion estimates noisy.
