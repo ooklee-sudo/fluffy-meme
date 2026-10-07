@@ -1,11 +1,11 @@
 ---
 title: "Counting What Machines Cannot Fake? A Pilot Study of Poisson-Based Screening for LLM-Generated Scholarly Text"
-subtitle: "Working paper, pilot evidence (two generators; human-subject experiment not yet conducted)"
+subtitle: "Working paper, pilot evidence (three generators; human-subject experiment not yet conducted)"
 ---
 
 # Abstract
 
-Organizations that publish or archive scholarly documents now face a screening problem: language models can produce papers faster and more cheaply than anyone can check them. Two common remedies, LLM-as-a-judge and embedding-based similarity metrics, are either expensive and prompt-dependent or insensitive to fine-grained statistical structure. We study a lightweight alternative that treats the occurrence of selected linguistic events (special punctuation, discourse markers, passive constructions, nominalizations) as count processes and asks how far a document departs from human-authored text. Using 474 human-written papers from PubMed Central and arXiv (2015–2019) and matched papers from two generators (GPT-4o, 245 papers; Claude Sonnet 5.5, 152 papers), we report six findings. First, human text is not Poisson: for punctuation events, 36–49% of documents reject the Poisson null because of over-dispersion. Second, a single Poisson-distance index performs near chance (AUC 0.52–0.54), but a vector of event rates and dispersion indices separates human from machine text well when the detector is trained and tested on the same generator (AUC 0.99 for GPT-4o, 0.91 for Claude). Third, this performance does not transfer: a detector trained on one generator reaches only 0.73 (GPT-4o to Claude) and 0.81 (Claude to GPT-4o) on the other. Fourth, dispersion transfers better than event rates, which differ in sign across generators; this is the clearest support we find for the count-process idea. Fifth, detectors trained on human papers alone, which need no generator data, perform near chance (AUC 0.45 to 0.66 across three methods), so the signal lies in directions specific to machine text and not in generic departures from human variation. Sixth, replacing the single-window dispersion index with a scale-dependent clustering model (a doubly stochastic, or Cox, Poisson process summarized by how the Fano factor changes with window size) improves detection modestly but consistently, by roughly 0.03 to 0.05 AUC in most settings, including transfer to an unseen generator (0.76 and 0.85); it does not rescue human-only detection. Screening costs nothing per document and runs at about 160 documents per second on one CPU core. The evidence is limited to two commercial generators and one genre, and we do not test adversarial editing, comparison with black-box metrics, or the effect on human reviewers.
+Organizations that publish or archive scholarly documents now face a screening problem: language models can produce papers faster and more cheaply than anyone can check them. Two common remedies, LLM-as-a-judge and embedding-based similarity metrics, are either expensive and prompt-dependent or insensitive to fine-grained statistical structure. We study a lightweight alternative that treats the occurrence of selected linguistic events (special punctuation, discourse markers, passive constructions, nominalizations) as count processes and asks how far a document departs from human-authored text. Using 474 human-written papers from PubMed Central and arXiv (2015–2019) and matched papers from three generators (GPT-4o, 245 papers; Claude Sonnet 5.5, 152; Llama 3.3 70B, 202), we report six findings. First, human text is not Poisson: for punctuation events, 36–49% of documents reject the Poisson null because of over-dispersion. Second, a single Poisson-distance index performs near chance (AUC 0.51–0.54). Third, a vector of event rates and dispersion indices separates human from machine text well when the detector is trained and tested on the same generator (AUC 0.91–0.99), but not across generators: a detector trained on GPT-4o reaches 0.73 on Claude. Fourth, dispersion transfers better than event rates, which differ in sign across generators. Fifth, detectors trained on human papers alone perform near chance to modestly above it. Sixth, we propose a scale-dependent clustering model, a doubly stochastic (Cox) Poisson process summarized by how the Fano factor changes with window size. In a test specified before the Llama data were collected, it raised AUC on the unseen Llama papers from 0.89 to 0.93 (difference +0.046, 95% interval 0.030 to 0.063). Screening costs nothing per document and runs at roughly 160 to 230 documents per second on one CPU core. The evidence is limited to three generators and one genre, and we do not test adversarial editing, comparison with black-box metrics, or the effect on human reviewers.
 
 **Keywords:** information quality, synthetic text detection, count data, dispersion, generalization, scholarly publishing
 
@@ -41,9 +41,9 @@ We sampled English-language papers published between 2015 and 2019, before wides
 
 ## 3.2 Synthetic papers
 
-For each sampled paper we asked a generator to write a paper on the same topic, given the original title and abstract, using one of three prompts of increasing detail. We used two generators through a commercial API gateway: GPT-4o and Claude Sonnet 5.5. A single request yielded only about 800 words from GPT-4o, too short for window-based analysis, so each paper was generated in four requests (introduction, methods, results, discussion and conclusion) and concatenated. Prompts were presented in a fixed random order, so each subset is random across fields.
+For each sampled paper we asked a generator to write a paper on the same topic, given the original title and abstract, using one of three prompts of increasing detail. We used three generators through a commercial API gateway: GPT-4o, Claude Sonnet 5.5, and Llama 3.3 70B Instruct (an open-weight model, hosted). A single request yielded only about 800 words from GPT-4o, too short for window-based analysis, so each paper was generated in four requests (introduction, methods, results, discussion and conclusion) and concatenated. Prompts were presented in a fixed random order, so each subset is random across fields.
 
-GPT-4o produced 245 unique papers (one source had been generated twice during testing and we kept one record), with a median of about 2,750 words. Claude produced 152 papers, with a median of 4,566 words (range 3,667 to 5,134); generation was capped at that number to limit cost, not because of any property of the output. Because Claude wrote longer papers, all documents are truncated to the same length before analysis (Section 3.3). Both sets passed the length requirement.
+GPT-4o produced 245 unique papers (one source had been generated twice during testing and we kept one record), with a median of about 2,750 words. Claude produced 152 papers, with a median of 4,566 words (range 3,667 to 5,134); generation was capped at that number to limit cost, not because of any property of the output. Llama 3.3 70B Instruct, an open-weight model that we accessed through the same gateway, produced 202 unique papers (one source had again been generated twice and one record was kept), with a median of about 2,970 words (range 2,355 to 7,926). It was added last, after the clustering model of Section 3.5 had been developed, and it serves as the confirmatory test. All three synthetic sets passed the length requirement, and because the generators wrote papers of different lengths, all documents are truncated to the same length before analysis (Section 3.3).
 
 ## 3.3 Events and windows
 
@@ -65,7 +65,7 @@ The comparison was fixed before the model was run: the baseline (rates plus the 
 
 ## 3.6 Evaluation
 
-Detection is evaluated by five-fold cross-validation with all material from the same source paper kept in the same fold, so that a human paper and its synthetic counterpart never straddle training and test sets. We report the area under the ROC curve (AUC), with 95% bootstrap intervals over documents. To study transfer, we train on human papers plus papers from one generator and test on held-out human papers plus papers from the other generator, in both directions. We also evaluate detectors trained on human papers only: a Mahalanobis distance from the human feature distribution (Ledoit–Wolf covariance), chosen as the primary method before seeing results, and, as secondary methods, a One-Class SVM and an Isolation Forest, all with default settings and no tuning on generator data. These produce an anomaly score, and we evaluate how well it separates held-out human papers from each generator's papers. The analysis code, prompts, and generated papers are in the project repository; the human papers can be re-collected with the included script.
+Detection is evaluated by five-fold cross-validation with all material from the same source paper kept in the same fold, so that a human paper and its synthetic counterpart never straddle training and test sets. We report the area under the ROC curve (AUC), with 95% bootstrap intervals over documents. To study transfer, we train on human papers plus papers from one generator and test on held-out human papers plus papers from the other generator, in both directions. We also evaluate detectors trained on human papers only: a Mahalanobis distance from the human feature distribution (Ledoit–Wolf covariance), chosen as the primary method before seeing results, and, as secondary methods, a One-Class SVM and an Isolation Forest, all with default settings and no tuning on generator data. These produce an anomaly score, and we evaluate how well it separates held-out human papers from each generator's papers. Finally, because the clustering model of Section 3.5 was developed on the GPT-4o and Claude data, we tested it on Llama papers that played no part in its development. This test, and the script that runs it, were fixed before the Llama papers were generated: train on human papers plus both other generators pooled, never on Llama, with grouped cross-validation, and compare the baseline features with the new features by a paired bootstrap of the AUC difference. The analysis code, prompts, and generated papers are in the project repository; the human papers can be re-collected with the included script.
 
 # 4. Results
 
@@ -73,19 +73,19 @@ Detection is evaluated by five-fold cross-validation with all material from the 
 
 Table 1 reports, for each event, the median dispersion index and the share of documents whose counts reject the Poisson null in the direction of over-dispersion. Only discourse markers behave approximately as the Poisson model predicts in human text: the median index is 1.00 and 6% of documents reject, close to the 5% expected by chance. Punctuation events are clearly over-dispersed, with 49% of documents rejecting for square brackets, 42% for parentheses, and 36% for semicolons. Citations and formulas plausibly cluster in particular parts of a paper, such as the introduction and methods, and this clustering is exactly what a Poisson model cannot represent.
 
-| Event | Human: index (% over) | GPT-4o: index (% over) | Claude: index (% over) |
-|:--|--:|--:|--:|
-| Square brackets | 2.53 (48.8) | 1.33 (36.4) | 1.22 (22.0) |
-| Parentheses | 2.22 (42.2) | 1.78 (28.6) | 2.21 (40.1) |
-| Semicolons | 2.00 (36.2) | 1.00 (12.4) | 2.00 (36.0) |
-| Nominalizations | 1.67 (27.4) | 0.76 (7.3) | 1.10 (15.1) |
-| Quotation marks | 1.30 (24.4) | 3.00 (60.0) | 2.00 (37.7) |
-| Passive constructions | 1.20 (18.8) | 2.51 (47.3) | 1.79 (37.5) |
-| Discourse markers | 1.00 (6.2) | 1.11 (7.8) | 1.22 (4.6) |
+| Event | Human: index (% over) | GPT-4o: index (% over) | Claude: index (% over) | Llama: index (% over) |
+|:--|--:|--:|--:|--:|
+| Square brackets | 2.53 (48.8) | 1.33 (36.4) | 1.22 (22.0) | 2.00 (38.5) |
+| Parentheses | 2.22 (42.2) | 1.78 (28.6) | 2.21 (40.1) | 2.02 (39.6) |
+| Semicolons | 2.00 (36.2) | 1.00 (12.4) | 2.00 (36.0) | 2.00 (35.0) |
+| Nominalizations | 1.67 (27.4) | 0.76 (7.3) | 1.10 (15.1) | 1.27 (21.8) |
+| Quotation marks | 1.30 (24.4) | 3.00 (60.0) | 2.00 (37.7) | 3.00 (55.3) |
+| Passive constructions | 1.20 (18.8) | 2.51 (47.3) | 1.79 (37.5) | 2.02 (35.1) |
+| Discourse markers | 1.00 (6.2) | 1.11 (7.8) | 1.22 (4.6) | 1.11 (9.4) |
 
 : Table 1. Median dispersion index and percentage of documents rejecting the Poisson null toward over-dispersion (5% level), by source. Index = variance / mean; 1 indicates Poisson behavior.
 
-Machine text departs from human text in both directions, which argues against the simple story that it is uniformly "too regular". Nominalizations are less dispersed in both generators (medians 0.76 and 1.10, against 1.67 in human text), meaning they are spread more evenly. Passive constructions and quotation marks are more dispersed in both (passive 2.51 and 1.79 against 1.20; quotation marks 3.00 and 2.00 against 1.30). These directions agree across the two generators, which makes them more credible as features of machine writing than as quirks of one model. Figure 1 shows the full distributions for GPT-4o and human text.
+Machine text departs from human text in both directions, which argues against the simple story that it is uniformly "too regular". Nominalizations are less dispersed in all three generators (medians 0.76, 1.10, and 1.27, against 1.67 in human text), meaning they are spread more evenly. Passive constructions and quotation marks are more dispersed in all three (passive 2.51, 1.79, and 2.02 against 1.20; quotation marks 3.00, 2.00, and 3.00 against 1.30). These directions agree across the three generators, which makes them more credible as features of machine writing than as quirks of one model. Figure 1 shows the full distributions for GPT-4o and human text.
 
 ![Figure 1. Distribution of log2 dispersion indices by event for human-authored and GPT-4o papers. Dashed line: Poisson (index of 1). Square brackets for GPT-4o are degenerate because most synthetic papers contain none (index set to one by convention).](fig_dispersion.png)
 
@@ -93,19 +93,19 @@ One caution applies to the passive result. Because we generated each paper secti
 
 ## 4.2 Detection within a generator (RQ2)
 
-The single-index Poisson-Score performs close to chance: AUC 0.54 for GPT-4o and 0.52 for Claude. Treating its fourteen components as separate predictors changes the picture. With human papers and one generator, cross-validated logistic regression reaches AUC 0.987 for GPT-4o and 0.913 for Claude (Table 3, diagonal). Detection is clearly easier for GPT-4o than for Claude.
+The single-index Poisson-Score performs close to chance: AUC 0.54 for GPT-4o, 0.51 for Claude, and 0.53 for Llama. Treating its fourteen components as separate predictors changes the picture. With human papers and one generator, cross-validated logistic regression reaches AUC 0.987 for GPT-4o and 0.913 for Claude (Table 3, diagonal). Detection is clearly easier for GPT-4o than for Claude, and Llama falls between them (baseline within-generator AUC 0.96, from the analysis described in Section 4.6).
 
-Event *rates* carry most of this within-generator signal (AUC 0.97 and 0.90), and dispersion alone remains informative (0.86 and 0.75). Table 2 shows why rates are generator-specific. GPT-4o uses far fewer square brackets, semicolons, and quotation marks than human authors, and more nominalizations and discourse markers. Claude differs in a different way: it uses *more* semicolons than human authors (3.54 per 500 tokens, against 1.95) and more quotation marks, and fewer discourse markers (1.08 against 1.84). Semicolons are lower than human in one generator and higher in the other, so a rule based on average frequency cannot describe machine text in general.
+Event *rates* carry most of this within-generator signal (AUC 0.97 and 0.90), and dispersion alone remains informative (0.86 and 0.75). Table 2 shows why rates are generator-specific. GPT-4o uses far fewer square brackets, semicolons, and quotation marks than human authors, and more nominalizations and discourse markers. Claude differs in a different way (Llama is a third pattern, with many parentheses and few brackets): it uses *more* semicolons than human authors (3.54 per 500 tokens, against 1.95) and more quotation marks, and fewer discourse markers (1.08 against 1.84). Semicolons are lower than human in one generator and higher in the other, so a rule based on average frequency cannot describe machine text in general.
 
-| Event | Human | GPT-4o | Claude |
-|:--|--:|--:|--:|
-| Parentheses | 9.80 | 7.39 | 11.39 |
-| Square brackets | 4.46 | 0.21 | 0.41 |
-| Semicolons | 1.95 | 0.51 | 3.54 |
-| Quotation marks | 0.95 | 0.53 | 1.23 |
-| Discourse markers | 1.84 | 2.38 | 1.08 |
-| Passive constructions | 8.08 | 6.18 | 8.61 |
-| Nominalizations | 24.43 | 34.08 | 27.34 |
+| Event | Human | GPT-4o | Claude | Llama |
+|:--|--:|--:|--:|--:|
+| Parentheses | 9.80 | 7.39 | 11.39 | 14.66 |
+| Square brackets | 4.46 | 0.21 | 0.41 | 0.17 |
+| Semicolons | 1.95 | 0.51 | 3.54 | 1.17 |
+| Quotation marks | 0.95 | 0.53 | 1.23 | 0.55 |
+| Discourse markers | 1.84 | 2.38 | 1.08 | 2.12 |
+| Passive constructions | 8.08 | 6.18 | 8.61 | 6.51 |
+| Nominalizations | 24.43 | 34.08 | 27.34 | 26.67 |
 
 : Table 2. Mean event count per 500-token window, by source.
 
@@ -126,7 +126,7 @@ Two patterns stand out. First, the gap between within-generator and cross-genera
 
 ## 4.4 Detection from human text alone (RQ2)
 
-A screening organization might prefer a detector that needs no examples of machine text, because those examples go stale as models change. We therefore trained detectors on human papers only and scored how unusual each held-out document looks (Table 4). The result is negative. The pre-specified Mahalanobis detector reaches an AUC of 0.56 on GPT-4o papers and 0.46 on Claude papers using all fourteen features, and the secondary methods do not change the picture: across three methods, three feature families, and two generators, AUCs range from 0.45 to 0.66, and many intervals include 0.5. The best single value (0.66, a One-Class SVM on rates for GPT-4o) is not one we would rely on, and it was not selected in advance.
+A screening organization might prefer a detector that needs no examples of machine text, because those examples go stale as models change. We therefore trained detectors on human papers only and scored how unusual each held-out document looks (Table 4). The result is negative. The pre-specified Mahalanobis detector reaches an AUC of 0.56 on GPT-4o papers and 0.46 on Claude papers using all fourteen features, and the secondary methods do not change the picture: across three methods, three feature families, and the two generators studied at that stage, AUCs range from 0.45 to 0.66, and many intervals include 0.5. The best single value (0.66, a One-Class SVM on rates for GPT-4o) is not one we would rely on, and it was not selected in advance.
 
 | Method (human-only) | Features | GPT-4o | Claude |
 |:--|:--|:--|:--|
@@ -140,9 +140,9 @@ A screening organization might prefer a detector that needs no examples of machi
 
 The contrast with Table 3 is informative. Supervised detectors succeed because they learn the *direction* in which a generator differs from human writers. Human papers already vary widely among themselves in these features, across fields, sections, and authors, so machine text is rarely far from the human cloud in an absolute sense; it is displaced from the center in particular directions. A distance from the human distribution does not capture that displacement.
 
-## 4.5 A scale-dependent clustering model (RQ2)
+## 4.5 A scale-dependent clustering model: development results (RQ2)
 
-Table 5 compares the new feature set with the baseline on the same documents and folds. Differences are computed with a paired bootstrap, which is more informative than comparing separate intervals.
+Table 5 compares the new feature set with the baseline on the same documents and folds. These GPT-4o and Claude data are the development data for the model, so Table 5 is exploratory; the confirmatory test is in Section 4.6. Differences are computed with a paired bootstrap, which is more informative than comparing separate intervals.
 
 | Train → Test | Baseline AUC | New AUC | Difference [95% CI] |
 |:--|--:|--:|:--|
@@ -161,11 +161,25 @@ Table 5 compares the new feature set with the baseline on the same documents and
 
 The new features help in seven of eight comparisons, where "help" means the interval for the difference excludes zero or sits at its edge, and the gains are largest for the dispersion-only comparison within a generator (+0.07 for GPT-4o). Transfer to an unseen generator improves from 0.73 to 0.76 (GPT-4o to Claude) and from 0.81 to 0.85 (Claude to GPT-4o) when rates are included; without rates, the improvement for GPT-4o to Claude is not distinguishable from zero. The slope alone is a weak predictor (AUC 0.67 to 0.82 within and across generators), so the gains come mainly from the clustering level across scales and from the richer description, not from the slope specifically.
 
-The model does not rescue detection from human text alone. A Mahalanobis detector on the new features reaches AUC 0.59 for GPT-4o and 0.49 for Claude, essentially the same as before. The improvement is therefore in how well a supervised detector can use the clustering structure, not in how well human text can define normality by itself.
+The model does not rescue detection from human text alone on these data. A Mahalanobis detector on the new features reaches AUC 0.59 for GPT-4o and 0.49 for Claude, essentially the same as before. The improvement is therefore in how well a supervised detector can use the clustering structure, not in how well human text can define normality by itself.
 
-## 4.6 Cost (RQ3)
+## 4.6 Confirmatory test on an open-weight generator (RQ2)
 
-Computing all events and the baseline indices took about 6 milliseconds per document on one CPU core (roughly 160 documents per second) with no external service calls, so the marginal monetary cost is zero. For context on the generation side, producing one paper through four requests cost about US$0.04 and 38 seconds on average for GPT-4o, and about US$0.13 and 100 seconds for Claude, through the gateway we used. We did not run an LLM-as-a-judge baseline, so we cannot report a measured cost or latency ratio between the two screening methods; any such comparison would depend on the judge model, prompt length, and pricing at the time.
+Llama papers were not used in developing the clustering model, and the analysis below was specified before they were generated. Table 6 reports the result. Trained on human papers plus GPT-4o and Claude pooled, the baseline features detect Llama papers with an AUC of 0.886 (95% interval 0.86 to 0.91). The new features reach 0.932 (0.91 to 0.95), a difference of +0.046 (0.030 to 0.063). The improvement is also present when training on a single generator, so it does not depend on the pooling choice.
+
+| Trained on (plus human papers) | Baseline AUC | New AUC | Difference [95% CI] |
+|:--|:--|:--|:--|
+| GPT-4o and Claude (primary) | 0.886 [0.86, 0.91] | 0.932 [0.91, 0.95] | +0.046 [+0.030, +0.063] |
+| GPT-4o only | 0.913 [0.89, 0.93] | 0.953 [0.94, 0.97] | +0.041 [+0.027, +0.054] |
+| Claude only | 0.737 [0.70, 0.77] | 0.796 [0.76, 0.83] | +0.058 [+0.034, +0.084] |
+
+: Table 6. Confirmatory test: detection of Llama 3.3 70B papers by detectors that never saw Llama. Baseline = rates plus the 500-token dispersion index; New = rates plus scale-dependent clustering features.
+
+Three further results are exploratory and were not specified in advance. First, Llama is easy to detect within its own class: with human and Llama papers, the baseline reaches 0.962 and the new features 0.984, and with clustering features alone (no rates) the new model reaches 0.914 against 0.764 for the baseline dispersion index. Second, a detector trained on Llama transfers well to GPT-4o (baseline 0.938, new 0.969) but poorly to Claude (0.745 and 0.763), which reinforces the picture that Claude papers are the hardest of the three to detect from other generators. Third, a human-only Mahalanobis detector on the new features reaches 0.65 (0.60 to 0.69) on Llama, against 0.51 for the baseline, the first human-only result in our data clearly above chance. Even so, 0.65 is not a level we would deploy.
+
+## 4.7 Cost (RQ3)
+
+Computing all events and the baseline indices took 4 to 6 milliseconds per document on one CPU core (roughly 160 to 230 documents per second, depending on machine load) with no external service calls, so the marginal monetary cost is zero. For context on the generation side, producing one paper through four requests cost about US$0.04 for GPT-4o, about US$0.13 for Claude, and about US$0.002 for Llama 3.3 70B, through the gateway we used (average generation time was 38 seconds for GPT-4o and roughly 100 seconds for Claude; Llama times are not comparable because we ran several requests in parallel). We did not run an LLM-as-a-judge baseline, so we cannot report a measured cost or latency ratio between the two screening methods; any such comparison would depend on the judge model, prompt length, and pricing at the time.
 
 # 5. Discussion
 
@@ -173,7 +187,7 @@ The headline lessons are two. The intuitive version of the idea does not hold: h
 
 The second lesson matters for practice. High within-generator accuracy is easy to obtain and easy to over-read. When the detector meets a generator it has not seen, accuracy falls to roughly 0.73 to 0.81, which is useful as a weak signal but not as a decision rule. Event rates are especially fragile, because each generator has its own stylistic habits, including habits that point in opposite directions relative to human writers. An organization that deployed such a screen would need to recalibrate per generator and per venue, and to expect decay as models change.
 
-A model that describes clustering across scales improves matters somewhat. The gains are modest, a few hundredths of AUC, but they appear in nearly every comparison and survive transfer to an unseen generator, which supports the view that how events cluster is a more informative description of machine text than a single Poisson test. The result is less discouraging for the count-process idea than for the rate-based version. Dispersion generalizes better than rates, and the direction of several dispersion differences agrees across two generators. If a general machine-text signature exists in these features, it is more likely to be found in how events cluster than in how often they occur. We see this as a hypothesis for larger studies with more generators, including open-weight models, rather than an established finding. We also tested the obvious way around generator-specific calibration, a screen that models human text alone and flags departures from it. It did not work in this setting (Section 4.4). Avoiding dependence on generator examples therefore comes at a large price in accuracy, at least with these features and these simple models.
+A model that describes clustering across scales improves matters somewhat. The gains are modest, a few hundredths of AUC, but they appear in nearly every comparison, and they held in a test fixed in advance on an unseen open-weight generator (+0.046), which supports the view that how events cluster is a more informative description of machine text than a single Poisson test. The result is less discouraging for the count-process idea than for the rate-based version. Dispersion generalizes better than rates, and the direction of several dispersion differences agrees across the generators. If a general machine-text signature exists in these features, it is more likely to be found in how events cluster than in how often they occur. We see this as a hypothesis for larger studies with more generators, including open-weight models, rather than an established finding. We also tested the obvious way around generator-specific calibration, a screen that models human text alone and flags departures from it. It did not work in this setting (Section 4.4). Avoiding dependence on generator examples therefore comes at a large price in accuracy, at least with these features and these simple models.
 
 For governance, the practical value of these features is transparency and cost, not accuracy. A flag such as "unusually clustered passive constructions and almost no bracketed citations" can be explained to an author or editor, and it costs nothing to compute. It should therefore be treated as a low-cost first filter whose output is routed to human review, not as grounds for action on its own.
 
@@ -181,8 +195,8 @@ For governance, the practical value of these features is transparency and cost, 
 
 This is a pilot, and several limitations are material.
 
-1. **Two generators, both commercial.** The findings come from GPT-4o and Claude Sonnet 5.5. The large cross-generator drop is itself a warning that results for other models, including open-weight ones and future releases, may differ.
-2. **Sample sizes.** The Claude sample (152) is smaller than the GPT-4o sample (245) because we capped generation to limit cost. Bootstrap intervals for cross-generator AUCs are about ±0.05.
+1. **Three generators.** The findings come from GPT-4o, Claude Sonnet 5.5, and Llama 3.3 70B. The large cross-generator drop between GPT-4o and Claude is itself a warning that results for other models and future releases may differ, and the confirmatory test used a single held-out generator.
+2. **Sample sizes.** The Claude sample (152) is smaller than the GPT-4o (245) and Llama (202) samples because we capped generation to limit cost. Bootstrap intervals for cross-generator AUCs are about ±0.05.
 3. **Section-wise generation.** Papers were produced in four requests to reach analyzable length. This may introduce structural artifacts, including inflated passive dispersion, and it is not how most real users would produce a paper. Claude also wrote substantially longer sections than GPT-4o, and we did not control for that beyond truncating to the same length.
 4. **Extraction differences.** Human papers come from two pipelines (XML and PDF conversion) while synthetic papers are plain text. Differences in how citations, formulas, and figures appear in extracted text could affect counts.
 5. **Short windows and low power.** Four windows per document limit the power of dispersion tests and make per-document dispersion estimates noisy.
@@ -191,16 +205,16 @@ This is a pilot, and several limitations are material.
 8. **Pre-LLM human sample.** Sampling human papers from 2015–2019 avoids contamination but may differ in style from papers written today.
 9. **No adversaries.** We did not test paraphrasing or light human editing of machine text, either of which could erode the signal.
 10. **One-class detectors were simple.** We tried three standard anomaly detectors with default settings on a small feature set. More expressive models, richer features, or longer documents could behave differently, so Section 4.4 shows that these particular detectors fail, not that no human-only detector can succeed.
-11. **Model developed after the baseline.** The clustering model was designed after we had seen the baseline results, and we compared it with the baseline on the same data. We fixed the comparison in advance and did not tune its settings, but we ran eight paired comparisons without correction for multiple testing, and several intervals touch zero at their edges while one includes it. The estimates rely on moment matching with four scales and are noisy for rare events. A confirmatory test on new generators and new documents is needed.
+11. **Model developed after the baseline.** The clustering model was designed after we had seen the baseline results on GPT-4o and Claude, and the development comparisons (Table 5) involve eight paired comparisons without correction for multiple testing. The Llama test (Table 6) was specified in advance and is the stronger evidence, but it is one test on one generator and one genre, drawn from the same human papers as the development data. The estimates rely on moment matching with four scales and are noisy for rare events.
 12. **No black-box baselines and no reviewer experiment.** We did not compare against LLM-as-a-judge, MAUVE, or BERTScore, and we did not test whether explainable evidence improves human decisions. Claims about relative advantage over those methods are therefore not supported by this study.
 
 # 7. Planned Extensions
 
-Five steps would turn this pilot into a test of the full proposal. (i) Add further generators, especially open-weight models, and evaluate each as held out, together with a negative binomial reference in place of the Poisson benchmark. (ii) Run MAUVE, BERTScore, and an LLM-as-a-judge baseline on identical documents, recording latency and cost. (iii) Test robustness to paraphrasing and light human editing, and test the clustering model on new generators and documents as a confirmatory study, ideally with full likelihood estimation (for example, a log-Gaussian Cox process) in place of moment matching. (iv) Conduct a randomized experiment in which domain experts classify real and fabricated papers under three conditions (no indicator, an unexplained AI score, and an explainable event-based indicator), analyzed with ANOVA and planned contrasts after an a priori power analysis. Pre-registering the feature list, windows, and analysis plan would guard against analytic flexibility.
+Five steps would turn this pilot into a test of the full proposal. (i) Add further generators, including more open-weight models and future releases, and evaluate each as held out, together with a negative binomial reference in place of the Poisson benchmark. (ii) Run MAUVE, BERTScore, and an LLM-as-a-judge baseline on identical documents, recording latency and cost. (iii) Test robustness to paraphrasing and light human editing, and replicate the clustering model on new documents and generators, ideally with full likelihood estimation (for example, a log-Gaussian Cox process) in place of moment matching. (iv) Conduct a randomized experiment in which domain experts classify real and fabricated papers under three conditions (no indicator, an unexplained AI score, and an explainable event-based indicator), analyzed with ANOVA and planned contrasts after an a priori power analysis. Pre-registering the feature list, windows, and analysis plan would guard against analytic flexibility.
 
 # 8. Conclusion
 
-Counting small linguistic events is a cheap and transparent way to screen scholarly text, but the simplest version of the idea, measuring distance from a Poisson process, does not work, because human text is not Poisson. A richer set of count-based features detects machine-generated papers well within a generator, but accuracy falls to between 0.73 and 0.81 on an unseen generator. Dispersion transfers better than event rates, and that is the clearest sign in our data that the count-process view captures something general. Detectors built on human text alone, which would avoid the need for generator examples, performed near chance. A model of clustering across scales improved detection modestly and consistently, including on an unseen generator. The evidence is limited to two generators and one genre, and whether the approach helps human reviewers or outperforms black-box metrics remains untested.
+Counting small linguistic events is a cheap and transparent way to screen scholarly text, but the simplest version of the idea, measuring distance from a Poisson process, does not work, because human text is not Poisson. A richer set of count-based features detects machine-generated papers well within a generator, but accuracy falls to between 0.73 and 0.81 on an unseen generator. Dispersion transfers better than event rates, and that is the clearest sign in our data that the count-process view captures something general. Detectors built on human text alone, which would avoid the need for generator examples, performed near chance. A model of clustering across scales improved detection modestly and consistently, and the improvement held in a test fixed in advance on an unseen open-weight generator (AUC 0.89 to 0.93). The evidence is limited to three generators and one genre, and whether the approach helps human reviewers or outperforms black-box metrics remains untested.
 
 # References
 

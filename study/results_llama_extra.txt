@@ -1,0 +1,18 @@
+docs: llama = 202
+
+[exploratory] Supervised within Llama (human + llama, grouped CV)
+  baseline: rates+disp500    0.962 [0.95,0.97]
+  NEW: rates+(a,b)           0.984 [0.97,0.99]
+  baseline: disp500 only     0.764 [0.72,0.80]
+  NEW: (a,b) only            0.914 [0.89,0.94]
+
+[exploratory] Human-only (one-class) Mahalanobis -> Llama
+  baseline: rates+disp500    0.510 [0.46,0.55]
+  NEW: rates+(a,b)           0.650 [0.60,0.69]
+  NEW: (a,b) only            0.634 [0.58,0.68]
+
+[exploratory] Llama -> others (train on human + llama)
+  llama->gpt4o   baseline: rates+disp500    0.938 [0.92,0.95]
+  llama->gpt4o   NEW: rates+(a,b)           0.969 [0.96,0.98]
+  llama->claude  baseline: rates+disp500    0.745 [0.71,0.78]
+  llama->claude  NEW: rates+(a,b)           0.763 [0.72,0.80]

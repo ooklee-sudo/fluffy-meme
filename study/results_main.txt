@@ -1,4 +1,4 @@
-human n=474; synthetic n=397 models=['gpt4o', 'claude']
+human n=474; synthetic n=599 models=['gpt4o', 'claude', 'llama']
                     median_DI  pct_overdisp  pct_underdisp
 model  feature                                            
 claude brackets         1.222         0.220          0.000
@@ -22,9 +22,17 @@ human  brackets         2.533         0.488          0.003
        passive          1.203         0.188          0.025
        quotes           1.296         0.244          0.007
        semicolons       2.000         0.362          0.010
+llama  brackets         2.000         0.385          0.000
+       markers          1.111         0.094          0.005
+       nominal          1.267         0.218          0.015
+       parentheses      2.016         0.396          0.010
+       passive          2.020         0.351          0.020
+       quotes           3.000         0.553          0.012
+       semicolons       2.000         0.350          0.000
 Poisson-Score (single index)     0.533
-Poisson components (logistic)    0.933
-dtype: float64 F1(logistic)= 0.839
-gpt4o AUC single: 0.544 AUC logistic: 0.967
-claude AUC single: 0.515 AUC logistic: 0.878
-Poisson pipeline: 159.3 docs/s on one CPU core, USD/doc = 0 (no API)
+Poisson components (logistic)    0.930
+dtype: float64 F1(logistic)= 0.873
+gpt4o AUC single: 0.544 AUC logistic: 0.97
+claude AUC single: 0.514 AUC logistic: 0.855
+llama AUC single: 0.533 AUC logistic: 0.938
+Poisson pipeline: 233.9 docs/s on one CPU core, USD/doc = 0 (no API)
