@@ -1,0 +1,20 @@
+n human=474, n gpt4o=245
+
+== Which signal? (5-fold, grouped by source paper) ==
+rates only             AUC=0.969
+dispersion only        AUC=0.860
+rates + dispersion     AUC=0.987
+
+== Within field (human vs gpt4o in the SAME field) ==
+medicine           rates=0.960  dispersion=0.871  both=0.983  (n=426)
+computer_science   rates=0.986  dispersion=0.825  both=0.984  (n=293)
+
+== Single-feature AUC (0.5 = no signal) ==
+    feature  AUC_rate  AUC_dispersion
+parentheses     0.393           0.420
+   brackets     0.164           0.295
+ semicolons     0.276           0.372
+     quotes     0.393           0.525
+    markers     0.679           0.541
+    passive     0.313           0.742
+    nominal     0.828           0.294

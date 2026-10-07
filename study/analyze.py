@@ -9,7 +9,7 @@ import features as F
 
 load = lambda p: [json.loads(l) for l in open(p, encoding="utf-8")]
 human = load("data/human.jsonl")
-syn = {os.path.basename(p)[:-6]: load(p) for p in glob.glob("data/synthetic/*.jsonl")}
+syn = {os.path.basename(p)[:-6]: list({r["human_id"]: r for r in load(p)}.values()) for p in glob.glob("data/synthetic/*.jsonl")}  # dedupe by source paper
 
 def prep(rows, label, model):
     out = []
