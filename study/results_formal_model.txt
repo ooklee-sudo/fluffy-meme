@@ -1,0 +1,92 @@
+Per 1,000 documents, US$; cR = $20 per reviewed paper (assumed). Depth q = share of ALL documents sent to the judge.
+
+--- L = $100 per missed machine paper; judge price x1 (cJ = $0.02) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%    14%     1000      973        948      594               37.3%   cascade
+mixture    10%    41%    10000     6225       5652     5420                4.1%   cascade
+mixture    30%    67%    30000    12647      16104    15955                0.9%   screen only
+gpt4o       1%    18%     1000      908        726      325               55.2%   cascade
+gpt4o      10%    42%    10000     5011       3428     3143                8.3%   cascade
+gpt4o      30%    54%    30000     8972       9434     9211                2.4%   screen only
+llama       1%    11%     1000      922        706      404               42.8%   cascade
+llama      10%    41%    10000     4843       3227     3110                3.6%   cascade
+llama      30%    58%    30000    11016       8829     8751                0.9%   cascade
+claude      1%     1%     1000     1090       1413     1000               29.2%   no screening
+claude     10%     1%    10000     7985      10300    10000                2.9%   screen only
+claude     30%    65%    30000    15685      30048    29899                0.5%   screen only
+
+--- L = $100 per missed machine paper; judge price x100 (cJ = $1.74) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%     5%     1000      973       2671      767               71.3%   cascade
+mixture    10%    24%    10000     6225       7374     6051               17.9%   cascade
+mixture    30%    56%    30000    12647      17826    16959                4.9%   screen only
+gpt4o       1%    10%     1000      908       2448      595               75.7%   cascade
+gpt4o      10%    26%    10000     5011       5151     3662               28.9%   cascade
+gpt4o      30%    54%    30000     8972      11156    10150                9.0%   screen only
+llama       1%     6%     1000      922       2428      552               77.3%   cascade
+llama      10%    41%    10000     4843       4949     3819               22.8%   cascade
+llama      30%    58%    30000    11016      10552     9744                7.7%   cascade
+claude      1%     1%     1000     1090       3136     1009               67.8%   no screening
+claude     10%     1%    10000     7985      12022    10010               16.7%   screen only
+claude     30%     1%    30000    15685      31770    30012                5.5%   screen only
+
+--- L = $500 per missed machine paper; judge price x1 (cJ = $0.02) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%    36%     5000     3465       2582     2284               11.5%   cascade
+mixture    10%    59%    50000    12092      21986    21795                0.9%   screen only
+mixture    30%    67%   150000    18543      65106    64957                0.2%   screen only
+gpt4o       1%    36%     5000     2817       1248      933               25.2%   cascade
+gpt4o      10%    42%    50000     6193       8646     8360                3.3%   screen only
+gpt4o      30%    54%   150000    10900      25086    24864                0.9%   screen only
+llama       1%    36%     5000     2401       1127      914               18.9%   cascade
+llama      10%    46%    50000     9532       7437     7336                1.4%   cascade
+llama      30%    58%   150000    13116      21461    21382                0.4%   screen only
+claude      1%     1%     5000     4746       5370     5000                6.9%   screen only
+claude     10%    58%    50000    17006      49874    49683                0.4%   screen only
+claude     30%    65%   150000    18600     148771   148622                0.1%   screen only
+
+--- L = $500 per missed machine paper; judge price x100 (cJ = $1.74) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%    18%     5000     3465       4304     2713               37.0%   cascade
+mixture    10%    45%    50000    12092      23708    22684                4.3%   screen only
+mixture    30%    67%   150000    18543      66829    66117                1.1%   screen only
+gpt4o       1%    18%     5000     2817       2970     1249               58.0%   cascade
+gpt4o      10%    42%    50000     6193      10368     9075               12.5%   screen only
+gpt4o      30%    54%   150000    10900      26808    25802                3.8%   screen only
+llama       1%    26%     5000     2401       2849     1506               47.2%   cascade
+llama      10%    46%    50000     9532       9160     8127               11.3%   cascade
+llama      30%    58%   150000    13116      23184    22376                3.5%   screen only
+claude      1%     1%     5000     4746       7093     5009               29.4%   screen only
+claude     10%     1%    50000    17006      51597    50010                3.1%   screen only
+claude     30%    65%   150000    18600     150494   149747                0.5%   screen only
+
+--- L = $2000 per missed machine paper; judge price x1 (cJ = $0.02) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%    55%    20000     7521       8707     8497                2.4%   screen only
+mixture    10%    59%   200000    18200      83239    83048                0.2%   screen only
+mixture    30%    67%   600000    18600     248865   248716                0.1%   screen only
+gpt4o       1%    36%    20000     4095       3204     2890                9.8%   cascade
+gpt4o      10%    42%   200000     8300      28211    27925                1.0%   screen only
+gpt4o      30%    54%   600000    10900      83781    83559                0.3%   screen only
+llama       1%    41%    20000     5723       2706     2594                4.1%   cascade
+llama      10%    46%   200000    11284      23227    23126                0.4%   screen only
+llama      30%    58%   600000    14400      68829    68751                0.1%   screen only
+claude      1%     1%    20000    11259      20211    20000                1.0%   screen only
+claude     10%    58%   200000    18200     198278   198087                0.1%   screen only
+claude     30%    65%   600000    18600     593984   593835                0.0%   screen only
+
+--- L = $2000 per missed machine paper; judge price x100 (cJ = $1.74) ---
+target      pi     q*     none   screen  judge-all  cascade  saving vs judge-all   best
+mixture     1%    36%    20000     7521      10429     9181               12.0%   screen only
+mixture    10%    59%   200000    18200      84961    84066                1.1%   screen only
+mixture    30%    67%   600000    18600     250588   249876                0.3%   screen only
+gpt4o       1%    36%    20000     4095       4927     3504               28.9%   cascade
+gpt4o      10%    42%   200000     8300      29933    28640                4.3%   screen only
+gpt4o      30%    54%   600000    10900      85504    84498                1.2%   screen only
+llama       1%    41%    20000     5723       4428     3294               25.6%   cascade
+llama      10%    46%   200000    11284      24949    23916                4.1%   screen only
+llama      30%    58%   600000    14400      70552    69744                1.1%   screen only
+claude      1%     1%    20000    11259      21933    20009                8.8%   screen only
+claude     10%    58%   200000    18200     200001   199094                0.5%   screen only
+claude     30%    65%   600000    18600     595707   594960                0.1%   screen only
+
