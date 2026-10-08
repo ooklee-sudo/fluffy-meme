@@ -1,20 +1,6 @@
 ---
-title: "Submission Package for Information Systems Research"
+title: "Cover Letter"
 ---
-
-# Part A. Title Page (upload as a separate file; not for reviewers)
-
-**Title:** How Much Screening Is Enough? An Economic Analysis of Cheap Statistical Screens, LLM Judges, and Strategic Evasion in Detecting Machine-Written Scholarly Text
-
-**Author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr
-
-**Corresponding author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr. [Add postal address and telephone if the submission system asks for them.]
-
-**Acknowledgments and funding:** [to be completed by the authors]
-
-**Disclosure of generative AI assistance (suggested wording; check INFORMS policy and edit):** [Generative AI (Anthropic's Claude) was used to write and run the data-collection and analysis code and to draft and edit the text. The author designed the research questions, reviewed all code, results, and text, verified the references, and takes full responsibility for the content.]
-
-# Part B. Cover Letter
 
 [Date]
 
@@ -32,7 +18,7 @@ Ook Lee
 Department of Information System, Hanyang University, Seoul, Korea
 ooklee@hanyang.ac.kr
 
-# Part C. Statement of Contribution (about 450 words)
+**Statement of Contribution**
 
 **Phenomenon and problem.** Large language models have made fluent scholarly prose cheap, so publishers and research-integrity offices must decide how much to spend on screening submissions for machine authorship. Research on detection reports accuracy for one generator at a time and leaves out the quantities that decide whether a screen is worth deploying: the base rate of machine-written submissions, the cost of false alarms and misses, and the response of authors who learn how they are screened.
 
@@ -45,13 +31,3 @@ ooklee@hanyang.ac.kr
 **Fit with the journal.** The paper addresses information quality and the governance of AI-generated content, and it builds and evaluates a screening artifact on an economic theory of screening, with an analytical model and calibrated empirical evidence.
 
 **Limitations we state openly.** The evidence is of pilot scale: three generators, one genre, and two judges. The cost parameters in the calibration are illustrative and not measured. We did not test the effect of explainable evidence on human reviewers.
-
-# Part D. Checklist to verify before submission
-
-- [ ] Confirm the current ISR submission guidelines at pubsonline.informs.org/page/isre/submission-guidelines. We could not open that page automatically; the limits below come from search results and must be checked: abstract of no more than 300 words (manuscript abstract: 150 words); manuscript of no more than 32 pages of text and 38 pages in total (this manuscript: 32 pages in total, double-spaced); double-blind review; a 500-word contribution statement in the cover letter (from a third-party source, not confirmed on the official page).
-- [ ] Check the reference style against the current INFORMS style guide (the manuscript follows the author-date style of INFORMS journals; journal-name abbreviations and the entry for the 2023 ICML paper, whose pages we could not verify, should be checked).
-- [ ] Select keywords and the theoretical and methodological attributes in the submission system (suggested: economic theory of screening and signaling; analytical modeling combined with computational calibration).
-- [ ] Complete the AI-assistance disclosure according to INFORMS policy, and confirm that you have reviewed all numbers and interpretations.
-- [ ] Decide whether to keep "we" in the manuscript or change it to "I" for a sole-authored paper (the manuscript and the contribution statement use "we"; if there are co-authors, add them to the title page).
-- [ ] Remove any identifying metadata from the Word and PDF files before upload (File > Info > Inspect Document in Word).
-- [ ] Confirm that no key or credential appears in the repository or supplementary files.
