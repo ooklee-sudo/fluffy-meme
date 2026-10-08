@@ -1,0 +1,16 @@
+
+== standard protocol ==
+condition                                gpt4o              claude               llama             mixture   [AUC / detected at 5% FPR]
+original (no attack)               0.950 / 0.71         0.773 / 0.22         0.932 / 0.70         0.885 / 0.54
+rewrite only                       0.924 / 0.54         0.884 / 0.42         0.935 / 0.63         0.914 / 0.53
+edit only (e=1)                    0.784 / 0.10         0.481 / 0.02         0.727 / 0.13         0.664 / 0.09
+rewrite + edit (e=0.5)             0.790 / 0.12         0.653 / 0.02         0.782 / 0.21         0.742 / 0.12
+rewrite + edit (e=1)               0.759 / 0.07         0.561 / 0.01         0.723 / 0.13         0.681 / 0.07
+
+== Llama (the rewriter) excluded from detector training ==
+condition                                gpt4o              claude               llama             mixture   [AUC / detected at 5% FPR]
+original (no attack)               0.830 / 0.20         0.750 / 0.21         0.932 / 0.70         0.837 / 0.37
+rewrite only                       0.813 / 0.11         0.905 / 0.51         0.935 / 0.63         0.884 / 0.42
+edit only (e=1)                    0.804 / 0.13         0.495 / 0.03         0.727 / 0.13         0.675 / 0.10
+rewrite + edit (e=0.5)             0.770 / 0.10         0.674 / 0.09         0.782 / 0.21         0.742 / 0.13
+rewrite + edit (e=1)               0.800 / 0.10         0.541 / 0.03         0.723 / 0.13         0.688 / 0.09
