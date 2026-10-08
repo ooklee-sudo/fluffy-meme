@@ -7,6 +7,10 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 src, out = sys.argv[1], sys.argv[2]
+ISR = len(sys.argv) > 3 and sys.argv[3] == 'isr'
+BODY = 12 if ISR else 11
+LS = 2.0 if ISR else 1.15
+TAB = 10 if ISR else 8.5
 subprocess.run(["pandoc", src, "-o", out, "--resource-path=."], check=True)
 d = Document(out)
 FONT = "Times New Roman"
@@ -17,6 +21,8 @@ def setfont(style, size, bold=None, italic=None, color=RGBColor(0, 0, 0)):
     rpr = style.element.get_or_add_rPr(); rf = rpr.find(qn("w:rFonts"))
     if rf is None: rf = OxmlElement("w:rFonts"); rpr.append(rf)
     for a in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"): rf.set(qn(a), FONT)
+    for a in ("w:asciiTheme", "w:hAnsiTheme", "w:eastAsiaTheme", "w:cstheme"):
+        if rf.get(qn(a)) is not None: del rf.attrib[qn(a)]
 for st in d.styles:
     name = st.name
     if not hasattr(st, "font") or st.type not in (1, 2): continue
@@ -25,11 +31,11 @@ for st in d.styles:
     elif name == "Heading 1": setfont(st, 13, bold=True)
     elif name == "Heading 2": setfont(st, 11.5, bold=True, italic=False)
     elif name in ("Table Caption", "Image Caption", "Caption"): setfont(st, 9.5, italic=False)
-    elif name in ("Body Text", "First Paragraph", "Compact", "Normal", "Block Text"): setfont(st, 11)
+    elif name in ("Body Text", "First Paragraph", "Compact", "Normal", "Block Text"): setfont(st, BODY)
     elif name in ("Heading 3", "Heading 4"): setfont(st, 11, bold=True)
 for st in d.styles:
     if st.name in ("Body Text", "First Paragraph", "Compact") and st.type == 1:
-        pf = st.paragraph_format; pf.space_after = Pt(6); pf.line_spacing = 1.15
+        pf = st.paragraph_format; pf.space_after = Pt(0 if ISR else 6); pf.line_spacing = LS
 for sec in d.sections:
     sec.left_margin = sec.right_margin = Inches(1); sec.top_margin = sec.bottom_margin = Inches(1)
     # page number in footer
@@ -50,7 +56,7 @@ for t in d.tables:
         for c in row.cells:
             for p in c.paragraphs:
                 p.paragraph_format.space_after = Pt(1); p.paragraph_format.space_before = Pt(1); p.paragraph_format.line_spacing = 1.0
-                for r in p.runs: r.font.size = Pt(8.5); r.font.name = FONT
+                for r in p.runs: r.font.size = Pt(TAB); r.font.name = FONT
             if i == 0: border(c._tc, top=10, bottom=6)
             if i == n - 1: border(c._tc, bottom=10)
             if i == 0:

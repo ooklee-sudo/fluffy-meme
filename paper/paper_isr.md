@@ -1,6 +1,5 @@
 ---
 title: "How Much Screening Is Enough? An Economic Analysis of Cheap Statistical Screens, LLM Judges, and Strategic Evasion in Detecting Machine-Written Scholarly Text"
-subtitle: "Working paper: analytical model with empirical calibration from three generators"
 ---
 
 # Abstract
@@ -39,23 +38,23 @@ We make four contributions. First, we give a decision model of cascaded screenin
 
 ## 3.1 Setting
 
-An organization receives a stream of documents, a share π of which are machine-written. A free screen assigns each document a score s, with likelihood ratio ℓ(s) = f_M(s) / f_H(s), where f_M and f_H are the score densities of machine and human papers; we assume ℓ is nondecreasing in s. Given a base rate π, the posterior probability that a document with score s is machine-written is p(s; π) = πℓ(s) / (πℓ(s) + 1 − π).
+An organization receives a stream of documents, a share π of which are machine-written. A free screen assigns each document a score s, with likelihood ratio ℓ(s) = f~M~(s) / f~H~(s), where f~M~ and f~H~ are the score densities of machine and human papers; we assume ℓ is nondecreasing in s. Given a base rate π, the posterior probability that a document with score s is machine-written is p(s; π) = πℓ(s) / (πℓ(s) + 1 − π).
 
-The organization may send a document to a judge. A judged document is flagged with probability J if it is machine-written (the judge's detection rate) and a if it is human (its false-alarm rate), independently of s given the class. Flagged documents are investigated. Four costs apply: c_J, the price of one judge call; c_R, the cost of investigating one flagged paper, assumed to settle its status; L, the loss from each machine paper that is not flagged; and nothing for the screen itself. Documents that are not judged are not flagged. A cascade is therefore a depth: the screen score above which documents are judged.
+The organization may send a document to a judge. A judged document is flagged with probability J if it is machine-written (the judge's detection rate) and a if it is human (its false-alarm rate), independently of s given the class. Flagged documents are investigated. Four costs apply: c~J~, the price of one judge call; c~R~, the cost of investigating one flagged paper, assumed to settle its status; L, the loss from each machine paper that is not flagged; and nothing for the screen itself. Documents that are not judged are not flagged. A cascade is therefore a depth: the screen score above which documents are judged.
 
 ## 3.2 When to call the judge
 
-**Proposition 1 (when to call the judge).** Sending a document with posterior p to the judge reduces expected cost, relative to not sending it, by V(p) = p·[(L − c_R)J + c_R·a] − (c_J + c_R·a). Hence it is worth sending if and only if p ≥ τ, where τ = (c_J + c_R·a) / ((L − c_R)J + c_R·a). If (L − c_R)J ≤ c_J, then τ ≥ 1 and the judge is never worth calling.
+**Proposition 1 (when to call the judge).** Sending a document with posterior p to the judge reduces expected cost, relative to not sending it, by V(p) = p·[(L − c~R~)J + c~R~·a] − (c~J~ + c~R~·a). Hence it is worth sending if and only if p ≥ τ, where τ = (c~J~ + c~R~·a) / ((L − c~R~)J + c~R~·a). If (L − c~R~)J ≤ c~J~, then τ ≥ 1 and the judge is never worth calling.
 
-*Proof.* Not sending leaves expected cost L·p. Sending costs c_J + c_R(pJ + (1 − p)a) + L·p(1 − J). The difference is V(p), which is linear and increasing in p. ∎
+*Proof.* Not sending leaves expected cost L·p. Sending costs c~J~ + c~R~(pJ + (1 − p)a) + L·p(1 − J). The difference is V(p), which is linear and increasing in p. ∎
 
 Equivalently, a document should be judged if and only if the screen's likelihood ratio satisfies ℓ(s) ≥ ℓ\* = ((1 − π)/π)·τ/(1 − τ).
 
-**Proposition 2 (depth).** The set of documents worth judging, {s : ℓ(s) ≥ ℓ\*}, expands as ℓ\* falls, and ℓ\* is decreasing in π. The cost-minimizing depth is therefore nondecreasing in the base rate π. It is also nondecreasing in J and L and nonincreasing in c_J and c_R.
+**Proposition 2 (depth).** The set of documents worth judging, {s : ℓ(s) ≥ ℓ\*}, expands as ℓ\* falls, and ℓ\* is decreasing in π. The cost-minimizing depth is therefore nondecreasing in the base rate π. It is also nondecreasing in J and L and nonincreasing in c~J~ and c~R~.
 
-*Proof.* τ is increasing in c_J; τ falls with J and with L; and ∂τ/∂c_R = [a·L·J + c_J(J − a)] / D², where D is the denominator of τ, which is positive when J > a. ℓ\* is increasing in τ and decreasing in π, and ℓ is nondecreasing in s. ∎
+*Proof.* τ is increasing in c~J~; τ falls with J and with L; and ∂τ/∂c~R~ = [a·L·J + c~J~(J − a)] / D², where D is the denominator of τ, which is positive when J > a. ℓ\* is increasing in τ and decreasing in π, and ℓ is nondecreasing in s. ∎
 
-**Proposition 3 (blind spots).** τ rises as the judge's detection rate J falls, and the judge is never worth calling when J ≤ c_J/(L − c_R). If the screen cannot tell generators apart, the relevant detection rate for a stream that mixes generators with weights w_g is the weighted mean J̄ = Σ w_g·J_g, so a generator that the judge cannot detect lowers the judge's value for the whole stream.
+**Proposition 3 (blind spots).** τ rises as the judge's detection rate J falls, and the judge is never worth calling when J ≤ c~J~/(L − c~R~). If the screen cannot tell generators apart, the relevant detection rate for a stream that mixes generators with weights w~g~ is the weighted mean J̄ = Σ w~g~·J~g~, so a generator that the judge cannot detect lowers the judge's value for the whole stream.
 
 **Proposition 4 (precision at low base rates).** Among the documents a judge flags in an unscreened stream, the share that is machine-written is πJ / (πJ + (1 − π)a). It is low when π is small, even for a judge with a small false-alarm rate. Screening before judging raises the effective base rate among judged documents, which raises this share and reduces wasted investigations.
 
@@ -69,11 +68,11 @@ The cascade model treats authors as passive. Suppose instead that a machine-usin
 
 *Proof.* The first-order condition gives e = m·d₀. Substituting gives d₀(1 − m·d₀), whose derivative in d₀ is 1 − 2m·d₀. ∎
 
-**Proposition 7 (robust design).** Consider two screens built from different feature sets, with detection curves d_A(e) and d_B(e), where d_B is flat in e because its features cannot be edited cheaply. If d_B(0) < d_A(0) but d_A falls steeply, there is a threshold m̂ such that the screen built on B has higher equilibrium detection for every m > m̂. An organization should prefer features that are costly to manipulate even at some cost in raw accuracy. This is the logic of costly signals (Spence 1973) applied to the screen's inputs.
+**Proposition 7 (robust design).** Consider two screens built from different feature sets, with detection curves d~A~(e) and d~B~(e), where d~B~ is flat in e because its features cannot be edited cheaply. If d~B~(0) < d~A~(0) but d~A~ falls steeply, there is a threshold m̂ such that the screen built on B has higher equilibrium detection for every m > m̂. An organization should prefer features that are costly to manipulate even at some cost in raw accuracy. This is the logic of costly signals (Spence 1973) applied to the screen's inputs.
 
 ## 3.4 Empirical implications
 
-The model's propositions guide the empirical work. We calibrate Propositions 1 to 4 with the measured detection behavior of the screen and the judge, and with the measured judge price; the costs c_R and L and the base rate π are not measurable from our data and are varied over illustrative values. We test Propositions 5 to 7 with an adversarial experiment that measures how the screen's detection falls with evasion effort. Throughout, we report structural patterns and not estimates of any organization's costs.
+The model's propositions guide the empirical work. We calibrate Propositions 1 to 4 with the measured detection behavior of the screen and the judge, and with the measured judge price; the costs c~R~ and L and the base rate π are not measurable from our data and are varied over illustrative values. We test Propositions 5 to 7 with an adversarial experiment that measures how the screen's detection falls with evasion effort. Throughout, we report structural patterns and not estimates of any organization's costs.
 
 # 4. Data and Measurement
 
@@ -91,7 +90,7 @@ GPT-4o produced 245 unique papers, with a median length of about 2,750 words. Cl
 
 Each document is cut into consecutive windows of 500 whitespace-delimited tokens, and only the first four windows (2,000 tokens) are kept for every document, human or machine, so that length cannot drive any result. In each window we count seven events: parentheses, square brackets, semicolons, paired quotation marks, a list of fourteen discourse markers (for example, *however*, *therefore*, *moreover*), passive constructions (a form of *be* plus a participle, found by pattern matching), and nominalizations (words ending in *-tion*, *-ment*, or *-ity*). The patterns for passives and nominalizations are approximate and misclassify some words. For each document and event we compute the mean count per window (the *rate*) and the dispersion index, and the baseline screen is a logistic regression on these fourteen quantities. A document-level Poisson test compares (n − 1) times the dispersion index with a chi-squared distribution; with only four windows per document it has low power, so rejection rates understate departures from Poisson behavior.
 
-A dispersion index at one window size says whether events cluster but not how. We therefore developed a scale-dependent clustering model. We treat the occurrences of each event as a doubly stochastic Poisson process, or Cox process: events arrive as a Poisson process whose rate varies along the document. For such a process, the Fano factor in a window of w tokens is F(w) = 1 + Var(Λ_w) / E(Λ_w), where Λ_w is the rate integrated over the window. If rate fluctuations are positively correlated over long ranges, as when citations gather in an introduction or passives in a methods section, F(w) grows with w; a pure Poisson process gives F(w) = 1 at every scale. We estimate F(w) for each event at four window sizes (50, 100, 200, and 400 tokens) within the same 2,000 tokens, and summarize each event by its rate, the mean log Fano factor across scales, and the slope of log F(w) on log w. Estimation is by moment matching and not a full likelihood fit; Fano factors are clipped to [0.05, 20] and set to one when an event does not occur. This yields 21 features. The comparison with the baseline was fixed before the model was run, no setting was tuned on these data, and the model was designed after we had seen the baseline results, a limitation we return to in Section 7.
+A dispersion index at one window size says whether events cluster but not how. We therefore developed a scale-dependent clustering model. We treat the occurrences of each event as a doubly stochastic Poisson process, or Cox process: events arrive as a Poisson process whose rate varies along the document. For such a process, the Fano factor in a window of w tokens is F(w) = 1 + Var(Λ~w~) / E(Λ~w~), where Λ~w~ is the rate integrated over the window. If rate fluctuations are positively correlated over long ranges, as when citations gather in an introduction or passives in a methods section, F(w) grows with w; a pure Poisson process gives F(w) = 1 at every scale. We estimate F(w) for each event at four window sizes (50, 100, 200, and 400 tokens) within the same 2,000 tokens, and summarize each event by its rate, the mean log Fano factor across scales, and the slope of log F(w) on log w. Estimation is by moment matching and not a full likelihood fit; Fano factors are clipped to [0.05, 20] and set to one when an event does not occur. This yields 21 features. The comparison with the baseline was fixed before the model was run, no setting was tuned on these data, and the model was designed after we had seen the baseline results, a limitation we return to in Section 7.
 
 ## 4.4 LLM judges
 
@@ -99,7 +98,7 @@ We asked two models, zero-shot and at temperature 0, to estimate for each excerp
 
 ## 4.5 Evaluation
 
-Detection is evaluated by five-fold cross-validation in which all material from one source paper stays in one fold. We report the area under the ROC curve (AUC) with 95% bootstrap intervals over documents, and, where noted, the share of machine papers detected when 5% of human papers are flagged. To study transfer, a screen is trained on human papers and the other generators and tested on a generator it never saw; this "unseen" protocol is also what makes a screen comparable to a zero-shot judge. Three analyses were specified before they were run: the test of the clustering model on Llama, the comparison of screens with judges and a rank-average fusion of the screen and the Gemini judge, and the cascade calibration. The analysis code, prompts, and generated papers are in the project repository.
+Detection is evaluated by five-fold cross-validation in which all material from one source paper stays in one fold. We report the area under the ROC curve (AUC) with 95% bootstrap intervals over documents, and, where noted, the share of machine papers detected when 5% of human papers are flagged. To study transfer, a screen is trained on human papers and the other generators and tested on a generator it never saw; this "unseen" protocol is also what makes a screen comparable to a zero-shot judge. Three analyses were specified before they were run: the test of the clustering model on Llama, the comparison of screens with judges and a rank-average fusion of the screen and the Gemini judge, and the cascade calibration. The analysis code, prompts, and generated papers will be made available in a public repository upon acceptance, together with the script that re-collects the human papers.
 
 # 5. Results
 
@@ -360,27 +359,27 @@ Whether to screen for machine-written scholarly text is an economic decision, an
 
 # References
 
-Akerlof, G. A. 1970. "The Market for 'Lemons': Quality Uncertainty and the Market Mechanism," *The Quarterly Journal of Economics* (84:3), pp. 488–500.
+Akerlof GA (1970) The market for "lemons": Quality uncertainty and the market mechanism. *Quart. J. Econom.* 84(3):488–500.
 
-Cameron, A. C., and Trivedi, P. K. 2013. *Regression Analysis of Count Data* (2nd ed.). Cambridge, UK: Cambridge University Press.
+Cameron AC, Trivedi PK (2013) *Regression Analysis of Count Data*, 2nd ed. (Cambridge University Press, Cambridge, UK).
 
-Connelly, B. L., Certo, S. T., Ireland, R. D., and Reutzel, C. R. 2011. "Signaling Theory: A Review and Assessment," *Journal of Management* (37:1), pp. 39–67.
+Connelly BL, Certo ST, Ireland RD, Reutzel CR (2011) Signaling theory: A review and assessment. *J. Management* 37(1):39–67.
 
-Gehrmann, S., Strobelt, H., and Rush, A. M. 2019. "GLTR: Statistical Detection and Visualization of Generated Text," in *Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics: System Demonstrations*, Florence, Italy, pp. 111–116.
+Gehrmann S, Strobelt H, Rush AM (2019) GLTR: Statistical detection and visualization of generated text. *Proc. 57th Annual Meeting Assoc. Comput. Linguist.: System Demonstrations* (Association for Computational Linguistics, Florence, Italy), 111–116.
 
-Hevner, A. R., March, S. T., Park, J., and Ram, S. 2004. "Design Science in Information Systems Research," *MIS Quarterly* (28:1), pp. 75–105.
+Hevner AR, March ST, Park J, Ram S (2004) Design science in information systems research. *MIS Quart.* 28(1):75–105.
 
-Mitchell, E., Lee, Y., Khazatsky, A., Manning, C. D., and Finn, C. 2023. "DetectGPT: Zero-Shot Machine-Generated Text Detection Using Probability Curvature," in *Proceedings of the 40th International Conference on Machine Learning*.
+Mitchell E, Lee Y, Khazatsky A, Manning CD, Finn C (2023) DetectGPT: Zero-shot machine-generated text detection using probability curvature. *Proc. 40th Internat. Conf. Machine Learn.* (PMLR).
 
-Pillutla, K., Swayamdipta, S., Zellers, R., Thickstun, J., Welleck, S., Choi, Y., and Harchaoui, Z. 2021. "MAUVE: Measuring the Gap Between Neural Text and Human Text Using Divergence Frontiers," in *Advances in Neural Information Processing Systems* (34).
+Pillutla K, Swayamdipta S, Zellers R, Thickstun J, Welleck S, Choi Y, Harchaoui Z (2021) MAUVE: Measuring the gap between neural text and human text using divergence frontiers. *Adv. Neural Inform. Processing Systems* 34.
 
-Spence, M. 1973. "Job Market Signaling," *The Quarterly Journal of Economics* (87:3), pp. 355–374.
+Spence M (1973) Job market signaling. *Quart. J. Econom.* 87(3):355–374.
 
-Wang, R. Y., and Strong, D. M. 1996. "Beyond Accuracy: What Data Quality Means to Data Consumers," *Journal of Management Information Systems* (12:4), pp. 5–33.
+Wang RY, Strong DM (1996) Beyond accuracy: What data quality means to data consumers. *J. Management Inform. Systems* 12(4):5–33.
 
-Zhang, T., Kishore, V., Wu, F., Weinberger, K. Q., and Artzi, Y. 2020. "BERTScore: Evaluating Text Generation with BERT," in *Proceedings of the International Conference on Learning Representations*.
+Zhang T, Kishore V, Wu F, Weinberger KQ, Artzi Y (2020) BERTScore: Evaluating text generation with BERT. *Proc. Internat. Conf. Learn. Representations*.
 
-Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., and Stoica, I. 2023. "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena," in *Advances in Neural Information Processing Systems* (36), Datasets and Benchmarks Track.
+Zheng L, Chiang WL, Sheng Y, Zhuang S, Wu Z, Zhuang Y, Lin Z, Li Z, Li D, Xing EP, Zhang H, Gonzalez JE, Stoica I (2023) Judging LLM-as-a-judge with MT-Bench and Chatbot Arena. *Adv. Neural Inform. Processing Systems* 36 (Datasets and Benchmarks Track).
 
 # Appendix A. Supplementary Tables
 
