@@ -165,14 +165,14 @@ P("A campaign manager planning a product launch, a public-health message, or a p
   "about expected reach, and a one-off announcement may call for an outcome that can be predicted in advance. "
   "Field experiments on this choice are expensive, can disturb the communities under study, and are hard to repeat, "
   "so decision makers rely on models and simulation to narrow the options before committing budget "
-  "[DSS-REF: add Decision Support Systems papers on social media or viral marketing decision support and on seeding "
-  "or influence maximization].", )
+  "(for support of word-of-mouth marketing and seed identification in this journal, see Li and Du, 2011; Bao and Chang, "
+  "2014; Monteserin and Amandi, 2015).", )
 P("Agent-based simulation has long served this purpose (Bonabeau, 2002; Rand and Rust, 2011), and large language "
   "models (LLMs) have renewed its appeal. LLM agents can be given personas and can read, write, and react to "
   "natural-language content, which promises behavioral richness that rule-based agents lack (Park et al., 2023; "
-  "Gao et al., 2023; Törnberg et al., 2023). [DSS-REF: add work that applies LLM agents to influencer selection "
-  "and campaign pre-testing, and Decision Support Systems work on LLM-based decision support, after checking each "
-  "publication venue.]")
+  "Gao et al., 2023; Törnberg et al., 2023). Zhang et al. (2024) use time-aware LLM agents to select influencers "
+  "for advertising campaigns, and recent work in this journal applies LLMs to decision support tasks such as process "
+  "model comprehension (Kourani et al., 2026) and narrative explanation (Martens et al., 2025).")
 P("A decision support tool is only as useful as the decisions it can be trusted to rank, and a less discussed "
   "weakness matters here. In most LLM-agent simulators the loop advances in discrete rounds, and every agent is "
   "queried once per round about whether and how to act. This embeds the assumption that human action is regular "
@@ -211,9 +211,23 @@ P("The remainder of the paper reviews related work (Section 2), describes the si
 # ------------------------------------------------------------------ 2 Related work
 H("2. Related work")
 H("2.1 Simulation for decision support in social media campaigns", 2)
-P("[DSS-REF: This subsection should position the paper within Decision Support Systems literature on simulation-based "
-  "and data-driven support for social media marketing, viral campaigns, and seed selection. No such papers were "
-  "verified while drafting, so none are cited here; add them after reading the sources.]", hl=True)
+P("Decision Support Systems has published work on supporting marketing and diffusion decisions on social media. Li "
+  "and Du (2011) and Bao and Chang (2014) propose frameworks for identifying opinion leaders and message "
+  "disseminators for word-of-mouth marketing, and Monteserin and Amandi (2015) use social influence maximization to "
+  "decide whom to persuade in a negotiation. Schramm et al. (2010) build an agent-based diffusion model with consumer "
+  "and brand agents, and He et al. (2024) model the co-diffusion of competing memes in online social networks. "
+  "Editorial and empirical work on firms' use of social media (Duan, 2013; Chang et al., 2018) shows the journal's "
+  "interest in social media as a managerial domain. Two features of this work frame our study. First, support for "
+  "the seeding decision largely takes the form of identifying whom to target or of modeling how content spreads, "
+  "rather than pre-testing alternative seeding plans in a simulated population. Second, to our knowledge, this "
+  "literature does not use LLM agents as simulated users, nor does it generate agent action times from a point "
+  "process whose intensity depends on agent state; recent LLM papers in the journal address other tasks, namely "
+  "process model comprehension (Kourani et al., 2026) and narrative explanation (Martens et al., 2025). Our "
+  "simulator is intended to fill this gap, and we examine whether the timing assumption changes the decision it "
+  "recommends.")
+P("[Author check: the descriptions of the cited Decision Support Systems papers rest on their titles and bibliographic "
+  "records. Read each paper and adjust the wording before submission, and repeat the literature search for papers "
+  "that may fit better.]", hl=True)
 H("2.2 Agent-based simulation and LLM agents", 2)
 P("Agent-based modeling studies system-level outcomes that emerge from the interaction of heterogeneous, autonomous "
   "actors (Bonabeau, 2002; Gilbert, 2008), and it has a long record in marketing and diffusion research, where its "
@@ -610,6 +624,17 @@ REFS = [
     "Watts, D.J., Dodds, P.S., 2007. Influentials, networks, and public opinion formation. J. Consum. Res. 34 (4), 441–458.",
     "Zhao, Q., Erdogdu, M.A., He, H.Y., Rajaraman, A., Leskovec, J., 2015. SEISMIC: a self-exciting point process model for predicting tweet popularity. In: Proceedings of the 21st ACM SIGKDD International Conference on Knowledge Discovery and Data Mining. ACM, New York, pp. 1513–1522.",
 ]
+REFS = sorted(REFS + [    "Bao, T., Chang, T.-L.S., 2014. Finding disseminators via electronic word of mouth message for effective marketing communications. Decis. Support Syst. 67, 21–29.",
+    "Chang, H.-L., Chou, Y.-C., Wu, D.-Y., Wu, S.-C., 2018. Will firm's marketing efforts on owned social media payoff? A quasi-experimental analysis of tourism products. Decis. Support Syst. 107, 13–25.",
+    "Duan, W., 2013. Special issue on social media: an editorial introduction. Decis. Support Syst. 55, 861–862.",
+    "He, S., Zhang, W., Luo, J., Zhang, P., Zhao, K., Zeng, D.D., 2024. Modeling the co-diffusion of competing memes in online social networks. Decis. Support Syst. 187, 114324.",
+    "Kourani, H., Berti, A., Hennrich, J., Kratsch, W., Weidlich, R., Li, C.-Y., Arslan, A., van der Aalst, W.M.P., Schuster, D., 2026. Leveraging large language models for enhanced process model comprehension. Decis. Support Syst. 200, 114563.",
+    "Li, F., Du, T.C., 2011. Who is talking? An ontology-based opinion leader identification framework for word-of-mouth marketing in online social blogs. Decis. Support Syst. 51, 190–197.",
+    "Martens, D., Hinns, J., Dams, C., Vergouwen, M., Evgeniou, T., 2025. Tell me a story! Narrative-driven XAI with large language models. Decis. Support Syst. 191, 114402.",
+    "Monteserin, A., Amandi, A., 2015. Whom should I persuade during a negotiation? An approach based on social influence maximization. Decis. Support Syst. 77, 1–20.",
+    "Schramm, M.E., Trainor, K.J., Shanker, M., Hu, M.Y., 2010. An agent-based diffusion model with consumer and brand agents. Decis. Support Syst. 50, 234–242.",
+    "Zhang, X., Chen, X., Liu, Y., Wang, J., Hu, Z., Yan, R., 2024. A large-scale time-aware agents simulation for influencer selection in digital advertising campaigns. arXiv:2411.01143.",
+], key=lambda x: x.lower())
 for r_ in REFS:
     p = doc.add_paragraph(r_)
     p.paragraph_format.line_spacing = 1.0
