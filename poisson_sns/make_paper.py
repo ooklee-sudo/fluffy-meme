@@ -341,13 +341,19 @@ P("We implement two oracles behind one interface. The surrogate oracle is a dete
   "the presence of a notification), described in Section 4.4. Because both are accessed through the same interface, "
   "the rest of the system is unchanged when one is substituted for the other.")
 H("3.5 Stability of the additive intensity", 2)
+stab = {r["config"]: r for r in J("results_stability.json")}
 P("A stability observation bears on the design, although it is specific to this parameterization and does not "
-  "establish a general property of additive intensity models. With the persona rates of Table 1, an exposure "
-  "probability of 0.5, and an uncapped additive stimulus at large κ, the evening process becomes supercritical: "
-  "exposures trigger actions that trigger further exposures faster than stimuli decay. Capping the stimulus at "
-  "S_max = 3 with κ = 0.16 produced a stable run with a clear diurnal pattern under those same settings. We "
-  "therefore treat the cap as a design requirement of this simulator, and Section 4.5 examines how the main "
-  "conclusion depends on κ, S_max, and p_view.")
+  "establish a general property of additive intensity models. With the persona rates of Table 1 and an exposure "
+  "probability of 0.5, we simulated 24 hours with 800 agents (three replications per setting) and stopped a run when it "
+  "exceeded 40,000 events. With the cap S_max = 3 and κ = 0.16, runs completed the 24 hours with about "
+  f"{stab['capped kappa=0.16, S_max=3']['events']:,.0f} events. Without a cap, every run exceeded 40,000 events before "
+  f"the end of the day: after {stab['uncapped kappa=0.16']['reached_hour']:.1f} hours at κ = 0.16, "
+  f"{stab['uncapped kappa=0.20']['reached_hour']:.1f} hours at κ = 0.20, and {stab['uncapped kappa=0.25']['reached_hour']:.1f} "
+  "hours at κ = 0.25 (mean times at which the limit was reached). The process is supercritical in the evening because "
+  "exposures trigger actions that trigger further exposures faster than stimuli decay. Raising κ to 0.25 with the cap "
+  f"kept the process finite ({stab['capped kappa=0.25, S_max=3']['events']:,.0f} events). We therefore treat the cap as a "
+  "design requirement of this simulator, and Section 4.5 examines how the main conclusion depends on κ, S_max, and "
+  "p_view.")
 
 # ------------------------------------------------------------------ 4 Evaluation
 H("4. Evaluation")
@@ -465,8 +471,8 @@ P("To separate the effect of the oracle from the effect of coarsening, we compar
   "surrogate on the continuous state, the same surrogate on the 1,600 coarse states, and ratings from LLM raters on the "
   "same coarse states. No API access was used for rating. Ten independent instances of an LLM (Claude Sonnet) acted as "
   "raters; the 1,600 states were shuffled and divided into ten batches of 160, so each state was rated once and each "
-  "rater saw a different random subset. Raters received the instruction in Appendix B, were told not to write code "
-  "or formulas to compute scores, and had no access to the simulator. The ratings form a lookup table used by the "
+  "rater saw a different random subset. Raters received the instruction in Appendix B and were told not to write code "
+  "or formulas to compute scores or to consult any other file. The ratings form a lookup table used by the "
   "simulator.")
 P(f"The LLM ratings (mean {f(lv.mean())}, SD {f(lv.std(ddof=1))}, range {f(lv.min(),1)} to {f(lv.max(),1)}) correlated "
   f"strongly with the coarse surrogate (Spearman ρ = {f(rho)}), so the two oracles agree on the ordering of states "
@@ -659,16 +665,19 @@ table([["Parameter", "Value", "Remarks"],
        ["Horizon", "72 h (Study 1); 18 h warm-up plus 48 h (Studies 2–3)", "Campaign starts at 18:00"],
        ["Replications", "5 (Study 1); 40 / 30 / 30 (Studies 2–3); 15 (sensitivity)", "Paired by network and seed"]],
       caption="Table A.1. Global simulation parameters and assumptions")
-H("Appendix B. Intensity oracle prompt")
-P("The instruction below was given to each LLM rater; the persona and state fields in brackets were filled in "
-  "programmatically.")
-P("[System] You are the behavior controller of a virtual SNS user: (persona description). Given the user's current "
-  "state and surroundings, rate on a real-valued scale from 0.0 to 5.0 the urge (Intensity) this user feels, within "
-  "the next hour, to write a new post or leave a comment on the SNS.")
-P("[Current situation] Time of day: [period]. Current emotion: [emotion]. Timeline update: [n] posts on topics of "
-  "interest appeared in the feed within the last hour (the latest concerns a topic of [low / medium / high] interest). "
-  "Notifications: [none / present].")
-P("[Output] A rating between 0.0 and 5.0.")
+H("Appendix B. Intensity oracle instruction")
+P("The instruction below was given to each LLM rater (one rater per batch of 160 states). Each item showed a persona "
+  "description and a situation of the form given in the second paragraph, filled in programmatically.")
+P("Instruction: You are one independent rater for a simulation study. Each of the 160 items describes a virtual "
+  "social-media user (persona) and their current situation. For each item, act as the user's behavior controller and "
+  "rate on a real-valued scale from 0.0 to 5.0 the urge (Intensity) this user feels, within the next hour, to write a "
+  "new post or leave a comment on the SNS. Use one decimal place. Judge each item on its own content; use the full "
+  "range where appropriate. Do not write code, formulas or scripts to compute scores; judge each item yourself. "
+  "Return a mapping from each item identifier to its rating.")
+P("Item: Persona: [persona description, e.g., a lurker who reads much more than they write and rarely posts]. "
+  "[Current situation] Time of day: [period]. Current emotion: [emotion]. Timeline update: [n] posts on topics of "
+  "interest appeared in the feed within the last hour (the latest concerns a topic of [low / medium / high] "
+  "interest). Notifications: [none / present].")
 doc.save(OUT + "DSS_manuscript_anonymized.docx")
 
 # ------------------------------------------------------------------ title page + highlights file
