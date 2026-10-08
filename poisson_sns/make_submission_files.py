@@ -36,12 +36,11 @@ d.add_heading("Title page", 1)
 d.add_paragraph("(Upload as a separate file; it is not sent to reviewers.)").italic = True
 d.add_heading("Title", 2); d.add_paragraph(TITLE)
 d.add_heading("Authors and affiliations", 2)
-fill(d.add_paragraph(), "[Author 1 name, department, institution, city, country]")
-fill(d.add_paragraph(), "[Author 2 name, department, institution, city, country (if any)]")
+d.add_paragraph("Ook Lee\nDepartment of Information Systems, Hanyang University, Seoul, Korea")
 d.add_heading("Corresponding author", 2)
-fill(d.add_paragraph(), "[Name, postal address, e-mail, telephone, ORCID]")
+fill(d.add_paragraph(), "Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr. [Postal address, telephone, ORCID]")
 d.add_heading("CRediT author statement", 2)
-fill(d.add_paragraph(), "[Author 1: Conceptualization, Methodology, Software, Formal analysis, Writing – original draft. Edit to match the actual contributions.]")
+fill(d.add_paragraph(), "Ook Lee: [Conceptualization, Methodology, Software, Formal analysis, Writing – original draft, Writing – review and editing. Edit to match the actual contributions.]")
 d.add_heading("Acknowledgements and funding", 2)
 fill(d.add_paragraph(), "[Funding sources and grant numbers, or: This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.]")
 d.add_heading("Declaration of competing interest", 2)
@@ -94,7 +93,7 @@ fill(d.add_paragraph(),
      "on the title page.")
 fill(d.add_paragraph(), "[Suggested reviewers (optional; name, affiliation, e-mail, reason)]")
 d.add_paragraph("Sincerely,")
-fill(d.add_paragraph(), "[Corresponding author name and affiliation]")
+d.add_paragraph("Ook Lee\nDepartment of Information Systems, Hanyang University, Seoul, Korea\nooklee@hanyang.ac.kr")
 d.save(OUT + "3_cover_letter.docx")
 
 # 4. checklist
@@ -108,7 +107,7 @@ for t in ["Anonymized manuscript (editable .docx), with abstract, keywords, high
           "DSS literature positioning: references verified against Crossref (journal ISSN 0167-9236)"]:
     d.add_paragraph(t, style="List Bullet")
 d.add_heading("Only the authors can do these", 2)
-for t in ["Fill in author names, affiliations, corresponding author, ORCID, CRediT roles, funding, conflicts (title page, cover letter)",
+for t in ["Complete the remaining highlighted fields: ORCID, postal address and telephone, CRediT roles, funding, conflicts, suggested reviewers (title page, cover letter)",
           "Confirm the generative-AI declaration wording and the originality statement",
           "Upload code_anonymous.zip to an anonymous host (for example, a private Zenodo or Figshare link, or an anonymization service for repositories) and insert the link in Section 4.1 and the Declarations. Do not use the current public repository link, which shows your account name",
           "Read each cited Decision Support Systems paper and adjust the one-line descriptions in Section 2.1 (written from titles and bibliographic records)",
