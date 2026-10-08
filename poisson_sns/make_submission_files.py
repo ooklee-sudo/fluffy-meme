@@ -116,7 +116,7 @@ for t in ["Fill in author names, affiliations, corresponding author, ORCID, CRed
     d.add_paragraph(t, style="List Bullet")
 d.add_heading("Could not be verified (the Guide for Authors was not readable from the working environment)", 2)
 for t in ["Number of Highlights bullets and characters per bullet (a third-party page says 3–5 bullets, up to 85 characters; unverified)",
-          "Abstract length limit (third-party page says 150–300 words; unverified). The current abstract has about 270 words",
+          "Abstract length limit (third-party page says 150–300 words; unverified). The current abstract has about 300 words, so shorten it if the limit is lower",
           "Reference style (the manuscript uses an Elsevier-like author-year style; a third-party page says numbered style; unverified)",
           "Page or word limits, figure and table placement rules, and any required template",
           "Exact anonymization rules (the journal uses double-anonymized review; check what must be removed from the file properties and the text)"]:
