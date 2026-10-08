@@ -16,8 +16,8 @@ for g in ("gpt4o", "claude", "llama"):
     for r in load(f"data/synthetic/{g}.jsonl"): ORIG[(g, r["human_id"])] = r["text"]
 CL = {g: dict(v) for g, v in {g: ns["build"](list({r["human_id"]: r for r in load(f"data/synthetic/{g}.jsonl")}.values()), "human_id") for g in ("gpt4o", "claude", "llama")}.items()}
 fam = FAM["NEW: rates+(a,b)"]
-def run(g, texts):                       # texts: {source_id: text}; returns clean-vs-attacked on the same papers
-    others = [t for t in CL if t != g]; hs, ys_c, ys_a = [], [], []
+def run(g, texts, excl=()):                       # texts: {source_id: text}; returns clean-vs-attacked on the same papers
+    others = [t for t in CL if t != g and t not in excl]; hs, ys_c, ys_a = [], [], []
     A = {sid: doc_feats(t) for sid, t in texts.items()}
     O = {sid: doc_feats(" ".join(clean(ORIG[(g, sid)]))) for sid in texts}      # original, cleaned like the attacked input
     for k in range(5):
@@ -36,11 +36,13 @@ def run(g, texts):                       # texts: {source_id: text}; returns cle
 if __name__ == "__main__":
     for level in sys.argv[1:]:
         rows = {r["id"]: r for r in load(f"data/attack/{level}_full.jsonl")}
-        print(f"\n== attack level {level}: {len(rows)} rewritten papers ==\n{'target':8s}{'n':>5s}   original AUC / det@5%FPR    attacked AUC / det@5%FPR")
-        res = {}
-        for g in ("gpt4o", "claude", "llama"):
-            texts = {key[i]["source_id"]: r["text"] for i, r in rows.items() if key[i]["source"] == g}
-            if not texts: continue
-            (ac, dc, n), (aa, da, _) = run(g, texts); res[g] = (ac, dc, aa, da)
-            print(f"{g:8s}{n:5d}        {ac:.3f} / {dc:.2f}                {aa:.3f} / {da:.2f}")
-        if res: print(f"{'mixture':8s}{'':5s}        {np.mean([v[0] for v in res.values()]):.3f} / {np.mean([v[1] for v in res.values()]):.2f}                {np.mean([v[2] for v in res.values()]):.3f} / {np.mean([v[3] for v in res.values()]):.2f}")
+        for label, attacker in (("detector may have seen the attacker's generator (standard 'unseen' protocol)", None), ("attacker's generator (Llama) EXCLUDED from detector training", "llama")):
+            print(f"\n== attack level {level}: {len(rows)} rewritten papers; {label} ==\n{'target':8s}{'n':>5s}   original AUC / det@5%FPR    attacked AUC / det@5%FPR")
+            res = {}
+            for g in ("gpt4o", "claude", "llama"):
+                texts = {key[i]["source_id"]: r["text"] for i, r in rows.items() if key[i]["source"] == g}
+                if not texts: continue
+                excl = (attacker,) if (attacker and g != attacker) else ()
+                (ac, dc, n), (aa, da, _) = run(g, texts, excl); res[g] = (ac, dc, aa, da)
+                print(f"{g:8s}{n:5d}        {ac:.3f} / {dc:.2f}                {aa:.3f} / {da:.2f}")
+            if res: print(f"{'mixture':8s}{'':5s}        {np.mean([v[0] for v in res.values()]):.3f} / {np.mean([v[1] for v in res.values()]):.2f}                {np.mean([v[2] for v in res.values()]):.3f} / {np.mean([v[3] for v in res.values()]):.2f}")

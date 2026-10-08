@@ -1,0 +1,14 @@
+
+== attack level p2: 300 rewritten papers; detector may have seen the attacker's generator (standard 'unseen' protocol) ==
+target      n   original AUC / det@5%FPR    attacked AUC / det@5%FPR
+gpt4o      97        0.950 / 0.71                0.924 / 0.54
+claude     96        0.773 / 0.22                0.884 / 0.42
+llama      97        0.932 / 0.70                0.935 / 0.63
+mixture              0.885 / 0.54                0.914 / 0.53
+
+== attack level p2: 300 rewritten papers; attacker's generator (Llama) EXCLUDED from detector training ==
+target      n   original AUC / det@5%FPR    attacked AUC / det@5%FPR
+gpt4o      97        0.830 / 0.20                0.813 / 0.11
+claude     96        0.750 / 0.21                0.905 / 0.51
+llama      97        0.932 / 0.70                0.935 / 0.63
+mixture              0.837 / 0.37                0.884 / 0.42
