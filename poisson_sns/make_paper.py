@@ -119,8 +119,6 @@ r = t.add_run(TITLE)
 r.bold = True
 r.font.size = Pt(16)
 t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-P("[Anonymized manuscript. Author names, affiliations, acknowledgements and funding details are in the separate title page.]", italic=True)
-
 H("Highlights", 2)
 HL = ["Agent timing in LLM simulators is set by a point process, not the simulation clock",
       "An LLM rates the urge to act; an inhomogeneous Poisson process decides when",
@@ -225,9 +223,6 @@ P("Decision Support Systems has published work on supporting marketing and diffu
   "process model comprehension (Kourani et al., 2026) and narrative explanation (Martens et al., 2025). Our "
   "simulator is intended to fill this gap, and we examine whether the timing assumption changes the decision it "
   "recommends.")
-P("[Author check: the descriptions of the cited Decision Support Systems papers rest on their titles and bibliographic "
-  "records. Read each paper and adjust the wording before submission, and repeat the literature search for papers "
-  "that may fit better.]", hl=True)
 H("2.2 Agent-based simulation and LLM agents", 2)
 P("Agent-based modeling studies system-level outcomes that emerge from the interaction of heterogeneous, autonomous "
   "actors (Bonabeau, 2002; Gilbert, 2008), and it has a long record in marketing and diffusion research, where its "
@@ -362,8 +357,8 @@ P("Unless stated otherwise, simulations used the parameters in Table 1 and Secti
   "set to hours. Study 1 used 800 agents (five new links per node) for 72 simulated hours with five "
   "replications per scheduler. Studies 2 and 3 used a 2,000-agent network (three new links per node) with an 18-hour "
   "warm-up, a campaign injected at 18:00, and outcomes counted over the following 48 hours; replications were paired "
-  "by network and random seed across strategies. The code and results are available from an anonymized repository "
-  "[link to be inserted after review]. The simulator was implemented from the specification in Section 3.")
+  "by network and random seed across strategies. The code, results, and the LLM rating table are provided as an anonymized "
+  "supplementary archive. The simulator was implemented from the specification in Section 3.")
 H("4.2 Study 1: Behavioral plausibility of the scheduler (RQ1)", 2)
 P("We compared three schedulers that share every other component: (a) the proposed IPP; (b) a homogeneous Poisson "
   "process (HPP) at each agent's mean base rate, which has no circadian or reactive structure; and (c) fixed-period "
@@ -603,12 +598,14 @@ P("This study asked whether the timing of LLM agents in a simulated social platf
   "We offer the simulator and the evaluation protocol so that these gaps can be closed in subsequent work.")
 
 H("Declarations", 2)
-P("Declaration of generative AI use: [to be completed by the authors. The ten LLM raters of Study 3 are part of the "
-  "method and are described in Section 4.4; any use of generative AI in preparing the manuscript must be declared "
-  "according to the journal's policy.]", hl=True)
-P("Data and code availability: [anonymized repository link to be inserted.]", hl=True)
-P("Declaration of competing interest, funding, and CRediT author statement: [see the title page.]", hl=True)
-
+P("Declaration of generative AI use: Large language models are part of the method of this study. Ten independent "
+  "instances of an LLM (Claude Sonnet) acted as raters of the intensity oracle in Study 3 (Section 4.4 and Appendix B). "
+  "In addition, an AI assistant (Claude, Anthropic) was used to implement the simulation code from the written "
+  "specification, to run the analyses, and to draft and edit the manuscript. The authors reviewed and edited all "
+  "content and take full responsibility for the published work.")
+P("Data and code availability: The simulation code, the result files, and the table of LLM ratings are provided as an "
+  "anonymized supplementary archive for review and will be deposited in a public repository upon acceptance.")
+P("Funding, competing interests, and author contributions are reported on the title page.")
 H("References")
 REFS = [
     "Aral, S., Walker, D., 2012. Identifying influential and susceptible members of social networks. Science 337 (6092), 337–341.",
@@ -646,8 +643,6 @@ for r_ in REFS:
     p.paragraph_format.line_spacing = 1.0
     p.paragraph_format.left_indent = Inches(0.3)
     p.paragraph_format.first_line_indent = Inches(-0.3)
-P("The reference style (author-year, Elsevier-like) must be checked against the journal's current Guide for Authors.", italic=True, hl=True)
-
 H("Appendix A. Simulation settings and assumptions")
 table([["Parameter", "Value", "Remarks"],
        ["Stimulus scale κ", "0.16", "Set manually for this synthetic run; see Sections 3.5 and 4.5"],
@@ -680,17 +675,4 @@ P("Item: Persona: [persona description, e.g., a lurker who reads much more than 
   "interest). Notifications: [none / present].")
 doc.save(OUT + "DSS_manuscript_anonymized.docx")
 
-# ------------------------------------------------------------------ title page + highlights file
-tp = Document()
-tp.styles["Normal"].font.name = "Times New Roman"
-tp.add_heading("Title page (not sent to reviewers)", 1)
-tp.add_paragraph(TITLE)
-tp.add_paragraph("Authors: [names, affiliations, corresponding author, e-mail, ORCID]")
-tp.add_paragraph("Acknowledgements and funding: [to be completed]")
-tp.add_paragraph("CRediT author statement: [to be completed]")
-tp.add_paragraph("Declaration of competing interest: [to be completed]")
-tp.add_heading("Highlights (separate file, if the journal asks for one)", 1)
-for h in HL:
-    tp.add_paragraph(h, style="List Bullet")
-tp.save(OUT + "DSS_title_page_and_highlights.docx")
 print("saved")

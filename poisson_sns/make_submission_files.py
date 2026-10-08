@@ -26,32 +26,29 @@ def fill(p, t):  # highlight bracketed fields to be completed by the authors
     import re
     for part in re.split(r"(\[[^\]]+\])", t):
         r = p.add_run(part)
-        if part.startswith("["):
-            r.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
 
 # 1. title page
 d = newdoc()
 d.add_heading("Title page", 1)
-d.add_paragraph("(Upload as a separate file; it is not sent to reviewers.)").italic = True
+d.add_paragraph("(Upload as a separate file; it is not sent to reviewers.)")
 d.add_heading("Title", 2); d.add_paragraph(TITLE)
 d.add_heading("Authors and affiliations", 2)
 d.add_paragraph("Ook Lee\nDepartment of Information Systems, Hanyang University, Seoul, Korea")
 d.add_heading("Corresponding author", 2)
-fill(d.add_paragraph(), "Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr. [Postal address, telephone, ORCID]")
+fill(d.add_paragraph(), "Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr.")
 d.add_heading("CRediT author statement", 2)
-fill(d.add_paragraph(), "Ook Lee: [Conceptualization, Methodology, Software, Formal analysis, Writing – original draft, Writing – review and editing. Edit to match the actual contributions.]")
+fill(d.add_paragraph(), "Ook Lee: Conceptualization, Methodology, Software, Formal analysis, Writing – original draft, Writing – review and editing.")
 d.add_heading("Acknowledgements and funding", 2)
-fill(d.add_paragraph(), "[Funding sources and grant numbers, or: This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.]")
+fill(d.add_paragraph(), "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.")
 d.add_heading("Declaration of competing interest", 2)
-fill(d.add_paragraph(), "[The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. Edit if this is not true.]")
+fill(d.add_paragraph(), "The author declares that he or she has no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.")
 d.add_heading("Declaration of generative AI use", 2)
 fill(d.add_paragraph(),
      "Large language models are part of the method of this study: ten independent instances of an LLM (Claude Sonnet) acted as "
-     "raters of the intensity oracle in Study 3 (Section 4.4 and Appendix B). In addition, [the authors used an AI coding and writing "
-     "assistant (Claude, Anthropic) to re-implement the simulation code from the written specification, to run the analyses, and to draft "
-     "and edit the manuscript text; edit this sentence to describe exactly how it was used]. The authors reviewed and edited all content and take full "
-     "responsibility for the published work. [Confirm that this wording satisfies the journal's current policy.]")
+     "raters of the intensity oracle in Study 3 (Section 4.4 and Appendix B). In addition, an AI assistant (Claude, Anthropic) was used to implement the "
+     "simulation code from the written specification, to run the analyses, and to draft and edit the manuscript. The author reviewed and edited all content and takes full "
+     "responsibility for the published work.")
 d.save(OUT + "1_title_page.docx")
 
 # 2. highlights
@@ -59,13 +56,12 @@ d = newdoc()
 d.add_heading("Highlights", 1)
 for h in HL:
     d.add_paragraph(h, style="List Bullet")
-fill(d.add_paragraph(), "[Check the Guide for Authors for the number of bullets and the character limit per bullet (each line above is under 85 characters).]")
 d.save(OUT + "2_highlights.docx")
 
 # 3. cover letter
 d = newdoc()
 d.add_heading("Cover letter", 1)
-fill(d.add_paragraph(), "[Date]")
+d.add_paragraph("October 8, 2026")
 d.add_paragraph("To the Editors of Decision Support Systems,")
 d.add_paragraph(
     "We submit the manuscript entitled “" + TITLE + "” for consideration as a research article in Decision Support Systems.")
@@ -88,10 +84,9 @@ d.add_paragraph(
     "media, connects to work published in Decision Support Systems on word-of-mouth marketing, diffusion models, and LLM-based "
     "decision support, and contributes a reusable specification together with an evaluation protocol.")
 fill(d.add_paragraph(),
-     "The manuscript is original, has not been published, and is not under consideration elsewhere. [Confirm.] All authors have approved the submission. [Confirm.] "
-     "The code, results, and the LLM rating table are available from an anonymized repository [link]. A statement on the use of generative AI is included "
-     "on the title page.")
-fill(d.add_paragraph(), "[Suggested reviewers (optional; name, affiliation, e-mail, reason)]")
+     "The manuscript is original, has not been published, and is not under consideration elsewhere. The sole author has approved the submission. "
+     "The code, results, and the LLM rating table are provided as an anonymized supplementary archive. A statement on the use of generative AI is included "
+     "on the title page and in the manuscript.")
 d.add_paragraph("Sincerely,")
 d.add_paragraph("Ook Lee\nDepartment of Information Systems, Hanyang University, Seoul, Korea\nooklee@hanyang.ac.kr")
 d.save(OUT + "3_cover_letter.docx")
@@ -107,16 +102,16 @@ for t in ["Anonymized manuscript (editable .docx), with abstract, keywords, high
           "DSS literature positioning: references verified against Crossref (journal ISSN 0167-9236)"]:
     d.add_paragraph(t, style="List Bullet")
 d.add_heading("Only the authors can do these", 2)
-for t in ["Complete the remaining highlighted fields: ORCID, postal address and telephone, CRediT roles, funding, conflicts, suggested reviewers (title page, cover letter)",
+for t in ["Check the filled-in statements, which are based on standard wording and were not confirmed by you: no funding, no competing interests, sole-author approval and originality (title page, cover letter), and the CRediT role list. Add ORCID, postal address, telephone, and suggested reviewers if the system asks for them",
           "Confirm the generative-AI declaration wording and the originality statement",
-          "Upload code_anonymous.zip to an anonymous host (for example, a private Zenodo or Figshare link, or an anonymization service for repositories) and insert the link in Section 4.1 and the Declarations. Do not use the current public repository link, which shows your account name",
-          "Read each cited Decision Support Systems paper and adjust the one-line descriptions in Section 2.1 (written from titles and bibliographic records)",
+          "Upload code_anonymous.zip as a supplementary file in the submission system (the manuscript says it is provided as an anonymized supplementary archive). Do not link the current public GitHub repository, which shows your account name",
+          "Read each cited Decision Support Systems paper and adjust the one-line descriptions in Section 2.1 (written from titles and bibliographic records); repeat the literature search in the journal for better-fitting papers",
           "Create an account in the journal's submission system and upload the files"]:
     d.add_paragraph(t, style="List Bullet")
 d.add_heading("Could not be verified (the Guide for Authors was not readable from the working environment)", 2)
 for t in ["Number of Highlights bullets and characters per bullet (a third-party page says 3–5 bullets, up to 85 characters; unverified)",
           "Abstract length limit (third-party page says 150–300 words; unverified). The current abstract has about 300 words, so shorten it if the limit is lower",
-          "Reference style (the manuscript uses an Elsevier-like author-year style; a third-party page says numbered style; unverified)",
+          "Reference style (the manuscript uses an Elsevier-like author-year style and the author-year list was not checked against the journal; a third-party page says numbered style; unverified)",
           "Page or word limits, figure and table placement rules, and any required template",
           "Exact anonymization rules (the journal uses double-anonymized review; check what must be removed from the file properties and the text)"]:
     d.add_paragraph(t, style="List Bullet")
