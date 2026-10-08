@@ -6,9 +6,9 @@ title: "Submission Package for Information Systems Research"
 
 **Title:** How Much Screening Is Enough? An Economic Analysis of Cheap Statistical Screens, LLM Judges, and Strategic Evasion in Detecting Machine-Written Scholarly Text
 
-**Author:** Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr
+**Author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr
 
-**Corresponding author:** Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr. [Add postal address and telephone if the submission system asks for them.]
+**Corresponding author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. Email: ooklee@hanyang.ac.kr. [Add postal address and telephone if the submission system asks for them.]
 
 **Acknowledgments and funding:** [to be completed by the authors]
 
@@ -29,7 +29,7 @@ A contribution statement follows in Part C. Please let us know if any further in
 Sincerely,
 
 Ook Lee
-Department of Information Systems, Hanyang University, Seoul, Korea
+Department of Information System, Hanyang University, Seoul, Korea
 ooklee@hanyang.ac.kr
 
 # Part C. Statement of Contribution (about 450 words)
