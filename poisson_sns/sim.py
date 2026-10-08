@@ -177,7 +177,7 @@ def coarse_surrogate_table():
 class Sim:
     def __init__(self, n, m, seed, oracle=None, scheduler="ipp",
                  net_seed=None, kappa=KAPPA, s_max=S_MAX, p_view=P_VIEW,
-                 tau=TAU, netfun=None):
+                 tau=TAU, netfun=None, max_events=600000):
         self.n = n
         self.scheduler = scheduler
         self.oracle = oracle or SurrogateFine()
@@ -226,6 +226,8 @@ class Sim:
         self.exposed = set()
         self.camp_events = []
         self.hook = None
+        self.max_events = max_events
+        self.truncated = False
 
     # -- intensity -------------------------------------------------------------
     def S(self, a, t):
@@ -373,6 +375,52 @@ class Sim:
             if v != self.ver[a]:
                 continue
             self.act(a, t)
+            if len(self.events) > self.max_events:
+                self.truncated = True
+                break
             self.ver[a] += 1
             self.schedule(a, t)
         return self
+
+
+# ---- alternative follower networks (robustness checks) ---------------------------
+def random_network(n, m, rng):
+    """Each agent follows m uniformly random others (Poisson in-degree)."""
+    followers = [[] for _ in range(n)]
+    for i in range(n):
+        chosen = set()
+        while len(chosen) < m:
+            j = rng.randrange(n)
+            if j != i:
+                chosen.add(j)
+        for j in chosen:
+            followers[j].append(i)
+    return followers
+
+
+def community_network(n, m, rng, blocks=10, p_in=0.8):
+    """Preferential attachment with community structure: a fraction p_in of each
+    agent's follow links stay inside its block."""
+    blk = [rng.randrange(blocks) for _ in range(n)]
+    members = [[] for _ in range(blocks)]
+    urn_b = [[] for _ in range(blocks)]
+    urn_all = []
+    followers = [[] for _ in range(n)]
+    for i in range(n):
+        chosen = set()
+        tries = 0
+        while len(chosen) < min(m, i) and tries < 50 * m:
+            tries += 1
+            u = urn_b[blk[i]] if (rng.random() < p_in and urn_b[blk[i]]) else urn_all
+            if not u:
+                continue
+            j = u[rng.randrange(len(u))]
+            if j != i:
+                chosen.add(j)
+        for j in chosen:
+            followers[j].append(i)
+            urn_b[blk[j]].append(j)
+            urn_all.append(j)
+        urn_b[blk[i]].append(i)
+        urn_all.append(i)
+    return followers
