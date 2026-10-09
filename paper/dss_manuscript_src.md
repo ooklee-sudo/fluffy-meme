@@ -2,7 +2,7 @@
 title: "Time-invariant pricing of shared LLM inference capacity under phase-varying demand"
 ---
 
-**Authors:** [Author names] — **Affiliations:** [Affiliations] — **Corresponding author:** [Name, e-mail]
+**Author:** Ook Lee — **Affiliation:** Department of Information Systems, Hanyang University, Seoul, Republic of Korea — **Corresponding author:** Ook Lee, ooklee@hanyang.ac.kr
 
 ## Highlights
 
@@ -229,7 +229,7 @@ All code and result tables are in the public project repository [repository URL 
 
 ## Declaration of generative AI and AI-assisted technologies in the manuscript preparation process
 
-During the preparation of this work the authors used a generative AI assistant (Claude, Anthropic) to write and run the simulation code, to carry out the numerical experiments, to search for and check bibliographic records, and to draft and edit the text. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article. [Authors: edit this statement so that it matches what was actually done.]
+During the preparation of this work the author used a generative AI assistant (Claude, Anthropic) to write and run the simulation code, to carry out the numerical experiments, to search for and check bibliographic records, and to draft and edit the text. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article. [Author: edit this statement so that it matches what was actually done.]
 
 ## Declarations
 

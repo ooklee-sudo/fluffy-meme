@@ -15,15 +15,14 @@ The main results are the following. First, the welfare-optimal price in a phase 
 
 We believe the paper fits the journal because it gives decision makers concrete rules for two decisions that support the operation of AI services: how to plan capacity from workload logs, and how to design and test a posted price schedule. The analysis is tied to data that practitioners can replicate, and the manuscript is explicit about the conditions under which the rules do not apply, for example when demand is dominated by unpredictable multi-day swings. We also state the limitations of the work, including the assumed service-time and demand parameters, the local nature of some of the analytical results for schedules, and the absence of competition among providers.
 
-To the best of our knowledge, the manuscript is original, has not been published previously and is not under consideration for publication elsewhere. All authors have read and approved the submitted version and agree to its submission to *Decision Support Systems*. The authors declare no competing interests [to be confirmed]. As required, the manuscript includes a declaration of the use of generative AI tools in its preparation. The traces are public, and our code and result tables are available at [repository URL].
+To the best of our knowledge, the manuscript is original, has not been published previously and is not under consideration for publication elsewhere. I have read and approved the submitted version and agree to its submission to *Decision Support Systems*. I declare no competing interests [to be confirmed]. As required, the manuscript includes a declaration of the use of generative AI tools in its preparation. The traces are public, and our code and result tables are available at [repository URL].
 
-[Optional: We suggest the following reviewers, who have no conflict of interest with the authors: (1) [Name, affiliation, e-mail]; (2) [Name, affiliation, e-mail]; (3) [Name, affiliation, e-mail]. We ask that [Name] not be asked to review because of [reason].]
+[Optional: We suggest the following reviewers, who have no conflict of interest with me: (1) [Name, affiliation, e-mail]; (2) [Name, affiliation, e-mail]; (3) [Name, affiliation, e-mail]. We ask that [Name] not be asked to review because of [reason].]
 
 Thank you for considering our work. We look forward to your response.
 
 Sincerely,
 
-[Corresponding author's name]
-[Title and affiliation]
-[E-mail] · [Telephone]
-on behalf of all authors
+Ook Lee
+Department of Information Systems, Hanyang University, Seoul, Republic of Korea
+ooklee@hanyang.ac.kr
