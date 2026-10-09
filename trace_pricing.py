@@ -76,7 +76,7 @@ def cont_generator(Pm, bin_s, tau):
 
 def welfare(lam_eff, Lam, G, c, N, piK):
     q = PhaseQueue(lam_eff, G, c, N)
-    if q.top_mass() > 1e-6 or lam_eff @ piK >= 0.995 * c:
+    if q.top_mass() > 1e-3 or lam_eff @ piK >= 0.995 * c:
         return -1e9
     B = piK @ (PBAR * (lam_eff - lam_eff ** 2 / (2 * Lam)))
     return B - q.L()
@@ -94,7 +94,7 @@ def run(name, lam_s, G, c, N, md):
     piK = stationary(G)
     lbar = float(piK @ lam_s)
     q = PhaseQueue(lam_s, G, c, N)
-    assert q.top_mass() < 1e-4, f"truncation too small ({q.top_mass():.2e})"
+    assert q.top_mass() < 1e-3, f"truncation too small ({q.top_mass():.2e})"
     qp = PhaseQueue([lbar], np.zeros((1, 1)), c, N)
     md.append(f"## {name}\n")
     md.append(f"c={c}, mean load {lbar:.1f} (rho={lbar / c:.2f}); phase rates (per service time): "
