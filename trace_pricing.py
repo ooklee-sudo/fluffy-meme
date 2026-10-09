@@ -74,9 +74,9 @@ def cont_generator(Pm, bin_s, tau):
     return (Pm - np.eye(len(Pm))) / bin_s * tau
 
 
-def welfare(lam_eff, Lam, G, c, N, piK):
+def welfare(lam_eff, Lam, G, c, N, piK, strict=True):
     q = PhaseQueue(lam_eff, G, c, N)
-    if q.top_mass() > 1e-3 or lam_eff @ piK >= 0.995 * c:
+    if (strict and q.top_mass() > 1e-3) or lam_eff @ piK >= 0.995 * c:
         return -1e9
     B = piK @ (PBAR * (lam_eff - lam_eff ** 2 / (2 * Lam)))
     return B - q.L()
@@ -100,14 +100,22 @@ def run(name, lam_s, G, c, N, md):
     md.append(f"c={c}, mean load {lbar:.1f} (rho={lbar / c:.2f}); phase rates (per service time): "
               + ", ".join(f"{x:.1f}" for x in lam_s) + f"; phase probabilities: "
               + ", ".join(f"{x:.2f}" for x in piK) + f"; E[sojourn] bursty {q.L() / lbar:.2f} vs Poisson {qp.L() / lbar:.2f}\n")
-    # --- E3
-    t = q.toll()
-    w = q.P[:t.shape[0]] * lam_s[None, :]
-    avg = float((w * t).sum() / w.sum())
-    tp = qp.toll()
-    wp = qp.P[:tp.shape[0]]
-    avg_p = float((wp[:, 0] * tp[:, 0]).sum() / wp[:, 0].sum())
-    byk = [float((w[:, k] * t[:, k]).sum() / w[:, k].sum()) for k in range(K)]
+    # --- E3: toll of a phase-k request = (dL/dlam_k)/pi_k - E_k[own sojourn]   (finite differences;
+    # the Poisson-equation solve is ill-conditioned for long queues)
+    def phase_toll(qq, lam_v):
+        piK_ = qq.phase_dist()
+        L0, out = qq.L(), []
+        n = np.arange(qq.N + 1)
+        own = np.where(n < c, 1.0, (n - c + 1) / c + 1.0)
+        for k in range(len(lam_v)):
+            l2 = np.array(lam_v, float); l2[k] *= 1.001
+            q2 = PhaseQueue(l2, G if len(lam_v) > 1 else np.zeros((1, 1)), c, N)
+            marg = (q2.L() - L0) / (lam_v[k] * 0.001) / piK_[k]
+            out.append(marg - float((qq.P[:, k] * own).sum() / piK_[k]))
+        return np.array(out), piK_
+    byk, _ = phase_toll(q, lam_s)
+    avg = float(((piK * lam_s) @ byk) / lbar)
+    avg_p = float(phase_toll(qp, [lbar])[0][0])
     md.append(f"### E3  Pigouvian toll per request (units: one service time of delay)\n")
     md.append(f"Poisson (same mean): {avg_p:.2f}; bursty average: {avg:.1f} ({avg / avg_p:.0f}x); by phase "
               + ", ".join(f"{b:.1f}" for b in byk) + "\n")
@@ -126,7 +134,7 @@ def run(name, lam_s, G, c, N, md):
         val = float(piK @ (PBAR * (lam_eff - lam_eff ** 2 / (2 * Lam)))) - pq.L()
         if val > best:
             best, tb = val, tau
-    pol["burst-blind flat"] = (welfare(rate(np.full(K, tb)), Lam, G, c, N, piK), np.full(K, tb))
+    pol["burst-blind flat (lower bound on loss: queue cap reached)"] = (welfare(rate(np.full(K, tb)), Lam, G, c, N, piK, strict=False), np.full(K, tb))
     grid = np.linspace(0, PBAR, 25)
     ev = [(welfare(rate(np.full(K, x)), Lam, G, c, N, piK), x) for x in grid]
     wf, xf = max(ev)
@@ -167,7 +175,7 @@ def main():
     lbar = len(t) / t[-1]
     p = tc.fit_mmpp2(lbar, tc.idc_curve(t, [1, 2, 5, 10, 30, 60, 120, 300]))
     G = np.array([[-p["rHL"], p["rHL"]], [p["rLH"], -p["rLH"]]]) * tau
-    run("Code trace: fitted MMPP(2)", np.array([p["lH"], p["lL"]]) * tau, G, 7, 7 + 700, md)
+    run("Code trace: fitted MMPP(2)", np.array([p["lH"], p["lL"]]) * tau, G, 7, 7 + 2500, md)
     open(out, "w").write("\n".join(md))
 
 
