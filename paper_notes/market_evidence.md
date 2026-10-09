@@ -28,3 +28,16 @@ Status: gathered by a subagent that opened the pages listed; I have not re-opene
 | Mooncake (Kimi) conversation | ~1 hour | 3 MB |
 | Alibaba Bailian usage traces | 2 hours | 28-132 MB |
 | Chutes one-year trace (arXiv 2608.13573) | 1 year, 6.1B rows | 91 GB parquet |
+
+
+## Re-verified by me on 2026-10-09 (pages opened directly)
+- DeepSeek pricing page: "Off-peak rates are half of the peak rates." Peak hours 01:00-04:00 and 06:00-10:00 UTC, Mon-Fri, excluding Chinese
+  public holidays; weekends and holidays fully off-peak. deepseek-flash: output $1.20 peak / $0.60 off-peak; deepseek-v4-pro: $3.96 / $1.98.
+  Concurrency limits 2500 / 500. No effective date on the page. In China time (UTC+8) the peak is 09:00-12:00 and 14:00-18:00: working
+  hours excluding lunch - a demand-profile-based schedule.
+- OpenAI pricing page: Standard 1x, Batch 0.5x, Flex 0.5x (subset), Fast (formerly priority processing, renamed 30 Jul 2026) 2x (about 1.8x for
+  gpt-5-mini), and **Ultrafast 6x** for gpt-6-astra and gpt-6.1-sol only. So the Ultrafast-to-Flex spread is 12x, larger than the 3.5-4x
+  I reported earlier from the subagent.
+- AWS Bedrock service-tier page: Reserved / Priority / Standard / Flex; "Priority tier requests are prioritized over Standard and Flex tier requests";
+  Reserved overflows to Standard; on-demand quota shared across priority/default/flex. Percent premium/discount is NOT on this page (the
+  75% / 50% figures from the subagent came from the pricing page and are unverified by me).
