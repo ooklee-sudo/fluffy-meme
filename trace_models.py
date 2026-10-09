@@ -112,4 +112,5 @@ def main():
     open(out, "w").write("\n".join(md))
 
 
-main()
+if __name__ == "__main__":
+    main()
