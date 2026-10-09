@@ -242,7 +242,7 @@ def e4(c, kappa, TH, Pbar):
 
     # (a) burst-blind flat: toll set as if arrivals were Poisson with the same mean
     best, tau_b = -1e18, 0
-    for tau in np.linspace(0, Pbar, 60):
+    for tau in np.linspace(0, Pbar, 30):
         l = rate_from_toll(tau)
         m = float((np.array([rt[1], rt[0]]) / (rt[0] + rt[1])) @ l)
         if m >= 0.995 * c * MU:
@@ -254,11 +254,11 @@ def e4(c, kappa, TH, Pbar):
             best, tau_b = val, tau
     w_blind = W(rate_from_toll(tau_b))
     # (b) best flat toll under true MMPP
-    w_flat, tau_f = max((W(rate_from_toll(t)), t) for t in np.linspace(0, Pbar, 80))
+    w_flat, tau_f = max((W(rate_from_toll(t)), t) for t in np.linspace(0, Pbar, 40))
     # (c) best two-price (toll depends on observed phase)
     w2, taus = -1e18, None
-    for tH in np.linspace(0, Pbar, 41):
-        for tL in np.linspace(0, Pbar / 2, 21):
+    for tH in np.linspace(0, Pbar, 21):
+        for tL in np.linspace(0, Pbar / 2, 11):
             val = W(Lam * np.clip(1 - np.array([tH, tL]) / Pbar, 0, 1))
             if val > w2:
                 w2, taus = val, (tH, tL)
@@ -272,8 +272,9 @@ def main():
     c1, tau1 = 8, 1.0
     md += [f"## E1  Delay at equal utilisation (c={c1} replicas, mu=1; time in mean service times)\n",
            "Burst process: 20% of time in burst, rate k x off-rate, mean burst length T service times.\n", e1(c1, tau1), ""]
-    lbar, tau2, eps = 20.0, 1.0, 0.01
+    lbar, tau2, eps = 10.0, 1.0, 0.01
     t2, c0 = e2(lbar, tau2, eps)
+    print("\n".join(md), flush=True)
     md += [f"## E2  Replicas needed for P(wait > {tau2}) <= {eps} at mean load {lbar} (mu=1)\n", t2, ""]
     md += ["## E3  Congestion externality per request (cost unit: one service time of one user's delay), rho=0.8, c=8\n",
            e3(8), ""]
