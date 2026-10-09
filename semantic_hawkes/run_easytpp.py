@@ -146,6 +146,15 @@ def main():
     runner = Runner.build_from_config(config)
     runner.run()
     res = parse_log(out)
+    core = getattr(runner.model, "core", None)
+    if core is not None:  # diagnostics of the (last-epoch) Hawkes parameters
+        import numpy as np
+        import torch
+        with torch.no_grad():
+            mu, A, beta = [x.cpu().numpy() for x in core.params()]
+        res["diag"] = dict(rho_A=float(np.max(np.abs(np.linalg.eigvals(A)))), A_sum_max=float(A.sum(1).max()),
+                           beta_med=float(np.median(beta)), beta_p90=float(np.quantile(beta, 0.9)),
+                           beta_max=float(beta.max()), kernel_peak_max=float((A * beta).max()))
     res.update(data=os.path.basename(a.data.rstrip("/")), model=a.model, n_train=a.n_train, seed=a.seed, tag=a.tag)
     print("RESULT", json.dumps(res))
 
