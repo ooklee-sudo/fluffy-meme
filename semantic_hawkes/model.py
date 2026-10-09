@@ -15,6 +15,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 MIN_BETA = 0.05
+# Upper bound on the decay rate (event times are in units of the mean inter-event time). Without it, tied timestamps
+# (identical times, e.g. same-day reviews) let beta -> infinity inflate the likelihood without modelling any dynamics.
+MAX_BETA = 20.0
 
 
 class _Base(nn.Module):
@@ -70,7 +73,7 @@ class FreeHawkes(_Base):
 
     def params(self):
         return (F.softplus(self.mu_raw), F.softplus(self.A_raw),
-                F.softplus(self.b_raw) + MIN_BETA)
+                (F.softplus(self.b_raw) + MIN_BETA).clamp(max=MAX_BETA))
 
 
 class SemanticHawkes(_Base):
@@ -91,6 +94,6 @@ class SemanticHawkes(_Base):
     def params(self):
         h = self.enc(self.emb)                                 # (K,H)
         A = F.softplus(self.src_A(h) @ self.dst_A(h).T * self.scale + self.bias_A)
-        beta = F.softplus(self.src_b(h) @ self.dst_b(h).T * self.scale + self.bias_b) + MIN_BETA
+        beta = (F.softplus(self.src_b(h) @ self.dst_b(h).T * self.scale + self.bias_b) + MIN_BETA).clamp(max=MAX_BETA)
         mu = F.softplus(self.mu_head(h).squeeze(-1) - 2.0)
         return mu, A, beta

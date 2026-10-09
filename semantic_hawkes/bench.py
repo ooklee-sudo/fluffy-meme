@@ -51,11 +51,12 @@ if __name__ == "__main__":
     ap.add_argument("--seeds", type=int, nargs="+", default=[2019])
     ap.add_argument("--datasets", nargs="+", default=DATASETS)
     ap.add_argument("--jobs", type=int, default=4)
+    ap.add_argument("--models", nargs="+", default=MODELS)
     a = ap.parse_args()
     os.makedirs("semantic_hawkes/runs", exist_ok=True)
     have = done()
     todo = []
-    for d, n, s, m in itertools.product(a.datasets, a.sizes, a.seeds, MODELS):
+    for d, n, s, m in itertools.product(a.datasets, a.sizes, a.seeds, a.models):
         tag = "qwen" if m == "SemHawkesTPP" else ""
         if (d, m, n or None, s, tag) not in have:
             todo.append((d, m, n, s, a.epochs))
