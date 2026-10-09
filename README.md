@@ -82,3 +82,28 @@ python run_pairs.py
 - Recovery is `R = (L_none − L_method) / (L_none − L_retrain)`, where L is test MSE (toy) or held-out response NLL (LLM), and `none` is the target model without an adapter.
 - `act_llama.py` reports `C_A/C_N` from compute time only. The paper argues C_N should also include data acquisition and revalidation labor. Add those before drawing conclusions.
 - In `act_llama.py`, calibration inputs are task prompts without answers (Appendix A.4). α is chosen per module from 13 values in [1e-3, 1e3] on an 80/20 split, using a Gram-only validation error. Decoder layers are corrected sequentially from the input side.
+
+
+---
+
+# Second study in this repository: pricing shared LLM inference capacity under bursty demand
+
+Unrelated to the adapter-maintenance paper above. Notes and drafts: `paper_notes/` (`manuscript.md` is the entry point). Results: `results/*.md`.
+
+Data are not stored in the repository. Download:
+- Azure LLM inference 2023 traces (`AzureLLMInferenceTrace_conv.csv`, `..._code.csv`) from github.com/Azure/AzurePublicDataset/data
+- Azure LLM inference 2024 code trace (`AzureLLMInferenceTrace_code_1week.csv`, release tag `dataset-llm-2024`)
+- BurstGPT_1.csv from github.com/HPMLL/BurstGPT/data
+
+| Script | What it does | Output |
+| --- | --- | --- |
+| `serving_mmpp.py` | exact CTMC of MMPP(2)/M/c vs Poisson: delay, SLO sizing, tolls (numpy/scipy only; older "flat" definition, see note in the result files) | `results/mmpp_serving.md` |
+| `trace_calibration.py`, `trace_fit_sensitivity.py`, `trace_models.py` | fit MMPP / rate chains to the 2023 traces, replay, compare arrival models | `trace_calibration.md`, `trace_models.md` |
+| `trace_pricing.py`, `trace_equilibrium.py`, `trace_service_pricing.py` | pricing under bursty demand: planner, equilibrium demand (CTMC), non-exponential service (simulation) | `trace_pricing.md`, `trace_equilibrium.md`, `trace_service_pricing.md` |
+| `theory_check.py`, `theory_props.py`, `theory_verify.py` | quasi-static theory, numerical checks of the propositions, strategic extensions | `theory_check.md`, `theory_props.md`, `theory_verify.md` |
+| `switching_scaling.py` | flat-price loss vs switching speed (exact CTMC) | `switching_scaling.md` |
+| `longtrace.py`, `schedule_test.py`, `robustness.py`, `cost_calibration.py`, `c0_estimate.py` | long traces, schedules with real list-price ratios, robustness, serving-cost calibration | `longtrace_*.md`, `schedule_test.md`, `robustness.md`, `cost_calibration.md`, `c0_estimate.md` |
+| `congestion_wedge.py` | measured throughput vs welfare | `congestion_wedge.md` |
+
+Run, e.g.: `python trace_calibration.py --data DIR`, `python longtrace.py azure PATH`, `python theory_check.py DIR`. Seeds are fixed in the scripts.
+Needs numpy, scipy, pandas (long traces). Service times are built from token counts with assumed coefficients (0.5 ms per prompt token, 30 ms per generated token).

@@ -61,6 +61,9 @@ Relative to hour-by-hour first best: no price 44.1%, best flat 14.7%, best two-l
 c0/P is low and worse than flat when c0/P is large (19.0% vs 14.0% at c0 = 8, P = 20). Equilibrium demand with posted prices, exact CTMC and
 simulation with non-exponential service (cs2 0.5-16) [results/trace_equilibrium.md, trace_service_pricing.md]: flat price loses 6% (conversation) and
 17-19% (code) of phase-dependent welfare; no price 38-71%; results hardly depend on cs2 for the code trace and shrink with cs2 for the conversation trace.
+Robustness (results/robustness.md): across 18 parameter sets (choke value P = 10, 20, 40; unpriced demand 1.2x, 1.4x, 2.0x capacity; c0/P = 0 or 0.15) the best flat
+price loses 11.0-18.6% of hour-by-hour first-best welfare and the best two-level schedule recovers 65-73% of that loss; no price loses 37-57%. The qualitative
+conclusion does not depend on these assumed parameters (their levels do).
 ### 4.3 List prices and c0 (results/c0_estimate.md; paper_notes/market_evidence.md)
 Directly verified: DeepSeek peak = 2x off-peak, 7 weekday peak hours (China working hours excluding lunch); OpenAI Fast 2x, Batch/Flex 0.5x,
 Ultrafast 6x; Bedrock Reserved/Priority/Standard/Flex tiers. A 2x ratio implies c0/P of 0.08-0.25 depending mainly on how far unpriced demand
