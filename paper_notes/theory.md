@@ -81,19 +81,42 @@ With serving cost c0 the planner's choke value is P - c0 and users pay c0 + p_k.
 So the extreme ratio at c0 = 0 (31x, 7x) is an artefact of ignoring cost; matching market ratios does not make the flat-price loss disappear.
 c0 itself is not observed (only its effect on the ratio is calibrated), so this is consistency, not identification.
 
-## 5. When is the quasi-static approximation reasonable? (results/theory_check.md, Part C)
-The quasi-static model treats the queue as being in steady state within each phase, so it ignores queues that build up during a
-burst and drain afterwards. Exact CTMC for the code-trace MMPP (equilibrium demand, best flat price vs. phase-dependent welfare),
-dwell times multiplied by f:
+## 5. Finite switching speed
+Let the phase chain have generator theta * G0 (G0 irreducible with stationary distribution pi); theta = 1/f is the switching speed.
+Work with a finite buffer N (as in all CTMC computations) so that the state space is finite; for an infinite buffer assume the usual uniform tail bound.
 
+**Theorem 5 (fast switching: flat pricing becomes first best).** Fix prices and rates (lambda_k). As theta -> infinity the stationary distribution of
+(queue length n, phase k) converges to nu(n) pi_k, where nu is the stationary distribution of the M/M/c queue with the *average* rate
+lambdabar = sum_k pi_k lambda_k. Consequently every phase faces the same delay d(lambdabar), the first-best rates satisfy P_k(lambda_k) = D'(lambdabar)
+for all k, and the flat price p = t(lambdabar) implements them. The welfare loss of the best flat price therefore tends to 0 as theta -> infinity.
+*Proof.* Let mu_theta be the stationary law of Q_theta = theta Q0 + Q1, where Q0 changes only the phase and Q1 contains the queue transitions
+(phase-dependent arrival rates, service rates). Q_theta is irreducible for every theta > 0. Dividing mu_theta Q_theta = 0 by theta gives
+mu_theta Q0 = -(1/theta) mu_theta Q1; any limit point mu satisfies mu Q0 = 0, so mu(n,k) = m(n) pi_k for some law m on {0..N}.
+For a test function f(n) depending only on n, Q0 f = 0, hence mu_theta Q1 f = 0 for all theta; passing to the limit,
+sum_n m(n) sum_k pi_k (Q1 f)(n,k) = 0, i.e. m is invariant for the birth-death generator with arrival rate sum_k pi_k lambda_k, which is irreducible
+and has a unique invariant law nu. So mu_theta -> nu x pi. Delays, queue lengths and welfare are continuous functions of mu_theta and of the rates,
+so W_theta(lambda) -> W_inf(lambda) = sum_k pi_k B_k(lambda_k) - D(lambdabar) uniformly on the compact rate set. The maximisers of W_inf satisfy
+P_k(lambda_k) = D'(lambdabar) for all k (differentiate with respect to lambda_k and divide by pi_k), which is implemented by the flat price
+t(lambdabar) with equilibrium delay d(lambdabar) in every phase. Hence both the first best and the best flat price converge to max W_inf, and the
+loss is at most the sum of two uniform-convergence errors, which tend to 0. QED
+(Equilibrium rates also converge: the equilibrium map is continuous in the delays, which converge to d(lambdabar).)
+
+**Slow switching.** As theta -> 0 with every phase stable at its equilibrium rate, the queue reaches a quasi-stationary state in each phase and the
+loss tends to the quasi-static loss of Section 2 (standard separation of time scales; not proved here).
+
+**Between the limits - numerical results (results/switching_scaling.md, exact CTMC, code-trace MMPP, f = dwell-time multiplier).**
 | f | mean burst (service times) | flat-price loss (% of phase-dependent welfare) |
 |---|---|---|
-| 0.2 | 0.8 | 12.3% |
-| 1.0 | 4.1 | 20.9% |
-| 5.0 | 20.6 | 17.5% |
-
-- The loss is not monotone in switching speed: it is smallest for very fast switching (the queue averages the phases) and peaks at intermediate burst lengths.
-- Even at f = 5 the exact loss (17.5%) exceeds the quasi-static loss for the same trace (10.1% of first best; different normalisation, same direction).
-  Treat the quasi-static numbers as a conservative (lower) estimate of the flat-price loss when bursts are short relative to queue build-up,
-  and the formal results of Section 2 as statements about the slow-switching limit only.
-- A formal statement for finite switching speed is not proved here.
+| 0.005 | 0.02 | 0.28% |
+| 0.02 | 0.08 | 1.3% |
+| 0.1 | 0.41 | 7.1% |
+| 0.5 | 2.1 | 17.0% |
+| 1 | 4.1 | 19.0% |
+| 2 | 8.2 | 16.9% |
+| 5 | 20.6 | 17.0% |
+- The loss rises from 0 (Theorem 5) roughly linearly in f (log-log slope about 1.1 for f <= 0.05), peaks for bursts of the order of a few
+  service times (the queue builds during a burst and does not average out), and plateaus near 17% for slow switching.
+- A quadratic rate (loss = O(f^2)) was conjectured and is **not** supported; the rate is left open. Grid resolution limits accuracy to about 1-2 points
+  (f = 1 gave 20.9% with a different grid), and the smallest f values are likely inflated by the price grid.
+- Exact slow-limit loss (about 17%) exceeds the quasi-static loss (10.1% of first best for the same trace, a different normalisation): the quasi-static
+  formulas are a conservative lower estimate when bursts are short relative to queue build-up.

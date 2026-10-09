@@ -1,7 +1,7 @@
 """Flat-price loss as a function of the switching speed (exact CTMC, code-trace MMPP with dwell times scaled by f).
 
 Theory (paper_notes/theory.md, Section 5): as f -> 0 (fast switching) the queue sees only the average rate, all phases face the
-same externality, and a flat price is first best, so the loss -> 0; the loss is expected to vanish like f^2.
+same externality, and a flat price is first best, so the loss -> 0; the rate of convergence is not proved; the measured log-log slope is about 1.
 Output: loss of the best flat price (equilibrium demand) relative to the phase-dependent planner optimum, and the log-log slope.
 Usage: python switching_scaling.py DATA_DIR [OUT.md]"""
 import sys
@@ -48,7 +48,7 @@ def main():
     sl = np.polyfit(np.log(fs[:4]), np.log(np.maximum(ls[:4], 1e-9)), 1)[0]
     md = ["# Flat-price loss vs. switching speed (code-trace MMPP, exact CTMC)\n",
           tc.table(rows, ["f (dwell multiplier)", "mean burst (service times)", "best flat welfare", "phase-dependent welfare", "flat loss"]),
-          f"\nLog-log slope of the loss against f over f = {fs[0]}..{fs[3]}: {sl:.2f} (theory predicts about 2 if the loss is O(f^2)).\n"]
+          f"\nLog-log slope of the loss against f over f = {fs[0]}..{fs[3]}: {sl:.2f} (about 1 means roughly linear in f).\n"]
     open(out, "w").write("\n".join(md))
     print(md[-1])
 
