@@ -27,7 +27,10 @@ def job(args):
     cmd = [sys.executable, "-m", "semantic_hawkes.run_easytpp", "--data", f"semantic_hawkes/real_data/tppllm/{d}",
            "--model", m, "--epochs", str(epochs), "--seed", str(seed), "--tag", tag]
     if n:
-        cmd += ["--n_train", str(n)]
+        # few training sequences -> use small batches / more epochs so every model gets ~400 gradient steps
+        steps_per_epoch = -(-n // 8)
+        cmd[cmd.index("--epochs") + 1] = str(max(epochs, -(-400 // steps_per_epoch)))
+        cmd += ["--n_train", str(n), "--batch_size", "8"]
     if m == "SemHawkesTPP":
         cmd += ["--emb", f"semantic_hawkes/emb/{d}_qwen.npy"]
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")

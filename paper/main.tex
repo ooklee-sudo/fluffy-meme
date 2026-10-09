@@ -1,0 +1,208 @@
+%% Manuscript for Expert Systems with Applications (Elsevier), elsarticle class.
+%% Build: pdflatex main && bibtex main && pdflatex main && pdflatex main
+%% Items shown in red (\todo{...}) depend on benchmark runs that must be finished and checked by the authors.
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\newcommand{\todo}[1]{{\color{red}[#1]}}
+\newcommand{\softplus}{\operatorname{softplus}}
+
+\journal{Expert Systems with Applications}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Text-conditioned Hawkes processes for event sequences with few observations: exact likelihood and interpretable excitation from language-model embeddings}
+
+\author[a]{First Author\corref{cor1}}
+\ead{ooklee@hanyang.ac.kr}
+\cortext[cor1]{Corresponding author}
+\affiliation[a]{organization={Department of ...},
+  addressline={Hanyang University},
+  city={Seoul},
+  country={Republic of Korea}}
+
+\begin{abstract}
+Many operational systems record streams of timestamped events whose types carry short textual descriptions, such as product categories, incident labels or badge names. Multivariate Hawkes processes describe how past events excite future ones and give directly interpretable parameters, but a free $K\times K$ excitation matrix requires many observations to estimate. Neural point-process models are more flexible but offer no direct reading of the dependencies they learn, and recent language-model-based models add substantial computational cost and approximate the likelihood by Monte Carlo sampling. We propose Text-Hawkes, a multivariate Hawkes process with exponential kernels whose base rates, branching ratios and decay rates are computed from frozen language-model embeddings of the event-type descriptions. Because the embeddings are computed once and cached, training and inference never run the language model, and the exponential kernel yields a closed-form log-likelihood without numerical integration. The learned branching-ratio matrix remains non-negative and can be inspected directly. We implement the model inside the EasyTPP benchmark so that it is trained and evaluated exactly like the Neural Hawkes Process (NHP) and the Transformer Hawkes Process (THP), and we evaluate it on five public event-sequence datasets with textual type descriptions. \todo{Summarise real-data findings once the benchmark is complete: which datasets and training sizes favour Text-Hawkes, by how much, and where it does not.} In a controlled synthetic study, text conditioning improved held-out likelihood when 20--200 training sequences were available, but a free-parameter model was better with 800 sequences, which indicates that the benefit is a prior rather than additional capacity.
+\end{abstract}
+
+\begin{keyword}
+temporal point processes \sep Hawkes process \sep language model embeddings \sep event sequence modeling \sep interpretability \sep small-data learning
+\end{keyword}
+
+\end{frontmatter}
+
+%% Highlights (to be uploaded as a separate file; each at most 85 characters)
+%%  - Hawkes excitation is predicted from language-model embeddings of event texts
+%%  - Exponential kernels give an exact closed-form log-likelihood
+%%  - The language model is run once; training and inference do not call it
+%%  - Compared with NHP and THP on five public event-sequence datasets
+%%  - \todo{one highlight stating the verified main empirical finding}
+
+\section{Introduction}
+\label{sec:intro}
+
+Event sequences are produced by most information systems: customers purchase and review products, users earn badges on question-answering sites, vehicles pick up and drop off passengers, and monitoring systems raise incident tickets. Analysts working with such logs typically want to forecast what happens next and when, and, just as importantly, to understand which kinds of events trigger which others. Temporal point processes (TPPs) are the standard statistical framework for this purpose, and the multivariate Hawkes process \citep{hawkes1971spectra} is the classical model for self- and mutually exciting event streams, with applications ranging from finance \citep{bacry2015hawkes} to social media and operations.
+
+Three families of methods are currently available, and each has a weakness that matters in applied settings. Classical Hawkes models are interpretable because each entry of the excitation matrix says how strongly one event type triggers another, but a free matrix has $K^2$ parameters and becomes unreliable when the number of observed sequences is small or the number of event types is large. Neural TPPs, such as the Neural Hawkes Process \citep{mei2017neural}, the Transformer Hawkes Process \citep{zuo2020transformer} and the Self-Attentive Hawkes Process \citep{zhang2020self}, are flexible and are now compared systematically in the EasyTPP benchmark \citep{xue2024easytpp}, but they treat event types as anonymous identifiers and provide no direct reading of the dependencies they have learned. Recent language-model-based TPPs \citep{liu2024tppllm,kong2025bytetoken,chen2025tal} exploit the textual description of event types, but they fine-tune models with hundreds of millions to billions of parameters, they approximate the integral term of the likelihood by Monte Carlo sampling, and, again, they do not expose an interpretable interaction structure.
+
+In practice the event types of many systems do have meaningful names. The names ``Manhattan Pickup'' and ``Manhattan Dropoff'' or ``Pet Supplies'' and ``Tools and Home Improvement'' are informative about which types are likely to interact, even before any sequence has been observed. A model that can use this prior knowledge should need fewer sequences to estimate a useful interaction structure, and a model that keeps the Hawkes parameterisation should keep the interpretability that practitioners need. This paper investigates that idea.
+
+We propose Text-Hawkes, a multivariate Hawkes process with exponential kernels in which the base rates, branching ratios and decay rates are functions of frozen language-model embeddings of the event-type descriptions. Our contributions are as follows.
+\begin{enumerate}
+\item We formulate a text-conditioned Hawkes process whose excitation matrix is generated from type embeddings through a small trainable network, so that the number of trainable parameters does not grow with $K^2$ and non-negativity of the excitation is guaranteed by construction.
+\item We exploit the closed-form compensator of the exponential kernel to obtain an exact log-likelihood and exact intensities at arbitrary times, which removes the Monte Carlo approximation used by the neural and language-model-based TPPs we compare against.
+\item We integrate the model into the EasyTPP library, so that likelihood convention, optimisation protocol and thinning-based time and type prediction are identical to those used for NHP and THP.
+\item We evaluate the model on a controlled synthetic study and on five public datasets with textual type descriptions, at the full training size and with only 200 training sequences, and we report where the approach helps and where it does not. \todo{State the main verified finding here.}
+\end{enumerate}
+
+The remainder of the paper is organised as follows. Section~\ref{sec:related} reviews related work, Section~\ref{sec:method} presents the model, Section~\ref{sec:setup} describes the experimental protocol, Section~\ref{sec:results} reports the results, and Section~\ref{sec:conclusion} concludes with limitations and directions for future work.
+
+\section{Related work}
+\label{sec:related}
+
+\subsection{Hawkes processes and neural temporal point processes}
+
+A temporal point process is characterised by its conditional intensity function. In a multivariate Hawkes process every past event raises the intensity of future events through a decaying kernel \citep{hawkes1971spectra}, and the branching ratio of the kernel has a clear interpretation as the expected number of direct offspring of one event type produced by another \citep{laub2015hawkes}. Estimating the excitation structure of Hawkes processes has been studied extensively from the point of view of Granger causality \citep{xu2016learning}. Neural TPPs replace the fixed parametric intensity by learned dynamics. Recurrent marked temporal point processes \citep{du2016recurrent} and the Neural Hawkes Process \citep{mei2017neural} use recurrent networks, whereas the Self-Attentive Hawkes Process \citep{zhang2020self} and the Transformer Hawkes Process \citep{zuo2020transformer} use attention. Intensity-free approaches model the inter-event time distribution directly \citep{shchur2020intensity}. EasyTPP \citep{xue2024easytpp} provides a common implementation of these models, with the same optimisation protocol and the same evaluation tasks, and we use it as the foundation of our experiments.
+
+\subsection{Language models for event sequences}
+
+Language models have recently been combined with TPPs in several ways. LAMP \citep{shi2023lamp} uses a large language model to propose and evaluate candidate future events by abductive reasoning. TPP-LLM \citep{liu2024tppllm} replaces categorical event-type embeddings by the tokenised textual description of the type, combines them with temporal embeddings, fine-tunes a decoder-only language model with low-rank adaptation \citep{hu2022lora}, and predicts intensities from the hidden state; it was evaluated on five datasets with released type descriptions. Language-TPP \citep{kong2025bytetoken} (the title of later versions is ``Byte-token enhanced language models for temporal point processes analysis'') encodes time intervals as byte tokens added to the vocabulary of a Qwen2.5 model and trains in several stages. TPP-TAL \citep{chen2025tal} aligns temporal and semantic representations by cross-attention and a multi-scale temporal attention bias before the language model. These approaches report strong results, but, to the best of our knowledge, none of them exposes an explicit event-to-event excitation structure, and all of them fine-tune or run a language model of at least several hundred million parameters during training. Our work takes the opposite design decision: we keep the statistical structure of the Hawkes process and use the language model only as a frozen text encoder that is evaluated once per event type.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem setting}
+
+Let a sequence be $\{(t_i,a_i)\}_{i=1}^{N}$ with $0\le t_1\le\dots\le t_N$ and event types $a_i\in\{1,\dots,K\}$. Each type $k$ is accompanied by a short text description $s_k$ (for example ``Pet Supplies''). We denote by $e_k\in\mathbb{R}^{D}$ the embedding of $s_k$ produced by a pre-trained language model, normalised to unit length. The embeddings are computed once, before training, and are kept fixed.
+
+\subsection{Hawkes process with exponential kernels}
+
+The conditional intensity of type $k$ is
+\begin{equation}
+\lambda_k(t)=\mu_k+\sum_{i:\,t_i<t}A_{a_i k}\,\beta_{a_i k}\,e^{-\beta_{a_i k}(t-t_i)},
+\label{eq:intensity}
+\end{equation}
+where $\mu_k\ge0$ is the base rate, $A_{jk}\ge0$ is the branching ratio from type $j$ to type $k$ (the expected number of type-$k$ events directly triggered by one type-$j$ event), and $\beta_{jk}>0$ is the corresponding decay rate. With the parameterisation of Eq.~\eqref{eq:intensity} the integral of each kernel equals $A_{jk}$, which is why $A$ can be read as a branching matrix.
+
+Given a sequence observed on $[t_1,T]$ and conditioning on the first event, as in the EasyTPP convention, the log-likelihood of events $2,\dots,N$ is
+\begin{equation}
+\ell=\sum_{i=2}^{N}\log\lambda_{a_i}(t_i)\;-\;\sum_{k=1}^{K}\mu_k\,(T-t_1)\;-\;\sum_{i=1}^{N}\sum_{k=1}^{K}A_{a_i k}\Bigl(1-e^{-\beta_{a_i k}(T-t_i)}\Bigr),
+\label{eq:loglik}
+\end{equation}
+with $T=t_N$. The last term is the exact integral of the kernels over $[t_i,T]$. Eq.~\eqref{eq:loglik} therefore requires no numerical integration, whereas the models we compare against estimate the corresponding term with 20 Monte Carlo samples per interval. Intensities at arbitrary times after an event are also exact, which is needed by the thinning-based predictor used for evaluation. We compute them with a recursion over events for the decayed sums $\sum_{m\le i,\,a_m=j}e^{-\beta_{jk}(t_i-t_m)}$, which costs $\mathcal{O}(NK^2)$ memory per sequence and avoids materialising all event pairs at sampling time. The training objective uses all event pairs within a batch and has $\mathcal{O}(N^2K)$ cost per sequence for the sequence lengths considered here (at most 182).
+
+\subsection{Text-conditioned parameterisation}
+
+The parameters of Eq.~\eqref{eq:intensity} are generated from the embeddings. A shared encoder maps $e_k$ to a hidden representation
+\begin{equation}
+h_k=W_2\tanh(W_1e_k+b_1)+b_2\in\mathbb{R}^{H},
+\end{equation}
+and the pairwise quantities are obtained by bilinear scores,
+\begin{align}
+A_{jk}&=\softplus\!\Bigl(\tfrac{1}{\sqrt{H}}\,(P^{A}_{s}h_j)^{\top}(P^{A}_{d}h_k)+b_A\Bigr),\\
+\beta_{jk}&=\softplus\!\Bigl(\tfrac{1}{\sqrt{H}}\,(P^{\beta}_{s}h_j)^{\top}(P^{\beta}_{d}h_k)+b_\beta\Bigr)+\beta_{\min},\\
+\mu_k&=\softplus\!\bigl(w^{\top}h_k+c-2\bigr),
+\end{align}
+where the subscripts $s$ and $d$ denote source and destination projections, $\beta_{\min}=0.05$ prevents degenerate infinitely slow decay, and $H=32$. The softplus functions guarantee $A_{jk}\ge0$, $\beta_{jk}>0$ and $\mu_k\ge0$. The number of trainable parameters depends on $D$ and $H$ but not on $K^2$. Two types with similar descriptions receive similar rows and columns in $A$, which is the mechanism through which textual similarity acts as a prior on the interaction structure. Because the score is bilinear in two different projections, $A$ is not forced to be symmetric, so directed relations can be represented. The model does not impose the stationarity condition that the spectral radius of $A$ is below one; the learned matrices are checked after training.
+
+As the reference model without text we use a free-parameter Hawkes process, in which $A=\softplus(\tilde A)$, $\beta=\softplus(\tilde\beta)+\beta_{\min}$ and $\mu=\softplus(\tilde\mu)$ with unconstrained matrices $\tilde A,\tilde\beta\in\mathbb{R}^{K\times K}$ and vector $\tilde\mu\in\mathbb{R}^{K}$. This model is the classical multivariate Hawkes process with exponential kernels, fitted by gradient-based maximum likelihood, and it shares every component of Text-Hawkes except the use of text.
+
+\subsection{Prediction}
+
+For next-event prediction we use the procedure of the EasyTPP library. The time of the next event is predicted by sampling from the model with the thinning algorithm \citep{ogata1981lewis} and taking the expectation, and the type is the one with the highest normalised intensity, averaged over the sampled times. Using the library's own predictor for all models ensures that differences in accuracy and time error come from the models and not from the evaluation code.
+
+\section{Experimental setup}
+\label{sec:setup}
+
+\subsection{Data}
+
+We use the five event-sequence datasets released by \citet{liu2024tppllm}, which provide the textual description of each event type together with the standard train, development and test splits. The datasets cover badge awards on Stack Overflow, crime reports in Chicago, taxi pick-ups and drop-offs in New York City, earthquakes in the United States, and product reviews on Amazon. Table~\ref{tab:data} lists the sizes. Event types are short phrases, for example ``Manhattan Pickup'', ``Battery'', ``Pet Supplies'' or ``Guru''; we verified that the mapping between type identifiers and descriptions is one-to-one in the training split.
+
+\begin{table}[t]
+\centering
+\caption{Datasets. Number of sequences (seq.) and events per split; $K$ is the number of event types and $\bar N$ the mean training sequence length.}
+\label{tab:data}
+\small
+\begin{tabular}{lrrrrrrrr}
+\toprule
+ & & \multicolumn{2}{c}{Train} & \multicolumn{2}{c}{Dev} & \multicolumn{2}{c}{Test} & \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Dataset & $K$ & seq. & events & seq. & events & seq. & events & $\bar N$ \\
+\midrule
+US Earthquake & 3 & 2,463 & 24,224 & 308 & 3,029 & 308 & 2,965 & 9.8 \\
+NYC Taxi & 8 & 2,365 & 289,866 & 296 & 36,274 & 296 & 36,230 & 122.6 \\
+Amazon Review & 18 & 1,796 & 101,026 & 224 & 12,748 & 225 & 13,280 & 56.3 \\
+Chicago Crime & 20 & 3,238 & 162,471 & 405 & 20,260 & 405 & 20,136 & 50.2 \\
+Stack Overflow & 25 & 2,668 & 150,460 & 334 & 18,451 & 334 & 18,925 & 56.4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Models and training}
+
+We compare Text-Hawkes with its free-parameter counterpart and with NHP and THP, using the EasyTPP implementations (version 0.3.0) of the latter two. NHP uses hidden size 64, and THP uses hidden size 32, time-embedding size 16, two layers and two attention heads; both use 20 Monte Carlo samples per interval for the likelihood. The two Hawkes models are registered as additional EasyTPP models and therefore use the same data pipeline, likelihood convention, validation-based model selection and predictor. All models are trained with Adam, with learning rate $10^{-3}$ for NHP and THP and $10^{-2}$ for the Hawkes models, for 8 epochs with batch size 64 on the full training split. In the small-data setting we draw 200 training sequences at random and use batch size 8 with enough epochs to give each model about 400 gradient updates, since a fixed number of epochs would give far fewer updates to the smaller training set and disadvantage every model. Event times are divided by the mean training inter-event time, so that the likelihoods are expressed in a rescaled time unit and are comparable across models but not with values reported in other papers. We report the test metrics at the epoch with the highest validation log-likelihood. Text embeddings are the mean-pooled last hidden states of Qwen2.5-0.5B \citep{qwen2025qwen25} for the type descriptions, normalised to unit length ($D=896$). All experiments were run on CPU. \todo{State the number of random seeds actually run for each setting.}
+
+\subsection{Metrics}
+
+We report the test log-likelihood per event (LL), the accuracy of next-event type prediction, and the root-mean-square error (RMSE) of next-event time prediction, all computed by the EasyTPP evaluation code. The RMSE is expressed in the original time unit of each dataset and therefore should only be compared across models within a dataset.
+
+\subsection{Synthetic study}
+
+To isolate the effect of text from the effect of the dataset, we also generate sequences from a Hawkes process with $K=12$ event types in four topics (server, payment, login and shipping), each with three types described by short phrases that share the topic word. The true branching matrix is mostly large within topics and has up to three weaker cross-topic links, and it is rescaled to have spectral radius at most $0.7$. Sequences are simulated with Ogata's thinning algorithm on $[0,30]$ and truncated to 64 events. We train both Hawkes models on 20, 50, 200 and 800 sequences with three seeds, evaluate on 300 fresh sequences, and additionally report the Pearson correlation between the learned and true branching matrices. For this study the likelihood is computed over the whole observation window (that is, including the first event), so its values are not comparable with those of the benchmark datasets. The text embeddings in the synthetic study are signed hashed bag-of-words vectors, which keeps the study independent of any language model.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Synthetic study}
+
+Table~\ref{tab:synthetic} shows that text conditioning raised the held-out log-likelihood when few sequences were available: with 20 and 50 training sequences Text-Hawkes was better than the free-parameter model by 0.090 and 0.077 nats per event, respectively, and the difference shrank to 0.003 with 200 sequences. With 800 sequences the free-parameter model was better (by 0.014 nats), and it also recovered the true branching matrix more accurately at every size from 50 sequences onwards. With 20 sequences, the free model also had the higher branching-matrix correlation. The type-prediction accuracy of Text-Hawkes was not higher than that of the free model at any size. These observations are consistent with the view that text acts as a prior: it helps when data are scarce, but because the embedding only encodes what is shared between types, it cannot represent type-specific effects that the data eventually reveal, and it is overtaken once enough data are available.
+
+\input{tables/synthetic}
+
+\subsection{Public datasets}
+
+\todo{Complete after the benchmark has finished and the numbers have been checked. Describe, per dataset, how Text-Hawkes compares with NHP, THP and the free-parameter Hawkes model on LL, accuracy and RMSE with the full training split (Table~\ref{tab:full}) and with 200 training sequences (Table~\ref{tab:small}); say explicitly where Text-Hawkes is worse. Do not claim a win on any metric where the difference is within seed variation.}
+
+\input{tables/results_full}
+\input{tables/results_small}
+
+\subsection{Interpretability}
+
+\todo{Optional, only if run: show the learned branching matrix $\hat A$ of one dataset as a heat map, list the strongest type pairs, and check whether they are sensible given the type descriptions. Do not describe the structure as causal.}
+
+\subsection{Ablation of the text encoder}
+
+\todo{Optional, only if run: compare the Qwen2.5-0.5B embeddings with hashed bag-of-words embeddings (already generated for every dataset) to test whether the language model adds anything over lexical overlap.}
+
+\section{Discussion and conclusion}
+\label{sec:conclusion}
+
+\todo{Rewrite after the results are final.} The synthetic study already supports one qualified conclusion: using type descriptions as a prior over the interaction structure of a Hawkes process improves likelihood when training data are scarce, with no cost in parameters that scale with $K^2$, and the advantage disappears as data grow. For practitioners this suggests a simple rule: when many event types have meaningful names but few sequences are available, a text-conditioned Hawkes model is a reasonable first model, and when abundant data are available a free-parameter or neural model should be preferred.
+
+\paragraph{Limitations.} First, exponential kernels cannot represent inhibition or heavy-tailed memory; extending the parameterisation to signed interactions would require a different likelihood. Second, the model sees only the text of the event \emph{type}; the datasets we use have short category names, so the semantic information is limited, and event-level free text (for example the content of a review) is not used. Third, the quadratic cost in sequence length of the training objective limits its use on very long sequences without truncation or a recursive implementation. Fourth, we used a single small language model as encoder and did not tune the hidden size or the text encoder. Fifth, we did not compare directly with the fine-tuned language-model TPPs on our hardware, because training billion-parameter models was not feasible on CPU; the numbers reported in their papers use different time scaling and are not comparable with ours. \todo{Update this item if a reduced-scale comparison is run.} Finally, a learned branching matrix describes predictive association, not causation.
+
+\section*{CRediT authorship contribution statement}
+\textbf{First Author:} Conceptualization, Methodology, Software, Investigation, Writing -- original draft, Writing -- review \& editing. \todo{Complete for all authors.}
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. \todo{Confirm.}
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+During the preparation of this work the authors used Claude (Anthropic) to assist with drafting the text, writing the experiment code and formatting the manuscript. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article. \todo{Authors must confirm that this statement accurately describes their use of AI tools before submission; Elsevier requires it.}
+
+\section*{Data availability}
+The five datasets are publicly available from the Hugging Face organisation ``tppllm'' \citep{liu2024tppllm}. \todo{Add the repository URL and a persistent archive (for example Zenodo) for the code, the cached embeddings and the result files.}
+
+\section*{Funding}
+\todo{Funding information, or ``This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.''}
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}

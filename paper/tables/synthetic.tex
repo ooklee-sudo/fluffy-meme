@@ -1,0 +1,25 @@
+\begin{table}[t]
+\centering
+\caption{Synthetic experiment ($K=12$ event types, three random seeds; mean $\pm$ s.d.). ``Oracle'' evaluates the data-generating parameters.}
+\label{tab:synthetic}
+\small
+\begin{tabular}{rlrrr}
+\toprule
+$n_{\mathrm{train}}$ & Model & Test LL $\uparrow$ & Type acc.\ $\uparrow$ & $\mathrm{corr}(\hat A,A)$ $\uparrow$ \\
+\midrule
+20 & Free Hawkes & $-$2.254{\scriptsize$\,\pm\,$0.001} & 0.184{\scriptsize$\,\pm\,$0.002} & 0.710{\scriptsize$\,\pm\,$0.024} \\
+ & Text-Hawkes & \textbf{$-$2.164{\scriptsize$\,\pm\,$0.029}} & 0.145{\scriptsize$\,\pm\,$0.013} & 0.503{\scriptsize$\,\pm\,$0.150} \\
+\midrule
+50 & Free Hawkes & $-$2.137{\scriptsize$\,\pm\,$0.001} & 0.191{\scriptsize$\,\pm\,$0.004} & 0.866{\scriptsize$\,\pm\,$0.015} \\
+ & Text-Hawkes & \textbf{$-$2.060{\scriptsize$\,\pm\,$0.045}} & 0.186{\scriptsize$\,\pm\,$0.006} & 0.846{\scriptsize$\,\pm\,$0.116} \\
+\midrule
+200 & Free Hawkes & $-$2.018{\scriptsize$\,\pm\,$0.000} & 0.201{\scriptsize$\,\pm\,$0.001} & 0.975{\scriptsize$\,\pm\,$0.008} \\
+ & Text-Hawkes & \textbf{$-$2.015{\scriptsize$\,\pm\,$0.002}} & 0.193{\scriptsize$\,\pm\,$0.000} & 0.960{\scriptsize$\,\pm\,$0.004} \\
+\midrule
+800 & Free Hawkes & \textbf{$-$1.997{\scriptsize$\,\pm\,$0.000}} & 0.203{\scriptsize$\,\pm\,$0.000} & 0.996{\scriptsize$\,\pm\,$0.001} \\
+ & Text-Hawkes & $-$2.011{\scriptsize$\,\pm\,$0.001} & 0.195{\scriptsize$\,\pm\,$0.003} & 0.966{\scriptsize$\,\pm\,$0.003} \\
+\midrule
+-- & Oracle & -1.994 & 0.203 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
