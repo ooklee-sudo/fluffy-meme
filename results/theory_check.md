@@ -39,3 +39,11 @@
 | flat price | 10.2 | 24.7 | 34.0 |
 | phase prices | 16.6, 9.5 | 26.5 | 37.4 |
 | (welfare first best) | - | - | 47.6 |
+
+## C  Switching speed, code-trace MMPP (exact CTMC; f = dwell-time multiplier)
+
+| f | mean burst length (service times) | best flat welfare | phase-dependent welfare | flat loss |
+|---|---|---|---|---|
+| 0.2 | 0.8 | 47.85 (p=8) | 54.55 | 12.3% |
+| 1.0 | 4.1 | 39.07 (p=6) | 49.37 | 20.9% |
+| 5.0 | 20.6 | 39.43 (p=4) | 47.76 | 17.5% |

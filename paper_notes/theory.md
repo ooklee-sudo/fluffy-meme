@@ -81,7 +81,19 @@ With serving cost c0 the planner's choke value is P - c0 and users pay c0 + p_k.
 So the extreme ratio at c0 = 0 (31x, 7x) is an artefact of ignoring cost; matching market ratios does not make the flat-price loss disappear.
 c0 itself is not observed (only its effect on the ratio is calibrated), so this is consistency, not identification.
 
-## 5. When is the quasi-static approximation reasonable?
-It treats the queue as being in steady state within each phase. It underestimates delay in short bursts. The exact CTMC check
-(code-trace MMPP, dwell time multiplied by f) is in results/theory_check.md Part C when finished: f = 0.2: flat loss 12.3%, f = 1: 20.9%
-of the phase-dependent welfare (an exact-CTMC planner comparison, different normalisation from the quasi-static numbers above).
+## 5. When is the quasi-static approximation reasonable? (results/theory_check.md, Part C)
+The quasi-static model treats the queue as being in steady state within each phase, so it ignores queues that build up during a
+burst and drain afterwards. Exact CTMC for the code-trace MMPP (equilibrium demand, best flat price vs. phase-dependent welfare),
+dwell times multiplied by f:
+
+| f | mean burst (service times) | flat-price loss (% of phase-dependent welfare) |
+|---|---|---|
+| 0.2 | 0.8 | 12.3% |
+| 1.0 | 4.1 | 20.9% |
+| 5.0 | 20.6 | 17.5% |
+
+- The loss is not monotone in switching speed: it is smallest for very fast switching (the queue averages the phases) and peaks at intermediate burst lengths.
+- Even at f = 5 the exact loss (17.5%) exceeds the quasi-static loss for the same trace (10.1% of first best; different normalisation, same direction).
+  Treat the quasi-static numbers as a conservative (lower) estimate of the flat-price loss when bursts are short relative to queue build-up,
+  and the formal results of Section 2 as statements about the slow-switching limit only.
+- A formal statement for finite switching speed is not proved here.
