@@ -120,3 +120,42 @@ loss tends to the quasi-static loss of Section 2 (standard separation of time sc
   (f = 1 gave 20.9% with a different grid), and the smallest f values are likely inflated by the price grid.
 - Exact slow-limit loss (about 17%) exceeds the quasi-static loss (10.1% of first best for the same trace, a different normalisation): the quasi-static
   formulas are a conservative lower estimate when bursts are short relative to queue build-up.
+
+## 6. How many price levels? Structure and recovery of G-level schedules
+A G-level schedule groups the phases and posts one price per group. Order the phases by their first-best prices x_k = p_k* (equivalently by demand
+potential Lambda_k, Proposition 1).
+
+**Proposition 7 (quadratic regime).** Replace W_k by its second-order expansion at p_k*, W_k(p) ~ W_k(p_k*) - (omega_k/2)(p - x_k)^2, with omega_k from
+Proposition 4, and let w_k = pi_k omega_k. For a partition into groups g with prices p_g the loss is (1/2) sum_g sum_{k in g} w_k (x_k - p_g)^2.
+(i) The optimal prices are the w-weighted group means, and the loss of the best G-level schedule is SSE_G / 2, where SSE_G is the minimal
+within-group weighted sum of squares of x. (ii) An optimal partition has contiguous groups in the order of x. (iii) The share of the flat-price loss
+recovered is R_G = 1 - SSE_G / SSE_1 = between-group / total weighted variance.
+*Proof.* (i) Each group's loss is a weighted quadratic in p_g, minimised at the weighted mean. (ii) Fix the prices of an optimal schedule and assign each
+phase to the nearest price: this cannot raise the loss; with strictly ordered prices the nearest-price regions are intervals of the line, so after
+reassignment (and re-optimising prices, which can only lower the loss again) the groups are contiguous; an optimal partition cannot be strictly
+improved by this step, so it is contiguous up to ties. (iii) Definition. QED
+
+**Corollary 8 (bounds).** (a) For G = 2: R_2 >= (E|X - mu| / sd)^2, with mean mu, mean absolute deviation and standard deviation taken under the weights q_k = w_k / sum w.
+(b) For any G, if the first-best prices lie in [a, b]: R_G >= 1 - (b - a)^2 / (4 G^2 sd^2), i.e. the loss of a G-level schedule falls like 1/G^2.
+*Proof.* (a) Split at the mean into lower and upper groups with probabilities P_L, P_U and means m_L, m_U. Then the between-group variance is
+P_L P_U (m_U - m_L)^2, and E|X - mu| = 2 P_L P_U (m_U - m_L), so between / Var = (E|X - mu|)^2 / (4 P_L P_U Var) >= (E|X - mu|)^2 / Var because 4 P_L P_U <= 1;
+the best 2-partition does at least as well as the mean split. (b) Cut [a, b] into G intervals of width h = (b - a)/G; with the group price at the interval's
+midpoint every point is within h/2 of its price, so SSE_G <= h^2/4 = (b-a)^2/(4G^2); divide by SSE_1 = sd^2 (the optimal weighted means do no worse). QED
+(For uniformly spread first-best prices (a) gives 3/4; for Gaussian-like spreads 2/pi = 0.64.)
+
+**What is and is not proved.** Proposition 7 and Corollary 8 hold exactly for the quadratic model; for the true welfare curves they are approximations.
+A rigorous non-local statement follows from curvature bounds: if omega_lo <= -W_k''(p) <= omega_hi on [a, b] for all k, then the share recovered is at least
+1 - (omega_hi / omega_lo)(1 - R_G^pi), with R_G^pi computed with weights pi_k only. In the Azure example the local curvatures omega_k range from about 1 to
+about 200 (results/two_level_theory.md), so this guaranteed bound is vacuous; it is stated for completeness, not as a useful guarantee.
+
+**Numerical check (results/two_level_theory.md; Azure 2024 hour-of-day profile, 24 phases, c = 77).** Share of the flat-price loss recovered:
+| P, unpriced/capacity, c0/P | bound (MAD/sd)^2 | G=2 quad / exact | G=3 | G=4 | G=6 |
+|---|---|---|---|---|---|
+| 20, 1.4, 0 | 0.47 | 0.76 / 0.69 | 0.89 / 0.85 | 0.97 / 0.94 | 0.99 / 0.98 |
+| 20, 1.4, 0.15 | 0.47 | 0.76 / 0.69 | 0.89 / 0.85 | 0.97 / 0.94 | 0.99 / 0.98 |
+| 10, 1.2, 0 | 0.48 | 0.77 / 0.72 | 0.90 / 0.84 | 0.97 / 0.96 | 0.99 / 0.99 |
+| 40, 2.0, 0 | 0.61 | 0.78 / 0.65 | 0.91 / 0.79 | 0.94 / 0.87 | 0.98 / 0.95 |
+- The bound (a) holds in all four cases (0.47-0.61 versus exact 0.65-0.72) but is loose. The quadratic prediction overstates the exact recovery by 4-13 points at G = 2 and
+  by less at larger G; it reproduces the diminishing returns (about 2/3 of the loss for two levels, about 85% for three, 94-96% for four in three of four cases, 98% for six).
+- The exact numbers use contiguous groups; contiguity of the exact optimum is shown only in the quadratic model.
+- Practical reading: a posted schedule with two to four price levels per day is enough to capture most of the benefit of hour-by-hour pricing in this calibration.

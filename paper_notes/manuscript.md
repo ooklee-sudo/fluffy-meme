@@ -42,6 +42,9 @@ P1 tolls rise with demand; P2 flat price is a convex combination of phase tolls,
 sum pi kappa (p - t) = 0; P3 exact integral loss (checked to four decimals: 4.8265 vs 4.8264 and 31.8094 vs 31.8093); P4 local formula,
 accurate for small dispersion and not beyond. A negative result is reported: the direction of the error from pricing at the mean demand
 depends on curvature (above the optimal flat price for the code trace, below for the conversation trace).
+P7 and Corollary 8 (paper_notes/theory.md, Section 6): in the quadratic regime the optimal G-level schedule groups phases contiguously in demand and the loss is half the
+within-group weighted variance of first-best prices; two levels recover at least (MAD/sd)^2 of the flat-price loss (0.47-0.61 in the calibration, exact 0.65-0.72) and
+the loss falls like 1/G^2 (three levels about 85%, four 94-96%, six 98% in three of four cases) [results/two_level_theory.md]. The non-local guarantee (curvature-ratio bound) is vacuous here.
 ### 3.3 Switching speed (paper_notes/theory.md, Section 5; results/switching_scaling.md)
 Theorem 5 (fast switching: flat is first best in the limit; proof by finite-state perturbation). Numerical map for the code-trace MMPP:
 loss 0.28% (burst 0.02 service times) rising roughly linearly to 19.0% at 4.1 service times and about 17% for slow switching.
@@ -82,6 +85,5 @@ Quasi-static theory covers slow switching only; the quadratic fast-switching rat
 c0 is identified only through one price ratio; list prices are static; providers also ration by rate limits and 429/503 errors; the duopoly welfare measure is incomplete.
 
 ## 7. What would still be needed for a top-tier submission
-A sharper single theorem with consequences beyond the exact flat-price characterisation (for example, conditions under which a two-level schedule is
-near optimal, with a bound); a properly specified competition model; an over-identified empirical test (several posted price structures explained by one
+A sharper single theorem: the two-level result is now an exact statement only in the quadratic model (local), with a loose guarantee; a non-local, non-vacuous bound is still missing; a properly specified competition model; an over-identified empirical test (several posted price structures explained by one
 parameter set); verified literature positioning.
