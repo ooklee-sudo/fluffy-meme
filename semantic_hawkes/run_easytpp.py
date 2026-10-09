@@ -31,6 +31,41 @@ THINNING = dict(num_seq=10, num_sample=1, num_exp=500, look_ahead_time=10, patie
                 over_sample_rate=5, num_samples_boundary=5, dtime_max=5, num_step_gen=1)
 
 
+def _install_fast_eval():
+    """Evaluate the test split only when the validation log-likelihood improves.
+
+    The reported numbers are the test metrics at the best-validation epoch, so skipping the test pass at the
+    other epochs leaves the results unchanged (the log format is kept for parse_log) and roughly halves the
+    cost of the thinning-based prediction, which dominates run time.
+    """
+    from easy_tpp.runner.tpp_runner import TPPRunner
+    from easy_tpp.utils import MetricsHelper, RunnerPhase, logger
+
+    def _train_model(self, train_loader, valid_loader, **kwargs):
+        test_loader = kwargs.get("test_loader")
+        for i in range(self.runner_config.trainer_config.max_epoch):
+            train_metrics = self.run_one_epoch(train_loader, RunnerPhase.TRAIN)
+            logger.info(f"[ Epoch {i} (train) ]: train " + MetricsHelper.metrics_dict_to_str(train_metrics))
+            self.model_wrapper.write_summary(i, train_metrics, RunnerPhase.TRAIN)
+            if i % self.runner_config.trainer_config.valid_freq == 0:
+                valid_metrics = self.run_one_epoch(valid_loader, RunnerPhase.VALIDATE)
+                self.model_wrapper.write_summary(i, valid_metrics, RunnerPhase.VALIDATE)
+                logger.info(f"[ Epoch {i} (valid) ]:  valid " + MetricsHelper.metrics_dict_to_str(valid_metrics))
+                updated = self.metrics_tracker.update_best("loglike", valid_metrics["loglike"], i)
+                msg = "current best loglike on valid set is {:.4f} (updated at epoch-{})".format(
+                    self.metrics_tracker.current_best["loglike"], self.metrics_tracker.episode_best)
+                if updated:
+                    msg += ", best updated at this epoch"
+                    self.model_wrapper.save(self.runner_config.base_config.specs["saved_model_dir"])
+                    if test_loader is not None:
+                        test_metrics = self.run_one_epoch(test_loader, RunnerPhase.VALIDATE)
+                        logger.info(f"[ Epoch {i} (test) ]: test " + MetricsHelper.metrics_dict_to_str(test_metrics))
+                logger.critical(msg)
+        self.model_wrapper.close_summary()
+
+    TPPRunner._train_model = _train_model
+
+
 def subset_dir(data_dir, n_train, seed, out_dir):
     """Copy of the dataset whose train split keeps n_train random sequences (dev/test untouched)."""
     d = os.path.join(out_dir, "subset")
@@ -99,6 +134,8 @@ def main():
 
     from easy_tpp.config_factory import Config
     from easy_tpp.runner import Runner
+
+    _install_fast_eval()
 
     out = tempfile.mkdtemp(prefix="easytpp_")
     data_dir = subset_dir(a.data, a.n_train, a.seed, out) if a.n_train else a.data
