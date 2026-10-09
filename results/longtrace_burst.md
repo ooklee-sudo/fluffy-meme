@@ -14,8 +14,6 @@ Residual IDC after removing the hour-of-day profile (Poisson / NHPP = 1): w=1s: 
 | 0.54 | 2 | real | 93380.96 | 0.7370 | 0.6928 |
 | 0.54 | 2 | Poisson | 4.00 | 0.2260 | 0.0156 |
 | 0.54 | 2 | hour-of-day NHPP | 24.96 | 0.4691 | 0.1892 |
-| 0.54 | 2 | real | 93380.96 | 0.7370 | 0.6928 |
-| 0.54 | 2 | Poisson | 4.00 | 0.2254 | 0.0159 |
-| 0.54 | 2 | hour-of-day NHPP | 26.87 | 0.4693 | 0.1888 |
 
 - Pricing with 24 hourly phases (c=2): hourly first-best prices range 0.09-10.84; best flat price 8.35 loses 4.9% of first-best welfare; best two-level schedule (11 off-peak hours at 4.5, 13 peak hours at 9.2) loses 1.8%; no price loses 42.6%.
+- Pricing with every clock hour as a phase (1463 hours, c=2; hourly rate / mean: median 0.21, p95 4.24, max 34.12): loss vs real-time first-best: best flat price 14.5%, hour-of-day schedule 14.2%, no price 48.3%.
