@@ -24,7 +24,7 @@ def cell(vals, best, fmt):
 def results_table(rows, n_train, caption, label):
     by = defaultdict(list)
     for r in rows:
-        if (r["n_train"] or 0) == n_train:
+        if (r["n_train"] or 0) == n_train and r["tag"] in ("", "qwen"):  # main tables: Qwen embeddings only
             by[(r["data"], r["model"])].append(r)
     lines = [r"\begin{table}[t]", r"\centering", r"\caption{" + caption + "}", r"\label{" + label + "}",
              r"\small", r"\begin{tabular}{llrrr}", r"\toprule",

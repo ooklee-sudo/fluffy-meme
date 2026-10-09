@@ -15,6 +15,9 @@ MODELS = ["NHP", "THP", "FreeHawkesTPP", "SemHawkesTPP"]
 OUT = "semantic_hawkes/runs/results.jsonl"
 
 
+EMB_TAGS = ["qwen", "hash", "qwenperm", "random"]  # qwenperm: Qwen embeddings assigned to the wrong types; random: no information
+
+
 def done():
     if not os.path.exists(OUT):
         return set()
@@ -22,8 +25,7 @@ def done():
 
 
 def job(args):
-    d, m, n, seed, epochs = args
-    tag = "qwen" if m == "SemHawkesTPP" else ""
+    d, m, n, seed, epochs, tag = args
     cmd = [sys.executable, "-m", "semantic_hawkes.run_easytpp", "--data", f"semantic_hawkes/real_data/tppllm/{d}",
            "--model", m, "--epochs", str(epochs), "--seed", str(seed), "--tag", tag]
     if n:
@@ -32,7 +34,7 @@ def job(args):
         cmd[cmd.index("--epochs") + 1] = str(max(epochs, -(-400 // steps_per_epoch)))
         cmd += ["--n_train", str(n), "--batch_size", "8"]
     if m == "SemHawkesTPP":
-        cmd += ["--emb", f"semantic_hawkes/emb/{d}_qwen.npy"]
+        cmd += ["--emb", f"semantic_hawkes/emb/{d}_{tag}.npy"]
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     p = subprocess.run(cmd, capture_output=True, text=True, env=env)
     line = [l for l in p.stdout.splitlines() if l.startswith("RESULT ")]
@@ -52,14 +54,15 @@ if __name__ == "__main__":
     ap.add_argument("--datasets", nargs="+", default=DATASETS)
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--models", nargs="+", default=MODELS)
+    ap.add_argument("--emb_tags", nargs="+", default=["qwen"], choices=EMB_TAGS, help="text-embedding variants for SemHawkesTPP")
     a = ap.parse_args()
     os.makedirs("semantic_hawkes/runs", exist_ok=True)
     have = done()
     todo = []
     for d, n, s, m in itertools.product(a.datasets, a.sizes, a.seeds, a.models):
-        tag = "qwen" if m == "SemHawkesTPP" else ""
-        if (d, m, n or None, s, tag) not in have:
-            todo.append((d, m, n, s, a.epochs))
+        for tag in (a.emb_tags if m == "SemHawkesTPP" else [""]):
+            if (d, m, n or None, s, tag) not in have:
+                todo.append((d, m, n, s, a.epochs, tag))
     # longest jobs first so the 4 workers stay busy
     todo.sort(key=lambda x: (x[0] != "stack-overflow", x[0] != "nyc-taxi", -x[2] if x[2] else -10**9))
     print(len(todo), "jobs", flush=True)
