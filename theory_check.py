@@ -146,7 +146,7 @@ def part_AB(name, lam_s, G, c, md):
             prow.append(["(welfare first best)", "-", "-", f"{r['wfb']:.1f}"])
     md.append("### A  Flat-price loss vs. demand dispersion (spread 1 = fitted trace, 0 = Poisson)\n")
     md.append(tc.table(rows, ["spread", "CV of demand potential", "std of Pigouvian toll", "best flat p",
-                              "exact loss", "Harberger 1/2 sum pi k (t-tbar)^2", "loss % of first best",
+                              "exact loss", "old kappa-only formula (SUPERSEDED, see theory_verify.py)", "loss % of first best",
                               "no-price loss %"]))
     md.append("\n### B  Monopolist pricing (spread 1)\n")
     md.append(tc.table(prow, ["policy", "price(s)", "profit rate", "welfare"]))

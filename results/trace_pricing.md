@@ -1,3 +1,7 @@
+> Note: in this file the 'flat' policy forces the same *marginal-benefit level* (full cost incl. delay) in every phase, which is not a posted price and
+> overstates the flat-pricing loss. The posted-price (equilibrium) comparison is in results/trace_equilibrium.md and results/trace_service_pricing.md;
+> use those numbers.
+
 # Pricing on trace-calibrated bursty arrivals
 
 ## Conversation trace: 5-state rate chain

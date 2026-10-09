@@ -1,10 +1,12 @@
+> Note: the column 'old kappa-only formula' omits the factor (1 + kappa t') and understates the loss by roughly an order of magnitude. The corrected local formula is Proposition 4 in paper_notes/theory.md and is checked in results/theory_verify.md.
+
 # Analytic reinforcement: Harberger loss of flat pricing under bursty demand
 
 ## Conversation trace: quasi-static analysis (c=45)
 
 ### A  Flat-price loss vs. demand dispersion (spread 1 = fitted trace, 0 = Poisson)
 
-| spread | CV of demand potential | std of Pigouvian toll | best flat p | exact loss | Harberger 1/2 sum pi k (t-tbar)^2 | loss % of first best | no-price loss % |
+| spread | CV of demand potential | std of Pigouvian toll | best flat p | exact loss | old kappa-only formula (SUPERSEDED: understates; see results/theory_verify.md) | loss % of first best | no-price loss % |
 |---|---|---|---|---|---|---|---|
 | 0.0 | 0.00 | 0.00 | 5.4 | 0.00 | 0.00 | 0.0% | 37.6% |
 | 0.25 | 0.05 | 0.66 | 5.6 | 4.83 | 0.49 | 0.9% | 37.3% |
@@ -24,7 +26,7 @@
 
 ### A  Flat-price loss vs. demand dispersion (spread 1 = fitted trace, 0 = Poisson)
 
-| spread | CV of demand potential | std of Pigouvian toll | best flat p | exact loss | Harberger 1/2 sum pi k (t-tbar)^2 | loss % of first best | no-price loss % |
+| spread | CV of demand potential | std of Pigouvian toll | best flat p | exact loss | old kappa-only formula (SUPERSEDED: understates; see results/theory_verify.md) | loss % of first best | no-price loss % |
 |---|---|---|---|---|---|---|---|
 | 0.0 | 0.00 | 0.00 | 6.1 | 0.00 | 0.00 | 0.0% | 35.5% |
 | 0.25 | 0.54 | 2.03 | 5.0 | 2.66 | 0.73 | 3.8% | 27.4% |
