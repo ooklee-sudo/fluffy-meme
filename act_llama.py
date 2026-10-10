@@ -58,7 +58,7 @@ def load_examples(args, tok):
     train = [enc(tr[i]) for i in range(args.n_train)]
     evals = [enc(te[i]) for i in range(args.n_eval)]
     # calibration = task prompts without answers (A.4), disjoint from training rows
-    calib = [enc(tr[args.n_train + i], with_resp=False) for i in range(args.n_cal)]
+    calib = [enc(tr[args.n_train + i], with_resp=args.calib_with_response) for i in range(args.n_cal)]
     return train, evals, calib
 
 
@@ -322,6 +322,8 @@ def main():
     ap.add_argument("--n-train", type=int, default=2000)
     ap.add_argument("--n-eval", type=int, default=500)
     ap.add_argument("--n-cal", type=int, default=256)
+    ap.add_argument("--calib-with-response", action="store_true",
+                    help="diagnostic: calibrate ACT on prompt+answer tokens instead of prompts only")
     ap.add_argument("--max-len", type=int, default=512)
     ap.add_argument("--rank", type=int, default=8)
     ap.add_argument("--lora-alpha", type=int, default=16)
