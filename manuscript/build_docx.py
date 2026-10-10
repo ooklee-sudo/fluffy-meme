@@ -3,7 +3,7 @@
 Citations (natbib author-year) are expanded to text, section/table/proposition numbers are resolved and
 fixed as text, simple math in tables becomes plain text with subscripts, math elsewhere becomes native Word equations.
 
-Usage:  python build_docx.py dss_manuscript.tex dss_manuscript.docx
+Usage:  python build_docx.py dss_manuscript.tex dss_manuscript.docx [--acm]   (--acm: numbered ACM-style citations/references and front matter)
 Requires: pandoc, python-docx.
 """
 import re
@@ -25,6 +25,23 @@ CM = {'benaroch1999case': ('Benaroch and Kauffman', '1999'), 'benaroch2002managi
       'ilharco2023editing': ('Ilharco et al.', '2023'), 'kirkpatrick2017overcoming': ('Kirkpatrick et al.', '2017'),
       'mcdonald1986value': ('McDonald and Siegel', '1986'), 'merton1976option': ('Merton', '1976'),
       'sculley2015hidden': ('Sculley et al.', '2015')}
+
+ACM_REFS = [  # alphabetical by first author, as in ACM-Reference-Format
+    ('benaroch2002managing', 'Michel Benaroch. 2002. Managing Information Technology Investment Risk: A Real Options Perspective. \\emph{Journal of Management Information Systems} 19, 2 (2002), 43--84.'),
+    ('benaroch1999case', 'Michel Benaroch and Robert J. Kauffman. 1999. A Case for Using Real Options Pricing Analysis to Evaluate Information Technology Project Investments. \\emph{Information Systems Research} 10, 1 (1999), 70--86.'),
+    ('biderman2023pythia', 'Stella Biderman et al. 2023. Pythia: A Suite for Analyzing Large Language Models Across Training and Scaling. In \\emph{Proceedings of the 40th International Conference on Machine Learning}.'),
+    ('broadie1997continuity', 'Mark Broadie, Paul Glasserman, and Steven Kou. 1997. A Continuity Correction for Discrete Barrier Options. \\emph{Mathematical Finance} 7, 4 (1997), 325--349.'),
+    ('cobbe2021gsm8k', 'Karl Cobbe et al. 2021. Training Verifiers to Solve Math Word Problems. arXiv:2110.14168.'),
+    ('dixit1994investment', 'Avinash K. Dixit and Robert S. Pindyck. 1994. \\emph{Investment under Uncertainty}. Princeton University Press, Princeton, NJ.'),
+    ('houlsby2019parameter', 'Neil Houlsby et al. 2019. Parameter-Efficient Transfer Learning for NLP. In \\emph{Proceedings of the 36th International Conference on Machine Learning}.'),
+    ('hu2022lora', 'Edward J. Hu et al. 2022. LoRA: Low-Rank Adaptation of Large Language Models. In \\emph{International Conference on Learning Representations}.'),
+    ('ilharco2023editing', 'Gabriel Ilharco et al. 2023. Editing Models with Task Arithmetic. In \\emph{International Conference on Learning Representations}.'),
+    ('kirkpatrick2017overcoming', 'James Kirkpatrick et al. 2017. Overcoming Catastrophic Forgetting in Neural Networks. \\emph{Proceedings of the National Academy of Sciences} 114, 13 (2017), 3521--3526.'),
+    ('mcdonald1986value', 'Robert McDonald and Daniel Siegel. 1986. The Value of Waiting to Invest. \\emph{The Quarterly Journal of Economics} 101, 4 (1986), 707--727.'),
+    ('merton1976option', 'Robert C. Merton. 1976. Option Pricing When Underlying Stock Returns Are Discontinuous. \\emph{Journal of Financial Economics} 3, 1--2 (1976), 125--144.'),
+    ('sculley2015hidden', 'D. Sculley et al. 2015. Hidden Technical Debt in Machine Learning Systems. In \\emph{Advances in Neural Information Processing Systems 28}.'),
+]
+ACM_NUM = {k: i + 1 for i, (k, _) in enumerate(ACM_REFS)}
 
 
 def find_close(s, i):
@@ -48,7 +65,7 @@ def nm(keys):
     return ' and '.join(f'{CM[k][0]} ({CM[k][1]})' for k in ks)
 
 
-def to_pandoc_tex(src):
+def to_pandoc_tex(src, acm=False):
     fm0, fm1 = src.index('\\begin{frontmatter}'), src.index('\\end{frontmatter}')
     front = src[fm0:fm1]
     title = re.search(r'\\title\{(.*?)\}\n', front, re.S).group(1).strip()
@@ -63,11 +80,17 @@ def to_pandoc_tex(src):
     cort = cort.group(1).strip() if cort else ''
     body = src[fm1 + len('\\end{frontmatter}'):]
     body = body[:body.index('\\end{document}')]
+    if acm:
+        body = re.sub(r'\\section\*\{CRediT authorship contribution statement\}.*?(?=\\section\*\{Declaration of competing interest\})', '', body, flags=re.S)
+        body = re.sub(r'\\section\*\{Declaration of competing interest\}.*?(?=\\section\*\{Declaration of generative AI)', '', body, flags=re.S)
+        body = body.replace('\\section*{Declaration of generative AI and AI-assisted technologies in the writing process}', '\\section*{Acknowledgments}')
 
     # bibliography -> References section
     bs, bt, be = body.index('\\bibliographystyle'), body.index('\\begin{thebibliography}'), body.index('\\end{thebibliography}')
     items = re.findall(r'\\bibitem\[[^\]]*\]\{[^}]*\}\s*(.*?)(?=\\bibitem|\Z)', body[bt:be], re.S)
     refs = '\\section*{References}\n\n' + '\n\n'.join(' '.join(x.split()) for x in items) + '\n\n'
+    if acm:
+        refs = '\\section*{References}\n\n' + '\n\n'.join(f'[{i + 1}] {t}' for i, (_, t) in enumerate(ACM_REFS)) + '\n\n'
     body = body[:bs] + refs + body[be + len('\\end{thebibliography}'):]
 
     # label numbering
@@ -137,6 +160,16 @@ def to_pandoc_tex(src):
         body = body[:i] + '\\textbf{' + body[i + len('\\paragraph{'):c] + '}' + body[c + 1:]
 
     # citations
+    if acm:
+        def nums(keys):
+            return ', '.join(str(n) for n in sorted(ACM_NUM[k.strip()] for k in keys.split(',')))
+
+        def short(k):
+            return CM[k.strip()][0]
+        body = re.sub(r'\\citep\[([^\]]*);\]\[\]\{([^}]+)\}', lambda m: f'({m.group(1)} [{nums(m.group(2))}])', body)
+        body = re.sub(r'\\citep\{([^}]+)\}', lambda m: f'[{nums(m.group(1))}]', body)
+        body = re.sub(r'\\citet\{([^}]+)\}', lambda m: f'{short(m.group(1))} [{nums(m.group(1))}]', body)
+        body = re.sub(r'\\citealt\{([^}]+)\}', lambda m: f'{short(m.group(1))} [{nums(m.group(1))}]', body)
     body = re.sub(r'\\citep\[([^\]]*);\]\[\]\{([^}]+)\}', lambda m: f'({m.group(1)}; {ay(m.group(2))})', body)
     body = re.sub(r'\\citep\{([^}]+)\}', lambda m: f'({ay(m.group(1))})', body)
     body = re.sub(r'\\citet\{([^}]+)\}', lambda m: nm(m.group(1)), body)
@@ -169,6 +202,12 @@ def to_pandoc_tex(src):
             '\\newcommand{\\E}{\\mathbb{E}}\n\\begin{document}\n'
             f'\\title{{{title}}}\n\\author{{{author}\\\\{address}' + (f'\\\\{cort}' if cort else '') + '}\n\\date{}\n\\maketitle\n'
             f'\\begin{{abstract}}\n{abstract}\n\\end{{abstract}}\n\\noindent\\textbf{{Keywords:}} {kw}\n\n')
+    if acm:
+        kw_acm = kw.replace('; ', ', ')
+        head = head.replace(f'\\noindent\\textbf{{Keywords:}} {kw}\n\n',
+                            '\\noindent\\textbf{CCS Concepts:} Information systems → Decision support systems; Computing methodologies → Natural language processing; Applied computing → Operations research.\n\n'
+                            f'\\noindent\\textbf{{Additional Key Words and Phrases:}} {kw_acm}\n\n'
+                            f'\\noindent\\textbf{{ACM Reference Format:}} {author}. 2026. {title}. \\emph{{ACM Trans. Manag. Inf. Syst.}} (2026).\n\n')
     return head + body + '\n\\end{document}\n', title
 
 
@@ -290,9 +329,9 @@ def style_docx(path_in, path_out, title):
     d.save(path_out)
 
 
-def main(tex_path, docx_path):
+def main(tex_path, docx_path, acm=False):
     src = open(tex_path, encoding='utf8').read()
-    ptex, title = to_pandoc_tex(src)
+    ptex, title = to_pandoc_tex(src, acm=acm)
     with tempfile.TemporaryDirectory() as tmp:
         tp, raw = os.path.join(tmp, 'm.tex'), os.path.join(tmp, 'raw.docx')
         open(tp, 'w', encoding='utf8').write(ptex)
@@ -308,4 +347,4 @@ def main(tex_path, docx_path):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], acm='--acm' in sys.argv)
