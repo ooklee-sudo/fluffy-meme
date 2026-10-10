@@ -25,13 +25,13 @@
 Organizations that build on foundation models they do not control must decide, after every provider upgrade, whether to retrain the adapters
 that hold their task knowledge, to keep reusing them, or to apply a cheaper transfer procedure. We formulate this problem as optimal stopping in which
 upgrades arrive stochastically, the value at stake evolves randomly, and a transfer method is characterized by the share of the retraining benefit
-it recovers and by its cost. The solution is a retraining threshold in closed form together with a break-even recovery that any transfer method must exceed
-to be worth its price. To make the model usable, we show how recovery can be estimated from a held-out set and measure it on two open model pairs: simply
-copying the old adapter restores 71\% and 96\% of the retraining benefit, which implies retraining thresholds of about 8 and 56 times the retraining cost. We then
-evaluate Anchored Calibration Transfer (ACT), a label-free, closed-form correction of the adapter. ACT improves recovery in controlled simulations, but on the real pairs its recovery
-is within 0.01 of plain copying, and none of three candidate explanations we test accounts for the difference. The model implies that a method with no recovery gain has no positive
-willingness to pay. Simulations with clustered and regular release schedules and with jump risk show that the policy ranking is robust, although the optimal threshold moves by 20 percent or more. The
-results give practitioners a transparent, checkable rule for maintaining AI assets.
+it recovers and by its cost. The solution is a closed-form retraining threshold together with a break-even recovery that any transfer method must exceed
+to be worth its price. We measure recovery on open model pairs. Copying the old adapter restores 93 to 96 percent of the retraining benefit after small
+upgrades but only 32 to 36 percent after a large one (two seeds), and 71 percent after instruction tuning. A label-free, closed-form transfer method,
+Anchored Calibration Transfer (ACT), restores 69 to 72 percent after the large upgrade at about a third of the retraining compute time, which makes it the
+cost-minimizing policy for adapters whose annual value is roughly 1.8 to 4.4 times the retraining cost. After small upgrades, and for the instruction-tuned pair,
+it offers no gain over copying, and we do not know why the latter differs. Simulations with clustered and regular release schedules and with jump risk show that the
+policy ranking is robust, although the optimal threshold moves by 20 percent or more. The model gives practitioners a checkable rule for when transfer is worth buying.
 \end{abstract}
 
 \begin{keyword}
@@ -69,20 +69,19 @@ We contribute the following.
 Brownian motion (GBM) value, and derive the optimal retraining threshold in closed form (Propositions~\ref{prop:thr}--\ref{prop:act}).
 A transfer method with recovery $R$ and cost $C$ is worth adopting if and only if $C$ is below an explicit bound $\Gamma$. Equivalently, every method has a
 break-even recovery that a team can check before buying it.
-\item \emph{Measured recovery of naive reuse.} On two open model pairs, copying the old adapter recovers 71\% and 96\% of the retraining
-benefit. Through the model, these numbers imply retraining thresholds of roughly 8 and 56 times the retraining cost, so for tasks whose annual value is below
-those thresholds the cheapest policy is to keep the old adapter and retrain only on demand.
-\item \emph{A tested candidate and a negative result.} We propose Anchored Calibration Transfer (ACT), a closed-form, label-free correction
-of the adapter. It improves recovery in every controlled simulation we run but not on the real pairs, where its recovery is within 0.01 of copying.
-None of three explanations we test (upgrade type, task shift, calibration data) accounts for the gap. Under the model this settles the decision, because a method with no
-recovery gain has no positive willingness to pay.
+\item \emph{Recovery of naive reuse as a function of upgrade size.} On open model pairs, copying the old adapter recovers 93\% to 96\% of the retraining
+benefit after small upgrades, 71\% after an instruction-tuning upgrade, and only 32\% to 36\% after a large one. Through the model these numbers imply
+retraining thresholds from about 4 to about 56 times the retraining cost, so the right policy depends strongly on how far the model moved.
+\item \emph{A transfer method priced by the rule.} We propose Anchored Calibration Transfer (ACT), a closed-form, label-free correction of the adapter.
+After the large upgrade it improves recovery by 0.33 to 0.40 over copying (two seeds) at 30\% to 36\% of the retraining compute time, which makes it the
+cost-minimizing policy over a bounded range of adapter values. After small upgrades it does not beat copying, and neither does it on the instruction-tuned pair, for a reason we could not identify.
 \item \emph{Robustness of the rule.} We simulate clustered and regular release schedules and jump risk in value. The cost of using the
 Poisson-calibrated threshold is below 2.5\% in every scenario.
 \end{enumerate}
 
 Section~\ref{sec:lit} reviews related work. Section~\ref{sec:model} sets up the model and Section~\ref{sec:analysis} derives the
 decision rule. Section~\ref{sec:act} presents ACT. Sections~\ref{sec:numerical} and~\ref{sec:pairs} report numerical results and experiments on open
-model pairs, Section~\ref{sec:diag} tests explanations for ACT's result on real pairs, and Section~\ref{sec:robust} checks robustness.
+model pairs, Section~\ref{sec:diag} asks where ACT helps and tests explanations for its exceptions, and Section~\ref{sec:robust} checks robustness.
 Section~\ref{sec:practice} shows how a manager would apply the rule, and Section~\ref{sec:conclusion} concludes with limitations.
 
 \section{Related Literature}\label{sec:lit}
@@ -187,7 +186,7 @@ calibration set, scoring candidates by the validation error $\|B(AX_t^{v}-A_sX_s
 Gram matrices alone. The calibration inputs are task prompts without answers, so no labels are needed.
 Accumulating Gram matrices costs $O(Nd^2)$ for $N$ calibration tokens, and each module requires $K=13$ solves of size
 $d\times d$. Unlike retraining it needs no labels. Its compute time is not negligible in practice, however: in our
-implementation it takes 35\% to 65\% of the time of the retraining runs on the full-size CPU settings (Section~\ref{sec:pairs}).
+implementation it takes 30\% to 65\% of the time of the retraining runs on the full-size CPU settings (Section~\ref{sec:pairs}).
 
 \section{Numerical Analysis}\label{sec:numerical}
 
@@ -239,10 +238,10 @@ Drift & $R_C$ & $R_A$ & $v^*_C$ & $v^*_A$ & ACT optimal for & $\Gamma$\\
 $v^*_A=2.49,\,4.35,\,7.96,\,14.97$ and $v^*_C=1.50,\,2.63,\,4.81,\,9.04$ for $\mu=0.5,\,1,\,2,\,4$ per year.
 
 \paragraph{Break-even recovery.} Proposition~\ref{prop:act} implies that, for a given copy recovery $R_C$ and transfer cost
-$C_A$, there is a smallest recovery $R_A^{\min}$ at which paying $C_A$ is worthwhile. Table~\ref{tab:breakeven} reports it.
-When transfer is cheap ($C_A=0.05C_N$) a gain of two percentage points over copy suffices where copy is mediocre
-($R_C=0.71$), and only 0.3 points where copy is already near-perfect ($R_C=0.96$). At the compute costs we measure for ACT
-(0.35 and 0.65 of $C_N$), the required gain is 1.9 and 21 points respectively.
+$C_A$, there is a smallest recovery $R_A^{\min}$ at which paying $C_A$ is worthwhile. Table~\ref{tab:breakeven} reports it, using the copy recoveries and
+the ACT cost ratios measured in Section~\ref{sec:pairs}. When transfer is cheap ($C_A=0.05C_N$), a gain of half a point over copy suffices where copy is already
+near-perfect ($R_C\ge 0.93$), and about 2 to 5 points where copy is mediocre or poor ($R_C=0.71$ and $0.32$). At the compute costs we measure for ACT (0.30 to 0.65 of $C_N$),
+the required gain is 2 to 3 points where copy recovers 93\% to 96\%, about 30 points where copy recovers 32\%, and 21 points for the instruction-tuned pair, where ACT costs 0.65.
 
 \begin{table}[t]
 \centering
@@ -251,11 +250,13 @@ When transfer is cheap ($C_A=0.05C_N$) a gain of two percentage points over copy
 \toprule
 Copy recovery $R_C$ & Transfer cost $C_A/C_N$ & Break-even $R_A$ & Required gain\\
 \midrule
-0.49 (toy, drift 0.8) & 0.05 & 0.527 & 0.038\\
+0.49 (controlled simulation) & 0.05 & 0.527 & 0.038\\
+0.32 (Pythia, large upgrade) & 0.05 & 0.370 & 0.051\\
+0.32 (Pythia, large upgrade) & 0.36 (measured, ACT) & 0.622 & 0.303\\
 0.71 (SmolLM2) & 0.05 & 0.728 & 0.022\\
 0.71 (SmolLM2) & 0.65 (measured, ACT) & 0.916 & 0.210\\
-0.96 (Pythia) & 0.05 & 0.959 & 0.003\\
-0.96 (Pythia) & 0.35 (measured, ACT) & 0.975 & 0.019\\
+0.93 (Pythia, medium upgrade) & 0.35 (measured, ACT) & 0.959 & 0.031\\
+0.96 (Pythia, small upgrade) & 0.35 (measured, ACT) & 0.975 & 0.019\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -266,46 +267,66 @@ Copy recovery $R_C$ & Transfer cost $C_A/C_N$ & Break-even $R_A$ & Required gain
 source model, retrain the same adapter on the target model (the upper bound and the basis of $C_N$), copy the source adapter,
 and apply ACT with 128 unlabeled prompts. Recovery $R=(L_{\text{none}}-L_{\text{method}})/(L_{\text{none}}-L_{\text{retrain}})$
 uses held-out response negative log-likelihood (NLL) on 200 examples. Runs use a CPU preset (500 training examples, 300 steps,
-batch 4, maximum length 256), one seed per pair. Costs are compute time only. We evaluate two pairs: Pythia-160M step 133k to
-step 143k \citep{biderman2023pythia}, a small upgrade, and SmolLM2-360M base to instruction-tuned, a larger one. Larger-drift pairs, such as the later Pythia checkpoints
-(steps 113k and 73k), were not run.
+batch 4, maximum length 256). Costs are compute time only. We evaluate four upgrades. Three are Pythia-160M checkpoints \citep{biderman2023pythia}
+upgraded to the same final checkpoint, step 143k, from step 133k, 113k, and 73k, which gives upgrades of increasing size within one model family. The fourth is SmolLM2-360M, base to instruction-tuned.
+Each pair is run once with seed 0. The largest Pythia upgrade is repeated with seed 1, which changes the training, evaluation, and calibration examples, the adapter initialization, and the batch order. As a measure of upgrade size we report the median relative change of
+module inputs between source and target models over the calibration set, which we call the activation drift.
 
 \begin{table}[t]
 \centering
-\caption{Recovery on open model pairs. NLL on 200 held-out responses; compute-time cost ratio $C_A/C_N$.}\label{tab:pairs}
-\begin{tabular}{lcccccccc}
+\caption{Held-out response NLL (200 examples) and median activation drift. The seed-1 run uses a different example sample, so its NLL values are not comparable in level with seed 0.}\label{tab:nll}
+\begin{tabular}{lccccc}
 \toprule
-Pair & None & Retrain & Copy & ACT & $R_C$ & $R_A$ & $C_A/C_N$ & $v^*_C/C_N$\\
+Upgrade & Drift & None & Retrain & Copy & ACT\\
 \midrule
-Pythia-160M, 133k$\to$143k & 2.761 & 1.355 & 1.417 & 1.423 & 0.956 & 0.952 & 0.35 & 55.7\\
-SmolLM2-360M, base$\to$instruct & 1.015 & 0.652 & 0.759 & 0.761 & 0.706 & 0.700 & 0.65 & 8.4\\
+Pythia, step 133k to 143k & 0.25 & 2.761 & 1.355 & 1.417 & 1.423\\
+Pythia, step 113k to 143k & 0.31 & 2.761 & 1.359 & 1.460 & 1.445\\
+Pythia, step 73k to 143k (seed 0) & 0.60 & 2.761 & 1.396 & 2.326 & 1.782\\
+Pythia, step 73k to 143k (seed 1) & 0.60 & 2.743 & 1.336 & 2.238 & 1.769\\
+SmolLM2-360M, base to instruct & 0.27 & 1.015 & 0.652 & 0.759 & 0.761\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Results.} Copying recovers 96\% of the retraining benefit for the small upgrade and 71\% for the larger one. Under the
-baseline parameters the corresponding retraining thresholds are 55.7 and 8.4 times $C_N$: a task must be worth that many retraining
-costs per year before retraining immediately beats keeping the old adapter and retraining later on demand. ACT does not improve on copy
-in either pair: its recovery is lower by 0.004 and 0.006, well inside the noise of a 200-example evaluation. Consequently
-$\Gamma=0$ for both, and ACT is never the cost-minimizing policy at any $v$, whatever its cost.
-A second run of the SmolLM2 pair with a shorter schedule (100 steps, batch 2, 60 evaluation examples, run on a different machine) gives
-the same conclusion ($R_C=0.871$, $R_A=0.869$). Its cost ratio of 3.13 reflects the shortened retraining and is not comparable. We note that
-$C_N$ here contains compute only; adding data acquisition and revalidation labor lowers every $C_A/C_N$ and raises the thresholds.
+\begin{table}[t]
+\centering
+\caption{Recovery, ACT cost ratio, and the policy implied by the model ($\rho=0.10$, $\mu=2$, $g=0.20$, $\sigma=0.40$; $v$ in multiples of $C_N$, using each pair's measured $C_A/C_N$).}\label{tab:pairs}
+\begin{tabular}{lccccc}
+\toprule
+Upgrade & $R_C$ & $R_A$ & $C_A/C_N$ & $v^*_C/C_N$ & ACT optimal for\\
+\midrule
+Pythia, step 133k to 143k & 0.956 & 0.952 & 0.35 & 55.6 & never\\
+Pythia, step 113k to 143k & 0.928 & 0.939 & 0.35 & 34.0 & never\\
+Pythia, step 73k to 143k (seed 0) & 0.319 & 0.717 & 0.36 & 3.6 & $[1.78,\,4.40)$\\
+Pythia, step 73k to 143k (seed 1) & 0.359 & 0.692 & 0.30 & 3.8 & $[1.73,\,4.49)$\\
+SmolLM2-360M, base to instruct & 0.706 & 0.700 & 0.65 & 8.4 & never\\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\section{Why Does ACT Not Help on Real Pairs?}\label{sec:diag}
+\paragraph{Results.} Copying degrades sharply with the size of the upgrade. Across the Pythia series the activation drift rises from 0.25 to 0.31 to 0.60, and
+copy recovery falls from 0.956 to 0.928 to 0.319 (0.359 on the second seed). ACT's gain over copying rises in the same order: $-0.004$, $+0.011$, and $+0.398$ ($+0.333$ on the second seed).
+After the largest upgrade ACT recovers 0.69 to 0.72 of the retraining benefit at 30\% to 36\% of the retraining compute time. Under the model this makes ACT the cost-minimizing policy for adapters
+whose annual value lies between about 1.8 and 4.4 times $C_N$ (Table~\ref{tab:pairs}): below that range, keep the copy; above it, retrain immediately. After the two smaller upgrades ACT's gain is smaller than the break-even implied
+by its cost ($\Gamma=0$ and $\Gamma=0.11$ against $C_A=0.35$), so copying is the better policy at every value.
 
-ACT does help in the controlled simulation, so the discrepancy needs explanation. We test three candidates.
-The first is the \emph{upgrade type}: the original simulation rotates the hidden basis, which ACT can undo, whereas
-instruction tuning moves weights within a shared basis. We re-run the simulation with a dense random perturbation and with a
-rank-8 weight update (a fine-tuning-like change) in a shared basis. The second is a \emph{mismatch of objective}: in the
-simulation the target task is by construction the same change the source adapter made, so preserving the adapter's effect is exactly right,
-whereas on real models retraining may learn something the source adapter never encoded. We mix the target task with a fresh rank-4 change
-with weight $\tau\in\{0,0.5,0.9\}$. The third is \emph{calibration data}: ACT calibrates on prompts, while recovery is measured on
-answer tokens. We re-run the Pythia pair calibrating on prompt and answer tokens.
+The instruction-tuned pair is an exception that we cannot explain. Copy recovers 71\%, which leaves room for improvement, and the activation drift (0.27) is similar to that of the small Pythia upgrades, but ACT recovers 70\%, no more than copy, at 65\% of the retraining compute time.
+A shorter-schedule re-run of this pair on a different machine (100 steps, batch 2, 60 evaluation examples) gives the same conclusion ($R_C=0.871$, $R_A=0.869$); its cost ratio of 3.13 reflects the shortened retraining and is not comparable.
+We note that $C_N$ here contains compute only. Adding data acquisition and revalidation labor lowers every $C_A/C_N$ and raises every threshold.
+
+\section{Where Does ACT Help?}\label{sec:diag}
+
+\paragraph{Dependence on upgrade size.} The pattern in Table~\ref{tab:pairs}, with ACT's gain growing as copy recovery falls, matches the controlled simulation of Section~\ref{sec:numerical}, where the gain also grows with drift (Table~\ref{tab:toy}).
+The selected anchoring strength is consistent with this account for the large Pythia upgrade: it falls with activation drift (Spearman $-0.35$, $p=0.016$), as in the simulation ($-0.30$), so the correction is allowed to move further from the copied adapter where the model moved more.
+
+\paragraph{The instruction-tuned exception.} On SmolLM2 the selected anchoring strength instead rises with drift (Spearman $+0.78$): the validation criterion pulls the correction back toward the copied adapter where drift is large. We tested three possible reasons.
+The first is the \emph{upgrade type}: the simulation rotates the hidden basis, which ACT can undo, whereas instruction tuning moves weights within a shared basis. We re-ran the simulation with a dense random perturbation and with a
+rank-8 weight update (a fine-tuning-like change) in a shared basis. The second is a \emph{mismatch of objective}: in the simulation the target task is by construction the same change the source adapter made, whereas on real models retraining may learn something the source adapter never encoded.
+We mix the target task with a fresh rank-4 change with weight $\tau\in\{0,0.5,0.9\}$. The third is \emph{calibration data}: ACT calibrates on prompts, whereas recovery is measured on answer tokens. We re-ran the smallest Pythia upgrade calibrating on prompt and answer tokens.
 
 \begin{table}[t]
 \centering
-\caption{Simulated ACT$-$copy recovery gain (two seeds per cell; ACT wins in all 12 conditions).}\label{tab:variants}
+\caption{Simulated ACT$-$copy recovery gain (two seeds per cell; ACT wins in all 12 conditions). Controlled simulation, not real models.}\label{tab:variants}
 \begin{tabular}{llcc}
 \toprule
 Upgrade & Task overlap & Drift 0.5 & Drift 0.8\\
@@ -320,59 +341,51 @@ Rank-8 update & $\tau=0.9$ & $+0.125$ & $+0.331$\\
 \end{tabular}
 \end{table}
 
-None of the three explains the result. In simulation ACT keeps a gain of 0.05 to 0.33 under both upgrade types and every task overlap
-(Table~\ref{tab:variants}), and on the Pythia pair calibrating on prompt and answer tokens still leaves ACT behind copy ($R_C=0.958$, $R_A=0.955$).
-Two descriptive facts point to a behavioral difference. On the real models activation drift is substantial (median 0.27 for SmolLM2, range 0.03 to 0.55),
-so ACT had room to act. And the anchoring strength chosen by validation rises with drift on SmolLM2 (Spearman 0.78) whereas it fell with drift in
-simulation ($-0.30$): the validation criterion pulls the correction back toward the copied adapter where drift is large. We have not identified the cause. Untested candidates include
-properties of real transformers absent from the simulation (residual connections, normalization, attention) and the fact that LoRA's $A$ matrix stays close to its initialization
-in short fine-tuning, which would make an $A$-only correction uninformative. The Pythia calibration test also has limited power, because copy already recovers 96\% there.
+In simulation ACT keeps a gain of 0.05 to 0.33 under both upgrade types and every task overlap (Table~\ref{tab:variants}), so neither the upgrade type nor the task mismatch explains the exception. Calibrating on prompt and answer tokens leaves ACT level with copy on the smallest Pythia upgrade ($R_C=0.958$, $R_A=0.955$), but that test has limited power because copy already recovers 96\% there, and it does not bear on SmolLM2.
+We therefore have not identified why ACT fails on the instruction-tuned pair. Untested candidates include the upgrade type itself (continued pre-training against instruction tuning), model scale, properties of real transformers absent from the simulation (residual connections, normalization, attention), and the fact that LoRA's $A$ matrix stays close to its initialization in short fine-tuning, which would make an $A$-only correction less informative. The honest summary is that ACT helped where we expected it to and did not where copy was already adequate or, in one case, where it was not.
 
 \section{Robustness to the Upgrade-Arrival Assumption}\label{sec:robust}
 
 The closed forms assume exponential release intervals and GBM value. We simulate the threshold policy with
-40{,}000 paths (time step $1/200$ year, barrier shift of \citealt{broadie1997continuity}) for the $s=0.8$ recovery
-rates. Epoch lengths keep the mean $1/\mu$ and vary in dispersion: two-phase hyperexponential (coefficient of
+40{,}000 paths (time step $1/200$ year, barrier shift of \citealt{broadie1997continuity}) using the measured recovery rates and cost ratio of the large Pythia upgrade
+($R_C=0.319$, $R_A=0.717$, $C_A=0.36C_N$). Epoch lengths keep the mean $1/\mu$ and vary in dispersion: two-phase hyperexponential (coefficient of
 variation, CV, of 2 and 3), which mimics clustered releases; Erlang (CV $=0.5$); and deterministic (CV $=0$). We
 also add compound Poisson jumps to $\log v$ (rates one and three per year, normal log-sizes with mean 0.2 and standard
 deviation 0.3), with the drift compensated so that $\E[v]$ still grows at $g$. The Poisson baseline reproduces the
-closed form within simulation error (for example, 0.2740 $\pm$ 0.0015 versus 0.2722 at $v_0=1.0$ for copy).
+closed form within simulation error (for example, 0.3651 $\pm$ 0.0020 versus 0.3624 at $v_0=1.0$ for copy).
 
 \begin{table}[t]
 \centering
-\caption{Optimal ACT threshold, cost of using the Poisson threshold, and ACT-optimal region ($s=0.8$).}\label{tab:robust}
+\caption{Optimal ACT threshold, cost of using the Poisson threshold, and ACT-optimal region (large Pythia upgrade).}\label{tab:robust}
 \begin{tabular}{lcccc}
 \toprule
 Scenario & Best $\theta_A$ & Regret (ACT) & Regret (copy) & ACT optimal for\\
 \midrule
-Poisson (CV $=1$) & 7.96 & 0.0\% & 0.0\% & [0.47, 6.79)\\
-Hyperexponential, CV $=2$ & 6.24 & 0.8\% & 1.1\% & [0.48, 6.79)\\
-Hyperexponential, CV $=3$ & 6.24 & 1.4\% & 2.4\% & [0.53, 6.93)\\
-Erlang, CV $=0.5$ & 17.45$^\dagger$ & 0.3\% & 0.4\% & [0.48, 5.93)\\
-Deterministic & 19.89$^\dagger$ & 0.4\% & 0.5\% & [0.48, 5.99)\\
-Poisson + jumps (1/yr) & 8.11 & 0.0\% & 0.0\% & [0.47, 7.03)\\
-Poisson + jumps (3/yr) & 9.07 & 0.1\% & 0.1\% & [0.48, 7.95)\\
+Poisson (CV $=1$) & 8.68 & 0.0\% & 0.0\% & [1.77, 4.36)\\
+Hyperexponential, CV $=2$ & 6.68 & 0.5\% & 1.1\% & [2.19, 5.06)\\
+Hyperexponential, CV $=3$ & 6.68 & 0.7\% & 2.3\% & [2.23, 5.38)\\
+Erlang, CV $=0.5$ & 16.70$^\dagger$ & 0.1\% & 0.4\% & [1.73, 4.34)\\
+Deterministic & 19.04$^\dagger$ & 0.1\% & 0.6\% & [1.75, 4.40)\\
+Poisson + jumps (1/yr) & 9.01 & 0.0\% & 0.0\% & [1.88, 4.56)\\
+Poisson + jumps (3/yr) & 9.90 & 0.0\% & 0.1\% & [2.08, 4.82)\\
 \bottomrule
 \end{tabular}
 
-\smallskip\footnotesize $^\dagger$ At or near the edge of the threshold grid, so the regret is a lower bound.
+\smallskip\footnotesize $^\dagger$ At or near the upper edge of the threshold grid, so the regret is a lower bound.
 Regret is the average proportional excess cost of the Poisson threshold over the best threshold on the grid,
 across starting values well below the threshold.
 \end{table}
 
-Three patterns emerge. First, clustered releases shift the optimal threshold down by about 22\% and regular
-schedules shift it up by a factor of two or more: with clustered releases the next upgrade tends to follow soon and
+Three patterns emerge. First, clustered releases shift the optimal ACT threshold down by about 23\% and regular schedules shift it up by a factor of about two: with clustered releases the next upgrade tends to follow soon and
 waiting is less valuable, while a predictable cadence allows firms to wait longer. Second, using the Poisson threshold
-in the wrong environment costs at most 2.4\% of expected cost, because the cost curve is flat near the optimum.
-Third, the lower end of the ACT-optimal region is stable (0.47--0.53) and the upper end stays between 5.9 and 8.0 (the
-closed-form value is 6.7). The qualitative conclusion that a cheap transfer method has a bounded region of use
+in the wrong environment costs at most 2.3\% of expected cost, because the cost curve is flat near the optimum.
+Third, the range in which ACT is optimal is stable: its lower end stays between 1.7 and 2.2 and its upper end between 4.3 and 5.4 (the closed-form range is 1.8 to 4.4). The qualitative conclusion that a transfer method has a bounded region of use
 therefore does not depend on Poisson arrivals. Clustering is modeled as a renewal process rather than a self-exciting
 process, so dependence between consecutive intervals is not captured.
 
 \section{Using the Rule in Practice}\label{sec:practice}
 
-The model is meant to be used with a small amount of data that a team already has. We describe the procedure and illustrate it with the
-SmolLM2 pair.
+The model is meant to be used with a small amount of data that a team already has. We describe the procedure and illustrate it with two of our upgrades.
 
 \begin{enumerate}
 \item \emph{Measure recovery of the cheap option.} After an upgrade, evaluate three configurations on a held-out set of task examples:
@@ -382,10 +395,10 @@ $R_C=(L_{\text{none}}-L_{\text{copy}})/(L_{\text{none}}-L_{\text{retrain}})$. Ou
 organization's hurdle rate, the value volatility $\sigma$ and growth $g$ from the business metric the task supports, and the retraining cost
 $C_N$ from the full cost of the last retraining, including data and revalidation labor.
 \item \emph{Apply the threshold.} Retrain immediately if the annual value at stake exceeds $v^*(R_C)$; otherwise keep the copied adapter and monitor.
-With the baseline parameters, SmolLM2 gives $v^*=8.4\,C_N$: a task worth less than about eight retraining costs per year does not justify immediate retraining.
+With the baseline parameters, a small Pythia upgrade ($R_C=0.96$) gives $v^*=55.6\,C_N$, so almost any task should keep the copy. After the large upgrade ($R_C=0.32$) the threshold falls to $3.6\,C_N$, and a task worth more than that should be retrained at once.
 \item \emph{Price any alternative method.} A transfer procedure that costs $C_A$ is worth buying only if its recovery exceeds the break-even level in
-Table~\ref{tab:breakeven}. For SmolLM2 and a procedure costing 5\% of $C_N$, recovery must reach 0.728, a gain of 2.2 points over copying. If the cost is 65\% of $C_N$, as we measured for
-ACT, the required recovery is 0.916, a gain of 21 points, which no tested method achieved.
+Table~\ref{tab:breakeven}. After the large Pythia upgrade, a procedure costing 36\% of $C_N$ must reach a recovery of 0.62; ACT reached 0.69 to 0.72, so it is worth buying for adapters worth between 1.8 and 4.4 times $C_N$ per year, and not outside that range. On the instruction-tuned pair a
+procedure costing 65\% of $C_N$ would need a recovery of 0.92, a gain of 21 points over copy, which ACT did not deliver.
 \end{enumerate}
 
 Two cautions apply. The thresholds scale with the full retraining cost, so a team that omits labeling and validation labor from $C_N$ will retrain too early. And
@@ -393,20 +406,16 @@ $R_C$ is task-specific: the same upgrade can leave a summarization adapter nearl
 
 \section{Discussion and Conclusion}\label{sec:conclusion}
 
-For managers, the model reduces AI-asset maintenance to four measurable quantities: the release rate, the volatility of the value at stake,
-the retraining cost, and the recovery of the available transfer method. It yields a threshold for retraining and a price ceiling for transfer tooling.
-Our measurements suggest a practical default: because naive reuse of an adapter already restores most of the retraining benefit in the pairs we test,
-the retraining threshold is high, and a transfer method must beat copying by a margin that grows with its cost (Table~\ref{tab:breakeven}) before it is worth buying.
+For managers, the model reduces AI-asset maintenance to four measurable quantities: the release rate, the volatility of the value at stake, the retraining cost, and the recovery of the available transfer method. It yields a threshold for retraining and a price ceiling for transfer tooling.
+Our measurements suggest a practical default that depends on the size of the upgrade: when the model moved little, copying the old adapter restores most of the retraining benefit, the retraining threshold is high, and a transfer method must beat copying by only a few points, but at a cost it rarely does; when the model moved a lot, copying collapses, and a cheap closed-form transfer such as ACT can be the cheapest policy over a middle range of adapter values.
 For providers, upgrades that preserve internal representations raise recovery and so raise the value of customers' existing adapters.
 
-For researchers, the ACT result is a caution. A method can look strong in a controlled setting that favors its assumptions and fail to improve on the trivial baseline in real models; the
-decision-theoretic break-even makes this visible in a way an accuracy table does not.
+For researchers, the instruction-tuned pair is a caution. A method can help where the problem is severe and fail on a different kind of upgrade of similar size, and the decision-theoretic break-even makes this visible in a way an accuracy table does not.
 
 \paragraph{Limitations.} First, $C_N$ and $C_A$ are measured in compute time; data acquisition and revalidation labor
-are excluded and would lower every cost ratio and raise the thresholds. Second, only two small model pairs finished, each with one seed and a 200-example evaluation,
-on a single task (GSM8K); the results do not speak to frontier models, to larger upgrades, or to other tasks, and larger-drift pairs, such as the later Pythia
-checkpoints, are missing. Third, the cause of ACT's failure on real pairs is unidentified. Fourth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
-practice it must be estimated. Fifth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals, and the release-interval distribution is not estimated from the release history of a real model family.
+are excluded and would lower every cost ratio and raise the thresholds. Second, we ran four upgrades of models with 160 to 360 million parameters, on a single task (GSM8K), with 200 evaluation examples each. The drift series covers one model family, and only the largest upgrade has a replicate; the results do not speak to frontier models or to other tasks.
+Third, the instruction-tuned pair is an unexplained exception, and we cannot say whether it reflects the upgrade type, the model scale, or something else. Fourth, the drift at which ACT starts to pay lies between 0.31 and 0.60 in our series and is not located more precisely. Fifth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
+practice it must be estimated. Sixth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals, and the release-interval distribution is not estimated from the release history of a real model family.
 
 \paragraph{Reproducibility.} Code, simulation seeds, and result files are described in the Data availability statement.
 
