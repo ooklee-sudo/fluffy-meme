@@ -17,8 +17,9 @@
 
 \title{When Is Adapter Transfer Worth Its Cost? A Decision Model for Maintaining Fine-Tuned Language-Model Adapters Across Foundation-Model Upgrades}
 
-\author[inst1]{\todo{Author name}}
-\address[inst1]{\todo{Affiliation, address, e-mail}}
+\author[inst1]{Ook Lee\corref{cor1}}
+\cortext[cor1]{Corresponding author. E-mail: \textbf{[to be added]}}
+\address[inst1]{Department of Information System, Hanyang University, Seoul, Republic of Korea}
 
 \begin{abstract}
 Organizations that build on foundation models they do not control must decide, after every provider upgrade, whether to retrain the adapters
@@ -99,9 +100,7 @@ one such cost, the dependence of an adapter on a changing base model.
 \emph{Parameter-efficient fine-tuning and model reuse.} LoRA \citep{hu2022lora} and adapters \citep{houlsby2019parameter}
 make task adaptations small and portable. Work on combining and editing fine-tuned weights
 \citep{ilharco2023editing} shows that weight-space updates can be reused, and \citet{kirkpatrick2017overcoming}
-address retention of earlier knowledge when weights change. Transfer of adapters \emph{across} base-model versions
-is a more recent line of work \todo{cite Trans-LoRA and related cross-base adapter transfer papers after verifying}.
-ACT is a closed-form, label-free candidate in this family, and we evaluate it by the decision rule it would have to satisfy rather than by accuracy alone.
+address retention of earlier knowledge when weights change. This paper concerns the transfer of an adapter \emph{across} base-model versions. ACT is a closed-form, label-free candidate method for that setting, and we evaluate it by the decision rule it would have to satisfy rather than by accuracy alone.
 
 \emph{Stochastic modeling choices.} Poisson arrivals and GBM are the standard baseline in optimal stopping. We relax
 both: jump risk follows \citet{merton1976option}, and non-exponential release intervals are handled by simulation,
@@ -407,22 +406,21 @@ decision-theoretic break-even makes this visible in a way an accuracy table does
 are excluded and would lower every cost ratio and raise the thresholds. Second, only two small model pairs finished, each with one seed and a 200-example evaluation,
 on a single task (GSM8K); the results do not speak to frontier models, to larger upgrades, or to other tasks, and larger-drift pairs, such as the later Pythia
 checkpoints, are missing. Third, the cause of ACT's failure on real pairs is unidentified. Fourth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
-practice it must be estimated. Fifth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals.
-\todo{Add the measured upgrade history of a real model family to estimate the release-interval distribution.}
+practice it must be estimated. Fifth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals, and the release-interval distribution is not estimated from the release history of a real model family.
 
 \paragraph{Reproducibility.} Code, simulation seeds, and result files are described in the Data availability statement.
 
 \section*{CRediT authorship contribution statement}
-\todo{Complete per author: conceptualization, methodology, software, formal analysis, writing.}
+Ook Lee: Conceptualization, Methodology, Writing -- review \& editing. \textbf{[Author to confirm roles and add any co-authors.]}
 
 \section*{Declaration of competing interest}
-\todo{State competing interests or confirm there are none.}
+The author declares that he has no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. \textbf{[Author to confirm.]}
 
 \section*{Declaration of generative AI and AI-assisted technologies in the writing process}
-\todo{Elsevier asks authors to disclose any use of generative AI in preparing the manuscript. State truthfully what tools were used, for what, and that the authors reviewed and take responsibility for the content.}
+During the preparation of this work, the author used Claude (Anthropic) to assist with writing and running the simulation and experiment code, analyzing results, and drafting and language-editing the manuscript. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the publication. \textbf{[Author to confirm that this statement is accurate before submission.]}
 
 \section*{Data availability}
-\todo{Repository link for code, simulation seeds, and result files.}
+The code, simulation seeds, and result files are available at https://github.com/ooklee-sudo/fluffy-meme (branch claude/elegant-johnson-xo3pqu). \textbf{[Author to confirm that the repository is accessible to reviewers and to archive a permanent copy in a DOI-issuing repository before submission.]}
 
 \appendix
 \section{Proof Sketches}\label{app:proofs}
