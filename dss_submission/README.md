@@ -1,5 +1,6 @@
 # Submission files (Decision Support Systems format)
 
+- DSS_cover_letter.docx: cover letter to the Editor-in-Chief (one page).
 - DSS_title_page.docx: title page with author details (placeholders), declarations, CRediT, AI-use statement draft, data statement.
 - DSS_highlights.docx: five highlights, each at most 85 characters.
 - DSS_manuscript_anonymized.docx: anonymized manuscript (abstract, text, tables, appendix, references); 33 pages in LibreOffice rendering; 11.5 pt, double-spaced, 1-inch margins.
