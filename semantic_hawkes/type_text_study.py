@@ -119,9 +119,15 @@ def run(job):
     train = train[:n_train] if n_train else train
     scale = float(np.concatenate([np.diff(s[0]) for s in ds["train"]]).mean())
     emb = None
+    SIMV = {"ridge": None, "sim_qwen": "qwen", "sim_hash": "hash", "sim_perm": "qwenperm", "sim_random": "random"}
     if variant in ("qwen", "hash", "qwenperm", "random", "qwencentered"):
         emb = np.load(f"{EMB}/{name}_{variant}.npy")
-    model = TypeHawkes(K, "free" if variant == "free" else ("learned" if variant == "learned" else "frozen"), emb)
+    if variant in SIMV:
+        from .positive_control import SimPrior, cosine_matrix
+        sim = None if SIMV[variant] is None else cosine_matrix(np.load(f"{EMB}/{name}_{SIMV[variant]}.npy"))
+        model = SimPrior(K, sim)
+    else:
+        model = TypeHawkes(K, "free" if variant == "free" else ("learned" if variant == "learned" else "frozen"), emb)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     opt = torch.optim.Adam(model.parameters(), lr=1e-2)
     bs = 8 if n_train and n_train <= 200 else 32
@@ -148,6 +154,8 @@ def run(job):
         for i in range(0, len(idx), bs):
             r = model(*batch([train[j] for j in idx[i:i + bs]], scale))
             loss = -(r["event_ll"] - r["comp"]) / max(r["n"], 1)
+            if hasattr(model, "penalty"):
+                loss = loss + model.penalty()
             opt.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 10.0)
