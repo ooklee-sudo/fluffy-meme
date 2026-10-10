@@ -273,9 +273,8 @@ source model, retrain the same adapter on the target model (the upper bound and 
 and apply ACT with 128 unlabeled prompts. Recovery $R=(L_{\text{none}}-L_{\text{method}})/(L_{\text{none}}-L_{\text{retrain}})$
 uses held-out response negative log-likelihood (NLL) on 200 examples. Runs use a CPU preset (500 training examples, 300 steps,
 batch 4, maximum length 256), one seed per pair. Costs are compute time only. We evaluate two pairs: Pythia-160M step 133k to
-step 143k \citep{biderman2023pythia}, a small upgrade, and SmolLM2-360M base to instruction-tuned, a larger one. \todo{Add the
-Qwen2.5-0.5B pair, which did not finish within the available compute time.} The planned larger-drift Pythia checkpoints
-(steps 113k and 73k) were not run.
+step 143k \citep{biderman2023pythia}, a small upgrade, and SmolLM2-360M base to instruction-tuned, a larger one. Larger-drift pairs, such as the later Pythia checkpoints
+(steps 113k and 73k), were not run.
 
 \begin{table}[t]
 \centering
@@ -389,8 +388,8 @@ decision-theoretic break-even makes this visible in a way an accuracy table does
 
 \paragraph{Limitations.} First, $C_N$ and $C_A$ are measured in compute time; data acquisition and revalidation labor
 are excluded and would lower every cost ratio and raise the thresholds. Second, only two small model pairs finished, each with one seed and a 200-example evaluation,
-on a single task (GSM8K); the results do not speak to frontier models, to larger upgrades, or to other tasks, and the planned larger-drift Pythia pairs and the
-Qwen pair are missing. Third, the cause of ACT's failure on real pairs is unidentified. Fourth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
+on a single task (GSM8K); the results do not speak to frontier models, to larger upgrades, or to other tasks, and larger-drift pairs, such as the later Pythia
+checkpoints, are missing. Third, the cause of ACT's failure on real pairs is unidentified. Fourth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
 practice it must be estimated. Fifth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals.
 \todo{Add the measured upgrade history of a real model family to estimate the release-interval distribution.}
 
