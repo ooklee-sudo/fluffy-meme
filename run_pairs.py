@@ -25,6 +25,8 @@ PAIRS = [
     ("pythia-160m +10k",   "EleutherAI/pythia-160m",        "step133000", "EleutherAI/pythia-160m",              "step143000"),
     ("pythia-160m +30k",   "EleutherAI/pythia-160m",        "step113000", "EleutherAI/pythia-160m",              "step143000"),
     ("pythia-160m +70k",   "EleutherAI/pythia-160m",        "step73000",  "EleutherAI/pythia-160m",              "step143000"),
+    ("pythia-160m +40k",   "EleutherAI/pythia-160m",        "step103000", "EleutherAI/pythia-160m",              "step143000"),
+    ("pythia-160m +60k",   "EleutherAI/pythia-160m",        "step83000",  "EleutherAI/pythia-160m",              "step143000"),
     ("smollm2-360m instr", "HuggingFaceTB/SmolLM2-360M",    None,         "HuggingFaceTB/SmolLM2-360M-Instruct", None),
     ("qwen2.5-0.5b instr", "Qwen/Qwen2.5-0.5B",             None,         "Qwen/Qwen2.5-0.5B-Instruct",          None),
 ]
