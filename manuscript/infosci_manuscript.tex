@@ -343,7 +343,25 @@ Model and upgrade & Drift & $R_C$ & $R_A$ & $C_A/C_N$ & $\Gamma$ & ACT optimal f
 \end{tabular}
 \end{table}
 
-The cost ratio is the quantity that changes with scale. Retraining time grows roughly in proportion to model size (207, 467, and 1{,}171 seconds at 70, 160, and 410 million parameters), but ACT's time grows faster (29, 168, and 815 seconds). We have not isolated the reason. A plausible one is that the implementation solves several linear systems per module in every layer, which may grow faster with width than gradient training does, but we did not test this. The effect is a property of our implementation rather than of the method, and a cheaper implementation would shift the boundary of the useful range. It shows, however, that a transfer method's gain and its cost have to be measured at the scale at which it will be used. The 410-million run is a single upgrade with a single seed, and its drift (0.46) is lower than that of the 160-million run it is compared with (0.60).
+The cost ratio is the quantity that changes with scale. Retraining time grows roughly in proportion to model size (207, 467, and 1{,}171 seconds at 70, 160, and 410 million parameters), but ACT's time grows faster (29, 168, and 815 seconds). To see where the time goes, we profiled ACT on untrained adapters, whose cost is the same as that of trained ones (Table~\ref{tab:profile}).
+Contrary to our first guess, the linear solves are not the main cost: they take 11\% to 14\% of ACT's time at every size. The largest component, and the one that grows fastest, is the forward passes that capture module inputs (39\%, 51\%, and 60\% of the time). ACT corrects the layers in order from the input side, and for each layer it runs both models from the input up to that layer, so the number of layer passes grows with the square of the depth. Relative to 70 million parameters, the layer-pass count multiplied by the squared layer width predicts growth of 8.4 and 57 times; the measured forward time grew by 8.4 and 35 times. The prediction matches at 160 million parameters and overshoots at 410 million, perhaps because larger matrix products run more efficiently on the CPU, a point we did not test.
+Retraining, in contrast, passes through each layer once per step, so its cost grows roughly with depth rather than with its square. Of the 787 seconds added between 70 and 410 million parameters, forward passes account for 61\%, Gram-matrix accumulation and other work for 26\%, and the solves for 13\%.
+
+\begin{table}[t]
+\centering
+\caption{Profile of ACT on untrained adapters (Pythia, CPU, four threads). The totals differ from the ACT times of the full runs by up to 38\%.}\label{tab:profile}
+\begin{tabular}{lccccc}
+\toprule
+Model & Layers & Total (s) & Forward passes & Linear solves & Gram matrices, other\\
+\midrule
+70M & 6 & 36 & 14 (39\%) & 5 (14\%) & 17 (47\%)\\
+160M & 12 & 232 & 118 (51\%) & 26 (11\%) & 88 (38\%)\\
+410M & 24 & 823 & 494 (60\%) & 108 (13\%) & 220 (27\%)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The effect is a property of our implementation rather than of the method. Caching the corrected hidden states from layer to layer would remove the repeated passes; we did not implement this, so we cannot say how much it would reduce the cost ratio. The result does show that a transfer method's gain and its cost have to be measured at the scale at which it will be used. The 410-million run is a single upgrade with a single seed, and its drift (0.46) is lower than that of the 160-million run it is compared with (0.60).
 
 \section{Where Does ACT Help?}\label{sec:diag}
 
@@ -445,7 +463,7 @@ For researchers, the instruction-tuned pair is a caution. A method can help wher
 
 \paragraph{Limitations.} First, $C_N$ and $C_A$ are measured in compute time; data acquisition and revalidation labor
 are excluded and would lower every cost ratio and raise the thresholds. Second, we ran ten upgrades of models with 70 to 410 million parameters, on a single task (GSM8K), with 200 evaluation examples each. The drift series covers one model family, and only the largest upgrade at 160 million parameters has a replicate; the 70- and 410-million runs have one seed each, and the 410-million run covers a single upgrade. The results do not speak to frontier models or to other tasks.
-Third, the instruction-tuned pair is an unexplained exception, and we cannot say whether it reflects the upgrade type, the model scale, or something else. The rise of ACT's relative compute cost with model size is also unexplained, and may reflect our implementation. Fourth, ACT's gain rises steadily with upgrade size, but it covers ACT's measured cost only at the largest upgrade, with the next largest narrowly short; the boundary lies between drifts of 0.56 and 0.60 for this implementation and cost, and it would move with a cheaper or better method. Fifth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
+Third, the instruction-tuned pair is an unexplained exception, and we cannot say whether it reflects the upgrade type, the model scale, or something else. ACT's relative compute cost rises with model size mainly because of repeated forward passes in our implementation (Section~\ref{sec:pairs}); we did not test whether caching removes the effect. Fourth, ACT's gain rises steadily with upgrade size, but it covers ACT's measured cost only at the largest upgrade, with the next largest narrowly short; the boundary lies between drifts of 0.56 and 0.60 for this implementation and cost, and it would move with a cheaper or better method. Fifth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
 practice it must be estimated. Sixth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals, and the release-interval distribution is not estimated from the release history of a real model family.
 
 \paragraph{Reproducibility.} Code, simulation seeds, and result files are described in the Data availability statement.
