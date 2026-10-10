@@ -49,7 +49,7 @@ def load_examples(args, tok):
 
     from datasets import load_dataset
     ds = load_dataset(args.dataset, args.dataset_config)
-    tr, te = ds["train"].shuffle(seed=0), ds[args.eval_split].shuffle(seed=0)
+    tr, te = ds["train"].shuffle(seed=args.seed), ds[args.eval_split].shuffle(seed=args.seed)
 
     def enc(row, with_resp=True):
         p = tok(args.prompt_template.format(**row), add_special_tokens=True)["input_ids"]
@@ -322,6 +322,8 @@ def main():
     ap.add_argument("--n-train", type=int, default=2000)
     ap.add_argument("--n-eval", type=int, default=500)
     ap.add_argument("--n-cal", type=int, default=256)
+    ap.add_argument("--seed", type=int, default=0,
+                    help="replicate seed: data sample (train/eval/calib rows), LoRA init and batch order; 0 = original runs")
     ap.add_argument("--calib-with-response", action="store_true",
                     help="diagnostic: calibrate ACT on prompt+answer tokens instead of prompts only")
     ap.add_argument("--max-len", type=int, default=512)
@@ -388,12 +390,12 @@ def main():
     res = {"pair": args.pair_name, "args": vars(args)}
 
     print("[1] train source adapter")
-    res["time_train_source_s"] = train_lora(src_pm, train, args, device, pad_id, seed=0)
+    res["time_train_source_s"] = train_lora(src_pm, train, args, device, pad_id, seed=2 * args.seed)
     src_state = get_lora_state(src_pm)
 
     print("[2] retrain on target (upper bound, C_N)")
     set_lora_state(tgt_pm, init)
-    res["time_retrain_s"] = train_lora(tgt_pm, train, args, device, pad_id, seed=1)
+    res["time_retrain_s"] = train_lora(tgt_pm, train, args, device, pad_id, seed=2 * args.seed + 1)
     retr_state = get_lora_state(tgt_pm)
 
     def evaluate(tag):
