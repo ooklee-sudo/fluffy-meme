@@ -1,3 +1,6 @@
+> **SUPERSEDED.** This framing note predates the real model-pair results (ACT did not beat copy). See
+> `manuscript/ijoc_manuscript.tex` for the current abstract, introduction and claims.
+
 # Reframed abstract and introduction (draft)
 
 Framing change: the contribution is a **maintenance policy for AI assets under foundation-model upgrades**
