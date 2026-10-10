@@ -230,10 +230,13 @@ if __name__ == "__main__":
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--sizes", type=int, nargs="+", default=[20, 50, 200])
     ap.add_argument("--seeds", type=int, default=10)
+    ap.add_argument("--plan", default="main", choices=["main", "mis32"])
     a = ap.parse_args()
     for k in (3, 8):
         embeddings(k)
     plan = [("aligned", 3, a.seeds), ("misaligned", 3, max(6, a.seeds * 3 // 5)), ("aligned", 8, max(5, a.seeds // 2))]
+    if a.plan == "mis32":
+        plan = [("misaligned", 8, 5)]
     have = done_keys()
     jobs = [(sc, kp, s, a.sizes) for sc, kp, ns in plan for s in range(ns) if (sc, 4 * kp, s) not in have]
     print(len(jobs), "jobs (each: all sizes, all variants)", flush=True)

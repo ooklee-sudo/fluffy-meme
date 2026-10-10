@@ -120,7 +120,7 @@ def run(job):
     scale = float(np.concatenate([np.diff(s[0]) for s in ds["train"]]).mean())
     emb = None
     SIMV = {"ridge": None, "sim_qwen": "qwen", "sim_hash": "hash", "sim_perm": "qwenperm", "sim_random": "random"}
-    if variant in ("qwen", "hash", "qwenperm", "random", "qwencentered"):
+    if variant in ("qwen", "hash", "qwenperm", "random", "qwencentered", "qwencenteredperm"):
         emb = np.load(f"{EMB}/{name}_{variant}.npy")
     if variant in SIMV:
         from .positive_control import SimPrior, cosine_matrix
