@@ -119,7 +119,7 @@ def run(job):
     train = train[:n_train] if n_train else train
     scale = float(np.concatenate([np.diff(s[0]) for s in ds["train"]]).mean())
     emb = None
-    if variant in ("qwen", "hash", "qwenperm", "random"):
+    if variant in ("qwen", "hash", "qwenperm", "random", "qwencentered"):
         emb = np.load(f"{EMB}/{name}_{variant}.npy")
     model = TypeHawkes(K, "free" if variant == "free" else ("learned" if variant == "learned" else "frozen"), emb)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
