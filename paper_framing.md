@@ -22,8 +22,8 @@ recovers depends on how far the upgraded model drifted from its predecessor.
 
 We develop a model of this decision in which upgrades arrive stochastically, adapter value evolves
 randomly, and a transfer method is characterized by its performance recovery R and cost. We derive a threshold
-policy: retrain once the value at stake exceeds a threshold that falls as recovery worsens and as upgrades
-become more frequent. We characterize when a cheap but imperfect transfer method is worth using
+policy: retrain once the value at stake exceeds a threshold that rises with recovery and with the upgrade
+frequency (when upgrades are frequent, a repair is less likely to pay back). We characterize when a cheap but imperfect transfer method is worth using
 (a bounded interval of adapter value, in multiples of retraining cost) and the maximum a firm should
 pay for a method with a given recovery. To make recovery measurable, we propose Anchored Calibration Transfer (ACT),
 a closed-form correction that uses unlabeled task inputs. In a controlled simulation, ACT raises recovery
@@ -72,7 +72,7 @@ closed-form, label-free correction that makes recovery high enough to matter, an
 [N] open-model pairs. (4) We test the policy's robustness to the upgrade-arrival assumption.
 
 **Findings and contributions.**
-- *Theory.* Optimal retraining thresholds decline with upgrade frequency and with lower recovery; the benefit of a
+- *Theory.* Optimal retraining thresholds rise with upgrade frequency and with recovery; the benefit of a
   transfer method is hump-shaped in adapter value.
 - *Method.* ACT lifts recovery under large drift (0.49 to 0.69 in simulation) at a small fraction of retraining
   cost [C_A/C_N = ... measured].
