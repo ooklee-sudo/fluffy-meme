@@ -30,4 +30,4 @@ not preregistered; heterogeneity is substantial.
 ## Reproduce
 screen.sh (blobless bare clones + counts) -> full bare clones into /home/user/full -> runall.sh/pipeline.py
 (per-repo CSVs) -> analysis_multi.py (needs the Aider extraction in p4_pilot_aider: extract3.py, lint.py).
-pooled.csv is the pooled commit-level dataset.
+pooled_pseudonymized.csv is the pooled commit-level dataset (author names and e-mails replaced by hashed ids).
