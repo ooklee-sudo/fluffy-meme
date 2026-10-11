@@ -239,4 +239,29 @@ for th in (0.25, 0.5, 0.75):
     wedge = (1 - th) * DC_num + th * DA_() - ((1 - th) * DC_num + th * DA_(**rat))
     check(f"Remark: wedge in aggregate debt = theta*(D_A - D_A*) at theta={th}", wedge, th * (DA_() - DA_(**rat)), 1e-12)
 
+
+# ---------------------------------------------------------------- Result 9: rational information vs order (Section 4.7)
+from math import erf as _erf2, sqrt as _sqrt2
+Phi2 = lambda x: 0.5 * (1 + _erf2(x / _sqrt2(2)))
+rng9 = np.random.default_rng(99)
+mu, sig, om = 1.0, 0.6, 0.5                      # prior R ~ N(mu, sig^2); signal S = R + N(0, om^2)
+k = sig**2 / (sig**2 + om**2); n9 = 2_000_000
+Rv = mu + sig * rng9.standard_normal(n9); Sv = Rv + om * rng9.standard_normal(n9); m = mu + k * (Sv - mu)   # posterior mean
+check("Result 9: E[m(S)] = prior mean (posterior mean is a martingale)", float(m.mean()), mu, 0.003)
+V = float(m.var()); check("Result 9: Var(m(S)) = k sigma^2 <= Var(R)", V, k * sig**2, 0.003); assert V <= sig**2
+for t in (0.2, 0.5, 0.8):                         # cases with prior mean above the threshold t (improvement warranted ex ante)
+    rat = float((m <= t).mean())                  # rational possession effect  = Pr(m <= t)
+    cant = V / (V + (mu - t)**2)                  # Cantelli bound
+    check(f"Result 9(b): rational possession effect Pr(m<=t) <= Cantelli bound (t={t}): {rat:.4f} <= {cant:.4f}", float(rat <= cant), 1.0, 0)
+    check(f"Result 9(b): closed form Pr(m<=t) (t={t})", rat, Phi2((t - mu) / _sqrt2(V)), 0.003)
+    lam9, beta9 = 1.2, 0.85
+    beh = float((m <= lam9 * t / beta9).mean()); gap = float(((m > t) & (m <= lam9 * t / beta9)).mean())
+    check(f"Result 9(c): behavioural effect = rational + Pr(t < m <= lam t/beta) (t={t})", beh, rat + gap, 1e-9)
+for t in (1.2, 1.5):                              # prior mean below t: ex ante deferral is certain, so the rational effect is <= 0
+    rat = float((m <= t).mean()) - 1.0
+    check(f"Result 9(b): rational possession effect <= 0 when prior mean <= t (t={t}): {rat:.4f}", float(rat <= 1e-12), 1.0, 0)
+# uninformative signal -> effect vanishes
+om2 = 1e6; S2 = Rv + om2 * rng9.standard_normal(n9); k2 = sig**2 / (sig**2 + om2**2); m2 = mu + k2 * (S2 - mu)
+check("Result 9(b): effect vanishes as the signal becomes uninformative", float((m2 <= 0.5).mean()), 0.0, 1e-9)
+
 print("\nALL CHECKS PASSED" if ok else "\nSOME CHECKS FAILED")
