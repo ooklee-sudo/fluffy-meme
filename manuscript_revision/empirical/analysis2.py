@@ -1,5 +1,5 @@
-import numpy as np, pandas as pd, statsmodels.api as sm
-pr = pd.read_parquet("/tmp/gha/prs.parquet")
+import os, numpy as np, pandas as pd, statsmodels.api as sm
+pr = pd.read_parquet(os.environ.get("GHA_PRS", "/tmp/gha/prs.parquet"))
 pr["is_agent"] = (pr.group == "agent").astype(int)
 pr["lsize_c"] = pr.lsize - pr.lsize.mean()
 pr["agent_x_lsize"] = pr.is_agent * pr.lsize_c

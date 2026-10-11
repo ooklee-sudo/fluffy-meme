@@ -7,3 +7,6 @@ Reproduce:
 
 Needs: python3, pandas, numpy, pyarrow, statsmodels; network access to data.gharchive.org.
 Note: GH Archive payloads from about 2025-10 onward no longer carry PR size or author fields, so the window had to precede that change.
+
+## Replication across windows
+`hour2.sh <hour> <outdir>` extracts any window (`hours.txt`: Sep 1-14; `hours_w2.txt`: Aug 1-14; `hours_w3.txt`: Sep 15-28). `analysis.py` reads `GHA_OUT`, `GHA_HOURS`, `GHA_START` and `GHA_PRS` from the environment, so run it once per window (one at a time: two at once exhausted 15 GB of memory). `analysis3.py` then prints the replication table (`results_replication.txt`).

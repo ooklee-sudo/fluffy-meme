@@ -1,0 +1,123 @@
+raw closed PR events 1,778,813; review events 1,064,746; inline-comment events 812,673
+
+PRs with missing size field (dropped), by group:
+        mean  sum
+group           
+agent   0.0    0
+human   0.0    0
+
+=== Sample ===
+group
+agent    146540
+human    853556
+agent
+Codex         110015
+Copilot        18429
+ClaudeCode      7731
+Cursor          5975
+Jules           3800
+Devin            590
+repos with both agent and human PRs: 5,406; PRs in them: 82,250 (agent 47,614, human 34,636)
+
+--- All PRs (descriptive)
+group                     agent       human
+N                    146540.000  853556.000
+median_size             138.000      47.000
+merge_rate                0.912       0.790
+any_human_review          0.031       0.119
+mean_inline_cmts          0.015       0.062
+inline_per100             0.026       0.133
+median_hrs_to_merge       0.017       0.035
+mean_net_add              1.951       1.311
+share_add_gt_del          0.836       0.722
+
+--- Repos with both agent and human PRs (descriptive)
+group                    agent      human
+N                    47614.000  34636.000
+median_size            124.000     74.000
+merge_rate               0.894      0.891
+any_human_review         0.038      0.198
+mean_inline_cmts         0.028      0.109
+inline_per100            0.053      0.234
+median_hrs_to_merge      0.018      0.242
+mean_net_add             1.728      1.085
+share_add_gt_del         0.823      0.679
+
+=== P7: review intensity, agent vs human, within-repo ===
+
+[LPM: P(any human review) ~ agent, size, agent×size]  N=82,250, repos=5,406
+   is_agent               b=+0.0354  se=0.0050  p=1.4e-12
+   lsize_c                b=+0.0078  se=0.0054  p=0.149
+   agent_x_lsize          b=-0.0056  se=0.0051  p=0.275
+
+[log(1+inline human comments)]  N=82,250, repos=5,406
+   is_agent               b=+0.0182  se=0.0022  p=6.89e-17
+   lsize_c                b=+0.0144  se=0.0012  p=1.62e-33
+   agent_x_lsize          b=-0.0114  se=0.0011  p=2.63e-24
+
+[log(1+inline), merged PRs only]  N=73,128, repos=5,048
+   is_agent               b=+0.0221  se=0.0025  p=1.99e-19
+   lsize_c                b=+0.0168  se=0.0014  p=1.08e-31
+   agent_x_lsize          b=-0.0135  se=0.0014  p=3.44e-23
+
+[P(any review), merged PRs only]  N=73,128, repos=5,048
+   is_agent               b=+0.0502  se=0.0055  p=3.44e-20
+   lsize_c                b=+0.0138  se=0.0063  p=0.0291
+   agent_x_lsize          b=-0.0108  se=0.0060  p=0.0725
+
+=== P5: net-addition bias ===
+
+[log((add+1)/(del+1)) ~ agent, size]  N=82,250, repos=5,406
+   is_agent               b=+0.7146  se=0.0351  p=2.79e-92
+   lsize_c                b=+0.1802  se=0.0134  p=2.55e-41
+   agent_x_lsize          b=+0.0942  se=0.0154  p=8.65e-10
+
+=== By agent (vs human, same repos), P(any human review) and log(1+inline) ===
+
+[Copilot: P(any human review)]  N=38,281, repos=3,792
+   is_agent               b=+0.1934  se=0.0136  p=4.47e-46
+   lsize_c                b=+0.0089  se=0.0056  p=0.114
+
+[Copilot: net add]  N=38,281, repos=3,792
+   is_agent               b=+1.0362  se=0.0729  p=7.71e-46
+   lsize_c                b=+0.2033  se=0.0147  p=3.12e-43
+
+[Codex: P(any human review)]  N=67,973, repos=4,144
+   is_agent               b=-0.0066  se=0.0022  p=0.00269
+   lsize_c                b=+0.0053  se=0.0036  p=0.138
+
+[Codex: net add]  N=67,973, repos=4,144
+   is_agent               b=+0.8766  se=0.0585  p=9e-51
+   lsize_c                b=+0.2154  se=0.0104  p=6.53e-95
+
+[Cursor: P(any human review)]  N=33,850, repos=3,301
+   is_agent               b=-0.0529  se=0.0128  p=3.42e-05
+   lsize_c                b=+0.0093  se=0.0063  p=0.139
+
+[Cursor: net add]  N=33,850, repos=3,301
+   is_agent               b=+0.8583  se=0.1385  p=5.73e-10
+   lsize_c                b=+0.1827  se=0.0155  p=4.07e-32
+
+[Devin: P(any human review)]  N=32,610, repos=3,205
+   is_agent               b=-0.0051  se=0.0540  p=0.924
+   lsize_c                b=+0.0098  se=0.0066  p=0.134
+
+[Devin: net add]  N=32,610, repos=3,205
+   is_agent               b=-0.0361  se=0.2608  p=0.89
+   lsize_c                b=+0.1776  se=0.0157  p=1.52e-29
+
+[Jules: P(any human review)]  N=34,231, repos=3,317
+   is_agent               b=+0.0797  se=0.0129  p=7.13e-10
+   lsize_c                b=+0.0096  se=0.0063  p=0.128
+
+[Jules: net add]  N=34,231, repos=3,317
+   is_agent               b=+0.0757  se=0.1037  p=0.465
+   lsize_c                b=+0.1752  se=0.0151  p=5.7e-31
+
+[ClaudeCode: P(any human review)]  N=37,478, repos=3,670
+   is_agent               b=-0.0125  se=0.0059  p=0.0343
+   lsize_c                b=+0.0086  se=0.0057  p=0.132
+
+[ClaudeCode: net add]  N=37,478, repos=3,670
+   is_agent               b=+0.3914  se=0.0518  p=4.1e-14
+   lsize_c                b=+0.1854  se=0.0142  p=4.41e-39

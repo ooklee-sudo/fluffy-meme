@@ -1,10 +1,13 @@
-import glob, json, sys
+import glob, json, sys, os
 import numpy as np, pandas as pd
 import statsmodels.api as sm
 
-OUT = "/tmp/gha/out"
+OUT = os.environ.get("GHA_OUT", "/tmp/gha/out")
+HOURS_F = os.environ.get("GHA_HOURS", "/tmp/gha/hours.txt")
+START = os.environ.get("GHA_START", "2025-09-01")
+PRS_F = os.environ.get("GHA_PRS", "/tmp/gha/prs.parquet")
 rows = {"pr": [], "rv": [], "rc": []}
-HOURS = set(open("/tmp/gha/hours.txt").read().split())
+HOURS = set(open(HOURS_F).read().split())
 for f in sorted(glob.glob(f"{OUT}/*.jsonl")):
     if f.split("/")[-1][:-6] not in HOURS: continue
     for line in open(f):
@@ -30,7 +33,7 @@ pr = pr[pr.group != "otherbot"].copy()
 # ---------- window & size filters
 pr["created"] = pd.to_datetime(pr.created, utc=True); pr["closed"] = pd.to_datetime(pr.closed, utc=True)
 pr["merged_at"] = pd.to_datetime(pr.merged_at, utc=True)
-pr = pr[pr.created >= pd.Timestamp("2025-09-01", tz="UTC")]            # review events observed from window start
+pr = pr[pr.created >= pd.Timestamp(START, tz="UTC")]            # review events observed from window start
 pr = pr.drop_duplicates("id")
 miss = pr.assign(miss=pr["add"].isna()).groupby("group").miss.agg(["mean","sum"])
 print("\nPRs with missing size field (dropped), by group:\n", miss.round(4).to_string())
@@ -48,6 +51,11 @@ n_rc = rc.groupby("pid").size().rename("n_inline")
 n_rc_sub = rc[rc.blen >= 30].groupby("pid").size().rename("n_inline_sub")
 n_rv = rv.groupby("pid").size().rename("n_reviews")
 n_rev_people = pd.concat([rv[["pid", "who"]], rc[["pid", "who"]]]).drop_duplicates().groupby("pid").size().rename("n_reviewers")
+ev = pd.concat([rv[["pid", "at"]], rc[["pid", "at"]]]); ev["at"] = pd.to_datetime(ev["at"], utc=True)
+first_ev = ev.groupby("pid")["at"].min().rename("first_review_at")
+pr = pr.join(first_ev, on="id")
+pr["first_rev_hrs"] = (pr.first_review_at - pr.created).dt.total_seconds() / 3600
+pr["rev_24h"] = (pr.first_rev_hrs.between(0, 24)).astype(int)
 pr = pr.join(n_rc, on="id").join(n_rc_sub, on="id").join(n_rv, on="id").join(n_rev_people, on="id")
 for c in ("n_inline", "n_inline_sub", "n_reviews", "n_reviewers"): pr[c] = pr[c].fillna(0)
 pr["any_review"] = ((pr.n_reviewers > 0)).astype(int)
@@ -57,7 +65,7 @@ pr["inline_per100"] = 100 * pr.n_inline / pr["size"]
 has = pr.groupby("repo").group.agg(lambda s: set(s))
 both = has[has.apply(lambda s: {"agent", "human"} <= s)].index
 pr["both"] = pr.repo.isin(both)
-pr.to_parquet("/tmp/gha/prs.parquet")
+pr.to_parquet(PRS_F)
 
 print("\n=== Sample ===")
 print(pr.groupby("group").size().to_string())
