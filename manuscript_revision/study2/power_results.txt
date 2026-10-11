@@ -1,0 +1,42 @@
+150 simulated experiments per cell; 24 decisions per participant; 20% attrition in session 2
+power = share of simulations with a significant (|z|>1.96) estimate of the correct sign (for rational/caveat rows: false-positive rate)
+
+=== baseline (s=0.5, no random)
+scenario                                          N   possession>0  ln(lam)>0  -ln(beta)>0
+rational (beta=1, lam=1)                        120           0.05       0.03         0.06
+rational (beta=1, lam=1)                        160           0.04       0.03         0.03
+rational (beta=1, lam=1)                        240           0.05       0.01         0.02
+rational (beta=1, lam=1)                        320           0.01       0.01         0.03
+both (beta=.7, lam=1.5)                         120           1.00       1.00         1.00
+both (beta=.7, lam=1.5)                         160           1.00       1.00         1.00
+both (beta=.7, lam=1.5)                         240           1.00       1.00         1.00
+both (beta=.7, lam=1.5)                         320           1.00       1.00         1.00
+mild (beta=.85, lam=1.2)                        120           1.00       0.85         0.69
+mild (beta=.85, lam=1.2)                        160           1.00       0.94         0.83
+mild (beta=.85, lam=1.2)                        240           1.00       1.00         0.96
+mild (beta=.85, lam=1.2)                        320           1.00       1.00         0.98
+[caveat] beta=1, lam=1.5, plan ignores lam      120           1.00       0.03         1.00
+[caveat] beta=1, lam=1.5, plan ignores lam      160           1.00       0.02         1.00
+[caveat] beta=1, lam=1.5, plan ignores lam      240           1.00       0.02         1.00
+[caveat] beta=1, lam=1.5, plan ignores lam      320           1.00       0.03         1.00
+
+=== noisier (s=0.9, 15% random responders)
+scenario                                          N   possession>0  ln(lam)>0  -ln(beta)>0
+rational (beta=1, lam=1)                        120           0.04       0.00         0.03
+rational (beta=1, lam=1)                        160           0.02       0.01         0.03
+rational (beta=1, lam=1)                        240           0.02       0.03         0.02
+rational (beta=1, lam=1)                        320           0.02       0.01         0.01
+both (beta=.7, lam=1.5)                         120           1.00       0.96         0.80
+both (beta=.7, lam=1.5)                         160           1.00       0.99         0.93
+both (beta=.7, lam=1.5)                         240           1.00       1.00         0.99
+both (beta=.7, lam=1.5)                         320           1.00       1.00         1.00
+mild (beta=.85, lam=1.2)                        120           0.83       0.35         0.29
+mild (beta=.85, lam=1.2)                        160           0.92       0.45         0.38
+mild (beta=.85, lam=1.2)                        240           0.99       0.63         0.49
+mild (beta=.85, lam=1.2)                        320           1.00       0.87         0.63
+[caveat] beta=1, lam=1.5, plan ignores lam      120           0.92       0.03         0.89
+[caveat] beta=1, lam=1.5, plan ignores lam      160           0.97       0.03         0.97
+[caveat] beta=1, lam=1.5, plan ignores lam      240           1.00       0.01         1.00
+[caveat] beta=1, lam=1.5, plan ignores lam      320           1.00       0.02         1.00
+
+(elapsed 117s)
