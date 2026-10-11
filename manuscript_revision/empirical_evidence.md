@@ -150,6 +150,38 @@ The same specifications, run separately on each window and on the pooled sample 
 
 **Two cautions.** First, the team-repository agent sample is small: 5,981 agent PRs against 84,231 human PRs, with Codex and Claude Code supplying most of the agent PRs. Second, the team-repository definition (three or more distinct authors in the window) is a proxy.
 
+## Event study around agent adoption
+
+**Design.** The pull-request panel is built from GH Archive for the 6,673 repositories in the AIDev curated set (repositories with over 100 stars and at least one agent PR), using the first seven days of each month from February to September 2025. A repository's adoption date is its first agent PR in AIDev; adoption is spread over May–October 2025, with about 800–950 repositories first adopting in each of June, July, August and September (cohort sizes with a PR in the panel: 41 in May, 812 in June, 754 in July, 847 in August, 943 in September, 1,172 later). The panel holds 7,041 agent PRs and 172,875 human PRs after filters.
+
+**Estimator.** Callaway–Sant'Anna with not-yet-treated repositories as controls and the period before adoption as base. Estimates are averages of repository-level means. Standard errors come from resampling repositories (400 draws; 300 for the count outcomes). The "pre-adoption" entry is the average of the placebo estimates two or more periods before adoption.
+
+| Outcome (repository mean) | Post-adoption ATT (SE) | Pre-adoption placebo (SE) |
+|---|---|---|
+| log(additions/deletions), all PRs | **+0.089** (0.042) | +0.025 (0.039) |
+| log(additions/deletions), human PRs only | +0.037 (0.042) | +0.026 (0.040) |
+| Share with a human review, all PRs | −0.010 (0.011) | +0.005 (0.011) |
+| Share with a human review, human PRs | −0.012 (0.011) | +0.005 (0.010) |
+| Share of refactor-titled PRs, all | +0.001 (0.005) | 0.000 (0.005) |
+| Merge rate, all PRs | −0.017 (0.008) | +0.010 (0.007) |
+| Merge rate, human PRs | −0.004 (0.008) | +0.009 (0.007) |
+| log(1 + PR count), all | +0.061 (0.019) | — |
+| log(1 + PR count), human | −0.025 (0.017) | — |
+
+![event study](empirical/event_study/event_study.png)
+
+**What it shows.**
+- *Net addition rises modestly.* The repository-level log ratio of additions to deletions is about 0.09 higher after adoption (t = 2.1). The effect is concentrated in the adoption period itself (+0.15 at event time 0, standard error 0.05) and is small and imprecise afterward. It is absent in human PRs only (+0.037), so it comes from the agent PRs themselves, as in the PR-level comparison, and is diluted because agent PRs are a minority of each repository's PRs.
+- *No change in review or refactoring at the repository level.* The share of PRs with a human review (−0.010) and the share of refactor-titled PRs (+0.001) show no significant change. Human PRs are not reviewed differently after adoption, so there is no spillover.
+- *Merge rate falls slightly* (−0.017, t = −2.2) but the lead two periods before adoption is positive (+0.025, t = 2.8), so part of this may be reversion, not an effect.
+- *Pre-trends are mostly flat.* The pooled placebo estimates are all close to zero, but individual leads are not uniformly clean: net addition at event time −6 (+0.186, t = 2.5), merge rate at −2 (+0.025, t = 2.8).
+
+**What it does not show, and why it is weak evidence.**
+- *It cannot separate the accounts.* Result 2(a) says aggregate outcomes cannot tell the behavioral theory from rational acceleration; repository-level means are aggregates. The repository-level result is consistent with the PR-level finding in the first section, not an additional test.
+- *Statistical strength.* Only one of nine outcomes is significant at 5% in the pooled post-adoption row (and the merge-rate result is doubtful given its lead). With nine outcomes and no correction, the net-addition result (t = 2.1) would not survive a multiplicity adjustment.
+- *The refactoring and review nulls are weak nulls.* The refactoring measure is a keyword match on the PR title, and "any human review" is a coarse outcome. They do not support the theory's P1a or a repository-level version of P7, but they do not refute them either.
+- *Design limits.* Only one week per month is observed, so event time is coarse; first-adoption dates come from AIDev's agent detection and may be late; there are no never-treated repositories (every repository eventually adopts), so late adopters serve as controls and anticipation or common shocks to adopters would not be removed; estimates at event time 4 and beyond rest on few repositories and are very imprecise.
+
 ## Limits
 
 1. **Not causal.** Within-repo comparison removes repository characteristics, not task difficulty or developer differences.
