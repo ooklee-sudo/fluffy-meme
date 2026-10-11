@@ -217,4 +217,26 @@ lo = [b for b in np.linspace(0.3, 1, 701) if len(steady(b)) >= 3]
 check("Result 4: bistable region lower edge ~0.646", min(lo), 0.646, 0.003)
 check("Result 4: bistable region upper edge ~0.843", max(lo), 0.843, 0.003)
 
+
+# ---------------------------------------------------------------- Lemma 1 (activation) and the workflow-mix remark
+base = dict(v=1.0, q=.8, beta=.5, phi=.6, alpha=.3, lam=1.2, eta=0.5, a=1.0, r=.4, delta=1.0, Rmed=1.0, s=0.79, Kmax=.6)
+def DA_(**kw): return aggregate_debt_closed_form(**{**base, **kw})
+# (a) choice regime: D_C = F(va/delta) does not involve the wedges -> nothing to vary; check the formula itself
+zz = np.linspace(-6, 6, 40001); ww = np.exp(-zz**2 / 2); ww /= ww.sum()
+DC_num = (ww * (np.exp(0.79 * zz) < 1.0)).sum()
+check("Lemma 1(a): D_C = F(va/delta) = 1/2 for median R = va", DC_num, 0.5, 0.002)
+# (b) acceptance regime: monotone in each wedge
+def mono(name, grid, sign):
+    vals = [DA_(**{name: g}) for g in grid]; d = np.diff(vals)
+    return bool(np.all(sign * d >= -1e-12)) and bool(sign * (vals[-1] - vals[0]) > 1e-4)
+check("Lemma 1(b): D_A weakly decreasing in beta (strictly overall)", mono("beta", np.linspace(.3, 1.0, 15), -1), True, 0)
+check("Lemma 1(b): D_A weakly decreasing in phi (strictly overall)", mono("phi", np.linspace(.3, 1.0, 15), -1), True, 0)
+check("Lemma 1(b): D_A weakly increasing in alpha (strictly overall)", mono("alpha", np.linspace(0, .9, 15), +1), True, 0)
+check("Lemma 1(b): D_A weakly increasing in lambda (strictly overall)", mono("lam", np.linspace(1.0, 2.0, 15), +1), True, 0)
+# workflow mix: wedge in aggregate debt scales with theta
+rat = dict(beta=1, phi=1, alpha=0, lam=1)
+for th in (0.25, 0.5, 0.75):
+    wedge = (1 - th) * DC_num + th * DA_() - ((1 - th) * DC_num + th * DA_(**rat))
+    check(f"Remark: wedge in aggregate debt = theta*(D_A - D_A*) at theta={th}", wedge, th * (DA_() - DA_(**rat)), 1e-12)
+
 print("\nALL CHECKS PASSED" if ok else "\nSOME CHECKS FAILED")
