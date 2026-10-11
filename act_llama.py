@@ -308,6 +308,123 @@ def act_transfer(src_pm, tgt_pm, calib, args, device, pad_id):
     return info
 
 
+@torch.no_grad()
+def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
+    """Same computation as act_transfer, without re-running the network from the input for every layer.
+
+    The inputs of each decoder layer are cached (source and target, per calibration batch).  For layer l the layer is
+    run once on each model with hooks on its LoRA modules to collect the Gram matrices; after the modules of the layer are
+    corrected, the corrected target layer is run once more to produce the cached input of layer l+1.  The number of layer
+    passes is then 3L instead of L(L+1)."""
+    src_mods, tgt_mods = lora_modules(src_pm), lora_modules(tgt_pm)
+    names = forward_order(tgt_pm, tgt_mods, device)
+    acc = device if device.type == "cuda" else torch.device("cpu")
+    layers = sorted({layer_index(n) for n in names})
+    n_fit = int(0.8 * len(calib))
+    fit, val = calib[:n_fit], calib[n_fit:]
+
+    def decoder_layers(pm):
+        out = {}
+        for n, m in pm.named_modules():
+            mm = re.search(r"layers\.(\d+)$", n)
+            if mm:
+                out[int(mm.group(1))] = m
+        return out
+    src_layers, tgt_layers = decoder_layers(src_pm), decoder_layers(tgt_pm)
+
+    def first_inputs(pm, layer0, ids, att):
+        store = {}
+
+        def pre(mod, a, kw):
+            store["h"] = a[0] if a else kw["hidden_states"]
+            store["a"] = tuple(a[1:])
+            store["kw"] = {k: v for k, v in kw.items() if k != "hidden_states"}
+            raise StopForward
+        h = layer0.register_forward_pre_hook(pre, with_kwargs=True)
+        try:
+            pm(input_ids=ids, attention_mask=att, use_cache=False)
+        except StopForward:
+            pass
+        finally:
+            h.remove()
+        return store
+
+    def run_layer(layer, st):
+        out = layer(st["h"], *st["a"], **st["kw"])
+        return out[0] if isinstance(out, (tuple, list)) else out
+
+    caches = {"f": [], "v": []}
+    for split, data in (("f", fit), ("v", val)):
+        for b in batches(data, args.bs):
+            ids, att, _ = collate(b, pad_id, device)
+            caches[split].append({"mask": att.bool().reshape(-1),
+                                  "s": first_inputs(src_pm, src_layers[layers[0]], ids, att),
+                                  "t": first_inputs(tgt_pm, tgt_layers[layers[0]], ids, att)})
+
+    def collect(mods, lnames, mask, store):
+        hs = []
+        for n in lnames:
+            def hook(mod, inp, out, n=n):
+                store[n] = inp[0].reshape(-1, inp[0].shape[-1])[mask].float()
+            hs.append(mods[n].register_forward_hook(hook))
+        return hs
+
+    info = {}
+    for l in layers:
+        lnames = [n for n in names if layer_index(n) == l]
+        G = {n: {k: 0.0 for k in ("tt_f", "st_f", "tt_v", "st_v", "ss_v", "dn", "sn")} for n in lnames}
+        for split in ("f", "v"):
+            for ent in caches[split]:
+                xs, xt = {}, {}
+                hs = collect(src_mods, lnames, ent["mask"], xs)
+                ent["s_next"] = run_layer(src_layers[l], ent["s"])
+                for h in hs:
+                    h.remove()
+                hs = collect(tgt_mods, lnames, ent["mask"], xt)
+                run_layer(tgt_layers[l], ent["t"])
+                for h in hs:
+                    h.remove()
+                for n in lnames:
+                    s_, t_ = xs[n].to(acc).double(), xt[n].to(acc).double()
+                    G[n]["tt_" + split] = G[n]["tt_" + split] + t_.T @ t_
+                    G[n]["st_" + split] = G[n]["st_" + split] + s_.T @ t_
+                    if split == "v":
+                        G[n]["ss_v"] = G[n]["ss_v"] + s_.T @ s_
+                    G[n]["dn"] += (t_ - s_).pow(2).sum().item()
+                    G[n]["sn"] += s_.pow(2).sum().item()
+        for n in lnames:
+            m = tgt_mods[n]
+            A_s = src_mods[n].lora_A["default"].weight.to(acc).double()
+            B = m.lora_B["default"].weight.to(acc).double()
+            BtB = B.T @ B
+            g = G[n]
+            d = A_s.shape[1]
+            eye = torch.eye(d, dtype=torch.float64, device=acc)
+
+            def solve(Gtt, Gst, alpha):
+                lam = alpha * torch.trace(Gtt) / d
+                rhs = A_s @ (Gst + lam * eye)
+                return torch.linalg.solve(Gtt + lam * eye, rhs.T).T
+
+            def val_err(A):
+                Gts = g["st_v"].T
+                return (torch.trace(BtB @ A @ g["tt_v"] @ A.T) - 2 * torch.trace(BtB @ A @ Gts @ A_s.T)
+                        + torch.trace(BtB @ A_s @ g["ss_v"] @ A_s.T)).item()
+            errs = [val_err(solve(g["tt_f"], g["st_f"], a)) for a in ALPHAS]
+            best = ALPHAS[min(range(len(ALPHAS)), key=errs.__getitem__)]
+            A_new = solve(g["tt_f"] + g["tt_v"], g["st_f"] + g["st_v"], best)
+            w = m.lora_A["default"].weight
+            w.copy_(A_new.to(device=w.device, dtype=w.dtype))
+            info[n] = {"alpha": best, "drift": math.sqrt(g["dn"] / max(g["sn"], 1e-12))}
+        if l != layers[-1]:  # advance the cached inputs: source from this pass, target through the corrected layer
+            for split in ("f", "v"):
+                for ent in caches[split]:
+                    ent["s"]["h"] = ent["s_next"]
+                    ent["t"]["h"] = run_layer(tgt_layers[l], ent["t"])
+        print(f"  ACT(fast) layer {l}: alphas " + ", ".join(f"{info[n]['alpha']:.0e}" for n in lnames))
+    return info
+
+
 # ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
@@ -324,6 +441,8 @@ def main():
     ap.add_argument("--n-cal", type=int, default=256)
     ap.add_argument("--seed", type=int, default=0,
                     help="replicate seed: data sample (train/eval/calib rows), LoRA init and batch order; 0 = original runs")
+    ap.add_argument("--act-impl", choices=["orig", "fast", "both"], default="orig",
+                    help="ACT implementation: orig re-runs the network per layer; fast caches layer inputs; both runs both")
     ap.add_argument("--calib-with-response", action="store_true",
                     help="diagnostic: calibrate ACT on prompt+answer tokens instead of prompts only")
     ap.add_argument("--max-len", type=int, default=512)
@@ -412,10 +531,20 @@ def main():
     set_lora_state(tgt_pm, src_state); res["copy"] = evaluate("copy")
 
     print("[4] ACT")
-    sync(device); t0 = time.time()
-    res["act_info"] = act_transfer(src_pm, tgt_pm, calib, args, device, pad_id)
-    sync(device); res["time_act_s"] = time.time() - t0
-    res["act"] = evaluate("act")
+    if args.act_impl in ("orig", "both"):
+        sync(device); t0 = time.time()
+        res["act_info"] = act_transfer(src_pm, tgt_pm, calib, args, device, pad_id)
+        sync(device); res["time_act_s"] = time.time() - t0
+        res["act"] = evaluate("act")
+    if args.act_impl in ("fast", "both"):
+        if args.act_impl == "both":
+            set_lora_state(tgt_pm, src_state)
+        sync(device); t0 = time.time()
+        res["act_info_fast"] = act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id)
+        sync(device); res["time_act_fast_s"] = time.time() - t0
+        res["act_fast"] = evaluate("act_fast")
+        if args.act_impl == "fast":
+            res["act_info"], res["time_act_s"], res["act"] = res["act_info_fast"], res["time_act_fast_s"], res["act_fast"]
 
     def recovery(metric, higher_better):
         n, r = res["none"][metric], res["retrain"][metric]
@@ -427,6 +556,10 @@ def main():
         R_Ce, R_Ae = recovery("em", True)
         res["recovery_em"] = {"R_C": R_Ce, "R_A": R_Ae}
     res["C_A_over_C_N"] = res["time_act_s"] / res["time_retrain_s"]
+    if "act_fast" in res and args.act_impl == "both":
+        n_, r_ = res["none"]["nll"], res["retrain"]["nll"]
+        res["recovery_fast"] = {"R_C": R_C, "R_A": (n_ - res["act_fast"]["nll"]) / (n_ - r_)}
+        res["C_A_fast_over_C_N"] = res["time_act_fast_s"] / res["time_retrain_s"]
     res["cost_usd"] = {k: res[f"time_{k}_s"] / 3600 * args.gpu_price for k in ("retrain", "act")}
     print(f"\nR_C={R_C:.4f}  R_A={R_A:.4f}  (NLL-based)   "
           f"C_A/C_N={res['C_A_over_C_N']:.3f} (compute time only; add data and revalidation labor to C_N)")
