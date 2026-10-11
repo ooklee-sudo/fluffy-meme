@@ -65,6 +65,35 @@ How to read this:
 
 **Net.** Pooled over all repositories, P7 is not supported. In repositories where review is feasible it holds for the *presence* of review, and this replicates (next section). It does not hold for the *amount* of inline commenting.
 
+## Self-admitted debt markers (P4, partial test on AIDev)
+
+P4 says that, for a given amount of debt introduced, LLM-assisted changes carry fewer self-admitted markers. Neither dataset I used measures the debt introduced (no static-analysis warnings), so this is not a test of P4 as stated. What I could count is marker *density*.
+
+**Data.** The curated AIDev subset (v3: 33,596 agent PRs in repositories with over 100 stars), restricted to code files (common source extensions, excluding lock, minified and generated files). I counted TODO, FIXME, HACK and XXX in added lines ("strict"), and separately a wider set that adds "workaround" and "for now" ("wide"). Code-file rows analyzed: 322,664 across 25,572 PRs.
+
+**Density by agent** (strict markers per 1,000 added lines; the share of PRs with at least one marker in parentheses):
+
+| Agent | PRs | Strict per 1k | PRs with a marker |
+|---|---|---|---|
+| Claude Code | 375 | 0.34 | 19.7% |
+| Codex | 16,668 | 0.26 | 1.7% |
+| Copilot | 3,471 | 0.59 | 10.0% |
+| Cursor | 1,207 | 0.56 | 9.0% |
+| Devin | 3,851 | 0.62 | 9.0% |
+
+Markers are rare: at most about 0.6 per 1,000 added lines. One user supplies 34% of the Codex rows; excluding that user moves Codex to 0.39 per 1k. There is no human baseline in AIDev, so these rates cannot be compared with human code from this source.
+
+**Within-PR contrast.** In Copilot, Devin and Cursor PRs, some commits are made by the agent's account and others by a human who continued the work. In the 2,429 PRs with code added by both, the human-authored commits carry more strict markers per added line:
+
+| | Agent commits | Human commits | Difference |
+|---|---|---|---|
+| Strict markers per 1k lines | 0.34 | 0.59 | +0.25 (95% CI +0.13 to +0.36) |
+| Wide markers per 1k lines | 0.68 | 0.79 | +0.11 (CI −0.07 to +0.27) |
+
+The sign is the same for each agent (Copilot 0.32 vs 0.45, Devin 0.39 vs 0.68, Cursor 0.30 vs 0.69). Among the 473 PRs with a marker in either part, the human part has the higher rate in 80.5%.
+
+**How to read it.** The direction fits P4: agent-authored code carries fewer self-admitted markers per line than the humans who edit the same PR. It is weak evidence, for three reasons. The human commits are follow-up edits, which differ from the agent's commits in size and purpose. Fewer markers could reflect less debt, not less admission, and the data cannot separate the two. And the wide-marker difference is not significant.
+
 ## Replication across three windows
 
 The same specifications, run separately on each window and on the pooled sample (within-repo fixed effects, size control, SEs clustered by repository). Entries are the agent-vs-human coefficient.

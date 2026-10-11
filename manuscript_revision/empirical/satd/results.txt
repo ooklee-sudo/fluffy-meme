@@ -1,0 +1,29 @@
+=== 1. Marker density by agent (added lines in code files) ===
+              PRs  repos  added_lines  strict_per_1k  wide_per_1k  PRs_with_marker_%  mean_repo_strict_per_1k
+agent                                                                                                        
+ClaudeCode    375    181       848411           0.34         0.76              19.73                     0.65
+Codex       16668   1098      3566611           0.26         0.51               1.69                     1.45
+Copilot      3471    792      2904772           0.59         0.90              10.03                     0.32
+Cursor       1207    281       850788           0.56         1.03               9.03                     0.44
+Devin        3851    273      2827294           0.62         0.75               9.01                     0.37
+
+individual users >20% of an agent's file rows (dropped in robustness): [('Codex', 'tamnd', 0.34)]
+
+--- excluding dominant users
+             PRs  repos  added_lines  strict_per_1k  wide_per_1k  PRs_with_marker_%  mean_repo_strict_per_1k
+agent                                                                                                       
+ClaudeCode   375    181       848411           0.34         0.76              19.73                     0.65
+Codex       9635   1097      2241228           0.39         0.59               2.72                     1.45
+Copilot     3471    792      2904772           0.59         0.90              10.03                     0.32
+Cursor      1207    281       850788           0.56         1.03               9.03                     0.44
+Devin       3851    273      2827294           0.62         0.75               9.01                     0.37
+
+=== 2. Within-PR contrast: agent-authored vs human-authored commits (same PR) ===
+PRs with code added by both the agent account and a human: 2,429
+  strict (TODO/FIXME/HACK/XXX): agent commits 0.34/1k lines, human commits 0.59/1k; human minus agent = +0.25 [95% CI +0.13, +0.36] (PR bootstrap)
+  wide (+workaround/for now/...): agent commits 0.68/1k lines, human commits 0.79/1k; human minus agent = +0.11 [95% CI -0.07, +0.27] (PR bootstrap)
+  added lines: agent 1,222,011, human 2,733,568
+    Copilot: PRs 973, agent 0.32 vs human 0.45 per 1k lines
+    Devin: PRs 1,038, agent 0.39 vs human 0.68 per 1k lines
+    Cursor: PRs 418, agent 0.30 vs human 0.69 per 1k lines
+  PRs with a marker in either part: 473; human rate higher in 80.5%, agent higher in 19.5%
