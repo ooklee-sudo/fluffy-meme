@@ -13,3 +13,5 @@ Note: GH Archive payloads from about 2025-10 onward no longer carry PR size or a
 
 ## Self-admitted debt markers
 `satd/count.py` streams AIDev v3 `pr_commit_details.parquet` (download from huggingface.co/datasets/hao-li/AIDev, tag v3, to `/tmp/aidev_v3`) and counts markers in added lines of code files; `satd/analyze.py` produces `satd/results.txt`.
+
+`satd/` also holds the human-baseline comparison: download the CommitPackFT language files (`huggingface.co/datasets/bigcode/commitpackft`, `data/<lang>/data.jsonl`) to `/tmp/cpft`; run `count_agent.py`, `count_human.py` (both use `metrics.py`), then `size_strat.py` and `boot_fast.py`. `compare_results_unstandardised_partial.txt` is an earlier run, stopped before its slow bootstrap finished; `boot_fast.py` replaced it.

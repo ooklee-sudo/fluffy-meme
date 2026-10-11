@@ -1,0 +1,32 @@
+share of file-rows by patch size (added lines):
+         agent  human
+sz                   
+1-5      0.459  0.608
+6-20     0.238  0.236
+21-50    0.136  0.109
+51-150   0.112  0.046
+151-500  0.047  0.000
+>500     0.007  0.000
+
+language x size cells shared by both: 60 covering 60.6% of agent added lines
+
+Per 1,000 added lines, human reweighted to the agent's language x patch-size mix:
+          agent  human(std)  ratio
+strict     0.62        1.38   0.45
+wide       0.89        1.86   0.48
+long      10.05        3.61   2.78
+dup       22.84        6.85   3.34
+broad      1.09        0.27   3.98
+suppress   1.94        0.42   4.60
+smell     35.91       11.15   3.22
+
+strict markers per smell: agent 0.017, human 0.124, ratio 0.14
+
+By patch size (raw rates per 1k added lines):
+  size  n_agent  n_human  mk_agent  mk_human  smell_agent  smell_human  dup_agent  dup_human
+   1-5   111157   172480      1.56      3.45        57.23        26.92      14.12       2.32
+  6-20    57643    66973      0.95      1.73        35.34        10.51      17.95       3.06
+ 21-50    32981    30928      0.59      1.30        30.80        11.53      18.26       6.02
+51-150    27102    13170      0.51      1.24        33.95        13.75      23.55       9.82
+
+smell without dup (standardised): agent 13.07, human 4.30, ratio 3.04

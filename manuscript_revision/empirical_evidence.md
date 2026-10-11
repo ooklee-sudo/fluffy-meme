@@ -94,6 +94,36 @@ The sign is the same for each agent (Copilot 0.32 vs 0.45, Devin 0.39 vs 0.68, C
 
 **How to read it.** The direction fits P4: agent-authored code carries fewer self-admitted markers per line than the humans who edit the same PR. It is weak evidence, for three reasons. The human commits are follow-up edits, which differ from the agent's commits in size and purpose. Fewer markers could reflect less debt, not less admission, and the data cannot separate the two. And the wide-marker difference is not significant.
 
+### Against a human baseline (CommitPackFT)
+
+AIDev has no human patches, so I used an outside baseline: CommitPackFT (OctoPack project, MIT licence), human commits from GitHub, mostly before 2023, filtered for clear commit messages. For each file change I rebuilt the added lines with a line-level diff, then applied the same functions to it and to the agent patches.
+
+**Samples.** Agent: 241,916 file changes from 2,203 repositories, after dropping one individual user who supplied 34% of the Codex rows. Human: 283,557 file changes from 121,120 repositories. Both cover the same 14 languages.
+
+**Measures.** *Strict marker* is TODO, FIXME, HACK or XXX. *Smell proxy* is the sum of four pattern counts on added lines: lines over 120 characters, repeated long lines within a patch, broad exception handlers, and warning-suppression comments (`# noqa`, `@ts-ignore`, `eslint-disable` and similar). It is my own proxy, not an established static-analysis score.
+
+**Comparison.** Human rates are reweighted to the agent's mix of language and patch size (60 cells; patches over 150 added lines do not exist in the human data, so the comparison covers 60.6% of the agent's added lines). Ratios are agent over human; intervals come from resampling repositories (1,000 draws).
+
+| Per 1,000 added lines | Agent | Human | Ratio (95% CI) |
+|---|---|---|---|
+| Strict markers | 0.62 | 1.38 | **0.45** (0.33–0.61) |
+| Smell proxy | 35.9 | 11.2 | **3.22** (2.85–3.71) |
+| Smell proxy without the repeated-line component | 13.1 | 4.3 | 3.04 (2.54–3.79) |
+| Strict markers per smell instance | 0.017 | 0.124 | **0.14** (0.10–0.19) |
+
+By component, the agent-to-human ratio is 2.8 for long lines, 3.3 for repeated lines, 4.0 for broad exception handlers and 4.6 for suppression comments. The marker ratio is 0.29 in modified files and 0.50 in new files.
+
+**How to read it.** The pattern matches what P4 predicts: agent-authored code carries fewer self-admitted markers and, at the same time, more of the signals that usually go with unadmitted debt, so markers per smell instance are about one seventh of the human level. The result holds within language and patch-size cells, in new and modified files, and for each of the smell components.
+
+**Why it is still exploratory.**
+- *Era.* The human commits are mostly older. Comment conventions and tooling changed: suppression comments such as `@ts-ignore` and `eslint-disable` are more common in recent code.
+- *Selection.* CommitPackFT keeps commits with clear messages, and its repositories are mostly small and not selected on stars, whereas the agent PRs are in repositories with over 100 stars.
+- *Task mix.* Agent PRs may be different kinds of work.
+- *Proxy.* The smell score is ad hoc, and repeated lines in particular are inflated by repetitive test code.
+- *Reconstruction.* Human patches were rebuilt from file contents with a line diff, and the agent patches come from GitHub; the two can differ in how moved lines are counted.
+
+Any one of these could move the ratios. What would settle it is a same-period human sample from the same repositories, scored with an established static-analysis tool, which this environment could not reach.
+
 ## Replication across three windows
 
 The same specifications, run separately on each window and on the pooled sample (within-repo fixed effects, size control, SEs clustered by repository). Entries are the agent-vs-human coefficient.
