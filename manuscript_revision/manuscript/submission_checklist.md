@@ -34,3 +34,9 @@ Check in the journal's current instructions:
 - Its data and code disclosure requirements, and whether the code and data must be deposited at submission or only on acceptance. The statement in the file promises a public deposit; add the repository and DOI once it exists.
 - Abstract and length limits, and whether proofs should go in an electronic companion instead of Appendix A.
 - The department and the type of paper it expects. Papers that rest on assumed behavioral parameters will be read for the novelty of the economic insight, so the argument that frame shift is a structural claim (Section 3.1) deserves the most attention before submission.
+
+# AsCollected (required for Management Science from 29 April 2026)
+
+The journal's rule, as you gave it to me: every submission must include a link to the AsCollected project page, and submissions without it are returned. The link has to be created by you on AsCollected.org; I cannot create it and have not invented one. `ascollected_information_sheet.md` (and the Word version) lists the facts to enter. Placeholders for the link are in the manuscript (Data and Code Availability), the cover letter, and the title page. I could not open the journal's policy page (access refused), and a search suggested the page records how and when data were gathered, who cleaned and analyzed them, and what each contributor did, so check the form's actual fields and the replication-package checklist.
+
+The "who did what" entry should state accurately that the analysis programs and the drafting were done with an AI assistant, in line with the journal's own AI-use rules.

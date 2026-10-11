@@ -98,3 +98,4 @@ if __name__ == "__main__":
     build("manuscript_ms.md", "manuscript_ms.docx", "ref_misq.docx", 10)
     build("manuscript_misq.md", "manuscript_misq.docx", "ref_misq.docx", 10)
     build("online_appendix.md", "online_appendix_ms.docx", "ref_oa.docx", 9)
+    build("ascollected_information_sheet.md", "ascollected_information_sheet.docx", "ref_oa.docx", 10)
