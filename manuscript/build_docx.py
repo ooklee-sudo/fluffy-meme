@@ -3,7 +3,7 @@
 Citations (natbib author-year) are expanded to text, section/table/proposition numbers are resolved and
 fixed as text, simple math in tables becomes plain text with subscripts, math elsewhere becomes native Word equations.
 
-Usage:  python build_docx.py dss_manuscript.tex dss_manuscript.docx [--acm]   (--acm: numbered ACM-style citations/references and front matter)
+Usage:  python build_docx.py dss_manuscript.tex dss_manuscript.docx [--acm | --informs]   (--acm: numbered ACM-style citations/references; --informs: INFORMS/IJOC author-year style)
 Requires: pandoc, python-docx.
 """
 import re
@@ -65,7 +65,7 @@ def nm(keys):
     return ' and '.join(f'{CM[k][0]} ({CM[k][1]})' for k in ks)
 
 
-def to_pandoc_tex(src, acm=False):
+def to_pandoc_tex(src, acm=False, informs=False):
     fm0, fm1 = src.index('\\begin{frontmatter}'), src.index('\\end{frontmatter}')
     front = src[fm0:fm1]
     title = re.search(r'\\title\{(.*?)\}\n', front, re.S).group(1).strip()
@@ -80,10 +80,12 @@ def to_pandoc_tex(src, acm=False):
     cort = cort.group(1).strip() if cort else ''
     body = src[fm1 + len('\\end{frontmatter}'):]
     body = body[:body.index('\\end{document}')]
-    if acm:
+    if acm or informs:
         body = re.sub(r'\\section\*\{CRediT authorship contribution statement\}.*?(?=\\section\*\{Declaration of competing interest\})', '', body, flags=re.S)
         body = re.sub(r'\\section\*\{Declaration of competing interest\}.*?(?=\\section\*\{Declaration of generative AI)', '', body, flags=re.S)
         body = body.replace('\\section*{Declaration of generative AI and AI-assisted technologies in the writing process}', '\\section*{Acknowledgments}')
+        if informs:
+            body = body.replace('\\section*{Data availability}', '\\section*{Data and Software Availability}')
 
     # bibliography -> References section
     bs, bt, be = body.index('\\bibliographystyle'), body.index('\\begin{thebibliography}'), body.index('\\end{thebibliography}')
@@ -160,6 +162,12 @@ def to_pandoc_tex(src, acm=False):
         body = body[:i] + '\\textbf{' + body[i + len('\\paragraph{'):c] + '}' + body[c + 1:]
 
     # citations
+    if informs:
+        def ay_i(keys):
+            return ', '.join(f'{CM[k.strip()][0]} {CM[k.strip()][1]}' for k in keys.split(','))
+        body = re.sub(r'\\citep\[([^\]]*);\]\[\]\{([^}]+)\}', lambda m: f'({m.group(1)}; {ay_i(m.group(2))})', body)
+        body = re.sub(r'\\citep\{([^}]+)\}', lambda m: f'({ay_i(m.group(1))})', body)
+        body = re.sub(r'\\citealt\{([^}]+)\}', lambda m: ay_i(m.group(1)), body)
     if acm:
         def nums(keys):
             return ', '.join(str(n) for n in sorted(ACM_NUM[k.strip()] for k in keys.split(',')))
@@ -202,6 +210,10 @@ def to_pandoc_tex(src, acm=False):
             '\\newcommand{\\E}{\\mathbb{E}}\n\\begin{document}\n'
             f'\\title{{{title}}}\n\\author{{{author}\\\\{address}' + (f'\\\\{cort}' if cort else '') + '}\n\\date{}\n\\maketitle\n'
             f'\\begin{{abstract}}\n{abstract}\n\\end{{abstract}}\n\\noindent\\textbf{{Keywords:}} {kw}\n\n')
+    if informs:
+        head = head.replace(f'\\noindent\\textbf{{Keywords:}} {kw}\n\n',
+                            f'\\noindent\\textbf{{Key words:}} {kw.replace("; ", ", ")}\n\n'
+                            '\\noindent\\textbf{Funding:} \\textbf{[Author to confirm: state any funding, or that the research received no specific funding.]}\n\n')
     if acm:
         kw_acm = kw.replace('; ', ', ')
         head = head.replace(f'\\noindent\\textbf{{Keywords:}} {kw}\n\n',
@@ -329,9 +341,9 @@ def style_docx(path_in, path_out, title):
     d.save(path_out)
 
 
-def main(tex_path, docx_path, acm=False):
+def main(tex_path, docx_path, acm=False, informs=False):
     src = open(tex_path, encoding='utf8').read()
-    ptex, title = to_pandoc_tex(src, acm=acm)
+    ptex, title = to_pandoc_tex(src, acm=acm, informs=informs)
     with tempfile.TemporaryDirectory() as tmp:
         tp, raw = os.path.join(tmp, 'm.tex'), os.path.join(tmp, 'raw.docx')
         open(tp, 'w', encoding='utf8').write(ptex)
@@ -347,4 +359,4 @@ def main(tex_path, docx_path, acm=False):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2], acm='--acm' in sys.argv)
+    main(sys.argv[1], sys.argv[2], acm='--acm' in sys.argv, informs='--informs' in sys.argv)
