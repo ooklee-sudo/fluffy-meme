@@ -37,17 +37,7 @@
 }
 
 \ABSTRACT{%
-Organizations that build on foundation models they do not control must decide, after every provider upgrade, whether to retrain the adapters
-that hold their task knowledge, to keep reusing them, or to apply a cheaper transfer procedure. We formulate this problem as optimal stopping in which
-upgrades arrive stochastically, the value at stake evolves randomly, and a transfer method is characterized by the share of the retraining benefit
-it recovers and by its cost. The solution is a closed-form retraining threshold together with a break-even recovery that any transfer method must exceed
-to be worth its price. We measure recovery on open model pairs. Within one model family, copying the old adapter restores 96 percent of the retraining benefit
-after a small upgrade, 55 percent after a larger one, and only 32 to 36 percent after the largest (two seeds); after instruction tuning it restores 71 percent.
-A label-free, closed-form transfer method, Anchored Calibration Transfer (ACT), improves on copying by an amount that rises steadily with the size of the upgrade.
-After the largest upgrade it restores 69 to 72 percent at about a third of the retraining compute time, which makes it the cost-minimizing policy for adapters whose annual value is
-roughly 1.8 to 4.4 times the retraining cost. The pattern repeats at 70 and 410 million parameters. ACT's compute time relative to retraining rose from 0.14 to 0.70 with model size in our first implementation; caching layer inputs, which leaves its output unchanged, lowers the 410-million figure to 0.28, still above the break-even of 0.21, so at that size ACT does not pay. After smaller upgrades its gain does not cover its cost, and on an instruction-tuned pair it gives no gain at all, for a reason we could not identify.
-Simulations with clustered and regular release schedules and with jump risk show that the policy ranking is robust, although the optimal threshold moves by 20 percent or more.
-The model gives practitioners a checkable rule for when transfer is worth buying.
+Organizations that build on foundation models they do not control must decide, after every provider upgrade, whether to retrain the adapters that hold their task knowledge, to keep reusing them, or to apply a cheaper transfer procedure. We study this decision from a computational angle. We propose Anchored Calibration Transfer (ACT), a closed-form, label-free correction of a low-rank adapter that needs one pass over unlabeled task inputs and a set of ridge solves, and we show that a straightforward implementation re-runs the network once for every layer, so that its cost grows with the square of the depth. Caching layer inputs removes this repetition without changing the output: on the same trained adapters the two implementations select identical anchoring strengths and give identical held-out loss, and the cached version is 1.4 to 2.4 times faster at 70 to 410 million parameters, which lowers ACT's compute time relative to retraining at 410 million parameters from 0.67 to 0.28. To judge when such a method is worth its cost, we embed it in an optimal stopping model with stochastic upgrades, which gives a closed-form retraining threshold and a break-even recovery. On open model pairs, copying the old adapter restores 96 percent of the retraining benefit after a small upgrade but only 32 to 36 percent after the largest. ACT's gain over copying rises steadily with the size of the upgrade, and it pays for itself after sufficiently large upgrades at 70 and 160 million parameters but not at 410 million. On an instruction-tuned pair it gives no gain, for a reason we could not identify. The decision rule is robust to clustered and regular release schedules and to jump risk.
 }
 
 \KEYWORDS{AI asset management, foundation model upgrades, parameter-efficient fine-tuning, maintenance policy, optimal stopping, adapter transfer}
@@ -80,19 +70,11 @@ that says what to do and what a repair method is worth.
 
 We contribute the following.
 \begin{enumerate}
-\item \emph{A decision model.} We cast the maintenance problem as an optimal stopping problem with Poisson upgrades and geometric
-Brownian motion (GBM) value, and derive the optimal retraining threshold in closed form (Propositions~\ref{prop:thr}--\ref{prop:act}).
-A transfer method with recovery $R$ and cost $C$ is worth adopting if and only if $C$ is below an explicit bound $\Gamma$. Equivalently, every method has a
-break-even recovery that a team can check before buying it.
-\item \emph{Recovery of naive reuse as a function of upgrade size.} On open model pairs, copying the old adapter recovers 96\% of the retraining
-benefit after a small upgrade, 55\% after a larger one, and only 32\% to 36\% after the largest; after an instruction-tuning upgrade it recovers 71\%. Through the model these numbers imply
-retraining thresholds from about 4 to about 56 times the retraining cost, so the right policy depends strongly on how far the model moved.
-\item \emph{A transfer method priced by the rule.} We propose Anchored Calibration Transfer (ACT), a closed-form, label-free correction of the adapter.
-Its gain over copying rises steadily with the size of the upgrade, reaching 0.33 to 0.40 after the largest at 160 million parameters (two seeds), where it restores 69\% to 72\% of the retraining benefit at 30\% to 36\% of the retraining compute time and is the
-cost-minimizing policy over a bounded range of adapter values. The gain also appears at 70 and 410 million parameters. ACT's compute time relative to retraining rose from 0.14 to 0.70 with model size in our first implementation, and a version that caches layer inputs and leaves the output unchanged lowers the 410-million figure to 0.28, which is still above the break-even of 0.21, so at that size ACT does not pay.
-After smaller upgrades its gain does not cover its cost, and on the instruction-tuned pair it gives no gain, for a reason we could not identify.
-\item \emph{Robustness of the rule.} We simulate clustered and regular release schedules and jump risk in value. The cost of using the
-Poisson-calibrated threshold is below 2.5\% in every scenario.
+\item \emph{A closed-form, label-free transfer method.} Anchored Calibration Transfer (ACT) corrects the input projection of each low-rank adapter module by a ridge regression on activation statistics of the source and target models, using only unlabeled task inputs. Section~\ref{sec:act} gives the method, its complexity, and a cached implementation.
+\item \emph{A cost analysis and a faster implementation.} A time profile shows that ACT's cost grows faster than that of retraining because the straightforward implementation runs the network from the input once for every layer, which makes the number of layer passes quadratic in depth. Caching layer inputs makes it linear and leaves the output unchanged: on the same trained adapters the two versions select identical anchoring strengths and give identical held-out loss. The cached version is 1.4, 1.6, and 2.4 times faster at 70, 160, and 410 million parameters, and it lowers ACT's compute time relative to retraining at 410 million parameters from 0.67 to 0.28.
+\item \emph{A decision model that prices the method.} We cast the maintenance decision as an optimal stopping problem with Poisson upgrades and geometric Brownian motion (GBM) value, and derive the optimal retraining threshold in closed form (Propositions~\ref{prop:thr}--\ref{prop:act}). A transfer method with recovery $R$ and cost $C$ is worth adopting if and only if $C$ is below an explicit bound $\Gamma$; equivalently, every method has a break-even recovery that can be checked before it is bought.
+\item \emph{Evidence on open model pairs.} Copying the old adapter recovers 96\% of the retraining benefit after a small upgrade, 55\% after a larger one, and only 32\% to 36\% after the largest; after an instruction-tuning upgrade it recovers 71\%. ACT's gain over copying rises steadily with the size of the upgrade, reaching 0.33 to 0.40 after the largest at 160 million parameters (two seeds). It covers its cost after sufficiently large upgrades at 70 and 160 million parameters but not at 410 million, where its cost ratio of 0.28 remains above the break-even of 0.21. On the instruction-tuned pair it gives no gain, for a reason we could not identify.
+\item \emph{Robustness of the rule.} We simulate clustered and regular release schedules and jump risk in value. The cost of using the Poisson-calibrated threshold is below 2.5\% in every scenario.
 \end{enumerate}
 
 Section~\ref{sec:lit} reviews related work. Section~\ref{sec:model} sets up the model and Section~\ref{sec:analysis} derives the
@@ -203,6 +185,13 @@ Gram matrices alone. The calibration inputs are task prompts without answers, so
 Accumulating Gram matrices costs $O(Nd^2)$ for $N$ calibration tokens, and each module requires $K=13$ solves of size
 $d\times d$. Unlike retraining it needs no labels. Its compute time is not negligible in practice, however: in our
 implementation it takes 30\% to 65\% of the time of the retraining runs on the full-size CPU settings (Section~\ref{sec:pairs}).
+
+\paragraph{Algorithm and complexity.} Let the model have $L$ decoder layers, let $N$ be the number of calibration tokens, and let $d_{\text{in}}$ be the input width of a module. The cached implementation proceeds as follows.
+\begin{enumerate}
+\item Run the source and the target model on each calibration batch up to the input of the first decoder layer, and cache the hidden states and the layer arguments (attention mask, position encodings), for the fit and the validation split.
+\item For each layer $l=1,\dots,L$ in order from the input side: (a) run layer $l$ of the source model and of the target model on the cached inputs, with hooks on the adapter modules, and accumulate for every module the matrices $X_tX_t^{\top}$ and $X_sX_t^{\top}$ on the fit and the validation split and $X_sX_s^{\top}$ on the validation split; (b) for every module and each of $K=13$ values of $\alpha$, solve the ridge system on the fit matrices and score it by the validation error, which is evaluated from the accumulated matrices alone; (c) solve once more with the full matrices for the chosen $\alpha$ and overwrite $A$; (d) run the corrected target layer once more to obtain the cached input of layer $l+1$, and take the source output of step (a) as the next source input.
+\end{enumerate}
+Step 2 costs $O(Nd_{\text{in}}^2)$ for the accumulation and $K+1=14$ solves of cost $O(d_{\text{in}}^3)$ per module, and the cached version makes $3L-1$ passes through a layer per calibration batch. The straightforward implementation instead re-runs both models from the input up to layer $l$ for every $l$, which makes $L(L+1)$ layer passes per batch, so that the passes grow with $L^2$, whereas one gradient step of retraining passes each layer once and grows with $L$. This explains why ACT's cost relative to retraining rises with depth in the straightforward implementation (Section~\ref{sec:pairs}). On random models of three architectures (Llama, Qwen2, GPT-NeoX) and on trained adapters at three sizes, the cached version selected the same $\alpha$ for every module and gave the same held-out loss as the straightforward one.
 
 \section{Numerical Analysis}\label{sec:numerical}
 
