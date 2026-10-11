@@ -33,8 +33,7 @@ to be worth its price. We measure recovery on open model pairs. Within one model
 after a small upgrade, 55 percent after a larger one, and only 32 to 36 percent after the largest (two seeds); after instruction tuning it restores 71 percent.
 A label-free, closed-form transfer method, Anchored Calibration Transfer (ACT), improves on copying by an amount that rises steadily with the size of the upgrade.
 After the largest upgrade it restores 69 to 72 percent at about a third of the retraining compute time, which makes it the cost-minimizing policy for adapters whose annual value is
-roughly 1.8 to 4.4 times the retraining cost. The pattern repeats at 70 and 410 million parameters, but ACT's compute time relative to retraining rises from 0.14 to 0.70 in our implementation,
-so at 410 million it no longer pays. After smaller upgrades its gain does not cover its cost, and on an instruction-tuned pair it gives no gain at all, for a reason we could not identify.
+roughly 1.8 to 4.4 times the retraining cost. The pattern repeats at 70 and 410 million parameters. ACT's compute time relative to retraining rose from 0.14 to 0.70 with model size in our first implementation; caching layer inputs, which leaves its output unchanged, lowers the 410-million figure to 0.28, still above the break-even of 0.21, so at that size ACT does not pay. After smaller upgrades its gain does not cover its cost, and on an instruction-tuned pair it gives no gain at all, for a reason we could not identify.
 Simulations with clustered and regular release schedules and with jump risk show that the policy ranking is robust, although the optimal threshold moves by 20 percent or more.
 The model gives practitioners a checkable rule for when transfer is worth buying.
 \end{abstract}
@@ -81,7 +80,7 @@ benefit after a small upgrade, 55\% after a larger one, and only 32\% to 36\% af
 retraining thresholds from about 4 to about 56 times the retraining cost, so the right policy depends strongly on how far the model moved.
 \item \emph{A transfer method priced by the rule.} We propose Anchored Calibration Transfer (ACT), a closed-form, label-free correction of the adapter.
 Its gain over copying rises steadily with the size of the upgrade, reaching 0.33 to 0.40 after the largest at 160 million parameters (two seeds), where it restores 69\% to 72\% of the retraining benefit at 30\% to 36\% of the retraining compute time and is the
-cost-minimizing policy over a bounded range of adapter values. The gain also appears at 70 and 410 million parameters, but ACT's compute time relative to retraining rises from 0.14 to 0.70 with model size in our implementation, so the same method stops paying at 410 million.
+cost-minimizing policy over a bounded range of adapter values. The gain also appears at 70 and 410 million parameters. ACT's compute time relative to retraining rose from 0.14 to 0.70 with model size in our first implementation, and a version that caches layer inputs and leaves the output unchanged lowers the 410-million figure to 0.28, which is still above the break-even of 0.21, so at that size ACT does not pay.
 After smaller upgrades its gain does not cover its cost, and on the instruction-tuned pair it gives no gain, for a reason we could not identify.
 \item \emph{Robustness of the rule.} We simulate clustered and regular release schedules and jump risk in value. The cost of using the
 Poisson-calibrated threshold is below 2.5\% in every scenario.
@@ -330,7 +329,7 @@ We note that $C_N$ here contains compute only. Adding data acquisition and reval
 
 \paragraph{Model size.} To check whether the pattern depends on scale, we repeat the smallest, a medium, and the largest upgrade at 70 million parameters, and the largest upgrade at 410 million parameters (Table~\ref{tab:scale}); the 160-million row is repeated for comparison.
 The shape repeats at 70 million: copy recovery falls from 0.972 to 0.933 to 0.621 as the drift rises from 0.25 to 0.32 to 0.49, and ACT's gain rises from $+0.002$ to $+0.026$ to $+0.171$. ACT is cheaper relative to retraining at this size (0.14 to 0.16), so it already pays after the medium upgrade, for adapter values between about 12 and 42 times $C_N$, and over a range of 1.6 to 8.4 after the largest.
-At 410 million parameters ACT again improves on copying after the largest upgrade (recovery 0.63 against 0.47, a gain of 0.16), but its compute time relative to retraining has risen to 0.70, so the gain is smaller than the break-even ($\Gamma=0.23$ against $C_A=0.70$) and ACT is never the cost-minimizing policy.
+At 410 million parameters ACT again improves on copying after the largest upgrade (recovery 0.63 against 0.47, a gain of 0.16), but its compute time relative to retraining has risen to 0.70, so the gain is smaller than the break-even ($\Gamma=0.23$ against $C_A=0.70$) and ACT is never the cost-minimizing policy. A more efficient implementation, described below, lowers this cost ratio to 0.28 without changing the result, which is closer to the break-even but still above it.
 
 \begin{table}[t]
 \centering
@@ -366,7 +365,22 @@ Model & Layers & Total (s) & Forward passes & Linear solves & Gram matrices, oth
 \end{tabular}
 \end{table}
 
-The effect is a property of our implementation rather than of the method. Caching the corrected hidden states from layer to layer would remove the repeated passes; we did not implement this, so we cannot say how much it would reduce the cost ratio. The result does show that a transfer method's gain and its cost have to be measured at the scale at which it will be used. The 410-million run is a single upgrade with a single seed, and its drift (0.46) is lower than that of the 160-million run it is compared with (0.60).
+The effect is a property of our implementation rather than of the method. We therefore implemented the obvious remedy: the inputs of each layer are cached, so that each layer is run once per model to collect statistics and once more through the corrected target model to produce the next layer's input, which makes the number of layer passes grow linearly with depth. On the same trained adapters the cached version selects the same anchoring strength for every module and gives the same held-out NLL as the original, to the digits reported, and it is faster by 1.35, 1.62, and 2.37 times at 70, 160, and 410 million parameters, lowering the cost ratio from 0.16, 0.33, and 0.67 to 0.12, 0.21, and 0.28 (Table~\ref{tab:cached}). The speed-up grows with model size, as the profile predicts. At 410 million parameters the cost ratio is still above the break-even of 0.21, so ACT does not pay there, but the gap is 0.07 rather than 0.46. We did not profile the cached version, so we cannot say what dominates its remaining cost.
+The result also shows that a transfer method's gain and its cost have to be measured at the scale at which it will be used. The 410-million run is a single upgrade with a single seed, and its drift (0.46) is lower than that of the 160-million run it is compared with (0.60).
+
+\begin{table}[t]
+\centering
+\caption{Original and cached ACT on the same trained adapters (Pythia, step 73k to 143k; new runs, so recoveries differ slightly from Table~\ref{tab:scale}). $\Gamma$ and the ACT-optimal range use the cached cost ratio.}\label{tab:cached}
+\begin{tabular}{lcccccc}
+\toprule
+Model & $R_C$ & $R_A$ & ACT time (s), original / cached & $C_A/C_N$, original / cached & $\Gamma$ & ACT optimal for\\
+\midrule
+70M & 0.645 & 0.809 & 32 / 23 & 0.16 / 0.12 & 0.38 & $[1.4,\,9.6)$\\
+160M & 0.390 & 0.768 & 151 / 94 & 0.33 / 0.21 & 0.54 & $[1.0,\,6.9)$\\
+410M & 0.492 & 0.637 & 763 / 322 & 0.67 / 0.28 & 0.21 & never\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Where Does ACT Help?}\label{sec:diag}
 
@@ -456,19 +470,19 @@ procedure costing 65\% of $C_N$ would need a recovery of 0.92, a gain of 21 poin
 \end{enumerate}
 
 Three cautions apply. The thresholds scale with the full retraining cost, so a team that omits labeling and validation labor from $C_N$ will retrain too early. And
-$R_C$ is task-specific: the same upgrade can leave a summarization adapter nearly intact and a reasoning adapter badly degraded, so the measurement in step 1 should be repeated for each adapter that matters. Finally, a transfer method's cost ratio depends on model scale and implementation (in our runs ACT's rose from 0.14 to 0.70 between 70 and 410 million parameters), so $C_A$ should be measured at the model size in use.
+$R_C$ is task-specific: the same upgrade can leave a summarization adapter nearly intact and a reasoning adapter badly degraded, so the measurement in step 1 should be repeated for each adapter that matters. Finally, a transfer method's cost ratio depends on model scale and implementation (in our first implementation ACT's rose from 0.14 to 0.70 between 70 and 410 million parameters, and with cached layer inputs from 0.12 to 0.28), so $C_A$ should be measured at the model size in use.
 
 \section{Discussion and Conclusion}\label{sec:conclusion}
 
 For managers, the model reduces AI-asset maintenance to four measurable quantities: the release rate, the volatility of the value at stake, the retraining cost, and the recovery of the available transfer method. It yields a threshold for retraining and a price ceiling for transfer tooling.
-Our measurements suggest a practical default that depends on the size of the upgrade: when the model moved little, copying the old adapter restores most of the retraining benefit, the retraining threshold is high, and a transfer method must beat copying by only a few points, but at a cost it rarely does; when the model moved a lot, copying collapses, and a cheap closed-form transfer such as ACT can be the cheapest policy over a middle range of adapter values, although in our series its gain covered its cost only at the largest upgrade, and at 410 million parameters, where its compute cost relative to retraining rose to 0.70, not even there.
+Our measurements suggest a practical default that depends on the size of the upgrade: when the model moved little, copying the old adapter restores most of the retraining benefit, the retraining threshold is high, and a transfer method must beat copying by only a few points, but at a cost it rarely does; when the model moved a lot, copying collapses, and a cheap closed-form transfer such as ACT can be the cheapest policy over a middle range of adapter values, although in our series its gain covered its cost only at the largest upgrade, and at 410 million parameters, where its compute cost relative to retraining was 0.70 (0.28 with cached layer inputs, still above its break-even of 0.21), not even there.
 For providers, upgrades that preserve internal representations raise recovery and so raise the value of customers' existing adapters.
 
 For researchers, the instruction-tuned pair is a caution. A method can help where the problem is severe and fail on a different kind of upgrade of similar size, and the decision-theoretic break-even makes this visible in a way an accuracy table does not.
 
 \paragraph{Limitations.} First, $C_N$ and $C_A$ are measured in compute time; data acquisition and revalidation labor
 are excluded and would lower every cost ratio and raise the thresholds. Second, we ran ten upgrades of models with 70 to 410 million parameters, on a single task (GSM8K), with 200 evaluation examples each. The drift series covers one model family, and only the largest upgrade at 160 million parameters has a replicate; the 70- and 410-million runs have one seed each, and the 410-million run covers a single upgrade. The results do not speak to frontier models or to other tasks.
-Third, the instruction-tuned pair is an unexplained exception, and we cannot say whether it reflects the upgrade type, the model scale, or something else. ACT's relative compute cost rises with model size mainly because of repeated forward passes in our implementation (Section~\ref{sec:pairs}); we did not test whether caching removes the effect. Fourth, ACT's gain rises steadily with upgrade size, but it covers ACT's measured cost only at the largest upgrade, with the next largest narrowly short; the boundary lies between drifts of 0.56 and 0.60 for this implementation and cost, and it would move with a cheaper or better method. Fifth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
+Third, the instruction-tuned pair is an unexplained exception, and we cannot say whether it reflects the upgrade type, the model scale, or something else. ACT's relative compute cost rises with model size, mainly because of repeated forward passes in our first implementation; caching layer inputs reduces the rise (0.12, 0.21, and 0.28 at 70, 160, and 410 million parameters) but does not remove it (Section~\ref{sec:pairs}). Fourth, ACT's gain rises steadily with upgrade size, but it covers ACT's measured cost only at the largest upgrade, with the next largest narrowly short; the boundary lies between drifts of 0.56 and 0.60 for this implementation and cost, and it would move with a cheaper or better method. Fifth, value follows a stylized diffusion, and recovery is treated as known at the start of an epoch, whereas in
 practice it must be estimated. Sixth, robustness runs use one recovery pair and renewal rather than self-exciting arrivals, and the release-interval distribution is not estimated from the release history of a real model family.
 
 \paragraph{Reproducibility.} Code, simulation seeds, and result files are described in the Data availability statement.
