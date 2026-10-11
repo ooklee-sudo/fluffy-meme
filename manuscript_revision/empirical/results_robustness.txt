@@ -1,0 +1,70 @@
+=== Why raw and within-repo P7 differ: raw gap is across repos; within-repo gap is not ===
+repos with both: 5,106; mean P(review) human 0.066, agent 0.116 (each repo weighted equally)
+top-50 PR-volume repos hold 21% of PRs; their human review rate 0.235 vs agent 0.004
+
+=== P7 robustness ===
+
+[P(any human review), + task-type controls] N=77,980, repos=5,106
+   is_agent         b=+0.0386  se=0.0079  p=1.07e-06
+   lsize_c          b=+0.0086  se=0.0083  p=0.301
+   agent_x_lsize    b=-0.0051  se=0.0075  p=0.493
+
+[P(any human review), excluding Copilot] N=72,034, repos=4,573
+   is_agent         b=+0.0007  se=0.0085  p=0.932
+   lsize_c          b=+0.0086  se=0.0084  p=0.305
+   agent_x_lsize    b=-0.0077  se=0.0079  p=0.332
+
+[log(1+inline), excluding Copilot] N=72,034, repos=4,573
+   is_agent         b=+0.0077  se=0.0017  p=4.93e-06
+   lsize_c          b=+0.0118  se=0.0010  p=2.27e-33
+   agent_x_lsize    b=-0.0099  se=0.0009  p=2.48e-29
+
+team repos (>=3 authors): 548 repos, 16,711 PRs; solo repos (<=1 author): 4,081 repos, 56,740 PRs
+
+[P(any human review), team repos, excl. Copilot] N=16,268, repos=548
+   is_agent         b=-0.0671  se=0.0184  p=0.000262
+   lsize_c          b=+0.0197  se=0.0173  p=0.254
+   agent_x_lsize    b=-0.0177  se=0.0176  p=0.316
+
+[log(1+inline), team repos, all agents] N=16,711, repos=548
+   is_agent         b=+0.0124  se=0.0108  p=0.251
+   lsize_c          b=+0.0249  se=0.0023  p=1.63e-27
+   agent_x_lsize    b=-0.0036  se=0.0047  p=0.444
+
+large PRs only (size >= 500 lines):
+
+[log(1+inline), large PRs] N=12,957, repos=2,485
+   is_agent         b=+0.0196  se=0.0054  p=0.000309
+   lsize_c          b=-0.0045  se=0.0017  p=0.00968
+
+[P(any review), large PRs excl. Copilot] N=10,965, repos=2,155
+   is_agent         b=-0.0067  se=0.0040  p=0.0936
+   lsize_c          b=-0.0103  se=0.0022  p=2.46e-06
+
+=== P5 robustness: net-addition bias ===
+
+[net_add, + task-type controls] N=77,980, repos=5,106
+   is_agent         b=+0.5326  se=0.0368  p=2.38e-47
+   lsize_c          b=+0.1684  se=0.0163  p=5.25e-25
+   agent_x_lsize    b=+0.0099  se=0.0211  p=0.638
+
+[net_add, excluding refactor-titled PRs] N=72,890, repos=4,999
+   is_agent         b=+0.6475  se=0.0382  p=1.95e-64
+   lsize_c          b=+0.2106  se=0.0185  p=5.26e-30
+   agent_x_lsize    b=+0.0580  se=0.0237  p=0.0142
+
+[net_add, TEAM repos (>=3 authors)] N=16,711, repos=548
+   is_agent         b=+0.4320  se=0.0726  p=2.7e-09
+   lsize_c          b=+0.1825  se=0.0343  p=1.02e-07
+   agent_x_lsize    b=+0.1172  se=0.0505  p=0.0202
+
+[net_add, SOLO repos (<=1 author)] N=56,740, repos=4,081
+   is_agent         b=+0.6913  se=0.0399  p=2.2e-67
+   lsize_c          b=+0.2066  se=0.0130  p=6.31e-57
+   agent_x_lsize    b=+0.0141  se=0.0204  p=0.491
+
+  agent effect solo = +0.691 (se 0.040); team = +0.432 (se 0.073)
+
+  median additions/deletions: agent 50/8, human 37/9
+  pooled deletion share of changed lines: agent 0.544, human 0.232
+  within-repo effect exp(0.633) = x1.88 higher additions-to-deletions ratio
