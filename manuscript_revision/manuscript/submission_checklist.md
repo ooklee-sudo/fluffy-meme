@@ -25,3 +25,12 @@ The Word file (`manuscript_misq.docx`) is double-spaced Times New Roman 12, with
 
 ## Not in the file
 - Title page with author details and acknowledgments (for the non-anonymized version), funding and conflict-of-interest statements, and the Online Appendix.
+
+# Management Science version (`manuscript_ms.docx`)
+
+Same content as the other version, with these differences: the front line names Management Science (Department of Information Systems); the audience sentence in the Introduction addresses economics and management readers as well as information systems; Data and Code Availability, Funding and Conflict of Interest sections are added before the references (the last two are placeholders); and page numbers are in the footer. The reference style is the INFORMS style that your original manuscript already used.
+
+Check in the journal's current instructions:
+- Its data and code disclosure requirements, and whether the code and data must be deposited at submission or only on acceptance. The statement in the file promises a public deposit; add the repository and DOI once it exists.
+- Abstract and length limits, and whether proofs should go in an electronic companion instead of Appendix A.
+- The department and the type of paper it expects. Papers that rest on assumed behavioral parameters will be read for the novelty of the economic insight, so the argument that frame shift is a structural claim (Section 3.1) deserves the most attention before submission.
