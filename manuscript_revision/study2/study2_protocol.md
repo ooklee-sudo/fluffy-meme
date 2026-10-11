@@ -88,3 +88,18 @@ H2 identifies β < 1 only if participants apply the same loss-aversion weight λ
 - **Naivety.** The lapse logic assumes a naive planner. A sophisticated planner would not commit to what she expects not to do; H2 would then be understated.
 - **Ethics.** Real stakes, a debrief about the purpose, and approval from the institution's review board before any recruitment.
 - **Preregistration.** Register hypotheses, the primary model and exclusion rules before data collection; this file can be the basis.
+
+## 9. Low-budget variant: one session, possession effect only
+
+Drop session 2 and the plan condition. Each participant makes 8 decisions in condition C and 8 in condition A in a single sitting of about 20–25 minutes. Only H1 (the possession effect) is tested; β and λ cannot be separated and the lapse (H2) is not tested. Simulated power for H1 (`power_one_session.py`, 200 simulations per cell, two-sided 5%):
+
+| Scenario | N = 60 | 80 | 100 | 120 |
+|---|---|---|---|---|
+| Rational (β = 1, λ = 1): false-positive rate | 0.02 | 0.02 | 0.01 | 0.03 |
+| Mild (β = 0.85, λ = 1.2), noise 0.5 | 0.97 | 1.00 | 1.00 | 1.00 |
+| Mild, noisier (noise 0.9, 15% random responders) | 0.59 | 0.72 | 0.88 | 0.86 |
+| Weaker (β = 0.9, λ = 1.1), noise 0.5 | 0.73 | 0.81 | 0.87 | 0.92 |
+| Weaker, noisier | 0.34 | 0.34 | 0.36 | 0.42 |
+| Moderate (β = 0.7, λ = 1.5), either noise level | 1.00 | 1.00 | 1.00 | 1.00 |
+
+**Reading.** About 100 participants is enough for a moderate or mild effect even with noisy responses. If the true effect is weak and responses are noisy, no feasible sample size here reaches adequate power. What is lost relative to the full design: the lapse test (the sharpest evidence for present bias), the separate estimates of β and λ, and the ability to detect plan-stage inattention.
