@@ -31,7 +31,11 @@ So ln λ = τ_P − τ_C, −ln β = τ_A − τ_P, and the possession effect is
 
 **Stimuli.** Short realistic tasks, each presented with: stated time cost c (minutes of extra work to improve the code), stated future rework R (minutes of cleanup the code will cause later), and the working implementation (conditions P and A only). Design points x = ln(R/c) ∈ {−0.2, 0.3, 0.8, 1.3} bracket the predicted thresholds. R and c are shown in minutes so that the cost is concrete.
 
-**Incentives.** One decision per participant is randomly selected for implementation. If the code is not improved, the participant does R minutes of paid-time cleanup in a follow-up task; if improved, c minutes of extra work. Without real stakes, stated costs are cheap talk.
+**Incentives.** The cost of each decision must fall on the participant's own money; if the extra work were paid by the hour, choosing it would cost nothing and the decisions would be cheap talk.
+- Each participant gets a fixed participation fee plus a bonus endowment E.
+- One decision per participant is drawn at random and carried out. Stated minutes convert to money at a fixed rate m: improving the code deducts c·m from the bonus now (condition C or A) or in session 2 (condition P); leaving it deducts R·m.
+- Choose m so that the largest possible deduction is below E, and tell participants the rule and the conversion before the first decision.
+- The random draw is a standard way to keep decisions incentive-compatible without paying for all of them.
 
 **Exclusions (preregistered).** Failing an attention check; completing session 1 in under a minimum plausible time; not returning for session 2 (kept for conditions C and P, dropped for A and the lapse analysis).
 
