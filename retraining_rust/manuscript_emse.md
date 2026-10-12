@@ -8,7 +8,7 @@ title: "Does Release Timing in the LLM Software Ecosystem Respond to Accumulatin
 
 ## Abstract
 
-Software that wraps or serves large language models (LLMs) is widely believed to degrade as the world drifts away from the data a model was trained on, and practitioners are advised to refresh models and their serving stacks on a schedule that balances cost against degradation. We ask whether the public record of the LLM software ecosystem is consistent with this view. We formalize a simple replacement model in which errors accumulate with drift and a refresh resets them at a fixed cost, derive three testable implications, and confirm by simulation that the model's parameters are recoverable when the assumptions hold. We then test the implications on three sources of evidence: weekly bug-report counts and release dates for three widely used open-source repositories (vLLM, Hugging Face Transformers, Ollama; 773 repository-weeks, 408 releases), and 478,498 English conversations from the WildChat corpus (April 2023 to April 2024) from which we measure prompt-distribution drift and user corrections. The evidence does not support the depreciation view. Bug reports are highest just after a release and then decline; the probability of a release does not rise with the time since the last one; and, once repeated automated prompt templates are removed, our drift measure does not predict a pattern-based measure of user corrections, which captures only a small share of corrections. We also show that an uncorrected drift measure appears to predict corrections (p = 0.009) only because a single template comes to dominate the data. We discuss what these results imply for researchers who want to study AI-system maintenance, list the design requirements for a valid test, and release a replication package.
+Software that wraps or serves large language models (LLMs) is widely believed to degrade as the world drifts away from the data a model was trained on, and practitioners are advised to refresh models and their serving stacks on a schedule that balances cost against degradation. We ask whether the public record of the LLM software ecosystem is consistent with this view. We formalize a simple replacement model in which errors accumulate with drift and a refresh resets them at a fixed cost, derive three testable implications, and confirm by simulation that the model's parameters are recoverable when the assumptions hold. We then test the implications on three sources of evidence: weekly bug-report counts and release dates for 19 widely used open-source repositories in the LLM software ecosystem (4,071 repository-weeks, 1,521 releases), and 478,498 English conversations from the WildChat corpus (April 2023 to April 2024) from which we measure prompt-distribution drift and user corrections. The evidence does not support the depreciation view. Once total issue volume is taken into account, bug reports do not increase with the time since the last release (pooled slope $-0.001$ per week, 95% CI $-0.010$ to $0.009$); the probability of a release does not rise with that time either (it falls in the pooled estimate, driven by repositories that release weekly and issue hot-fixes); and, once repeated automated prompt templates are removed, our drift measure does not predict a pattern-based measure of user corrections, which captures only a small share of corrections. We also show that an uncorrected drift measure appears to predict corrections (p = 0.009) only because a single template comes to dominate the data. We discuss what these results imply for researchers who want to study AI-system maintenance, list the design requirements for a valid test, and release a replication package.
 
 **Keywords:** software maintenance, large language models, concept drift, release engineering, mining software repositories, negative results
 
@@ -21,7 +21,7 @@ This paper asks a plain empirical question about that belief. If degradation acc
 We examine all three. For the first two we use the issue trackers and release histories of three open-source projects that sit between users and models. For the third we use a public corpus of real user conversations with ChatGPT-family models. Our contributions are as follows.
 
 1. A small, explicit model of refresh timing that yields testable implications and whose parameters can be recovered by simulation, which we use as a benchmark for what the data would have to look like (Section 3).
-2. Empirical evidence from three repositories and 478,498 conversations that the signatures of accumulating degradation are absent (Section 5).
+2. Empirical evidence from 19 repositories and 478,498 conversations that the signatures of accumulating degradation are absent (Section 5).
 3. A methodological caution: a plausible drift measure produced a statistically significant association with user corrections until we removed repeated automated templates (Section 5.3). We document how the contamination arises and how to detect it.
 4. A replication package containing collection, measurement, and analysis code, and the weekly aggregates (Data availability).
 
@@ -65,21 +65,39 @@ RQ1 to RQ3 test H1 to H3, respectively. Because the cost of a refresh is identif
 
 ### 3.4 Simulation benchmark
 
-To make sure the tests would detect the signatures if they were present, we simulated the model with $\gamma=0.5$, $RC=40$, $\lambda_0=5$, drift increments Poisson(1), and discount factor 0.95. The optimal policy refreshes at drift 14, where the expected error rate is 12.0, 2.4 times the baseline. Across 100 replications of 3,000 weeks, the two-step estimator recovered $\gamma$ (mean 0.499, SD 0.011) and $RC$ (mean 39.9, SD 1.0); estimating $\gamma$ and $RC$ jointly from choice data alone gave $RC$ with mean 40.1 and SD 3.0. Precision falls with sample length: the SD of the estimated $RC$ is 6.7 at 100 weeks, 4.8 at 250 weeks, 2.8 at 500 weeks, and 2.1 at 1,000 weeks. The repositories we study have between 173 and 414 weekly observations, so a cost estimate would be imprecise even under ideal conditions, which is a further reason to focus on testing H1 to H3.
+To make sure the tests would detect the signatures if they were present, we simulated the model with $\gamma=0.5$, $RC=40$, $\lambda_0=5$, drift increments Poisson(1), and discount factor 0.95. The optimal policy refreshes at drift 14, where the expected error rate is 12.0, 2.4 times the baseline. Across 100 replications of 3,000 weeks, the two-step estimator recovered $\gamma$ (mean 0.499, SD 0.011) and $RC$ (mean 39.9, SD 1.0); estimating $\gamma$ and $RC$ jointly from choice data alone gave $RC$ with mean 40.1 and SD 3.0. Precision falls with sample length: the SD of the estimated $RC$ is 6.7 at 100 weeks, 4.8 at 250 weeks, 2.8 at 500 weeks, and 2.1 at 1,000 weeks. The repositories we study have between 145 and 414 weekly observations, so a cost estimate would be imprecise even under ideal conditions, which is a further reason to focus on testing H1 to H3.
 
 ## 4 Study Design
 
 ### 4.1 Repository data (RQ1, RQ2)
 
-**Selection.** We looked for open-source projects in the LLM ecosystem whose releases are made by people and are neither absent nor automated. Of the six candidates we first tried, three were unusable: Qwen2.5 (0 GitHub releases in 140 weeks) and DeepSeek-V3 (1 release in 94 weeks) publish model weights elsewhere, and llama.cpp publishes automated builds (185 releases in 188 weeks) that carry no timing decision. The retained projects are vLLM, Hugging Face Transformers, and Ollama. This is a convenience sample chosen to satisfy these criteria, not a random sample, and we list it in full so that readers can judge the selection.
+**Selection.** We looked for open-source projects in the LLM ecosystem whose releases are made by people and are neither absent nor automated. The selection proceeded in three steps, all of which we report. First, we tried six candidates chosen for their prominence: Qwen2.5 (0 GitHub releases in 140 weeks) and DeepSeek-V3 (1 release in 94 weeks) publish model weights elsewhere, llama.cpp publishes automated builds (185 releases in 188 weeks) that carry no timing decision, and vLLM, Hugging Face Transformers, and Ollama were retained. Second, to avoid relying on three projects, we fixed a list of 17 further repositories before collecting any data for them (inference and training frameworks, client SDKs, agent frameworks, and evaluation tools in the LLM ecosystem, selected by the authors from memory of the ecosystem and without looking at their issue or release histories). Third, we applied an eligibility rule fixed in advance: at least 10 releases and at least 80 weeks of data. One of the 20 collected repositories (mlc-llm, 0 releases) was ineligible, which leaves 19. This remains a convenience sample of prominent projects, not a random sample of the ecosystem, and almost all of them are software and tooling, not model-retraining pipelines.
 
 **Collection.** Using the GitHub REST API we collected every issue (excluding pull requests) created since 1 January 2023 and every non-draft, non-prerelease release. Issues were aggregated by ISO week. A bug report is an issue with a label containing "bug" or a title matching a fixed keyword list (bug, error, crash, fail, wrong, incorrect, regression, broken, exception). The age of a repository-week is the number of weeks since the last release.
 
-| Repository | Weeks | Releases | Median cycle (weeks) | Mean bugs per week |
-|---|---|---|---|---|
-| vLLM | 186 | 76 | 2 | 54.3 |
-| Transformers | 414 | 186 | 2 | 8.4 |
-| Ollama | 173 | 146 | 1 | 36.3 |
+| Repository | Weeks | Releases | Median cycle (weeks) | Bug log-rate slope (SE) | Release-hazard logit slope (SE) |
+|---|---|---|---|---|---|
+| anthropics/anthropic-sdk-python | 194 | 123 | 1 | -0.016 (0.079) | -0.229 (0.093) |
+| Dao-AILab/flash-attention | 203 | 49 | 2 | -0.007 (0.016) | -0.294 (0.063) |
+| EleutherAI/lm-evaluation-harness | 268 | 19 | 10 | 0.002 (0.019) | 0.117 (0.160) |
+| ggml-org/whisper.cpp | 200 | 33 | 4 | 0.013 (0.016) | -0.105 (0.069) |
+| Hugging Face Transformers | 414 | 186 | 2 | -0.016 (0.033) | -0.066 (0.063) |
+| huggingface/accelerate | 293 | 60 | 4 | -0.033 (0.031) | 0.045 (0.077) |
+| huggingface/diffusers | 222 | 61 | 2.5 | -0.001 (0.014) | -0.024 (0.057) |
+| huggingface/peft | 194 | 30 | 7 | 0.004 (0.017) | 0.115 (0.073) |
+| huggingface/text-generation-inference | 167 | 58 | 2 | -0.049 (0.036) | -0.153 (0.094) |
+| huggingface/trl | 197 | 79 | 2 | -0.043 (0.037) | 0.038 (0.130) |
+| lm-sys/FastChat | 185 | 14 | 3 | 0.003 (0.046) | -0.403 (1.014) |
+| microsoft/autogen | 187 | 59 | 1 | -0.040 (0.037) | -0.482 (0.168) |
+| microsoft/semantic-kernel | 189 | 121 | 1 | 0.003 (0.150) | -0.522 (0.111) |
+| NVIDIA/TensorRT-LLM | 157 | 23 | 6 | 0.018 (0.016) | 0.172 (0.144) |
+| Ollama | 173 | 146 | 1 | 0.076 (0.034) | 0.116 (0.541) |
+| openai/openai-python | 299 | 181 | 1 | -0.027 (0.043) | -0.343 (0.049) |
+| run-llama/llama_index | 198 | 153 | 1 | -0.031 (0.032) | -0.564 (0.098) |
+| sgl-project/sglang | 145 | 50 | 2 | 0.002 (0.013) | 0.172 (0.089) |
+| vLLM | 186 | 76 | 2 | -0.004 (0.012) | 0.122 (0.268) |
+
+Table: Eligible repositories (4,071 repository-weeks, 1,521 releases) and repository-level slopes from Section 4.3.
 
 ### 4.2 Chat corpus (RQ3)
 
@@ -91,7 +109,7 @@ We use WildChat-1M, a public corpus of conversations with OpenAI chat models col
 
 ### 4.3 Analysis
 
-For RQ1, we fit Poisson regressions of weekly bug counts on the weeks since release with an offset equal to the log of total weekly issues and a linear time trend. For RQ2, we fit logistic regressions of a release in a given week on the weeks since release, capping age at eight weeks. We report 90 percent intervals from a bootstrap that resamples whole release cycles. Because resampling cycles disturbs the time ordering, these intervals are indicative and should not be read as exact coverage. For RQ3, we regress the weekly correction rate on the drift measure by weighted least squares with autocorrelation-robust standard errors, adding a time trend and then controls for task mix (code share, log prompt length, mean turns, jailbreak-prompt share). At the conversation level, we fit logistic regressions of any correction on the drift flags with week fixed effects and week-clustered standard errors.
+For RQ1, we fit Poisson regressions of weekly bug counts on the weeks since release with an offset equal to the log of total weekly issues and a linear time trend. For RQ2, we fit logistic regressions of a release in a given week on the weeks since release, capping age at eight weeks. Repository-level standard errors come from a cluster bootstrap that resamples whole release cycles while keeping each observation's calendar time, and the repository-level slopes are pooled with a random-effects (DerSimonian–Laird) model; we report 95 percent intervals for the pooled estimates and robustness checks that drop repositories with a median cycle of one week, condition on surviving the first week after a release (RQ2), and drop the issue-volume offset (RQ1). For RQ3, we regress the weekly correction rate on the drift measure by weighted least squares with autocorrelation-robust standard errors, adding a time trend and then controls for task mix (code share, log prompt length, mean turns, jailbreak-prompt share). At the conversation level, we fit logistic regressions of any correction on the drift flags with week fixed effects and week-clustered standard errors.
 
 ### 4.4 Validation of the correction detector
 
@@ -99,21 +117,15 @@ We drew a stratified random sample of 400 later user turns from four WildChat sh
 
 ## 5 Results
 
-### 5.1 RQ1: Bug reports fall after a release
+### 5.1 RQ1: Bug reports do not increase with the age of a release
 
-Bug counts are highest in the first week after a release and decline afterward. For Transformers, the mean is 8.9 bugs per week in the first week, 4.0 in the second, 4.8 in weeks three and four, and 2.2 in weeks five to eight. For vLLM, the corresponding means are 60.3, 39.5, 40.2, and 26.7. The fitted slopes on age are negative for Transformers ($-0.016$ per week on the log scale) and vLLM ($-0.004$), and positive for Ollama (0.076).
+Pooling the 19 repository-level slopes with a random-effects model, the log-rate slope of bug reports on weeks since release is $-0.0005$ per week (95% CI $-0.010$ to $0.009$), with no detectable heterogeneity across repositories ($\tau^2 = 0$). The estimate is precise enough to exclude, for example, a 1 percent weekly increase in the bug rate. Eight of the 19 repository-level slopes are positive and 11 negative. This is not what H1 predicts.
 
-| Repository | Bug log-rate slope | 90% interval | Release-hazard logit slope | 90% interval |
-|---|---|---|---|---|
-| vLLM | $-0.004$ | $[-0.077, -0.002]$ | 0.122 | $[-0.025, 0.719]$ |
-| Transformers | $-0.016$ | $[-0.189, -0.018]$ | $-0.066$ | $[-0.144, 0.051]$ |
-| Ollama | 0.076 | $[0.013, 0.127]$ | 0.116 | $[-0.342, 1.360]$ |
-
-The positive Ollama slope rests on ages of one and two weeks only, since the project releases almost every week. In two of three repositories, then, the evidence points the opposite way from H1: the time just after a release is when the most problems are reported, which is consistent with releases introducing defects, with a burst of attention after announcements, or both. We cannot separate these explanations with issue counts alone.
+The raw counts do fall with age: without the offset for total issue volume, the pooled slope is $-0.023$ (95% CI $-0.047$ to $0.001$), and in the first Transformers analysis bug counts fell from 8.9 per week in the first week to 2.2 after five weeks. Once we account for the total number of issues filed, the decline disappears, which suggests that the early surge reflects a general burst of issue-filing right after a release (attention, announcements, and defects together), and not a change in the share of bug reports. We cannot separate defects from attention with issue counts alone.
 
 ### 5.2 RQ2: Release probability does not rise with age
 
-For Transformers, the share of weeks with a release is about 47 percent at age one, 44 percent at age two, 43 percent at age three, and 42 percent at age four, which is flat and consistent with a fixed cadence. Release-hazard slopes have intervals that include zero in all three repositories (Table above). We therefore find no support for H2. Cadence-driven releasing leaves little scope for the timing of a refresh to respond to the state of the system, and the evidence is compatible with schedule-driven rather than state-driven release decisions.
+The pooled release-hazard logit slope is $-0.125$ per week of age (95% CI $-0.228$ to $-0.022$; $\tau^2 = 0.036$), that is, the probability of a release in a given week is lower, not higher, when more weeks have passed since the last one; eight of 19 repository-level slopes are positive. The negative pooled estimate comes mostly from repositories that release weekly and publish hot-fixes soon after a release: excluding the six repositories with a median cycle of one week gives $-0.016$ (95% CI $-0.101$ to $0.069$), and conditioning on surviving the first week (ages of two weeks or more) gives $-0.059$ (95% CI $-0.146$ to $0.029$). We therefore find no support for a hazard that rises with age, which H2 requires, and the evidence is compatible with schedule-driven or hot-fix-driven releasing. Cadence-driven releasing leaves little scope for the timing of a refresh to respond to the state of the system.
 
 ### 5.3 RQ3: Drift does not predict corrections once templates are removed
 
@@ -151,7 +163,7 @@ This matters for RQ3. If the detector's misses were unrelated to drift, the corr
 
 **Internal validity.** Because drift, calendar time, and model-version changes move together, associations are hard to attribute; we report collinearity and show results with and without a trend. The assumption that several model versions share a cutoff of about September 2021 is an approximation based on public statements and may be wrong for individual versions. Our bootstrap resamples cycles, which disturbs the time ordering, so interval estimates are indicative.
 
-**External validity.** Three repositories chosen under explicit criteria are not a sample of the ecosystem, and one chat corpus from a single service and period is not a sample of deployments. The results should not be generalized to commercial operators or to other model families.
+**External validity.** Twenty repositories chosen under explicit criteria are not a sample of the ecosystem, and they are software and tooling, not model-retraining pipelines, and one chat corpus from a single service and period is not a sample of deployments. The results should not be generalized to commercial operators or to other model families.
 
 **Conclusion validity.** Several tests have wide intervals, and absence of a significant result is not evidence of absence. We therefore describe the evidence as not supporting the hypotheses and give interval estimates, and we avoid claims that the effects are zero.
 
@@ -159,7 +171,7 @@ This matters for RQ3. If the detector's misses were unrelated to drift, the corr
 
 ## 8 Conclusion
 
-We asked whether the public record of the LLM software ecosystem shows the signatures of a system that degrades as drift accumulates and is refreshed in response. In three repositories and nearly half a million public conversations, it does not: problems peak after releases, release probability does not rise with age, and a de-duplicated drift measure does not predict user corrections. The more useful outcome may be the list of requirements for a valid test and the demonstration that a single automated template can manufacture a drift effect. We hope the replication package helps others with better-instrumented data, such as operators' own error logs and refresh histories, to carry out the test that these sources cannot.
+We asked whether the public record of the LLM software ecosystem shows the signatures of a system that degrades as drift accumulates and is refreshed in response. In 19 repositories and nearly half a million public conversations, it does not: bug reports do not increase with age once total issue volume is controlled, release probability does not rise with age, and a de-duplicated drift measure does not predict user corrections. The more useful outcome may be the list of requirements for a valid test and the demonstration that a single automated template can manufacture a drift effect. We hope the replication package helps others with better-instrumented data, such as operators' own error logs and refresh histories, to carry out the test that these sources cannot.
 
 ## Appendix A. Numerical Comparative Statics (Simulation)
 
