@@ -111,10 +111,10 @@ def dersimonian_laird(b, se):
     return dict(est=est, se=s, lo=est - 1.96 * s, hi=est + 1.96 * s, tau2=tau2, k=int(len(b)))
 
 
-def rq1(df, B, seed):
+def rq1(df, B, seed, specs=("a", "b", "c", "d")):
     rng = np.random.default_rng(seed)
     out = {}
-    for spec in ("a", "b", "c", "d"):
+    for spec in specs:
         rows = []
         for repo, d in df.groupby("repo"):
             d = d.dropna(subset=["age"])
