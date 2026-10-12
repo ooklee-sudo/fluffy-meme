@@ -138,23 +138,43 @@ Halving the retraining cost from 40 to 20 lowers the threshold from 14 to 10, so
 
 These are results from simulated data and demonstrate that the structure is identified and the estimator works. They are not empirical findings.
 
-## 6. Empirical Setting and Data [to be completed]
+## 6. Empirical Setting and Data
 
-**Primary sample (target).** Weekly error reports and model-update logs from one or more firms operating customer-facing LLM chatbots, provided in de-identified, aggregated form. This sample is the credible one for structural interpretation, because the update decision is made by an identifiable operator facing the cost trade-off in the model.
+### 6.1 Data
 
-**Supporting sample.** Weekly counts of bug and quality issues in the public repositories and discussion forums of open-weight models, with release dates as update events. Release timing for open-source models also reflects research roadmaps and competition, so the estimated cost should be read as a shadow cost of release rather than a pure maintenance cost. Issue counts should enter with an exposure offset (downloads or active users).
+We use only publicly available GitHub data on open-weight model repositories. For each repository we collect (i) the creation date, labels, and title of every issue, aggregated to ISO weeks, and (ii) the publication dates of non-draft, non-prerelease releases. A weekly error count is the number of issues carrying a bug-type label or a bug-type keyword in the title (the exact rule is in `collect_github.py`); the total weekly issue count is retained as a possible exposure measure. Pull requests are excluded. The pipeline is released with the paper so that the sample can be extended or replicated.
 
-**Drift proxy.** Cumulative drift is not directly observed. Candidate measures include weeks since the last update, the distributional distance between current user prompts and the training window, and the share of requests that mention post-cutoff entities. We plan to show that results are robust across proxies.
+[Sample to be filled once collection is run: repositories, period, number of weeks and releases per repository.]
 
-**Robustness.** Overdispersion in error counts (negative binomial), a non-zero post-retraining state to capture release regressions, multiple actions (full retraining, fine-tuning, prompt revision), and time-varying error intensity.
+### 6.2 Mapping the data to the model
 
-[Report here: descriptive statistics, first-stage estimates, estimated $RC/c$ with standard errors, model fit (observed versus predicted retraining hazard by drift level), and counterfactuals using estimated parameters.]
+*Retraining event.* A release is treated as the operator's decision to refresh the model. *State.* Cumulative drift is not observed. With GitHub data the only variable available for every repository is the number of weeks since the last release, so we set the state to this clock and treat drift as advancing deterministically by one unit per week ($\mu$ is not estimated). *Errors.* Weekly bug counts follow a Poisson process with rate $e_t(\lambda_0+\gamma x_t)$, where $e_t$ is an optional exposure term, such as the total weekly issue count, normalized to mean one.
+
+### 6.3 Threats specific to this setting
+
+We state these plainly because they bound what the estimates can mean.
+
+1. **Release-driven bug spikes.** New releases generate their own bug reports. If bug counts fall with the time since release, the data mimic *negative* drift and $\gamma$ will be small or negative. We therefore (a) report $\gamma$ with its sign, (b) allow a post-release indicator for the first weeks, and (c) interpret a non-positive $\gamma$ as evidence that the repository does not fit the depreciation mechanism rather than as a failure of the estimator.
+2. **Releases are not purely maintenance decisions.** Open-weight releases follow research roadmaps, new model families, and competitor launches. The estimated $RC/c$ should be read as the *shadow cost of a release*, that is, the implicit threshold at which the project team acts, and not as an engineering budget.
+3. **Issue counts measure attention as well as quality.** Stars, downloads, and press coverage change the number of reporters. The exposure term and repository fixed effects partly address this.
+4. **The state is a clock.** Because drift is proxied by time since release, the model cannot distinguish deterioration from the mere passage of time, and the within-repository variation in drift is limited. Identification of $\gamma$ then comes from how the bug rate changes with the age of the release; identification of $RC$ comes from how the release hazard changes with that age.
+5. **Small samples.** A repository with five releases supplies few choice observations. We estimate repository-level models with a block bootstrap over release cycles and report a pooled $RC$ across repositories only as a summary.
+
+### 6.4 Estimation and reporting
+
+For each repository, $(\lambda_0,\gamma)$ are estimated by Poisson maximum likelihood and $RC$ by NFXP given those estimates, using a grid search followed by local refinement because the choice likelihood has flat regions. Confidence intervals come from a block bootstrap that re-estimates both steps in every draw. In a check on synthetic repositories generated in the same file format (400 weeks, true $RC$ of 30 and 60), the estimator returned 32.4 (90% interval 27.5 to 38.1) and 56.7 (49.6 to 60.7).
+
+[To be reported: descriptive statistics; estimates of $\gamma$, $RC/c$, and implied threshold by repository; fit of the predicted versus observed release hazard by weeks since release; counterfactual thresholds under halved $RC$; sensitivity to $\beta$ and to the bug definition.]
+
+### 6.5 Extension with commercial operators
+
+GitHub data cannot show how a commercial operator trades off errors against the cost of an update. A natural extension uses public status-page incident histories and published release or deprecation notes for hosted models. We leave this for future work and do not rely on it here.
 
 ## 7. Discussion
 
 **Implications.** The framework turns a managerial rule of thumb into a quantity that can be audited. If the estimated cost of a firm is far above what an engineering budget would suggest, either the firm faces hidden organizational frictions or the drift measure is mis-specified, and both are informative. For managers, the counterfactuals provide a way to value MLOps investments by their effect on the optimal update schedule, and to see that the same investment is worth more where drift is fast.
 
-**Limitations.** First, the model assumes a single decision-maker minimizing expected discounted cost, which may not hold for firms whose releases are driven by marketing or competitive signaling. Second, the state is a proxy, and misspecification of the proxy will flow into the cost estimate. Third, the reset assumption is stylized. Fourth, we treat the error cost as constant, although errors in high-stakes interactions are likely to cost more. Finally, our numerical evidence is based on simulation, and the substantive claims about firms await field data.
+**Limitations.** First, the model assumes a single decision-maker minimizing expected discounted cost, which may not hold for firms whose releases are driven by marketing or competitive signaling. Second, the state is a proxy, and misspecification of the proxy will flow into the cost estimate. Third, the reset assumption is stylized. Fourth, we treat the error cost as constant, although errors in high-stakes interactions are likely to cost more. Finally, the numerical evidence in Section 5 is simulated, and the GitHub application in Section 6 identifies a shadow cost of open-source releases rather than the cost borne by a commercial operator.
 
 **Conclusion.** Maintaining an AI system is an investment decision with a cost that can, in principle, be read from the timing of updates. We provide the model and estimator that make this possible, show that they recover known primitives, and outline the data needed to apply them.
 

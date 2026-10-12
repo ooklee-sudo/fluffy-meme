@@ -14,8 +14,13 @@ N = 80  # state-space cap
 
 
 def trans_matrix(mu, n=N):
-    """P[x, x'] under 'keep': x' = min(x + D, n), D ~ Poisson(mu)."""
+    """P[x, x'] under 'keep': x' = min(x + D, n), D ~ Poisson(mu).
+    mu=None -> deterministic +1 (state is weeks since last release)."""
     P = np.zeros((n + 1, n + 1))
+    if mu is None:
+        for x in range(n + 1):
+            P[x, min(x + 1, n)] = 1.0
+        return P
     for x in range(n + 1):
         k = np.arange(0, n - x)
         P[x, x + k] = poisson.pmf(k, mu)
