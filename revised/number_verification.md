@@ -13,13 +13,12 @@
 | 5.2 풀링 hazard slope의 τ² | 0.050 (이전 실행값) | 0.049 (`rq123.py` 999회) |
 | 5.6 릴리스 내용의 손 검수 | "3개가 fix, 나머지 9개" | "2개가 fix, 나머지 10개는 fix 아님(1개는 기여자 이름)" — 출력된 12개 중 `[FIX]` 표시는 trl, vLLM 2개뿐 |
 
-## 검증하지 못한 것 (직접 확인 필요)
-1. **4.1절 후보 저장소 수치:** Qwen2.5(140주 동안 릴리스 0), DeepSeek-V3(94주 동안 1), llama.cpp(188주 동안 185), "20개 수집 중 mlc-llm 제외". 현재 코드와 출력에 근거가 없습니다. llama.cpp의 185건은 제 기억과 달라 보입니다(빌드마다 릴리스를 올리는 저장소). 아래 명령으로 확인하세요.
-   ```
-   python collect.py QwenLM/Qwen2.5 deepseek-ai/DeepSeek-V3 ggml-org/llama.cpp mlc-ai/mlc-llm
-   python -c "import json,glob; [print(f, len(json.load(open(f)))) for f in sorted(glob.glob('data/*/releases.json')) if any(k in f for k in ('Qwen','DeepSeek','llama.cpp','mlc'))]"
-   ```
-2. **5.2절 "Documented release policies":** 저장소 문서를 읽은 서술이며 코드가 없어 확인하지 못했습니다.
+## 검증하지 못한 것에 대한 조치
+1. **4.1절 후보 저장소 수치(Qwen2.5 140주 0건, DeepSeek-V3 94주 1건, llama.cpp 188주 185건, mlc-llm "릴리스 없음"):** 코드와 출력에 근거가 없고 기억으로 대체할 수 없어서 수치를 모두 뺐습니다. "Qwen2.5와 DeepSeek-V3는 모델 가중치를 다른 곳에 게시하고 GitHub 릴리스가 적거나 없다", "llama.cpp는 타이밍 결정이 없는 자동 빌드를 게시한다", "mlc-llm은 이 규칙을 충족하지 못했다"로 정성적으로 바꿨습니다. 수치를 되살리려면 `python collect.py QwenLM/Qwen2.5 deepseek-ai/DeepSeek-V3 ggml-org/llama.cpp mlc-ai/mlc-llm`로 직접 수집해서 확인한 뒤에만 넣으세요.
+2. **5.2절 "Documented release policies" 문단:** 삭제했습니다. 5.2절 전체는 RQ2의 핵심이고 나머지 수치는 모두 검증됐으므로 이 문단만 지웠습니다. 이 문단에 의존하던 문장도 함께 고쳤습니다.
+   - 2.4절: "문서화된 절차가 보여 준다"는 구절 삭제.
+   - 4.3절: 분석 (iv)(문서화된 릴리스 정책과의 비교) 삭제, "네 가지 추가 분석"을 "세 가지"로 수정.
+   - 4.1절, 4.3절, 5.6절: anthropic-sdk-python과 openai-python을 "자동 릴리스 파이프라인을 쓸 수 있는" 저장소로 완화(문서 근거가 없으므로 단정하지 않음). 두 저장소를 뺀 결과(5.6)는 그대로 유지.
 3. **4.1절의 "17개를 사전에 고정했다"는 절차 서술:** 수치가 아니라 연구 절차에 대한 주장이므로 저자가 직접 확인해야 합니다.
 
 ## 반올림과 출처 메모
