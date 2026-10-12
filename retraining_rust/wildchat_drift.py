@@ -37,6 +37,8 @@ def main():
     ap.add_argument("--workdir", default="."); ap.add_argument("--out", default=".")
     a = ap.parse_args()
     toks = defaultdict(Counter)
+    seen = defaultdict(Counter)   # (week) -> first-80-char prefix counts, for template de-duplication
+    MAXDUP = 5
     outp = os.path.join(a.out, "conv_features.csv.gz")
     with gzip.open(outp, "wt", newline="") as fo:
         wr = csv.writer(fo)
@@ -57,7 +59,9 @@ def main():
                     wr.writerow([wk, model, len(users), len(first), int(bool(CODE.search(alltext))),
                                  int(bool(YEAR.search(alltext))), int(bool(ENT.search(alltext))), int(bool(JB.search(alltext))), len(later), d])
                     fam = "gpt4" if model.startswith("gpt-4") else "gpt35"
-                    toks[(wk, fam)].update(TOK.findall(first.lower()[:2000]))
+                    pre = first[:80]; seen[wk][pre] += 1
+                    if seen[wk][pre] <= MAXDUP:   # drift tokens exclude repeated automated templates
+                        toks[(wk, fam)].update(TOK.findall(first.lower()[:2000]))
                     n += 1
             print("shard", s, n, "English convs", flush=True)
             os.remove(path)
