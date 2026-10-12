@@ -166,9 +166,33 @@ For each repository, $(\lambda_0,\gamma)$ are estimated by Poisson maximum likel
 
 [To be reported: descriptive statistics; estimates of $\gamma$, $RC/c$, and implied threshold by repository; fit of the predicted versus observed release hazard by weeks since release; counterfactual thresholds under halved $RC$; sensitivity to $\beta$ and to the bug definition.]
 
+### 6.4.1 Diagnostics on the collected sample
+
+We collected weekly data for three repositories (vLLM, Hugging Face Transformers, Ollama); Qwen2.5 and DeepSeek-V3 were dropped because they publish essentially no GitHub releases, and llama.cpp because its releases are automated per-commit builds (185 in 188 weeks) that carry no timing decision. Table 3 summarizes the retained samples, and Table 4 reports two diagnostics that must hold before the structural model is worth estimating: the bug rate should rise with the time since release ($\gamma>0$), and the release hazard should rise with that time.
+
+| Repository | Weeks | Releases | Median cycle (weeks) |
+|---|---|---|---|
+| vLLM | 186 | 76 | 2 |
+| Transformers | 414 | 186 | 2 |
+| Ollama | 173 | 146 | 1 |
+
+Table 4 reports Poisson log-rate slopes of weekly bug counts on weeks since release (offset: log of total issues; linear time trend) and logit slopes of the release hazard on weeks since release, with 90% cluster-bootstrap intervals over release cycles.
+
+| Repository | Bug log-rate slope | 90% interval | Release-hazard logit slope | 90% interval |
+|---|---|---|---|---|
+| vLLM | $-0.004$ | $[-0.077,\,-0.002]$ | 0.122 | $[-0.025,\,0.719]$ |
+| Transformers | $-0.016$ | $[-0.189,\,-0.018]$ | $-0.066$ | $[-0.144,\,0.051]$ |
+| Ollama | 0.076 | $[0.013,\,0.127]$ | 0.116 | $[-0.342,\,1.360]$ |
+
+The bootstrap resamples whole cycles and therefore perturbs the time ordering, so the intervals are indicative only (for two repositories the point estimate sits at the edge of its interval).
+
+**What the data say.** The depreciation mechanism is not supported. Bug reports are highest in the first weeks after a release and then decline (for Transformers, from about 8.9 per week in the first week to about 2.2 after five weeks), which is the signature of release-induced defects rather than accumulating drift. Release hazards are flat or imprecisely estimated: Transformers releases in about 45 percent of weeks regardless of age, which looks like a fixed cadence and not a threshold policy. The one positive bug slope (Ollama) rests on ages of one or two weeks only. Because $\gamma\le 0$ in two of three repositories and the hazard is not clearly increasing in any, a structural estimate of $RC$ from these data would not be interpretable, and we do not report one.
+
+This is a negative result for the application, and we state it as such. It does not contradict the model: open-source releases are driven by cadence, features, and defect fixes, so they do not test a model of renewal in response to accumulating drift. It does show that GitHub issue and release data are not a suitable setting for estimating the cost of retraining, and that the next step requires either a measured drift state or data on operators who update in response to degradation.
+
 ### 6.5 Extension with commercial operators
 
-GitHub data cannot show how a commercial operator trades off errors against the cost of an update. A natural extension uses public status-page incident histories and published release or deprecation notes for hosted models. We leave this for future work and do not rely on it here.
+GitHub data cannot show how a commercial operator trades off errors against the cost of an update. A natural extension uses public status-page incident histories and published release or deprecation notes for hosted models. The live status-page endpoints expose only the most recent 25 to 50 incidents, so a usable panel requires archived history; we leave this for future work and do not rely on it here.
 
 ## 7. Discussion
 
