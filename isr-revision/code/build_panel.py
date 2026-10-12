@@ -24,6 +24,7 @@ import os
 import re
 import sys
 import time
+import http.client
 import urllib.request
 import urllib.error
 
@@ -39,7 +40,7 @@ def get(url, token):
     req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json",
                                                "Authorization": f"Bearer {token}",
                                                "X-GitHub-Api-Version": "2022-11-28"})
-    for attempt in range(6):
+    for attempt in range(8):
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 return json.load(r), r.headers.get("Link", "")
@@ -52,7 +53,8 @@ def get(url, token):
                 time.sleep(2 ** attempt)
             else:
                 raise
-        except urllib.error.URLError:
+        except (urllib.error.URLError, http.client.HTTPException, ConnectionError, TimeoutError, OSError) as e:
+            print(f"network error ({type(e).__name__}); retry {attempt + 1}/8", file=sys.stderr)
             time.sleep(2 ** attempt)
     raise RuntimeError("giving up on " + url)
 
