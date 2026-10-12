@@ -159,7 +159,10 @@ def heterogeneity(df, rel_pairs, cats, B, seed, auto):
         sub = df[df["repo"].isin(rs)]
         if sub["repo"].nunique() < 3:
             continue
-        r1 = spec_c.rq1(sub, B, seed, specs=("b", "d"))
+        try:
+            r1 = spec_c.rq1(sub, B, seed, specs=("b", "d"))
+        except TypeError:  # older spec_c.py without the specs argument: run all four, use b and d
+            r1 = spec_c.rq1(sub, B, seed)
         out[name] = dict(n_repos=int(sub["repo"].nunique()),
                          rq1={s: {k: float(r1[s]["pooled"][k]) for k in ("est", "lo", "hi")} for s in r1},
                          rq3_nonbug=rq3_logit(sub))
