@@ -22,7 +22,12 @@ if TOKEN:
 
 def get(url, params=None):
     for attempt in range(8):
-        r = S.get(url, params=params, timeout=60)
+        try:
+            r = S.get(url, params=params, timeout=60)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+                requests.exceptions.ChunkedEncodingError) as e:
+            wait = min(2 ** attempt * 5, 300)
+            print(f"  connection problem ({type(e).__name__}); retrying in {wait}s"); time.sleep(wait); continue
         if r.status_code == 200:
             if int(r.headers.get("X-RateLimit-Remaining", "1")) < 5:
                 wait = int(r.headers.get("X-RateLimit-Reset", time.time() + 60)) - time.time() + 5
