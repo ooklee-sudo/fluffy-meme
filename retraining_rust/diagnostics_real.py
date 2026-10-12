@@ -1,8 +1,11 @@
 """Pre-estimation diagnostics on weekly GitHub data: does the depreciation mechanism appear?
-(1) Poisson (log link) of bug counts on weeks-since-release, with offset log(all_issues+1)
-    and a linear time trend; (2) logit of release hazard on weeks-since-release.
-Cluster (release-cycle) bootstrap CIs. Usage: python diagnostics_real.py data2"""
-import sys, glob, csv, json
+(1) Poisson (log link) of bug counts on weeks-since-release, offset log(all_issues+1), linear time trend;
+(2) logit of release hazard on weeks-since-release (age capped at 8).
+Cluster (release-cycle) bootstrap SEs that keep each row's original calendar time.
+Eligibility is fixed in advance: >= MIN_REL releases and >= MIN_WEEKS weeks. Reports every repo
+(including ineligible ones, flagged) and a random-effects (DerSimonian-Laird) pooled slope.
+Usage: python diagnostics_real.py data_dir [--min-rel 10] [--min-weeks 80]"""
+import sys, glob, csv, json, argparse
 import numpy as np
 from scipy.optimize import minimize
 
@@ -14,7 +17,7 @@ def load(path):
         age[t] = c; cyc[t] = k
         if d[t]: c = 1; k += 1
         else: c += 1
-    return n, a_, d, age, cyc
+    return n, a_, d, age, cyc, np.arange(len(r)) / 52.0
 
 def pois(y, X, off):
     def f(b):
@@ -27,31 +30,44 @@ def logit(y, X):
         z = X @ b; return np.sum(np.logaddexp(0, z) - y * z)
     return minimize(f, np.zeros(X.shape[1]), method="BFGS").x
 
-def est(n, a_, d, age, cyc, idx):
-    t = np.arange(len(n))[idx] / 52.0
-    X = np.c_[np.ones(idx.sum()), age[idx], t - t.mean()]
-    bp = pois(n[idx], X, np.log(a_[idx] + 1))
-    bl = logit(d[idx].astype(float), np.c_[np.ones(idx.sum()), np.minimum(age[idx], 8)])
+def est(n, a_, d, age, t):
+    X = np.c_[np.ones(len(n)), age, t - t.mean()]
+    bp = pois(n, X, np.log(a_ + 1))
+    bl = logit(d.astype(float), np.c_[np.ones(len(n)), np.minimum(age, 8)])
     return bp[1], bl[1]
 
-out = {}
-for p in sorted(glob.glob(sys.argv[1] + "/*.csv")):
-    n, a_, d, age, cyc = load(p); keep = (age >= 1) & (d == 0) | (d == 1)   # post-decision rows
-    allidx = np.ones(len(n), bool)
-    g_b, g_h = est(n, a_, d, age, cyc, allidx)
-    rng = np.random.default_rng(0); cycles = np.unique(cyc); bs = []
-    for _ in range(300):
-        pick = rng.choice(cycles, len(cycles)); idx = np.zeros(len(n), bool)
-        mask = np.isin(cyc, pick); idx = mask
-        if idx.sum() < 30: continue
-        # resample by weighting: simple cluster bootstrap via repetition
-        rows = np.concatenate([np.where(cyc == c)[0] for c in pick])
-        nn, aa, dd, ag, cy = n[rows], a_[rows], d[rows], age[rows], cyc[rows]
-        try: bs.append(est(nn, aa, dd, ag, cy, np.ones(len(rows), bool)))
-        except Exception: pass
-    bs = np.array(bs)
-    out[p.split("/")[-1][:-4]] = dict(
-        bug_log_rate_per_week_of_age=[float(g_b)] + [float(v) for v in np.percentile(bs[:, 0], [5, 95])],
-        release_logit_per_week_of_age=[float(g_h)] + [float(v) for v in np.percentile(bs[:, 1], [5, 95])])
-    print(p.split("/")[-1][:-4], json.dumps(out[p.split("/")[-1][:-4]]))
-json.dump(out, open("diagnostics_real.json", "w"), indent=1)
+def dl(b, se):
+    b, se = np.array(b), np.array(se); w = 1 / se**2; fe = np.sum(w * b) / w.sum()
+    q = np.sum(w * (b - fe) ** 2); tau2 = max(0, (q - (len(b) - 1)) / (w.sum() - (w**2).sum() / w.sum())) if len(b) > 1 else 0
+    w2 = 1 / (se**2 + tau2); m = np.sum(w2 * b) / w2.sum(); s = np.sqrt(1 / w2.sum()); return m, s, tau2
+
+def main():
+    ap = argparse.ArgumentParser(); ap.add_argument("dir"); ap.add_argument("--min-rel", type=int, default=10)
+    ap.add_argument("--min-weeks", type=int, default=80); ap.add_argument("--boot", type=int, default=300); a = ap.parse_args()
+    out, el = {}, []
+    for p in sorted(glob.glob(a.dir + "/*.csv")):
+        name = p.replace("\\", "/").split("/")[-1][:-4]
+        n, a_, d, age, cyc, t = load(p)
+        rec = dict(weeks=len(n), releases=int(d.sum()), median_cycle=float(np.median(np.diff(np.where(d == 1)[0]))) if d.sum() > 1 else None,
+                   eligible=bool(d.sum() >= a.min_rel and len(n) >= a.min_weeks))
+        if rec["eligible"]:
+            gb, gh = est(n, a_, d, age, t)
+            rng = np.random.default_rng(0); cycles = np.unique(cyc); bs = []
+            for _ in range(a.boot):
+                rows = np.concatenate([np.where(cyc == c)[0] for c in rng.choice(cycles, len(cycles))])
+                try: bs.append(est(n[rows], a_[rows], d[rows], age[rows], t[rows]))
+                except Exception: pass
+            bs = np.array(bs); se = bs.std(axis=0, ddof=1)
+            rec.update(bug_slope=float(gb), bug_se=float(se[0]), hazard_slope=float(gh), hazard_se=float(se[1]))
+            el.append(rec)
+        out[name] = rec
+        print(name, json.dumps({k: (round(v, 4) if isinstance(v, float) else v) for k, v in rec.items()}))
+    if len(el) >= 2:
+        pb = dl([r["bug_slope"] for r in el], [r["bug_se"] for r in el]); ph = dl([r["hazard_slope"] for r in el], [r["hazard_se"] for r in el])
+        out["_pooled"] = dict(k=len(el), bug=dict(est=pb[0], se=pb[1], tau2=pb[2]), hazard=dict(est=ph[0], se=ph[1], tau2=ph[2]),
+                              share_bug_positive=float(np.mean([r["bug_slope"] > 0 for r in el])), share_hazard_positive=float(np.mean([r["hazard_slope"] > 0 for r in el])))
+        print("POOLED", json.dumps(out["_pooled"], default=float))
+    json.dump(out, open("diagnostics_real.json", "w"), indent=1)
+
+if __name__ == "__main__":
+    main()

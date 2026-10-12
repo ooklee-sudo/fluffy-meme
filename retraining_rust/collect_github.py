@@ -49,6 +49,17 @@ def main():
     h = {"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"}
     os.makedirs(a.out, exist_ok=True)
     for repo in a.repos:
+        outf = os.path.join(a.out, repo.replace("/", "__") + ".csv")
+        if os.path.exists(outf):
+            print(repo, "already collected, skipping"); continue
+        try:
+            collect_one(repo, h, a, outf)
+        except Exception as e:
+            print(repo, "FAILED:", e)
+
+
+def collect_one(repo, h, a, outf):
+    if True:
         bugs, allc, rel = Counter(), Counter(), set()
         for it in get_all(f"{API}/repos/{repo}/issues", h, dict(state="all", since=a.since)):
             if "pull_request" in it or it["created_at"] < a.since:
@@ -61,7 +72,7 @@ def main():
                 rel.add(week_of(r["published_at"]))
         weeks = sorted(set(allc) | rel)
         if not weeks:
-            continue
+            return
         # fill gaps with zero weeks
         def nxt(wk):
             y, w = map(int, wk.split("-W"))
@@ -70,7 +81,7 @@ def main():
         full, cur = [], weeks[0]
         while cur <= weeks[-1]:
             full.append(cur); cur = nxt(cur)
-        with open(os.path.join(a.out, repo.replace("/", "__") + ".csv"), "w", newline="") as f:
+        with open(outf, "w", newline="") as f:
             wr = csv.writer(f); wr.writerow(["week", "bugs", "all_issues", "release"])
             for w in full:
                 wr.writerow([w, bugs[w], allc[w], int(w in rel)])
