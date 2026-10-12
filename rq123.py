@@ -165,7 +165,8 @@ def main():
         lg = r["lags123"]
         print(f"  control={c}: lag1 {l1['coef']:+.3f} (SE {l1['se']:.3f}, p={l1['p']:.2f}, wild p={l1['wild_p']:.2f}); "
               f"lags1-3 {lg['z1']['coef']:+.3f}/{lg['z2']['coef']:+.3f}/{lg['z3']['coef']:+.3f}; "
-              f"3-week average {av['coef']:+.3f} (SE {av['se']:.3f}, p={av['p']:.2f}, wild p={av['wild_p']:.2f}); n={r['n']}")
+              f"3-week average {av['coef']:+.3f} (SE {av['se']:.3f}, p={av['p']:.2f}, wild p={av['wild_p']:.2f}); "
+              f"coefficient on the {c}-issues control {r['control_coef']:+.3f}; n={r['n']}")
     json.dump(res, open("results/rq123.json", "w"), indent=2, default=float)
     print("\nsaved results/rq123.json")
 

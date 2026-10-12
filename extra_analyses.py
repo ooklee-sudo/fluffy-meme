@@ -59,13 +59,15 @@ def fix_share(body):
     """(n_items, n_fix) over bullet items of one release note. Items under a fix/bug heading count as fixes."""
     n = nf = 0
     in_fix = False
+    skip = False
     for line in (body or "").splitlines():
         h = HEAD.match(line)
         if h:
             in_fix = bool(FIXHEAD.search(h.group(1)))
+            skip = bool(re.search(r"contributor|acknowledg|thank", h.group(1), re.I))  # name lists are not changes
             continue
         b = BULLET.match(line)
-        if b:
+        if b and not skip and not re.fullmatch(r"@[\w-]+|\**full changelog.*", b.group(1).strip(), re.I):
             n += 1
             nf += int(in_fix or bool(FIXWORD.search(b.group(1))))
     return n, nf
