@@ -18,7 +18,7 @@ repository-clustered SE, and a Webb wild-cluster bootstrap on the linear probabi
 Spec (d) = (c) plus dummies for ages 1-3, which absorbs the post-release burst flexibly.
 Synthetic check (--demo, true gamma = +0.03 with a release-week attention burst): (b) +0.019 and
 (d) +0.016 detect the planted rise, attenuated; (a) -0.13 and (c) -0.04 miss it, because non-bug
-issues are a noisy proxy for the burst. Treat (a)/(c) nulls as uninformative and read (b)/(d).
+issues are a noisy proxy for the burst. Primary tests of H1 are therefore (b) and (d); (a)/(c) nulls are uninformative.
 
 Usage: python spec_c.py panel.csv [--boot 999] [--out results/spec_c.json]
        python spec_c.py --demo      # synthetic data, checks the code recovers a known gamma
@@ -219,11 +219,16 @@ def main():
         raw = pd.read_csv(a.panel)
     df = prepare(raw)
     res = dict(rq1=rq1(df, a.boot, a.seed), rq3=rq3(df, a.boot, a.seed))
-    for s, name in (("a", "no adjustment"), ("b", "offset: total issues"), ("c", "control: log non-bug issues"), ("d", "(c) + dummies for ages 1-3 (burst absorbed)")):
+    for s, name in (("a", "no adjustment"), ("b", "offset: total issues  <-- primary"), ("c", "control: log non-bug issues"), ("d", "(c) + dummies for ages 1-3  <-- primary")):
         p = res["rq1"][s]["pooled"]
         print(f"RQ1 ({s}) {name}: slope {p['est']:+.4f}  95% CI [{p['lo']:+.4f}, {p['hi']:+.4f}]  "
               f"+/sig+/sig-: {p['n_positive']}/{p['n_sig_positive']}/{p['n_sig_negative']} of {p['k']}  "
               f"rules out > {p['max_weekly_increase_ruled_out_pct']:.2f}%/week")
+    d = res["rq1"]["d"]["pooled"]
+    print(f"\nFor the manuscript placeholders: (c) {res['rq1']['c']['pooled']['est']:+.4f} "
+          f"[{res['rq1']['c']['pooled']['lo']:+.4f}, {res['rq1']['c']['pooled']['hi']:+.4f}]; (d) {d['est']:+.4f} "
+          f"[{d['lo']:+.4f}, {d['hi']:+.4f}], {d['n_positive']} positive / {d['n_sig_positive']} significantly positive of {d['k']}, "
+          f"rules out > {d['max_weekly_increase_ruled_out_pct']:.1f}% per week\n")
     for c, v in res["rq3"].items():
         print(f"RQ3 control={c}: coef {v['coef_bug']:+.3f} (SE {v['se']:.3f}, p={v['p']:.2f}, wild p={v['wild_cluster_p']:.2f}); "
               f"upper OR {v['odds_ratio_upper']:.2f}")
