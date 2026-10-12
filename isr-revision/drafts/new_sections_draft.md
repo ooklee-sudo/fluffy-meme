@@ -1,0 +1,45 @@
+# Draft text for the new analyses
+
+Bracketed values `[ ]` are placeholders to be filled from `output/*.csv`. Two versions of each results paragraph are given; keep the one the estimates support and delete the other.
+
+---
+
+## Insert in 4.3, after "Upstream launches (RQ3)"
+
+**Upstream launches at daily resolution.** A weekly indicator is a coarse measure of timing when the weekly release rate in treated blocks is about 0.42 and client SDKs often release on the day a model is announced. We therefore also measure timing in days. Day 0 is the date of the public announcement. For each launch and each repository that had released at least once in the preceding 90 days, we record the number of days until the next release, and we compare exposed and unexposed repositories in two ways: the difference in the share that release within *k* days (*k* = 0, 1, 3, 7, 14, 28), and the difference in the restricted mean time to the next release, truncated at 28 days. Both are averaged over launches with equal weight. Inference is by randomization: we replace each launch date with a placebo date drawn from days at least 14 days away from any real launch, keep the launch's type and therefore its exposed and unexposed sets, recompute the statistics, and repeat [999] times. The placebo distribution absorbs any baseline difference in release rates between exposed and unexposed repositories, and the p-value is the share of placebo statistics at least as far from the placebo mean as the observed statistic. To compare timing with content, we also record, for exposed repositories, the days until the first release whose notes mention the launched model, and whether that release is the first release after the launch.
+
+**Receivers of the signal.** Sections 5.1 to 5.5 test whether release timing is correlated with degradation. Signaling also requires that receivers act on the signal. We therefore ask whether adoption responds to release cadence and whether it responds differently to releases that follow a surge in bug reports. For each repository-week we measure adoption growth as the change in log mean weekly PyPI downloads between weeks *t*−3 to *t* and weeks *t*+1 to *t*+4, and, for all 19 repositories, the corresponding change in log new GitHub stars from GH Archive. three repositories (whisper.cpp, text-generation-inference, and ollama) have no PyPI artifact and enter only the star models (Appendix [B]). The regressors are the number of releases in the trailing eight weeks, the number of those releases that follow a week whose bug share exceeded the repository's median, the number of hot-fix releases in the same window, and the log of issues in the window as a control for project activity, together with the outcome measured four weeks earlier and repository and week fixed effects. Because total releases are in the model, the coefficient on bug-preceded releases is the additional response of adoption to a release that follows a bug surge, relative to any other release. Standard errors are clustered by repository, and p-values come from a wild cluster restricted bootstrap with Webb weights. Adoption and releases share momentum, so these estimates describe how receivers' behavior covaries with cadence and are not causal.
+
+---
+
+## Replace 5.4 second paragraph or add after it
+
+**Daily resolution.** [Version A — no timing response] Measured in days, exposed repositories are no more likely than unexposed ones to release soon after a launch. The difference in the share that release within one day is [ ] (placebo 95% range [ , ]; p = [ ]), within seven days [ ] (p = [ ]), and the restricted mean time to the next release differs by [ ] days (p = [ ]). Figure 4 shows that the gap in cumulative release probability stays within the placebo band throughout the first four weeks. The release that first mentions the model arrives a median of [ ] days after the launch, and in [ ] percent of exposed pairs it is the first release after the launch, released at a time that does not differ from that of releases after placebo dates. Support for new models is thus added to releases whose timing does not respond to the launch.
+
+[Version B — a short-run response] Measured in days, exposed repositories are more likely to release within [ ] days of a launch: the difference is [ ] (placebo 95% range [ , ]; p = [ ]), and it [persists / fades] by day 28 ([ ]; p = [ ]). The weekly estimates in Table [ ] miss this response because it is concentrated in the first days and is small relative to a weekly release rate of 0.42. Releases therefore do respond to this observable environmental state, which is a form of state dependence; whether that response reflects degradation or the addition of new features cannot be told from timing alone.
+
+---
+
+## New 5.7 Receivers: Does Adoption Respond to Cadence?
+
+[Version A — receivers reward cadence without discriminating] Adoption grows faster after periods of frequent releases. One standard deviation more releases in the trailing eight weeks is followed by a change of [ ] in log download growth (SE [ ]; wild cluster bootstrap p = [ ]) and of [ ] in log star growth (p = [ ]). The additional response to releases that follow a bug surge is [ ] (p = [ ]) for downloads and [ ] (p = [ ]) for stars, and that to hot-fixes is [ ] (p = [ ]). Users thus respond to cadence as such and not distinguishably to the component of cadence that tracks defects. Together with Section 5.3, this completes the signaling argument: receivers act on cadence, and the part of cadence they act on is not distinguishably tied to degradation.
+
+[Version B — no receiver response; SELECTED from receiver_side_results.csv, B = 999] We find no detectable response of adoption to release cadence. One standard deviation more releases in the trailing eight weeks is followed by a change of −0.008 in log download growth (clustered SE 0.034; wild cluster bootstrap p = 0.94) and of 0.047 in log star growth (SE 0.025; p = 0.10). The additional response to releases that follow a bug surge is −0.031 (p = 0.35) for downloads and −0.027 (p = 0.16) for stars, and that to hot-fixes is 0.020 (p = 0.63) and −0.020 (p = 0.66). In one of the six estimates of the response to releases, the star model that adds bug-preceded releases, the coefficient is 0.067 with a bootstrap p-value of 0.049; we do not read it as a finding, given the number of specifications we report and the estimate of 0.047 (p = 0.10) in the model without that term. With 16 clusters for downloads and 19 for stars, the minimum detectable effect at 80 percent power is about 0.09 and 0.07 log points per standard deviation, so the result does not show that receivers ignore cadence, only that adoption at weekly frequency does not reveal it. The argument of Section 2.4 then rests on the documented use of cadence in project-health assessments rather than on revealed behavior, and we say so in Section 6.3.
+
+---
+
+## Figure captions
+
+**Figure 1.** Repository-level age slopes. (a) Log-rate slope of weekly bug reports on weeks since the last release, specification (b). (b) Logit slope of the release hazard on weeks since the last release. Points are estimates with 95% intervals from the cycle bootstrap; grey points are repositories with a median release cycle of one week; diamonds are random-effects pooled estimates. Rows are ordered by the release-hazard slope.
+
+**Figure 2.** Pooled age slope of bug reports under four ways of handling issue volume (Section 4.3). Specifications (b) and (d), in black, are the primary tests of H1; (a) and (c) are biased downward by the burst of issues after a release. The shaded band marks the equivalence bound of ±0.02.
+
+**Figure 3.** (a) Response of the release hazard to issues in the previous week, holding non-bug issues or total issues fixed (Section 5.3). (b) Pooled coefficients on work age and calendar age in the regular-release hazard, entered alone and jointly (Section 5.5).
+
+**Figure 4.** Difference between exposed and unexposed repositories in the share that have released by day *k* after an upstream launch. The shaded band is the central 95% of the same statistic computed at placebo launch dates.
+
+---
+
+## Add to 6.3 Limitations (if 5.7 is kept)
+
+The receiver-side analysis uses downloads and stars as measures of adoption. Downloads include mirrors and continuous-integration installs, stars measure attention more than use, three repositories have no PyPI artifact, and the PyPI counts of TensorRT-LLM are incomplete because early versions were distributed through the NVIDIA package index. Adoption and releases are both driven by project momentum, which the lagged outcome and the issue control absorb only in part.
