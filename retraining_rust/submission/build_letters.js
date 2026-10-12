@@ -26,7 +26,7 @@ const title = [
   para(ABSTRACT, { alignment: AlignmentType.JUSTIFIED }),
   para([run("Keywords: ", { bold: true }), run(KEYWORDS)]),
   heading("Manuscript details"),
-  para("Article type: Original research. Word count: about 5,000 words in the main text (excluding abstract, tables and references); abstract about 260 words. The manuscript file is anonymized for review and does not contain author information."),
+  para("Article type: Original research. Word count: about 5,000 words in the main text (excluding abstract, tables and references); abstract 245 words. The manuscript file is anonymized for review and does not contain author information."),
   heading("Declarations"),
   para([run("Funding. ", { bold: true }), ph("[State the funding sources, or: “The authors received no specific funding for this work.”]")]),
   para([run("Competing interests. ", { bold: true }), ph("[State any competing interests, or: “The authors have no competing interests to declare that are relevant to the content of this article.”]")]),
