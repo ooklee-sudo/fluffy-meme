@@ -20,11 +20,15 @@ Synthetic check (--demo, true gamma = +0.03 with a release-week attention burst)
 (d) +0.016 detect the planted rise, attenuated; (a) -0.13 and (c) -0.04 miss it, because non-bug
 issues are a noisy proxy for the burst. Primary tests of H1 are therefore (b) and (d); (a)/(c) nulls are uninformative.
 
-Usage: python spec_c.py panel.csv [--boot 999] [--out results/spec_c.json]
-       python spec_c.py --demo      # synthetic data, checks the code recovers a known gamma
+Usage (inside the isr_analysis_kit folder, next to analyze.py and data/):
+       python spec_c.py --end-week 2026-10-05 --boot 999     # builds the panel from data/ and runs everything
+       python spec_c.py panel.csv --boot 999                 # or start from a ready-made CSV
+       python spec_c.py --demo                               # synthetic data, checks the code recovers a known gamma
+The panel built from data/ is also saved as panel.csv.
 """
 import argparse
 import json
+import os
 import warnings
 
 import numpy as np
@@ -205,6 +209,20 @@ def demo(gamma=0.03, repos=19, weeks=180, seed=1):
     return pd.DataFrame(rows)
 
 
+def panel_from_kit(data, end_week, out="panel.csv"):
+    """Build the weekly panel with the kit's own build_panel (same 3,432 repository-weeks as analyze.py)."""
+    import glob
+    from analyze import build_panel
+    dirs = sorted(glob.glob(f"{data}/*__*"))
+    if not dirs:
+        raise SystemExit(f"no repository folders in {data}/; run collect.py first or pass a panel CSV")
+    P = pd.concat([build_panel(d, end_week)[0] for d in dirs], ignore_index=True)
+    raw = P[["repo", "week", "issues", "bugs", "any_rel", "age_any"]].rename(columns={"any_rel": "release", "age_any": "age"})
+    raw.to_csv(out, index=False)
+    print(f"panel: {raw['repo'].nunique()} repositories, {len(raw)} repository-weeks, {int(raw['release'].sum())} release-weeks -> {out}")
+    return raw
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("panel", nargs="?")
@@ -212,11 +230,15 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="results/spec_c.json")
     ap.add_argument("--demo", action="store_true")
+    ap.add_argument("--data", default="data")
+    ap.add_argument("--end-week", default=None)
     a = ap.parse_args()
     if a.demo:
         raw, a.boot = demo(), min(a.boot, 200)
-    else:
+    elif a.panel:
         raw = pd.read_csv(a.panel)
+    else:
+        raw = panel_from_kit(a.data, a.end_week)
     df = prepare(raw)
     res = dict(rq1=rq1(df, a.boot, a.seed), rq3=rq3(df, a.boot, a.seed))
     for s, name in (("a", "no adjustment"), ("b", "offset: total issues  <-- primary"), ("c", "control: log non-bug issues"), ("d", "(c) + dummies for ages 1-3  <-- primary")):
@@ -233,6 +255,7 @@ def main():
         print(f"RQ3 control={c}: coef {v['coef_bug']:+.3f} (SE {v['se']:.3f}, p={v['p']:.2f}, wild p={v['wild_cluster_p']:.2f}); "
               f"upper OR {v['odds_ratio_upper']:.2f}")
     if not a.demo:
+        os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
         with open(a.out, "w") as f:
             json.dump(res, f, indent=2, default=float)
         print("saved", a.out)
