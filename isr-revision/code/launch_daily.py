@@ -128,7 +128,7 @@ for _, l in L.iterrows():
                    days_to_release=dt)
         if r in tr and pat is not None:
             sub = R[(R.repo == r) & (R.d >= l.d) & (R.d <= l.d + 56)].sort_values("d")
-            hit = sub[sub.body.fillna("").str.contains(pat)]
+            hit = sub[sub.body.fillna("").map(lambda t: pat.search(t) is not None)]
             row["days_to_mention"] = (hit.d.iloc[0] - l.d) if len(hit) else np.inf
             row["mention_in_first_release"] = int(len(sub) > 0 and len(hit) > 0 and hit.index[0] == sub.index[0])
         pairs.append(row)
