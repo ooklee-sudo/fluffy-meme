@@ -23,8 +23,8 @@ Real run: put the five CSVs in ./data with the column names in make_synthetic.py
     python receiver_side.py --data data --out output --B 999
 
 Notes
-- launches.csv `keywords`: semicolon-separated model names as they appear in release notes
-  (e.g. "gpt-4o;gpt4o"). Reuse the keyword lists behind Section 5.4.
+- launches.csv `keywords`: case-insensitive regular expression for the model as it appears in release notes
+  (e.g. "gpt-4o|gpt4o"); same patterns as events.csv of the first analysis kit.
 - `age` / `regular_age` in weekly_panel.csv follow the manuscript's definitions (1 = first week
   after a release).
 - The scripts were tested on synthetic data only; check the column mapping against your files.

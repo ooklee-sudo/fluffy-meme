@@ -4,7 +4,7 @@ Use only to check that the scripts run; replace ./data with the real files.
 
 weekly_panel.csv   repo, week, release, age, regular_release, regular_age, issues, bugs
 releases.csv       repo, published_at (UTC ISO), tag, is_hotfix, body
-launches.csv       launch_id, date, type, keywords (semicolon-separated)
+launches.csv       launch_id, date, type, keywords (regular expression, case-insensitive)
 exposure.csv       repo, open_weights, openai, anthropic, google   (0/1)
 adoption_weekly.csv repo, week, downloads, stars_new
 """
@@ -25,7 +25,7 @@ launches = pd.DataFrame({
     "date": np.sort(rng.choice(days[200:-60], 38, replace=False)),
     "type": rng.choice(types, 38, p=[.58, .16, .16, .10]),
 })
-launches["keywords"] = [f"model{i:02d};m{i:02d}" for i in range(38)]
+launches["keywords"] = [f"model{i:02d}|m{i:02d}" for i in range(38)]
 launches.to_csv(f"{D}/launches.csv", index=False)
 
 expo = pd.DataFrame({"repo": repos})
@@ -42,7 +42,7 @@ for r_i, r in enumerate(repos):
         txt = "Fixes and improvements."
         for _, L in launches.iterrows():
             if expo.loc[r_i, L.type] and 0 <= (d - L.date).days <= 30 and rng.random() < .3:
-                txt += f" Add support for {L.keywords.split(';')[0]}."
+                txt += f" Add support for {L.keywords.split('|')[0]}."
         rel_rows.append((r, d + pd.Timedelta(hours=int(rng.integers(0, 24))), f"v{len(rel_rows)}",
                          int(rng.random() < .4), txt))
     weeks = pd.date_range(start, end, freq="W-MON")

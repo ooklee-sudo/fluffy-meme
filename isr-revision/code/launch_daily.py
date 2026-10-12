@@ -122,8 +122,7 @@ for _, l in L.iterrows():
         continue
     s, tr, co, t, c = res
     obs.append(s)
-    kws = [k.strip().lower() for k in str(l.keywords).split(";") if k.strip()]
-    pat = re.compile("|".join(re.escape(k) for k in kws), re.I) if kws else None
+    pat = re.compile(str(l.keywords), re.I) if isinstance(l.keywords, str) and l.keywords.strip() else None
     for r, dt in zip(tr + co, list(t) + list(c)):
         row = dict(launch_id=l.launch_id, type=l.type, repo=r, treated=int(r in tr),
                    days_to_release=dt)
