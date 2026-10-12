@@ -38,6 +38,7 @@ ap.add_argument("--data", default="data")
 ap.add_argument("--out", default="output")
 ap.add_argument("--window", type=int, default=8)
 ap.add_argument("--B", type=int, default=999)
+ap.add_argument("--no-downloads", default="", help="comma-separated repositories whose PyPI downloads are set to missing (they enter only the star models)")
 a = ap.parse_args()
 os.makedirs(a.out, exist_ok=True)
 W = a.window
@@ -51,6 +52,10 @@ hot_w = R[R.is_hotfix == 1].groupby(["repo", "week"]).size().rename("n_hot")
 D = (P.merge(A, on=["repo", "week"], how="left")
        .merge(hot_w, on=["repo", "week"], how="left")
        .fillna({"n_hot": 0}).sort_values(["repo", "week"]))
+for r in [x.strip() for x in a.no_downloads.split(",") if x.strip()]:
+    if r not in set(D.repo):
+        raise SystemExit(f"--no-downloads: unknown repository {r}")
+    D.loc[D.repo == r, "downloads"] = np.nan
 
 
 def build(g):
