@@ -30,7 +30,7 @@ import urllib.error
 
 import pandas as pd
 
-BUG_RE = re.compile(r"\b(bug|error|crash|fail\w*|wrong|incorrect|regression|broken|exception)\b", re.I)
+BUG_RE = re.compile(r"\b(?:bug|error|crash|fail|wrong|incorrect|regression|broken|exception)", re.I)   # as in the first kit: no trailing word boundary
 VER_RE = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?")
 API = "https://api.github.com"
 SINCE = "2023-01-01"
