@@ -111,6 +111,9 @@ def rq3_lags(df, control, B, rng, min_age=0):
     X, m = fit(["z1"])
     out["lag1"] = dict(coef=float(m.params["z1"]), se=float(m.bse["z1"]), p=float(m.pvalues["z1"]),
                        wild_p=spec_c.webb_wild_p(y, X, grp, "z1", B, rng))
+    # the control in the same one-lag model: this is the coefficient to compare with the bug coefficient above
+    out["lag1_control"] = dict(coef=float(m.params["z_ctl"]), se=float(m.bse["z_ctl"]), p=float(m.pvalues["z_ctl"]),
+                               wild_p=spec_c.webb_wild_p(y, X, grp, "z_ctl", B, rng))
     X, m = fit(["z1", "z2", "z3"])
     out["lags123"] = {k: dict(coef=float(m.params[k]), se=float(m.bse[k])) for k in ("z1", "z2", "z3")}
     X, m = fit(["z_avg"])
@@ -129,6 +132,7 @@ def main():
     ap.add_argument("--boot", type=int, default=200)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--demo", action="store_true")
+    ap.add_argument("--only-rq3", action="store_true", help="skip Table 1, RQ1 and RQ2; run only the RQ3 regressions")
     ap.add_argument("--skip-table1", action="store_true", help="reuse results/table1.csv")
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
@@ -144,6 +148,19 @@ def main():
 
     res = {}
     os.makedirs("results", exist_ok=True)
+    if a.only_rq3:
+        res = {"rq3": {}}
+        print("RQ3 only (logit of a release on standardized log(1+bugs); clustered SE; wild-cluster p, Webb):")
+        for c, ma in [(c, ma) for ma in (0, 2) for c in ("total", "nonbug")]:
+            r = rq3_lags(df, c, a.boot, rng, ma)
+            res["rq3"][f"{c}_minage{ma}"] = r
+            l1, av, lc = r["lag1"], r["avg3"], r["lag1_control"]
+            print(f"  control={c}, ages>={ma if ma else 1}: lag1 bugs {l1['coef']:+.3f} (SE {l1['se']:.3f}, p={l1['p']:.2f}, wild p={l1['wild_p']:.2f}); "
+                  f"{c}-issues control {lc['coef']:+.3f} (SE {lc['se']:.3f}, p={lc['p']:.2f}, wild p={lc['wild_p']:.2f}); "
+                  f"3-week average {av['coef']:+.3f} (wild p={av['wild_p']:.2f}); n={r['n']}")
+        json.dump(res, open("results/rq3_only.json", "w"), indent=2, default=float)
+        print("saved results/rq3_only.json")
+        return
     if a.skip_table1 and os.path.exists("results/table1.csv"):
         t = pd.read_csv("results/table1.csv")
     else:
@@ -174,7 +191,9 @@ def main():
         print(f"  control={c}, ages>={ma if ma else 1}: lag1 {l1['coef']:+.3f} (SE {l1['se']:.3f}, p={l1['p']:.2f}, wild p={l1['wild_p']:.2f}); "
               f"lags1-3 {lg['z1']['coef']:+.3f}/{lg['z2']['coef']:+.3f}/{lg['z3']['coef']:+.3f}; "
               f"3-week average {av['coef']:+.3f} (SE {av['se']:.3f}, p={av['p']:.2f}, wild p={av['wild_p']:.2f}); "
-              f"coefficient on the {c}-issues control {r['control_coef']:+.3f}; n={r['n']}")
+              f"n={r['n']}")
+        lc = r["lag1_control"]
+        print(f"      one-lag model, coefficient on the {c}-issues control: {lc['coef']:+.3f} (SE {lc['se']:.3f}, p={lc['p']:.2f}, wild p={lc['wild_p']:.2f})")
     json.dump(res, open("results/rq123.json", "w"), indent=2, default=float)
     print("\nsaved results/rq123.json")
 
