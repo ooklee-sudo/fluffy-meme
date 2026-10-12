@@ -6,13 +6,14 @@ Reservoir sampling with a fixed seed; stores truncated text locally (scratch) fo
 import argparse, json, os, random, re, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pyarrow.parquet as pq
-from wildchat_drift import DISSAT, URL
+from wildchat_drift import DISSAT, DISSAT2_ANY, dissat2, URL
 
 CUE = re.compile(r"\b(wrong|incorrect|mistake|error|not (right|correct|what|true|work\w*)|doesn'?t|didn'?t|isn'?t|again|actually|fix|redo|rewrite|instead)\b", re.I)
-SIZES = {"A": 150, "B": 150, "C": 100}
+SIZES = {"A": 150, "B": 100, "C": 100}
 
 ap = argparse.ArgumentParser(); ap.add_argument("--shards", type=int, nargs="+"); ap.add_argument("--workdir"); ap.add_argument("--out")
-a = ap.parse_args(); rng = random.Random(42)
+a = ap.parse_args(); rng = random.Random(int(os.environ.get("SEED", "42")))
+V2 = os.environ.get("DETECTOR", "v1") == "v2"
 res = {k: [] for k in SIZES}; N = {k: 0 for k in SIZES}
 for s in a.shards:
     p = os.path.join(a.workdir, f"s{s}.parquet")
@@ -27,8 +28,9 @@ for s in a.shards:
                     k += 1
                     if k >= 2:
                         t = m["content"] or ""
-                        st = "A" if DISSAT.search(t[:120]) else ("B" if CUE.search(t[:300]) else "C")
-                        N[st] += 1; item = dict(id=f"{h}:{k}", stratum=st, prev=prev, text=t[:300])
+                        flag = dissat2(t) if V2 else bool(DISSAT.search(t[:120]))
+                        st = "A" if flag else ("B" if CUE.search(t[:300]) else "C")
+                        N[st] += 1; item = dict(id=f"{h}:{k}", stratum=st, v1=bool(DISSAT.search(t[:120])), prev=prev, text=t[:300])
                         if len(res[st]) < SIZES[st]: res[st].append(item)
                         else:
                             j = rng.randrange(N[st])

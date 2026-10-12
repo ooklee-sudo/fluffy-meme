@@ -23,6 +23,22 @@ DISSAT = re.compile(
     r"that (doesn'?t|does not|didn'?t|did not)|it (doesn'?t|does not|didn'?t) work|doesn'?t work|"
     r"try again|redo|you (misunderstood|didn'?t|did not)|i (said|asked|meant)|wrong answer|"
     r"that('s| is) (not|incorrect) (what|correct|right)|error\b)", re.I)
+# v2 detector: v1 start-of-turn patterns, plus cues anywhere in the first 200 characters
+# (designed from the codebook categories: "I meant", pasted error output, "still/same error",
+# "didn't work", "you didn't/forgot", "I said/asked", "are you sure", "that's not", "wrong/incorrect").
+DISSAT2_ANY = re.compile(
+    r"\b(i mean[t]?\b|still (not|doesn'?t|isn'?t|getting|the same|error|wrong|fail)|same error|"
+    r"(did(n'?t| not)|does(n'?t| not)|do(n'?t| not)) work|not working|it (didn'?t|doesn'?t|did not|does not)|"
+    r"you (didn'?t|did not|forgot|missed|ignored|misunderstood)|i (said|asked|requested|didn'?t (ask|say|tell|want))|"
+    r"are you sure|that'?s not|this is not|that is not|not true|incorrect|wrong|mistake|hallucinat\w*|"
+    r"traceback \(most recent|\bsyntaxerror|\btypeerror|\bnameerror|\bvalueerror|\battributeerror|\bkeyerror|"
+    r"\bexception\b|\berror[:\s]|\bfailed\b|cannot read propert|no such file|not found|http \d{3} error)", re.I)
+
+
+def dissat2(u):
+    return bool(DISSAT.search(u[:120]) or DISSAT2_ANY.search(u[:200]))
+
+
 CODE = re.compile(r"```|\bdef \w+\(|\bimport \w+|#include|\bfunction\s*\(|</?\w+>|\bSELECT\b.*\bFROM\b", re.I | re.S)
 TOK = re.compile(r"[a-z]{3,}")
 
@@ -42,7 +58,7 @@ def main():
     outp = os.path.join(a.out, "conv_features.csv.gz")
     with gzip.open(outp, "wt", newline="") as fo:
         wr = csv.writer(fo)
-        wr.writerow(["week", "model", "n_user", "first_len", "code", "year_ref", "ent_ref", "jb", "later_turns", "dissat_turns"])
+        wr.writerow(["week", "model", "n_user", "first_len", "code", "year_ref", "ent_ref", "jb", "later_turns", "dissat_turns", "dissat2_turns"])
         for s in a.shards:
             path = os.path.join(a.workdir, f"s{s}.parquet")
             if not os.path.exists(path):
@@ -56,8 +72,9 @@ def main():
                     wk = week(ts); first = users[0]; alltext = " ".join(users)
                     later = users[1:]
                     d = sum(1 for u in later if DISSAT.search(u[:120]))
+                    d2 = sum(1 for u in later if dissat2(u))
                     wr.writerow([wk, model, len(users), len(first), int(bool(CODE.search(alltext))),
-                                 int(bool(YEAR.search(alltext))), int(bool(ENT.search(alltext))), int(bool(JB.search(alltext))), len(later), d])
+                                 int(bool(YEAR.search(alltext))), int(bool(ENT.search(alltext))), int(bool(JB.search(alltext))), len(later), d, d2])
                     fam = "gpt4" if model.startswith("gpt-4") else "gpt35"
                     pre = first[:80]; seen[wk][pre] += 1
                     if seen[wk][pre] <= MAXDUP:   # drift tokens exclude repeated automated templates

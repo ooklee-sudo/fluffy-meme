@@ -11,6 +11,7 @@ import numpy as np, pandas as pd
 import statsmodels.api as sm
 
 d = sys.argv[1]
+OUT = sys.argv[2] if len(sys.argv) > 2 else "dissat_turns"
 df = pd.read_csv(f"{d}/conv_features.csv.gz")
 toks = pickle.load(open(f"{d}/weekly_tokens.pkl", "rb"))
 print(df.model.value_counts().head(8).to_string())
@@ -43,7 +44,7 @@ for fam in ["gpt35", "gpt4"]:
         g = df[(df.week == w) & (df.fam == fam)]
         lt = g.later_turns.sum()
         rows.append(dict(fam=fam, week=w, drift=js(vec(toks[(w, fam)]), pref), n=len(g),
-                         corr=g.dissat_turns.sum() / max(lt, 1), year_ref=g.year_ref.mean(),
+                         corr=g[OUT].sum() / max(lt, 1), year_ref=g.year_ref.mean(),
                          ent_ref=g.ent_ref.mean(), code=g.code.mean(), jb=g.jb.mean(), len=np.log(g.first_len + 1).mean(),
                          turns=g.n_user.mean()))
 W = pd.DataFrame(rows); W.to_csv(f"{d}/weekly_drift.csv", index=False)
@@ -60,7 +61,7 @@ for fam, g in W.groupby("fam"):
 
 # ---------- B. conversation level ----------
 c = df[df.later_turns >= 1].copy()
-c["any"] = (c.dissat_turns > 0).astype(int)
+c["any"] = (c[OUT] > 0).astype(int)
 c["loglen"] = np.log(c.first_len + 1); c["logturns"] = np.log(c.n_user)
 for fam in ["gpt35", "gpt4"]:
     g = c[c.fam == fam]
