@@ -35,6 +35,17 @@ DISSAT2_ANY = re.compile(
     r"\bexception\b|\berror[:\s]|\bfailed\b|cannot read propert|no such file|not found|http \d{3} error)", re.I)
 
 
+def reasks(users, thr=0.6):
+    """Number of consecutive user turns whose word sets overlap (Jaccard >= thr, >= 4 words each):
+    a regex-free proxy for re-asking / retrying the same request."""
+    n, prev = 0, None
+    for u in users:
+        w = set(TOK.findall(u.lower()[:1000]))
+        if prev is not None and len(w) >= 4 and len(prev) >= 4 and len(w & prev) / len(w | prev) >= thr: n += 1
+        prev = w
+    return n
+
+
 def dissat2(u):
     return bool(DISSAT.search(u[:120]) or DISSAT2_ANY.search(u[:200]))
 
@@ -58,7 +69,7 @@ def main():
     outp = os.path.join(a.out, "conv_features.csv.gz")
     with gzip.open(outp, "wt", newline="") as fo:
         wr = csv.writer(fo)
-        wr.writerow(["week", "model", "n_user", "first_len", "code", "year_ref", "ent_ref", "jb", "later_turns", "dissat_turns", "dissat2_turns"])
+        wr.writerow(["week", "model", "n_user", "first_len", "code", "year_ref", "ent_ref", "jb", "later_turns", "dissat_turns", "dissat2_turns", "reask_turns"])
         for s in a.shards:
             path = os.path.join(a.workdir, f"s{s}.parquet")
             if not os.path.exists(path):
@@ -74,7 +85,7 @@ def main():
                     d = sum(1 for u in later if DISSAT.search(u[:120]))
                     d2 = sum(1 for u in later if dissat2(u))
                     wr.writerow([wk, model, len(users), len(first), int(bool(CODE.search(alltext))),
-                                 int(bool(YEAR.search(alltext))), int(bool(ENT.search(alltext))), int(bool(JB.search(alltext))), len(later), d, d2])
+                                 int(bool(YEAR.search(alltext))), int(bool(ENT.search(alltext))), int(bool(JB.search(alltext))), len(later), d, d2, reasks(users)])
                     fam = "gpt4" if model.startswith("gpt-4") else "gpt35"
                     pre = first[:80]; seen[wk][pre] += 1
                     if seen[wk][pre] <= MAXDUP:   # drift tokens exclude repeated automated templates

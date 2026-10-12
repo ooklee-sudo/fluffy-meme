@@ -11,3 +11,8 @@
 
 `estimate_real.py` (structural estimator on weekly GitHub data) is provided but not reported: H1/H2 fail, so a cost estimate is not interpretable.
 Requires: Python 3, numpy, scipy, pandas, pyarrow, statsmodels, requests.
+
+
+## Additional files
+- `sample_corrections.py`, `correction_validation*_labels.json`, `human_labeling/answer_key.json`, `human_labeling/human_labels_from_file.json`, `agreement.py`: validation of the correction detector (stratified samples; ids and labels only, no text).
+- Human labelling workbook (`human_labeling/*.xlsx`) contains conversation excerpts and is not committed.
