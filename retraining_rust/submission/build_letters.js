@@ -8,7 +8,7 @@ const heading = (t) => new Paragraph({ children: [run(t, { bold: true })], spaci
 const ph = (t) => run(t, { highlight: "yellow" });   // placeholder to be completed by the authors
 const TITLE = "Does Release Timing in the LLM Software Ecosystem Respond to Accumulating Degradation? An Empirical Study of Open-Source Repositories and Public Chat Logs";
 const ABSTRACT = fs.readFileSync("manuscript_blind.md", "utf8").split("## Abstract")[1].split("**Keywords:**")[0].trim()
-  .replace(/\$-/g, "−").replace(/\$/g, "").replace(/\\\$/g, "");
+  .replace(/\$-/g, "−").replace(/\$/g, "").replace(/\*/g, "");
 const KEYWORDS = "software maintenance, large language models, concept drift, release engineering, mining software repositories, negative results";
 const doc = (children) => new Document({ styles: { default: { document: { run: { font: FONT, size: 24 } } } },
   sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }] });
