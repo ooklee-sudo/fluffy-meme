@@ -56,13 +56,15 @@ def cycle_boot(d, fit, B, rng):
     return float(np.std(est, ddof=1)) if len(est) > 10 else np.nan
 
 
-def table1(df, B, rng):
+def table1(df, B, rng, nrel=None):
     rows = []
     for repo, d in df.groupby("repo"):
         d = d.dropna(subset=["age"])
         rw = np.sort(d.loc[d["release"] == 1, "week"].unique())
         med = float(np.median(np.diff(rw).astype("timedelta64[D]").astype(int) / 7)) if len(rw) > 2 else np.nan
-        row = dict(repo=repo, weeks=int(len(d)), releases=int(d["release"].sum()), median_cycle_weeks=med)
+        row = dict(repo=repo, weeks=int(len(d)), release_weeks=int(d["release"].sum()), median_cycle_weeks=med)
+        if nrel is not None:
+            row["releases"] = int(nrel.get(repo, np.nan))
         for s in ("b", "d"):
             b = spec_c.poisson_slope(d, s)
             row[f"bug_{s}"], row[f"bug_{s}_se"] = b, spec_c.cycle_boot_se(d, s, B, rng)
@@ -86,12 +88,13 @@ def zs(s, repo):
     return (lg - lg.groupby(repo).transform("mean")) / lg.groupby(repo).transform("std")
 
 
-def rq3_lags(df, control, B, rng):
+def rq3_lags(df, control, B, rng, min_age=0):
     d = df.copy()
     g = d.groupby("repo")
     for k in (2, 3):
         d[f"lag{k}_bugs"] = g["bugs"].shift(k)
     d = d.dropna(subset=["lag_bugs", "lag2_bugs", "lag3_bugs", "lag_issues", "lag_nonbug"])
+    d = d[d["age"] >= min_age]  # min_age=2 drops the week right after a release, where hot-fixes follow the release burst
     d["z1"], d["z2"], d["z3"] = zs(d["lag_bugs"], d["repo"]), zs(d["lag2_bugs"], d["repo"]), zs(d["lag3_bugs"], d["repo"])
     d["z_avg"] = (d["z1"] + d["z2"] + d["z3"]) / 3
     d["z_ctl"] = zs(d["lag_issues" if control == "total" else "lag_nonbug"], d["repo"])
@@ -126,6 +129,7 @@ def main():
     ap.add_argument("--boot", type=int, default=200)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--demo", action="store_true")
+    ap.add_argument("--skip-table1", action="store_true", help="reuse results/table1.csv")
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
 
@@ -139,9 +143,13 @@ def main():
     print(f"panel: {df['repo'].nunique()} repositories, {len(df)} repository-weeks, {int(df['release'].sum())} release-weeks")
 
     res = {}
-    t = table1(df, a.boot, rng)
     os.makedirs("results", exist_ok=True)
-    t.round(4).to_csv("results/table1.csv", index=False)
+    if a.skip_table1 and os.path.exists("results/table1.csv"):
+        t = pd.read_csv("results/table1.csv")
+    else:
+        nrel = P.groupby("repo")["n_rel"].sum() if not a.demo else None
+        t = table1(df, a.boot, rng, nrel)
+        t.round(4).to_csv("results/table1.csv", index=False)
     print("\nTable 1 -> results/table1.csv")
     print(t.round(3).to_string(index=False))
 
@@ -158,12 +166,12 @@ def main():
 
     res["rq3"] = {}
     print("RQ3 (logit of a release on standardized log(1+bugs); clustered SE; wild-cluster p, Webb):")
-    for c in ("total", "nonbug"):
-        r = rq3_lags(df, c, a.boot, rng)
-        res["rq3"][c] = r
+    for c, ma in [(c, ma) for ma in (0, 2) for c in ("total", "nonbug")]:
+        r = rq3_lags(df, c, a.boot, rng, ma)
+        res["rq3"][f"{c}_minage{ma}"] = r
         l1, av = r["lag1"], r["avg3"]
         lg = r["lags123"]
-        print(f"  control={c}: lag1 {l1['coef']:+.3f} (SE {l1['se']:.3f}, p={l1['p']:.2f}, wild p={l1['wild_p']:.2f}); "
+        print(f"  control={c}, ages>={ma if ma else 1}: lag1 {l1['coef']:+.3f} (SE {l1['se']:.3f}, p={l1['p']:.2f}, wild p={l1['wild_p']:.2f}); "
               f"lags1-3 {lg['z1']['coef']:+.3f}/{lg['z2']['coef']:+.3f}/{lg['z3']['coef']:+.3f}; "
               f"3-week average {av['coef']:+.3f} (SE {av['se']:.3f}, p={av['p']:.2f}, wild p={av['wild_p']:.2f}); "
               f"coefficient on the {c}-issues control {r['control_coef']:+.3f}; n={r['n']}")
