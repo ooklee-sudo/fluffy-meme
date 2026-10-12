@@ -11,8 +11,8 @@ Definitions follow Section 4.2 of the manuscript.
   - issues: created since 2023-01-01, pull requests excluded, aggregated by ISO week (Monday start)
   - bug: a label containing "bug" or a title matching BUG_RE
   - releases: non-draft, non-prerelease
-  - hot-fix: version differs from the previous release only in the patch component and the release
-    appears within 7 days of the previous release; regular release = not a hot-fix
+  - hot-fix: as in the first analysis kit (analyze.py): the patch version rises against the previous release with
+    the same tag prefix and the release comes less than 7 days after it; regular release = not a hot-fix
   - panel: first week with a release on or after 2023-01-01 through the last complete week before --end
   - age: weeks since the last release, 1 = first week after a release, capped at 52 (same for regular_age)
 Raw API responses are cached in --cache so a rerun does not refetch. Keep the cache with the data:
@@ -31,7 +31,7 @@ import urllib.error
 import pandas as pd
 
 BUG_RE = re.compile(r"\b(?:bug|error|crash|fail|wrong|incorrect|regression|broken|exception)", re.I)   # as in the first kit: no trailing word boundary
-VER_RE = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?")
+VER_RE = re.compile(r"v?(\d+)\.(\d+)(?:\.(\d+))?")
 API = "https://api.github.com"
 SINCE = "2023-01-01"
 
@@ -76,16 +76,28 @@ def is_bug(labels, title):
     return any("bug" in l["name"].lower() for l in labels) or bool(BUG_RE.search(title or ""))
 
 
+def parse_tag(tag):
+    """As in the first kit (analyze.py): tag prefix before the version, and (major, minor, patch)."""
+    m = VER_RE.search(tag or "")
+    if not m:
+        return None, None
+    return tag[:m.start()], (int(m.group(1)), int(m.group(2)), int(m.group(3) or 0))
+
+
 def classify_hotfix(rel):
-    """rel sorted by published_at with columns tag, published_at. Returns list of 0/1."""
-    flags, prev_v, prev_ts = [], None, None
+    """Hot-fix as in the first kit: the patch component rises against the previous release with the same tag
+    prefix (same major and minor), and the release comes less than 7 days after it. rel sorted by published_at."""
+    flags, last = [], {}
     for tag, ts in zip(rel.tag, rel.published_at):
-        m = VER_RE.search(tag or "")
-        v = tuple(int(g) if g else 0 for g in m.groups()) if m else None
-        hot = int(prev_v is not None and v is not None and v[:2] == prev_v[:2]
-                  and v[2] != prev_v[2] and (ts - prev_ts).days <= 7)
+        pre, v = parse_tag(tag)
+        hot = 0
+        if v is not None and pre in last:
+            pv, pts = last[pre]
+            if v[:2] == pv[:2] and v[2] > pv[2]:
+                hot = int((ts - pts).days < 7)
+        if v is not None:
+            last[pre] = (v, ts)
         flags.append(hot)
-        prev_v, prev_ts = v, ts
     return flags
 
 

@@ -1,0 +1,120 @@
+{
+  "hotfix": {
+    "releases_collected": 2659,
+    "share_hotfix_7day_rule": 0.42685220007521624,
+    "share_hotfix_by_repo": {
+      "Dao-AILab/flash-attention": 0.326,
+      "EleutherAI/lm-evaluation-harness": 0.0,
+      "NVIDIA/TensorRT-LLM": 0.043,
+      "anthropics/anthropic-sdk-python": 0.328,
+      "ggml-org/whisper.cpp": 0.189,
+      "huggingface/accelerate": 0.247,
+      "huggingface/diffusers": 0.447,
+      "huggingface/peft": 0.25,
+      "huggingface/text-generation-inference": 0.269,
+      "huggingface/transformers": 0.351,
+      "huggingface/trl": 0.303,
+      "lm-sys/FastChat": 0.0,
+      "microsoft/autogen": 0.535,
+      "microsoft/semantic-kernel": 0.24,
+      "ollama/ollama": 0.693,
+      "openai/openai-python": 0.427,
+      "run-llama/llama_index": 0.724,
+      "sgl-project/sglang": 0.148,
+      "vllm-project/vllm": 0.204
+    },
+    "share_weeks_with_hotfix_by_age": {
+      "1": 0.365,
+      "2": 0.078,
+      "3": 0.058,
+      "4": 0.053,
+      "5": 0.057,
+      "6": 0.058,
+      "7": 0.045,
+      "8": 0.013
+    },
+    "share_patch_only_version_rule": 0.5983452425723956,
+    "share_of_patch_only_within_7_days": 0.7133878064110623,
+    "median_days_patch_only_within_7_days": 1.0
+  },
+  "regular_hazard": {
+    "est": 0.0726496133983406,
+    "se": 0.047751563226642174,
+    "lo": -0.020943450525878066,
+    "hi": 0.16624267732255926,
+    "tau2": 0.0218520912886594,
+    "k": 19,
+    "n_sig_positive": 3,
+    "n_sig_negative": 1,
+    "n_repos": 19,
+    "pooled_share_regular_release_at_age": {
+      "1": 0.36,
+      "2": 0.386,
+      "3": 0.367,
+      "4": 0.327,
+      "5": 0.27,
+      "6": 0.248,
+      "7": 0.247,
+      "8": 0.121
+    }
+  },
+  "weekly_releasers": [
+    "anthropics/anthropic-sdk-python",
+    "huggingface/transformers",
+    "microsoft/autogen",
+    "microsoft/semantic-kernel",
+    "ollama/ollama",
+    "openai/openai-python",
+    "run-llama/llama_index"
+  ],
+  "frailty": {
+    "all releases, age": {
+      "slope": -0.1185522303103122,
+      "se": 0.02045872907279754,
+      "sd_intercept": 0.9560694924429023,
+      "n": 3413
+    },
+    "all releases, excluding weekly releasers": {
+      "slope": -0.04421635415721842,
+      "se": 0.0234981250222534,
+      "sd_intercept": 0.6717883332072585,
+      "n": 2148
+    },
+    "all releases, ages 2 and above": {
+      "slope": -0.09858822016433588,
+      "se": 0.02783953756307593,
+      "sd_intercept": 0.9333212948196637,
+      "n": 2049
+    },
+    "regular releases, age since last regular": {
+      "slope": 0.0027418974175055346,
+      "se": 0.020129046954857184,
+      "sd_intercept": 0.9671837523566221,
+      "n": 3413
+    },
+    "regular releases, excluding weekly releasers": {
+      "slope": 0.04554730357184097,
+      "se": 0.02403022475862426,
+      "sd_intercept": 1.1209178607873973,
+      "n": 2148
+    }
+  },
+  "cv": {
+    "any": {
+      "median": 1.031783354293449,
+      "min": 0.32596354362380153,
+      "max": 2.1855492691304015,
+      "n_above_one": 10,
+      "n_below_one": 9,
+      "n": 19
+    },
+    "regular": {
+      "median": 0.6987401094928921,
+      "min": 0.32596354362380153,
+      "max": 1.757955213109062,
+      "n_above_one": 5,
+      "n_below_one": 14,
+      "n": 19
+    }
+  }
+}

@@ -1,0 +1,129 @@
+==== started 2026-10-12 23:57:47.94 (end week 2026-10-05, boot 999) ==== 
+  
+===== spec_c.py ===== 
+panel: 19 repositories, 3432 repository-weeks, 1373 release-weeks -> panel.csv
+RQ1 (a) no adjustment: slope -0.0257  95% CI [-0.0497, -0.0018]  +/sig+/sig-: 6/0/3 of 19  rules out > -0.18%/week
+RQ1 (b) offset: total issues  <-- primary: slope -0.0023  95% CI [-0.0146, +0.0100]  +/sig+/sig-: 8/1/2 of 19  rules out > 1.00%/week
+RQ1 (c) control: log non-bug issues: slope -0.0189  95% CI [-0.0396, +0.0017]  +/sig+/sig-: 5/1/2 of 19  rules out > 0.17%/week
+RQ1 (d) (c) + dummies for ages 1-3  <-- primary: slope +0.0164  95% CI [-0.0020, +0.0348]  +/sig+/sig-: 11/2/0 of 19  rules out > 3.54%/week
+
+For the manuscript placeholders: (c) -0.0189 [-0.0396, +0.0017]; (d) +0.0164 [-0.0020, +0.0348], 11 positive / 2 significantly positive of 19, rules out > 3.5% per week
+
+RQ3 control=total: coef +0.189 (SE 0.122, p=0.12, wild p=0.21); upper OR 1.54
+RQ3 control=nonbug: coef +0.254 (SE 0.096, p=0.01, wild p=0.02); upper OR 1.56
+saved results/spec_c.json
+  
+===== rq123.py ===== 
+panel: 19 repositories, 3432 repository-weeks, 1373 release-weeks
+
+Table 1 -> results/table1.csv
+                                 repo  weeks  release_weeks  median_cycle_weeks  releases  bug_b  bug_b_se  bug_d  bug_d_se  hazard  hazard_se
+            Dao-AILab/flash-attention    196             44                 2.0        89 -0.005     0.014  0.009     0.018  -0.272      0.069
+     EleutherAI/lm-evaluation-harness    148             15                 9.0        16  0.013     0.018  0.001     0.038   0.365      0.198
+                  NVIDIA/TensorRT-LLM    155             22                 6.0        23  0.020     0.015  0.046     0.022   0.224      0.166
+      anthropics/anthropic-sdk-python    191            122                 1.0       235 -0.023     0.079 -0.292     4.591  -0.255      0.095
+                 ggml-org/whisper.cpp    193             31                 4.0        36  0.008     0.010  0.013     0.019  -0.103      0.065
+               huggingface/accelerate    192             40                 4.0        51 -0.021     0.032 -0.004     0.065   0.168      0.133
+                huggingface/diffusers    193             48                 3.0        69  0.004     0.012  0.017     0.023   0.002      0.064
+                     huggingface/peft    191             29                 7.0        36 -0.016     0.018 -0.028     0.048   0.127      0.082
+huggingface/text-generation-inference    192             57                 2.0        67 -0.094     0.038 -0.211     0.179  -0.290      0.139
+             huggingface/transformers    193            107                 1.0       164  0.000     0.026 -0.161     0.151  -0.031      0.098
+                      huggingface/trl    193             78                 2.0        99 -0.048     0.029 -0.073     0.163   0.023      0.123
+                      lm-sys/FastChat    181             13                 3.0        14  0.007     0.055  0.017     0.356  -0.439      1.096
+                    microsoft/autogen    159             58                 1.0        86 -0.024     0.046 -0.047     6.778  -0.491      0.280
+            microsoft/semantic-kernel    163            120                 1.0       225 -0.231     0.066  0.120     0.241  -0.333      0.153
+                        ollama/ollama    170            145                 1.0       257  0.067     0.027  0.382     0.105  -0.128      0.327
+                 openai/openai-python    196            149                 1.0       396 -0.039     0.054 -0.094     0.210  -0.535      0.120
+                run-llama/llama_index    193            152                 1.0       434 -0.016     0.032  0.074     0.331  -0.615      0.107
+                   sgl-project/sglang    142             49                 2.0        61 -0.002     0.012  0.031     0.109   0.175      0.117
+                    vllm-project/vllm    172             75                 2.0        98  0.003     0.009  0.021     0.102   0.473      0.201
+
+RQ1 (pooled, from Table 1 repository slopes):
+  spec (b): -0.0029 [-0.0154, +0.0095]  +/sig+/sig-: 8/1/2  tau2=0.00027
+  spec (d): +0.0174 [-0.0030, +0.0378]  +/sig+/sig-: 11/2/0  tau2=0.00012
+RQ2 (pooled hazard slope per week of age):
+  all: -0.090 [-0.211, +0.030]  +/sig+/sig-: 8/1/6  tau2=0.049
+  excluding_weekly_releasers: +0.040 [-0.081, +0.162]  +/sig+/sig-: 8/1/2  tau2=0.028
+RQ3 (logit of a release on standardized log(1+bugs); clustered SE; wild-cluster p, Webb):
+  control=total, ages>=1: lag1 +0.191 (SE 0.123, p=0.12, wild p=0.18); lags1-3 +0.121/+0.099/+0.061; 3-week average +0.272 (SE 0.123, p=0.03, wild p=0.06); coefficient on the total-issues control +0.210; n=3375
+  control=nonbug, ages>=1: lag1 +0.261 (SE 0.095, p=0.01, wild p=0.01); lags1-3 +0.184/+0.096/+0.055; 3-week average +0.332 (SE 0.108, p=0.00, wild p=0.01); coefficient on the nonbug-issues control +0.220; n=3375
+  control=total, ages>=2: lag1 +0.143 (SE 0.129, p=0.27, wild p=0.32); lags1-3 +0.095/+0.101/+0.029; 3-week average +0.218 (SE 0.120, p=0.07, wild p=0.10); coefficient on the total-issues control +0.285; n=2037
+  control=nonbug, ages>=2: lag1 +0.251 (SE 0.092, p=0.01, wild p=0.02); lags1-3 +0.192/+0.104/+0.026; 3-week average +0.318 (SE 0.098, p=0.00, wild p=0.02); coefficient on the nonbug-issues control +0.237; n=2037
+
+saved results/rq123.json
+  
+===== extra_analyses.py ===== 
+== 1. Release content ==
+{
+ "n_releases": 1405,
+ "n_repos": 19,
+ "mean_fix_share": 0.32429110560643176,
+ "coef_bugs": -0.020579620485704747,
+ "se": 0.008266236667573748,
+ "ci": [
+  -0.036781146641833684,
+  -0.004378094329575807
+ ],
+ "p": 0.012788703703757917,
+ "coef_nonbug": 0.01594351658628404,
+ "coef_gap": -0.0181483958341162,
+ "wild_p": 0.06506506506506507
+}
+== 2. Equivalence ==
+RQ1 age slope, spec (b): est -0.0023 (SE 0.0063); TOST p=0.002 for +/-0.02 log bug rate per week; equivalence holds for any bound >= 0.013; MDE(80%) 0.018
+RQ1 age slope, spec (d): est +0.0164 (SE 0.0094); TOST p=0.350 for +/-0.02 log bug rate per week; equivalence holds for any bound >= 0.032; MDE(80%) 0.026
+RQ3 bug surge, control=total: est +0.1889 (SE 0.1224); TOST p=0.309 for +/-0.25 log-odds per SD; equivalence holds for any bound >= 0.390; MDE(80%) 0.343
+RQ3 bug surge, control=nonbug: est +0.2541 (SE 0.0956); TOST p=0.517 for +/-0.25 log-odds per SD; equivalence holds for any bound >= 0.411; MDE(80%) 0.268
+Launch event study, weeks 0-4: est -0.0020 (SE 0.0180); TOST p=0.004 for +/-0.05 release probability; equivalence holds for any bound >= 0.032; MDE(80%) 0.050
+== 3. Heterogeneity ==
+all (19 repos): RQ1(b) -0.0025 [-0.0148, +0.0098]  RQ1(d) +0.0183 [-0.0060, +0.0427]  RQ3 coef +0.254 (SE 0.096)
+excluding automated-release (17 repos): RQ1(b) -0.0025 [-0.0152, +0.0102]  RQ1(d) +0.0185 [-0.0070, +0.0441]  RQ3 coef +0.304 (SE 0.093)
+weekly releasers (6 repos): RQ1(b) -0.0328 [-0.1037, +0.0382]  RQ1(d) +0.2475 [+0.0773, +0.4177]  RQ3 coef +0.317 (SE 0.214)
+slower releasers (13 repos): RQ1(b) +0.0002 [-0.0088, +0.0092]  RQ1(d) +0.0145 [-0.0055, +0.0344]  RQ3 coef +0.211 (SE 0.082)
+category: agent framework (3 repos): RQ1(b) -0.0770 [-0.1894, +0.0354]  RQ1(d) +0.1043 [-0.2804, +0.4891]  RQ3 coef +0.709 (SE 0.134)
+category: inference engine (3 repos): RQ1(b) +0.0047 [-0.0079, +0.0172]  RQ1(d) +0.0445 [+0.0018, +0.0872]  RQ3 coef +0.274 (SE 0.144)
+saved results/extra.json
+
+Check by hand: 12 random release items and how they were classified
+  [   ] sgl-project/sglang: * [UnifiedTree] Sync Replay SSM: [#30636](https://github.com/sgl-project/sglang/pull/30636)
+  [   ] EleutherAI/lm-evaluation-harness: * Add xquad task by @zxcvuser in https://github.com/EleutherAI/lm-evaluation-harness/pull/2435
+  [FIX] huggingface/trl: * fix(PPO examples): passing model dict to models by @casinca in https://github.com/huggingface/trl/pull/4630
+  [   ] microsoft/semantic-kernel: * 12bcfc36eed0b9e18ec77d5aade591ebb8798845 .Net: Mcp sampling sample (#11533)
+  [   ] huggingface/transformers: - `push_to_hub_model_id` to control the repo name
+  [   ] huggingface/diffusers: * @gnobitab
+  [   ] huggingface/transformers: - Switch master/stable doc and add older releases #5193
+  [   ] NVIDIA/TensorRT-LLM: - Supported chunked context and sliding window attention to be enabled together.
+  [   ] microsoft/semantic-kernel: * 9cb9aba41d0ab113b56a3f403a6166af56d4d717 Python: Bump to v1.39.0 for a release (#13392)
+  [   ] sgl-project/sglang: - [router] Function call support for openai router Responses API (#12386) by @key4ng in https://github.com/sgl
+  [FIX] vllm-project/vllm: * [Neuron] [Bugfix] Fix neuron startup by @xendo in https://github.com/vllm-project/vllm/pull/9374
+  [   ] anthropics/anthropic-sdk-python: * **docs:** clarify the compaction tool_changes and tool change descriptions ([eacc0ff](https://github.com/ant
+  
+===== section52.py ===== 
+HOT-FIX FACTS
+  releases_collected: 2659
+  share_hotfix_7day_rule: 0.42685220007521624
+  share_hotfix_by_repo: {'Dao-AILab/flash-attention': 0.326, 'EleutherAI/lm-evaluation-harness': 0.0, 'NVIDIA/TensorRT-LLM': 0.043, 'anthropics/anthropic-sdk-python': 0.328, 'ggml-org/whisper.cpp': 0.189, 'huggingface/accelerate': 0.247, 'huggingface/diffusers': 0.447, 'huggingface/peft': 0.25, 'huggingface/text-generation-inference': 0.269, 'huggingface/transformers': 0.351, 'huggingface/trl': 0.303, 'lm-sys/FastChat': 0.0, 'microsoft/autogen': 0.535, 'microsoft/semantic-kernel': 0.24, 'ollama/ollama': 0.693, 'openai/openai-python': 0.427, 'run-llama/llama_index': 0.724, 'sgl-project/sglang': 0.148, 'vllm-project/vllm': 0.204}
+  share_weeks_with_hotfix_by_age: {1: 0.365, 2: 0.078, 3: 0.058, 4: 0.053, 5: 0.057, 6: 0.058, 7: 0.045, 8: 0.013}
+  share_patch_only_version_rule: 0.5983452425723956
+  share_of_patch_only_within_7_days: 0.7133878064110623
+  median_days_patch_only_within_7_days: 1.0
+
+REGULAR-RELEASE HAZARD (age since last regular, no trend): pooled +0.073 [-0.021, +0.166] tau2=0.022; significantly positive 3, negative 1 of 19
+  pooled share of repository-weeks with a regular release, by age: {1: 0.36, 2: 0.386, 3: 0.367, 4: 0.327, 5: 0.27, 6: 0.248, 7: 0.247, 8: 0.121}
+
+WEEKLY RELEASERS (7): ['anthropics/anthropic-sdk-python', 'huggingface/transformers', 'microsoft/autogen', 'microsoft/semantic-kernel', 'ollama/ollama', 'openai/openai-python', 'run-llama/llama_index']
+
+FRAILTY MODELS (slope per week of age, SE, SD of repository intercept):
+  all releases, age: -0.119 (SE 0.020); SD 0.96; n=3413
+  all releases, excluding weekly releasers: -0.044 (SE 0.023); SD 0.67; n=2148
+  all releases, ages 2 and above: -0.099 (SE 0.028); SD 0.93; n=2049
+  regular releases, age since last regular: +0.003 (SE 0.020); SD 0.97; n=3413
+  regular releases, excluding weekly releasers: +0.046 (SE 0.024); SD 1.12; n=2148
+
+COEFFICIENT OF VARIATION OF RELEASE INTERVALS (days):
+  any: median 1.03 (range 0.33 to 2.19); above one in 10, below one in 9 of 19
+  regular: median 0.70 (range 0.33 to 1.76); above one in 5, below one in 14 of 19
+
+saved results/section52.json
+  
+==== finished 2026-10-13  0:16:28.42 ==== 
