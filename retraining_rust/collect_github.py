@@ -6,7 +6,7 @@ Writes data/<owner>__<repo>.csv with columns: week, bugs, all_issues, release
 """
 import argparse, csv, os, re, sys, time
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 import requests
 
 API = "https://api.github.com"
@@ -64,8 +64,8 @@ def main():
             continue
         # fill gaps with zero weeks
         def nxt(wk):
-            y, w = map(int, wk.split("-W")); d = datetime.fromisocalendar(y, w, 1)
-            y2, w2, _ = datetime.fromtimestamp(d.timestamp() + 7 * 86400, timezone.utc).isocalendar()
+            y, w = map(int, wk.split("-W"))
+            y2, w2, _ = (date.fromisocalendar(y, w, 1) + timedelta(days=7)).isocalendar()
             return f"{y2}-W{w2:02d}"
         full, cur = [], weeks[0]
         while cur <= weeks[-1]:
