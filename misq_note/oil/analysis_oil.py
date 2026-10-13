@@ -1,7 +1,8 @@
 """Oil-shock Airbnb analysis as in ANALYSIS_PLAN.md (array-based implementation).
 Usage: python analysis_oil.py WORKDIR   (needs listings.parquet, counts.parquet, first.parquet from prep_oil.py and airports.csv)
 Deviation from the plan, disclosed: the H1 interrupted time series fits the linear trend on all rows together with the Post dummy
-(the plan said the trend is estimated on the pre-period only); H1 is descriptive and H2/H3 do not depend on it."""
+(the plan said the trend is estimated on the pre-period only); H1 is descriptive and H2/H3 do not depend on it.
+Second disclosed deviation: for memory reasons the event study uses months 2025-01 to 2026-08 only (reference 2026-02), not the full window."""
 import sys, json, time, warnings
 import numpy as np, pandas as pd, pyfixest as pf
 warnings.filterwarnings("ignore")
@@ -32,6 +33,7 @@ def build(m0, m1, a0, a1):
     P["cym"] = P.city_id.astype("int32") * 100 + P.t.astype("int32"); cal = ((P.t.astype("int32") + m0) % 12); P["cmo"] = P.city_id.astype("int32") * 12 + cal; P["yr"] = ((P.t.astype("float32") + m0) / 12).astype("float32")
     return P, Li
 def tid(m, k): return dict(b=float(m.coef()[k]), se=float(m.se()[k]), p=float(m.pvalue()[k]))
+def save(): json.dump(res, open("results_oil.json", "w"), indent=1)
 def setpost(P, m0, first_post, drop_transition=True):
     fp = first_post - m0; P = P[P.t != fp - 1].copy() if drop_transition else P.copy()
     P["post"] = (P.t >= fp).astype("int8"); P["LowPost"] = (P.Low * P.post).astype("int8"); P["MidPost"] = (P.Mid * P.post).astype("int8"); P["DistPost"] = (P.logDist * P.post).astype("float32"); return P
@@ -40,16 +42,17 @@ def main_models(P, label, es_ref=None, full=True):
     m = pf.fepois("y ~ LowPost + MidPost + DistPost | key + cym", data=P, vcov={"CRV1": "key"}); log(label, "H2/H3 fitted")
     for k in ("LowPost", "MidPost", "DistPost"): res[f"{label}: {k}"] = tid(m, k)
     mc = m.vcov({"CRV1": "city_id"}); res[f"{label}: city-clustered LowPost"] = tid(mc, "LowPost"); res[f"{label}: city-clustered DistPost"] = tid(mc, "DistPost")
-    m1 = pf.fepois("y ~ post + yr | key + cmo", data=P, vcov={"CRV1": "key"}); res[f"{label}: H1 ITS post"] = tid(m1, "post"); log(label, "H1 fitted")
+    save(); m1 = pf.fepois("y ~ post + yr | key + cmo", data=P, vcov={"CRV1": "key"}); res[f"{label}: H1 ITS post"] = tid(m1, "post"); save(); log(label, "H1 fitted")
     if full and es_ref is not None:
-        ts = sorted(P.t.unique()); es = []
-        for k in ts:
-            if k != es_ref: P[f"L{k}"] = (P.Low * (P.t == k)).astype("float32"); es.append(f"L{k}")
-        me = pf.fepois("y ~ " + " + ".join(es) + " | key + cym", data=P, vcov={"CRV1": "key"}); res[f"{label}: event study Low"] = {k: dict(b=float(me.coef()[k]), se=float(me.se()[k]), p=float(me.pvalue()[k])) for k in es}; log(label, "event study fitted")
+        e0 = mi(2025, 1) - mi(2023, 1); Q = P[P.t >= e0].copy(); es = []
+        for k in sorted(Q.t.unique()):
+            if k != es_ref: Q[f"L{k}"] = (Q.Low * (Q.t == k)).astype("float32"); es.append(f"L{k}")
+        me = pf.fepois("y ~ " + " + ".join(es) + " | key + cym", data=Q, vcov={"CRV1": "key"}); res[f"{label}: event study Low (2025-01..2026-08 only)"] = {k: dict(b=float(me.coef()[k]), se=float(me.se()[k]), p=float(me.pvalue()[k])) for k in es}; save(); log(label, "event study fitted")
+        del Q
     return m
 # main: window 2023-01..2026-08, activity 2024-03..2025-02, post = 2026-04.., March 2026 transition
 M0, M1 = mi(2023, 1), mi(2026, 8); P0, Li = build(M0, M1, mi(2024, 3), mi(2025, 2)); log("built main", len(P0), "rows", int(Li.shape[0]), "listings")
-res["n_main"] = dict(listings=int(len(Li)), rows=int(len(P0)), cities=int(P0.city_id.nunique()), reviews=int(P0.y.sum()))
+res["n_main"] = dict(listings=int(len(Li)), rows=int(len(P0)), cities=int(P0.city_id.nunique()), reviews=int(P0.y.sum())); save()
 Pm = setpost(P0, M0, mi(2026, 4)); ref = mi(2026, 2) - M0; main_models(Pm, "main", es_ref=ref)
 # robustness: drop top 5% volume; include March as post
 tot = Pm.groupby("key").y.sum(); keep = tot[tot <= tot.quantile(0.95)].index; Pk = Pm[Pm.key.isin(keep)]
@@ -58,10 +61,10 @@ Pm3 = setpost(P0, M0, mi(2026, 3), drop_transition=False); m3 = pf.fepois("y ~ L
 # placebo: fake shock, first post month 2025-04, window 2022-01..2025-08, activity window 2023-03..2024-02, March 2025 transition
 PM0, PM1 = mi(2022, 1), mi(2025, 8); Pp0, Lp = build(PM0, PM1, mi(2023, 3), mi(2024, 2)); Pp = setpost(Pp0, PM0, mi(2025, 4)); res["n_placebo"] = dict(listings=int(len(Lp)), rows=int(len(Pp)))
 main_models(Pp, "placebo", es_ref=None, full=False)
-json.dump(res, open("results_oil.json", "w"), indent=1)
+save()
 for k, v in res.items():
     if "event study" in k: continue
     print(k, v if not isinstance(v, dict) or "b" not in v else {a: round(b, 4) for a, b in v.items()})
 print("event study Low x month (reference 2026-02), t offsets from 2023-01:")
-for k, v in res["main: event study Low"].items():
-    if int(k[1:]) >= 30: print("  ", k, round(v["b"], 3), round(v["se"], 3), round(v["p"], 3))
+for k, v in res["main: event study Low (2025-01..2026-08 only)"].items():
+    print("  ", k, round(v["b"], 3), round(v["se"], 3), round(v["p"], 3))
