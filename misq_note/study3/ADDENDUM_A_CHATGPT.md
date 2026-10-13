@@ -1,0 +1,9 @@
+# Addendum: ChatGPT release (30 Nov 2022) as a second shock (written before any outcome is estimated)
+
+**Data limitation found while sizing the design (counts only, no outcomes).** Monthly review counts in the Appliances file are stable through March 2023 (about 25–30k per month) and then fall sharply: April 2023 16,843; May 9,831; June 6,211; July 4,888; August 3,336. The file therefore appears incompletely collected after about March 2023, and the reliable post-release window is only December 2022 to March 2023 (4 months).
+
+**Consequences, decided in advance.**
+1. No LLM coding is run for this shock. A 4-month post window shortly after release, when adoption of generative AI for writing reviews was early, offers little power, and review composition after March 2023 is affected by the collection gap.
+2. We report only an exploratory, non-LLM comparison with the same outcomes as the main study, on the full category file: monthly review counts, mean rating, review length, verified-purchase share, and helpful votes. Window: December 2022 to March 2023 versus the same calendar months one year earlier (December 2021 to March 2022) and two years earlier (December 2020 to March 2021), with product fixed effects (reviews per product-month by Poisson PML; review-level OLS for rating and length), clustered by product.
+3. Identification here is time-only (no cross-sectional exposure variation), so results are labelled descriptive and are not tested against the main hypotheses. We state the comparison with the incentive-ban results only qualitatively: magnitude of change in the same outcomes, with different identification strength.
+4. Related work found and to be cited and positioned against: a within-reviewer difference-in-differences working paper on Amazon and Yelp reviews around ChatGPT's release (Northeastern, SSRN 4621982), and descriptive industry detection reports. We have not read the full papers.
