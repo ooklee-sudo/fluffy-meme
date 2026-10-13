@@ -5,6 +5,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 
 R = json.load(open("results.json"))
 FL, AL, AQ = R["full_linear"], R["active_linear"], R["active_quad"]
+PN = json.load(open("panel_results.json")); PM = PN["models"]
+V = json.load(open("llm/validation_results.json"))
+pm = lambda m, v, k="b": PM[m][v][k]
 doc = Document()
 sec = doc.sections[0]
 for m in ("left_margin", "right_margin", "top_margin", "bottom_margin"): setattr(sec, m, Inches(1))
@@ -50,9 +53,11 @@ P(f"Consumer-generated content (CGC) volume is routinely analyzed with ordinary 
   f"conclusions about the time trend are fragile when a log-linear trend is imposed on a boom-and-bust series: on the full series the "
   f"negative binomial slope is more than three times the Poisson slope, and on the dense-collection window the Poisson slope is significant while the negative binomial slope is not. Under a quadratic trend on the "
   f"active window, the dispersion parameter falls from {AL['alpha']:.2f} to {AQ['alpha']:.2f}, indicating that much "
-  f"apparent overdispersion reflects misspecified mean dynamics. We outline how large language model (LLM)-derived "
-  f"attribute and sentiment measures could enter the mean equation, but we do not implement an LLM pipeline here; this "
-  f"note is a methodological caution and roadmap, not an empirical test of LLM-based measurement. We provide code to reproduce all results.",
+  f"apparent overdispersion reflects misspecified mean dynamics. A product-month panel of {PN['n_products']} products with product and month fixed effects "
+  f"reduces the Poisson Pearson dispersion statistic to about {PM['M1 FE only']['pearson_disp']:.0f} and shows that review volume is positively associated with a product's prior review stock "
+  f"(elasticity ≈ {pm('M3 +quality','lcum'):.2f}) but not with its prior average rating. Finally, we implement an LLM coding pipeline on a random sample of 400 reviews, "
+  f"evaluate it against star ratings and against a second LLM coder (κ for overall sentiment = {V['A_vs_B_kappa']['overall']:.2f}; aspect-mention κ from {min(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f} to {max(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f}), "
+  f"and provide a blind human-coding protocol; human validation is not yet completed and is reported as pending. We provide code and codebook to reproduce all results.",
   indent=False, single=True)
 P("Keywords: consumer-generated content, online reviews, count data, negative binomial regression, overdispersion, large language models",
   indent=False, single=True)
@@ -64,12 +69,12 @@ P("Online reviews are a primary source of market intelligence and a common objec
   "this kind are generally overdispersed relative to the Poisson benchmark, which favors negative binomial or related "
   "mixed-Poisson models (Cameron and Trivedi 2013; Hilbe 2011; Lawless 1987). Yet the diagnostics that establish "
   "whether a count model is adequate are seldom reported, and the practical consequences of getting them wrong are rarely shown.")
-P("This note makes three contributions. First, using a public review corpus, we document the magnitude of overdispersion in monthly review "
+P("This note makes four contributions. First, using a public review corpus, we document the magnitude of overdispersion in monthly review "
   "volume and the resulting gap between Poisson and negative binomial fit. Second, we show that two routine practices—ignoring dispersion when testing a trend and imposing a log-linear trend on a rise-and-fall series—"
-  "can inflate or reverse substantive conclusions about trend, and we identify a likely data-collection artifact that is easily mistaken for demand dynamics. Third, we "
-  "describe how LLM-derived text measures (Berger et al. 2020; Brown et al. 2020) could be added to the same count framework, and what "
-  "validation that would require. The first two contributions are empirical and are supported by the analysis below; the third is "
-  "a research agenda and is not tested here.")
+  "can inflate or reverse substantive conclusions about trend, and we identify a likely data-collection artifact that is easily mistaken for demand dynamics. "
+  "Third, we estimate product-month panel models that separate product heterogeneity and common time shocks from within-product dynamics. Fourth, we implement an LLM-based coding pipeline for review text "
+  "(Berger et al. 2020; Brown et al. 2020), report its agreement with star ratings and with a second LLM coder, and supply the blind protocol for human validation. "
+  "The LLM measures are validated on a sample and are not used as covariates in the panel models; scaling them to all reviews is future work.")
 
 H1("Data")
 P(f"We use the Datafiniti Amazon product consumer reviews data, originally released by Datafiniti in May 2019 and redistributed on Zenodo "
@@ -89,6 +94,16 @@ P("Review volume in this file is a measure of reviews that were collected, not n
   "dated 2015–2017, and counts fall to single digits from June 2018, although the file was assembled in 2019. This pattern is "
   "consistent with a crawl whose coverage changed over time. We return to this point in the Discussion.", indent=True)
 
+P(f"Panel construction. For the panel we keep the {PN['n_products']} products with at least 50 reviews, which account for most reviews. For each product we build a month series from its first review through "
+  f"March 2019 including months without reviews, and keep product-months after the product's first review (so lagged covariates exist) and in calendar months in which at least one review was posted by any product "
+  f"(month effects are not identified otherwise). The panel has {PN['n_obs']:,} product-months and {PN['n_reviews']:,} reviews; {PN['zero_share']:.0%} of product-months are zero. "
+  f"Because the product distribution is highly skewed (two battery products account for 43% of all reviews), standard errors are clustered by product.")
+P("LLM sample. We drew a simple random sample of 400 reviews (seed 20261013) among reviews of 20 to 1,500 characters. "
+  "Reviews were coded blind to star rating and product by two LLM coders of different capability tiers from the same model family "
+  "(larger: coder A; smaller: coder B; exact model versions are to be inserted by the authors before submission), using the same written codebook (Appendix A). Each coder labeled overall sentiment (negative, neutral, positive), "
+  "whether a product defect or failure is reported, and seven aspects (price, durability, battery, performance, ease of use, design, service) as not mentioned, negative, neutral/mixed, or positive. "
+  "Coding was done in eight batches of 50 reviews per coder with the review text treated as data, and the outputs are stored with the code.")
+
 H1("Method")
 P("Let Y_t be the number of reviews dated in month t. The Poisson model specifies Y_t ~ Poisson(μ_t) with log μ_t = β_0 + β_1 t. The negative binomial (NB2) "
   "model specifies Var(Y_t) = μ_t + α μ_t², with α > 0 the dispersion parameter, and the same mean function. The Poisson model is the "
@@ -96,6 +111,13 @@ P("Let Y_t be the number of reviews dated in month t. The Poisson model specifie
   "(Cameron and Trivedi 2013). We also report the Pearson dispersion statistic of the Poisson fit and compare models by AIC. "
   "Because the series rises and then falls, we add a quadratic term (log μ_t = β_0 + β_1 t + β_2 t²) as a robustness specification "
   "estimated on the active window. All models are estimated by maximum likelihood (code provided), with t measured in years and centered.")
+
+P("Panel model. For product i in month t we estimate E[Y_it] = exp(α_i + γ_t + x_it'β), with product effects α_i, calendar-month effects γ_t, and covariates x_it known at t−1: the log of one plus the product's cumulative reviews "
+  "(a social-proof or popularity stock) and either its cumulative average rating (centered at 4.5) or its cumulative share of reviews rated 1–2 stars. We estimate Poisson pseudo-maximum-likelihood with product-clustered standard errors, "
+  "which is consistent under overdispersion if the mean is correctly specified, and an NB2 version with the dispersion parameter fixed at a moment estimate as a check. A linear product-age term is not separately identified given product and month effects and is omitted.")
+P("Validation of LLM coding. We assess (i) convergent validity of the overall-sentiment label against star ratings (Spearman correlation and recall of 1–2 and 5-star reviews), "
+  "(ii) inter-coder reliability between the two LLM coders by Cohen's κ for each field, and (iii) agreement with human coders, for which we provide a blind coding sheet of 150 sampled reviews and the evaluation code. "
+  "Agreement between two LLMs does not establish validity because their errors may be correlated.")
 
 H1("Results")
 P(f"Overdispersion. The variance-to-mean ratio of monthly volume is {R['var_mean']:,.0f} on the full series and {R['var_mean_active']:,.0f} on the active window. "
@@ -126,6 +148,39 @@ P("Text covariates. As a descriptive check on the usefulness of text-derived cov
   "(word lists in analysis.py; months with at least one review in the active window). Their correlations with monthly volume are weak (positive-term rate r = 0.23; negative-term rate r = 0.09), and an NB model with both rates and a quadratic trend "
   "did not converge to a stable solution, so we report no coefficients. We read this as evidence that dictionary measures add little here, not as evidence about LLM measures.")
 
+H2("Product-month panel")
+P(f"Table 2 reports the panel estimates. With only product and month effects, the Poisson Pearson dispersion statistic is {PM['M1 FE only']['pearson_disp']:.1f}, compared with {FL['pearson_disp']:,.0f} for the aggregate linear-trend model. "
+  f"Dispersion remains well above one, so cluster-robust or negative binomial inference is still needed, but most of the aggregate overdispersion is attributable to differences across products and months. "
+  f"The cumulative review stock is positively associated with next-month volume: the elasticity is {pm('M2 +social proof','lcum'):.2f} (SE {pm('M2 +social proof','lcum','se'):.2f}) without a rating control and "
+  f"{pm('M3 +quality','lcum'):.2f} (SE {pm('M3 +quality','lcum','se'):.2f}) with it, and {pm('M3-NB2','lcum'):.2f} (SE {pm('M3-NB2','lcum','se'):.2f}) in the NB2 check. "
+  f"The prior average rating ({pm('M3 +quality','avg_prev_c'):.2f}, p = {pm('M3 +quality','avg_prev_c','p'):.2f}) and prior negative-review share ({pm('M4 +neg share','negshare_prev'):.2f}, p = {pm('M4 +neg share','negshare_prev','p'):.2f}) are not significantly related to volume. "
+  f"Dropping product effects raises the stock elasticity to {pm('M5 between (no product FE)','lcum'):.2f} and gives no brand-group difference (devices versus AmazonBasics: {pm('M5 between (no product FE)','device'):.2f}, p = {pm('M5 between (no product FE)','device','p'):.2f}). "
+  f"These are associations: the stock of reviews rises mechanically with a product's age and popularity, so we do not interpret the elasticity as a causal social-proof effect.")
+def c(m, v): return f"{pm(m,v):.3f} ({pm(m,v,'se'):.3f})"
+table([["", "(1) FE only", "(2) + stock", "(3) + avg. rating", "(4) + neg. share", "(5) NB2"],
+       ["log(1 + prior reviews)", "", c("M2 +social proof", "lcum"), c("M3 +quality", "lcum"), c("M4 +neg share", "lcum"), c("M3-NB2", "lcum")],
+       ["Prior avg. rating (− 4.5)", "", "", c("M3 +quality", "avg_prev_c"), "", c("M3-NB2", "avg_prev_c")],
+       ["Prior neg. share (1–2★)", "", "", "", c("M4 +neg share", "negshare_prev"), ""],
+       ["Product / month effects", "Yes / Yes", "Yes / Yes", "Yes / Yes", "Yes / Yes", "Yes / Yes"],
+       ["Pearson dispersion (Poisson)", f"{PM['M1 FE only']['pearson_disp']:.1f}", f"{PM['M2 +social proof']['pearson_disp']:.1f}", f"{PM['M3 +quality']['pearson_disp']:.1f}", f"{PM['M4 +neg share']['pearson_disp']:.1f}", "—"]],
+      note=f"Table 2. Product-month panel ({PN['n_products']} products, {PN['n_obs']:,} product-months). Coefficients with product-clustered standard errors in parentheses; columns 1–4 are Poisson PML, column 5 is NB2 with α fixed at {PM['M3-NB2']['alpha_used']:.2f} (moment estimate), so its standard errors understate uncertainty about α.")
+H2("LLM coding: convergent validity and reliability")
+sa, sb = V["A_vs_stars"], V["B_vs_stars"]; kk = V["A_vs_B_kappa"]
+P(f"Both coders labeled all 400 reviews. Coder A labeled {sa['pos_share']:.0%} of reviews positive and {sa['neg_share']:.0%} negative (coder B: {sb['pos_share']:.0%} and {sb['neg_share']:.0%}); "
+  f"the sample is dominated by 5-star reviews ({sa['n_five']} of 400) and has only {sa['n_low_star']} reviews rated 1–2 stars. "
+  f"Overall sentiment correlates with star rating at Spearman ρ = {sa['spearman']:.2f} (coder A) and {sb['spearman']:.2f} (coder B). "
+  f"Coder A labeled {sa['pos_recall_five']:.0%} of 5-star reviews positive and {sa['neg_recall_low_star']:.0%} of 1–2-star reviews negative; of the reviews it labeled negative, {sa['neg_precision']:.0%} had 1–2 stars. A positive/not-positive accuracy of {V['A_vs_stars']['acc_pos_neg']:.0%} is below the {sa['majority_baseline_acc']:.0%} accuracy "
+  f"of always predicting positive, so we do not report accuracy as evidence of validity.")
+P(f"Inter-coder reliability is high for overall sentiment (κ = {kk['overall']:.2f}), price (κ = {kk['price']:.2f}), service (κ = {kk['service']:.2f}), design (κ = {kk['design']:.2f}), ease of use (κ = {kk['ease']:.2f}), and defect reports (κ = {kk['defect']:.2f}), "
+  f"and lower for durability (κ = {kk['durability']:.2f}), battery (κ = {kk['battery']:.2f}), and especially performance (κ = {kk['performance']:.2f}), which is also the most prevalent aspect ({V['prevalence_A']['performance']:.0%} of reviews) and the broadest category in the codebook. "
+  f"Aspect prevalence under coder A ranges from {V['prevalence_A']['service']:.0%} (service) to {V['prevalence_A']['performance']:.0%} (performance), and {V['defect_A']:.0%} of reviews report a defect. "
+  f"Human validation is pending: the blind sheet (human_coding_sheet.xlsx) and evaluate.py are provided, and the human-agreement columns are to be completed before submission.")
+table([["Field", "κ (A vs. B)", "Raw agreement", "Prevalence (A)"]] +
+      [[n, f"{kk[k]:.2f}", f"{V['A_vs_B_agree'][k]:.0%}", ("—" if k in ("overall",) else (f"{V['defect_A']:.0%}" if k == "defect" else f"{V['prevalence_A'][k]:.0%}"))]
+       for n, k in (("Overall sentiment", "overall"), ("Defect reported", "defect"), ("Price", "price"), ("Durability", "durability"), ("Battery", "battery"),
+                    ("Performance", "performance"), ("Ease of use", "ease"), ("Design", "design"), ("Service", "service"))],
+      note="Table 3. Agreement between the two LLM coders on 400 reviews. Aspect κ is computed on the four-category code. Human agreement: pending.")
+
 H1("Discussion")
 H2("Implications for research")
 P("First, overdispersion testing should be reported, not assumed. In this corpus the Poisson model is rejected by every criterion, and its reported significance "
@@ -133,23 +188,29 @@ P("First, overdispersion testing should be reported, not assumed. In this corpus
   "meaningless slope, and the size of the estimated dispersion depends heavily on how well the mean is specified (α̂ falls from 2.45 to 0.42 once curvature is allowed). "
   "Researchers should therefore model the mean dynamics, or use product fixed effects and release-time controls in panel data, before interpreting α. "
   "Third, sample construction choices—dropping empty months, silent timestamp parsing failures, and pooling distinct brands—change results in ways that are rarely documented.")
-H2("A roadmap for LLM-derived covariates")
-P("LLMs can extract attribute-level mentions (for example, battery life, price, durability), sentiment, and causal claims from review text at a scale that dictionaries cannot match (Brown et al. 2020; Berger et al. 2020). "
-  "Aggregating such measures to the period of the count series yields covariates that can enter the NB mean equation. We did not implement this step. Doing so credibly requires "
-  "(i) a fixed, versioned model and prompt, (ii) validation against human-coded samples with reported agreement, (iii) sensitivity of the downstream count-model coefficients to measurement error in the LLM outputs, and "
-  "(iv) a design in which the text covariates are not mechanically related to volume. Without these, the incremental value of LLM features remains an open empirical question.")
+P("Fourth, aggregate overdispersion is partly heterogeneity. Product and month effects reduce the Poisson dispersion statistic from the hundreds to the teens, so research designs with product-level panels should be preferred to aggregate series, "
+  "and review stock should be treated as a state variable rather than an exogenous trend.")
+H2("Implications for LLM-based measurement")
+P("In this sample, two LLM coders agree closely on overall sentiment, price, service, design, ease of use, and defect reports, and agree less on durability, battery, and performance. "
+  "Researchers should therefore (i) document the codebook, model versions, and prompts, (ii) report reliability per aspect rather than a single accuracy figure, and (iii) treat low-reliability aspects as noisy measures when they enter count models, "
+  "since measurement error in covariates attenuates their coefficients. Star ratings are an imperfect benchmark, and about a third of the reviews that coder A labeled negative carry 3–5 stars; whether these are coder errors or genuine complaints in well-rated reviews can only be settled by human coding. Because the LLM coding here uses a sample, the LLM-derived variables are not entered into the panel models; "
+  "doing so requires coding all reviews and propagating measurement error, which we leave to future work.")
 H2("Limitations")
-P("The data come from one retailer, are pooled across Amazon-owned products, and, most importantly, appear to reflect a time-varying crawl. The collapse in counts after 2017 "
-  "is unlikely to reflect a real decline in reviewing, so the 'trend' we estimate describes the collected sample and not consumer behavior. The note is also limited to aggregate monthly series; "
-  "a product-level panel with product and calendar-time effects would be needed to identify drivers of review volume. Finally, the LLM component is prospective only.")
-
+P("The data come from one retailer, are pooled across Amazon-owned products, and appear to reflect a time-varying crawl. The collapse in counts after 2017 "
+  "is unlikely to reflect a real decline in reviewing, so the trends we estimate describe the collected sample and not consumer behavior. The panel covers 28 products, is dominated by a few, and its estimates are associations. "
+  "The LLM validation uses a 400-review random sample dominated by 5-star reviews, so negative-class statistics rest on few observations; both coders are LLMs whose errors may be correlated; "
+  "and agreement with human coders has not yet been measured. Coding was performed with specific model versions that may not be available in the future, so we archive all outputs.")
 H1("Conclusion")
 P("Review volume is an overdispersed count series for which Poisson models are inadequate. Negative binomial models are the appropriate starting point, but our results show that "
-  "their value depends on a correctly specified mean function and a carefully constructed sample. We encourage future work to report dispersion diagnostics, "
-  "document sample construction (including empty periods and data-collection coverage), and test LLM-derived measures against human-coded benchmarks before drawing substantive conclusions.")
+  "their value depends on a correctly specified mean function and a carefully constructed sample. Product-month panels explain much of the aggregate dispersion, and LLM coders can be made reliable for several aspects but not all. We encourage future work to report dispersion diagnostics, "
+  "document sample construction (including empty periods and data-collection coverage), and validate LLM-derived measures against human coders before using them as covariates.")
 
 H1("Data and Code Availability")
-P("The data are available at https://doi.org/10.5281/zenodo.18758751. The script analysis.py reproduces every number and Figure 1.", indent=False)
+P("The data are available at https://doi.org/10.5281/zenodo.18758751. The scripts analysis.py (aggregate models and Figure 1), panel.py (panel models), and llm/ (sample, codebook, batches, coder outputs, blind human coding sheet, and evaluate.py) reproduce every number.", indent=False)
+
+H1("Appendix A. Coding codebook")
+for line in open("llm/codebook.md").read().splitlines()[2:]:
+    if line.strip(): P(line.lstrip("- ").replace("`", ""), indent=False, single=True)
 
 H1("References")
 refs = [

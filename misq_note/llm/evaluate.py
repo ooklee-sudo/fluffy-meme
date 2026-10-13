@@ -15,6 +15,11 @@ for nm, X in (("A", A), ("B", B)):
     res[f"{nm}_vs_stars"] = dict(spearman=float(spearmanr(s[ok], star[ok])[0]),
         acc_pos_neg=float(((s[ok] == 1) == (star[ok] >= 4))[star[ok].isin([1, 2, 4, 5])].mean()),
         pos_share=float((s[ok] == 1).mean()), neg_share=float((s[ok] == -1).mean()))
+for nm, X in (("A", A), ("B", B)):
+    o = X.overall; res[f"{nm}_vs_stars"].update(
+        n_low_star=int((star <= 2).sum()), neg_recall_low_star=float((o[star <= 2] == "neg").mean()),
+        n_five=int((star == 5).sum()), pos_recall_five=float((o[star == 5] == "pos").mean()),
+        neg_precision=float((star[o == "neg"] <= 2).mean()), majority_baseline_acc=float(star[star.isin([1, 2, 4, 5])].ge(4).mean()))
 res["A_vs_B_kappa"] = {f: float(cohen_kappa_score(A[f].astype(str), B[f].astype(str))) for f in F}
 res["A_vs_B_agree"] = {f: float((A[f].astype(str) == B[f].astype(str)).mean()) for f in F}
 # mention (binary) agreement for aspects, which is what a count covariate uses
