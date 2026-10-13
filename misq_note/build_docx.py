@@ -55,9 +55,8 @@ P(f"Consumer-generated content (CGC) volume is routinely analyzed with ordinary 
   f"active window, the dispersion parameter falls from {AL['alpha']:.2f} to {AQ['alpha']:.2f}, indicating that much "
   f"apparent overdispersion reflects misspecified mean dynamics. A product-month panel of {PN['n_products']} products with product and month fixed effects "
   f"reduces the Poisson Pearson dispersion statistic to about {PM['M1 FE only']['pearson_disp']:.0f} and shows that review volume is positively associated with a product's prior review stock "
-  f"(elasticity ≈ {pm('M3 +quality','lcum'):.2f}) but not with its prior average rating. Finally, we implement an LLM coding pipeline on a random sample of 400 reviews, "
-  f"evaluate it against star ratings and against a second LLM coder (κ for overall sentiment = {V['A_vs_B_kappa']['overall']:.2f}; aspect-mention κ from {min(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f} to {max(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f}), "
-  f"and provide a blind human-coding protocol; human validation is not yet completed and is reported as pending. We provide code and codebook to reproduce all results.",
+  f"(elasticity ≈ {pm('M3 +quality','lcum'):.2f}) but not with its prior average rating. Finally, we code a random sample of 400 reviews with two LLM coders and compare them with star ratings and each other (κ for overall sentiment = {V['A_vs_B_kappa']['overall']:.2f}; aspect-mention κ from {min(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f} to {max(V['A_vs_B_kappa'][k] for k in V['A_vs_B_kappa'] if k.endswith('_mention')):.2f}), "
+  f"but human validation is still pending. Code is provided.",
   indent=False, single=True)
 P("Keywords: consumer-generated content, online reviews, count data, negative binomial regression, overdispersion, large language models",
   indent=False, single=True)
