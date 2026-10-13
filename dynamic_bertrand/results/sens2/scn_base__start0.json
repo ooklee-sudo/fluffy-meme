@@ -1,0 +1,120 @@
+{
+ "name": "base",
+ "start": 0,
+ "params": {
+  "beta": 0.95,
+  "rho": 1.0,
+  "M": 5,
+  "kappa": 15.0,
+  "lam": [
+   10.0,
+   25.0,
+   45.0
+  ],
+  "P_lam": [
+   [
+    0.7,
+    0.2,
+    0.1
+   ],
+   [
+    0.2,
+    0.6,
+    0.2
+   ],
+   [
+    0.1,
+    0.3,
+    0.6
+   ]
+  ],
+  "prices": [
+   0.4,
+   0.8,
+   1.2,
+   1.5
+  ],
+  "mc": 0.3,
+  "pk": 2.0,
+  "fc": [
+   12.0,
+   15.0
+  ],
+  "contract_frac": 0.3,
+  "sla": 0.3,
+  "competition": "bertrand"
+ },
+ "models": {
+  "bertrand": {
+   "avg_price": 1.1260701228030185,
+   "lerner": 0.7335867510157904,
+   "profit_A": 6.4218075830921295,
+   "profit_B": 6.484094785056798,
+   "profit_total": 12.905902368148928,
+   "consumer_surplus": 9.47718817745097,
+   "served": 25.344827347022896,
+   "rejected": 0.13556902160399048,
+   "mean_nodes_A": 1.9862985737146854,
+   "mean_nodes_B": 1.9990238082946015,
+   "mean_capacity": 59.7798357301393,
+   "excess_capacity": 34.43500838311641,
+   "p_both_expand": 4.405054121071995e-09,
+   "p_any_expand": 0.00122829139254167,
+   "p_redundant_both_expand": 2.735411817900717e-11,
+   "converged": true,
+   "iters": 5824,
+   "stage_gap": 9.78550573904613e-13
+  },
+  "cartel": {
+   "avg_price": 1.4999999999999998,
+   "lerner": 0.7999999999999999,
+   "profit_A": 11.82960919540116,
+   "profit_B": 11.963494252873549,
+   "profit_total": 23.793103448274707,
+   "consumer_surplus": 0.0,
+   "served": 25.3448275862064,
+   "rejected": 2.0689655172416086,
+   "mean_nodes_A": 1.4813333333330219,
+   "mean_nodes_B": 1.5186666666666648,
+   "mean_capacity": 44.999999999995296,
+   "excess_capacity": 19.6551724137889,
+   "p_both_expand": 0.0,
+   "p_any_expand": 9.28181295212625e-14,
+   "p_redundant_both_expand": 0.0,
+   "converged": true
+  },
+  "share": {
+   "avg_price": 1.4999999999999998,
+   "lerner": 0.7999999999999999,
+   "profit_A": 8.173991786587083,
+   "profit_B": 12.207358137209512,
+   "profit_total": 20.381349923796595,
+   "consumer_surplus": 7.105427357601002e-15,
+   "served": 25.344827570374157,
+   "rejected": 8.421427549327082e-23,
+   "mean_nodes_A": 2.0156897875661,
+   "mean_nodes_B": 3.0005112576781388,
+   "mean_capacity": 75.24301567866361,
+   "excess_capacity": 49.89818810828944,
+   "p_both_expand": 3.361632405417692e-10,
+   "p_any_expand": 2.3693563523075024e-06,
+   "p_redundant_both_expand": 3.36163240541767e-10,
+   "converged": true
+  }
+ },
+ "checks": {
+  "prop1_states": 3,
+  "prop1_top_price_strictly_dominant": true,
+  "prop1_top_price_modal": true,
+  "prop3_ne_prices": [
+   0.4,
+   0.8
+  ],
+  "prop3_states": 29,
+  "prop3_modal_in_ne_set": true,
+  "prop3_mean_modal_price": 0.8000000000000003,
+  "price_monotone_violations": 0,
+  "price_monotone_pairs": 120,
+  "mean_E_price_abundant": 0.8302662261507098
+ }
+}

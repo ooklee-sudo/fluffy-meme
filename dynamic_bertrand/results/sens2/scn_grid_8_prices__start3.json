@@ -1,0 +1,88 @@
+{
+ "name": "grid 8 prices",
+ "start": 3,
+ "params": {
+  "beta": 0.95,
+  "rho": 1.0,
+  "M": 5,
+  "kappa": 15.0,
+  "lam": [
+   10.0,
+   25.0,
+   45.0
+  ],
+  "P_lam": [
+   [
+    0.7,
+    0.2,
+    0.1
+   ],
+   [
+    0.2,
+    0.6,
+    0.2
+   ],
+   [
+    0.1,
+    0.3,
+    0.6
+   ]
+  ],
+  "prices": [
+   0.4,
+   0.5571,
+   0.7143,
+   0.8714,
+   1.0286,
+   1.1857,
+   1.3429,
+   1.5
+  ],
+  "mc": 0.3,
+  "pk": 2.0,
+  "fc": [
+   12.0,
+   15.0
+  ],
+  "contract_frac": 0.3,
+  "sla": 0.3,
+  "competition": "bertrand"
+ },
+ "models": {
+  "bertrand": {
+   "avg_price": 1.2183581850636476,
+   "lerner": 0.7537669925988736,
+   "profit_A": 11.033806189249926,
+   "profit_B": 5.047517852205428,
+   "profit_total": 16.081324041455353,
+   "consumer_surplus": 7.138160486480633,
+   "served": 25.344817807305233,
+   "rejected": 3.9809500306577523,
+   "mean_nodes_A": 1.9999946308673595,
+   "mean_nodes_B": 1.000000030150899,
+   "mean_capacity": 44.999919915273885,
+   "excess_capacity": 19.655102107968617,
+   "p_both_expand": 3.3180560686500975e-14,
+   "p_any_expand": 1.439938198629882e-06,
+   "p_redundant_both_expand": 6.684758025558581e-15,
+   "converged": true,
+   "iters": 749,
+   "stage_gap": 0.32487162045016527
+  }
+ },
+ "checks": {
+  "prop1_states": 3,
+  "prop1_top_price_strictly_dominant": true,
+  "prop1_top_price_modal": true,
+  "prop3_ne_prices": [
+   0.4,
+   0.5571
+  ],
+  "prop3_states": 29,
+  "prop3_modal_in_ne_set": false,
+  "prop3_mean_modal_price": 0.6438310344827585,
+  "price_monotone_violations": 6,
+  "price_monotone_pairs": 120,
+  "mean_E_price_abundant": 0.7252309849414987
+ }
+}

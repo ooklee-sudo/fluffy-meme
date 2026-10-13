@@ -1,0 +1,84 @@
+{
+ "name": "demand growth-skewed",
+ "start": 3,
+ "params": {
+  "beta": 0.95,
+  "rho": 1.0,
+  "M": 5,
+  "kappa": 15.0,
+  "lam": [
+   10.0,
+   25.0,
+   45.0
+  ],
+  "P_lam": [
+   [
+    0.4,
+    0.3,
+    0.3
+   ],
+   [
+    0.2,
+    0.4,
+    0.4
+   ],
+   [
+    0.1,
+    0.2,
+    0.7
+   ]
+  ],
+  "prices": [
+   0.4,
+   0.8,
+   1.2,
+   1.5
+  ],
+  "mc": 0.3,
+  "pk": 2.0,
+  "fc": [
+   12.0,
+   15.0
+  ],
+  "contract_frac": 0.3,
+  "sla": 0.3,
+  "competition": "bertrand"
+ },
+ "models": {
+  "bertrand": {
+   "avg_price": 1.3066682799789422,
+   "lerner": 0.7704084467368912,
+   "profit_A": 12.672692226936084,
+   "profit_B": 12.672693643505198,
+   "profit_total": 25.345385870441284,
+   "consumer_surplus": 6.415097982516642,
+   "served": 33.18181818181674,
+   "rejected": 0.19232391354759906,
+   "mean_nodes_A": 1.999999920100659,
+   "mean_nodes_B": 1.9999999979043135,
+   "mean_capacity": 59.9999987700746,
+   "excess_capacity": 26.818180588257835,
+   "p_both_expand": 3.1419623768632704e-17,
+   "p_any_expand": 6.085799202286397e-08,
+   "p_redundant_both_expand": 2.294520986636313e-17,
+   "converged": true,
+   "iters": 757,
+   "stage_gap": 9.78550573904613e-13
+  }
+ },
+ "checks": {
+  "prop1_states": 3,
+  "prop1_top_price_strictly_dominant": true,
+  "prop1_top_price_modal": true,
+  "prop3_ne_prices": [
+   0.4,
+   0.8
+  ],
+  "prop3_states": 29,
+  "prop3_modal_in_ne_set": true,
+  "prop3_mean_modal_price": 0.8000000000000003,
+  "price_monotone_violations": 0,
+  "price_monotone_pairs": 120,
+  "mean_E_price_abundant": 0.8302662261507098
+ }
+}
