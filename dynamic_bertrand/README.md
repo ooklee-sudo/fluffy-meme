@@ -10,6 +10,8 @@ Code and results for the manuscript `LLM_Capacity_Bertrand_ISR.docx`.
 | `equilibria_states.py` | State-level behaviour in the two base-scenario equilibria (`results/equilibria_states.json`). |
 | `alternating.py`, `price_game.py` | Dynamic price competition with alternating moves (Maskin–Tirole): prices are state variables. `price_game.py` solves the fixed-capacity game by Newton continuation in ρ and writes `results/price_game.json`; `alternating.py` is the joint price + capacity game (value iteration, Newton continuation). |
 | `joint_dynamic.py`, `joint_dynamic_starts.py`, `joint_dynamic_sens.py`, `make_price_figs.py` | Joint-game runs (ρ = 3, 2, 1.7), multi-start check, 17-scenario comparison with simultaneous pricing, Edgeworth-cycle figure. |
+| `theory_checks.py` | Exhaustive enumeration of pure Markov profiles in the two-price alternating game; verifies Propositions 4 and 5 (`python theory_checks.py verify` → `results/theory_checks.json`). |
+| `timing_experiment.py` | Controlled timing experiment: simultaneous vs staggered/synchronized capacity vs committed prices (C0, C1, C1s, C2) → `results/timing_experiment.json` (~4 min on 4 cores). |
 | `LLM_Capacity_Bertrand_ISR.docx` | Manuscript, ISR-style format. |
 
 ```bash
