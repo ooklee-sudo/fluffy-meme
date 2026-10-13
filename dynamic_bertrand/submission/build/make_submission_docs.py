@@ -95,17 +95,16 @@ para(d, "**Scope and limitations.** We want to be transparent about what the pap
         "public list prices found a sign opposite to the prediction, statistically insignificant and based on a noisy measure; we report it as inconclusive.")
 para(d, "**Fit with the journal.** The paper contributes to the economics of information technology and digital markets, using analytical modeling and computation. "
         "We believe it is of interest to readers who study IT infrastructure, platform competition, and the governance of digital markets.")
-para(d, "**Originality and compliance.** The manuscript has not been published and is not under consideration elsewhere. All authors have approved the submission. "
+para(d, "**Originality and compliance.** The manuscript has not been published and is not under consideration elsewhere. The submission has been approved by all authors. "
         "[We have no conflicts of interest to declare. / Describe any conflicts.] The title page is provided as a separate file and the manuscript file contains no author information. "
         "The code, parameter files, and result files are provided as an anonymized supplementary archive; [we will make them public on acceptance – confirm]. "
         "[If applicable, insert a statement on the use of AI-assisted tools in preparing the manuscript, code, or analysis, in line with INFORMS policy.]")
 para(d, "[Optional: suggested reviewers and any reviewers to exclude, with affiliations and e-mail addresses.]")
 para(d, "Thank you for considering our submission. We look forward to hearing from you.", after=12)
 para(d, "Sincerely,", after=18)
-para(d, "[Corresponding author name]", after=0)
-para(d, "[Affiliation]", after=0)
+para(d, "Ook Lee", after=0)
+para(d, "Department of Information Systems, Hanyang University, Seoul, Korea", after=0)
 para(d, "ooklee@hanyang.ac.kr", after=0)
-para(d, "on behalf of all authors", after=0)
 d.save(os.path.join(OUT, "01_Cover_Letter.docx"))
 
 # ====================================== TITLE PAGE ======================================
@@ -114,11 +113,10 @@ para(t, "Title Page (not shared with reviewers)", bold=True, align=WD_ALIGN_PARA
 para(t, "**Title**", after=2)
 para(t, TITLE, after=12)
 para(t, "**Authors and affiliations**", after=2)
-para(t, "[Author 1 full name], [Department], [University], [City, Country], [ORCID]", after=2)
-para(t, "[Author 2 full name], [Department], [University], [City, Country], [ORCID]", after=2)
-para(t, "[Add or delete lines as needed]", after=12)
+para(t, "Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. [ORCID, optional]", after=2)
+para(t, "[Add further authors here, or delete this line]", after=12)
 para(t, "**Corresponding author**", after=2)
-para(t, "[Name], [Postal address], ooklee@hanyang.ac.kr, [telephone]", after=12)
+para(t, "Ook Lee, Department of Information Systems, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr. [Postal address] [Telephone]", after=12)
 para(t, "**Manuscript type**", after=2)
 para(t, "Research article (analytical modeling with numerical analysis)", after=12)
 para(t, "**Keywords**", after=2)
