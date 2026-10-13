@@ -1,6 +1,6 @@
 # Dynamic Bertrand–Edgeworth model of LLM inference capacity
 
-Code and results for the manuscript `LLM_Capacity_Bertrand_ISR.docx`.
+Code and results for the manuscript submitted to *Information Systems Research*. Submission files are in `submission/`: `01_Cover_Letter.docx`, `02_Title_Page.docx` (author information, not shared with reviewers) and `03_Manuscript_Blinded.docx` (no author information). Placeholders in the cover letter and title page are highlighted in yellow. `submission/build/` regenerates all three (`python submission/build/make_isr.py`, `python submission/build/make_submission_docs.py`).
 
 | File | What it does |
 | --- | --- |
@@ -13,7 +13,6 @@ Code and results for the manuscript `LLM_Capacity_Bertrand_ISR.docx`.
 | `theory_checks.py` | Exhaustive enumeration of pure Markov profiles in the two-price alternating game; verifies Propositions 4 and 5 (`python theory_checks.py verify` → `results/theory_checks.json`). |
 | `timing_experiment.py` | Controlled timing experiment: simultaneous vs staggered/synchronized capacity vs committed prices (C0, C1, C1s, C2) → `results/timing_experiment.json` (~4 min on 4 cores). |
 | `empirical/` | Exploratory empirical check of the repricing prediction (manuscript Section 8.3) and the design for a real test. `DESIGN.md` (Korean) is the plan; `build_price_panel.py` rebuilds the LiteLLM price panel from git history (needs a blobless clone of BerriAI/litellm); `analyze_repricing.py` runs the host-type regressions; `collect_openrouter.py` appends a daily snapshot of host-level prices and uptime (run it once a day); `analyze_snapshots.py` analyses that panel after 28 days. |
-| `LLM_Capacity_Bertrand_ISR.docx` | Manuscript, ISR-style format. |
 
 ```bash
 pip install numpy matplotlib
