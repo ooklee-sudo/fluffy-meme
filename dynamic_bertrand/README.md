@@ -12,6 +12,7 @@ Code and results for the manuscript `LLM_Capacity_Bertrand_ISR.docx`.
 | `joint_dynamic.py`, `joint_dynamic_starts.py`, `joint_dynamic_sens.py`, `make_price_figs.py` | Joint-game runs (ρ = 3, 2, 1.7), multi-start check, 17-scenario comparison with simultaneous pricing, Edgeworth-cycle figure. |
 | `theory_checks.py` | Exhaustive enumeration of pure Markov profiles in the two-price alternating game; verifies Propositions 4 and 5 (`python theory_checks.py verify` → `results/theory_checks.json`). |
 | `timing_experiment.py` | Controlled timing experiment: simultaneous vs staggered/synchronized capacity vs committed prices (C0, C1, C1s, C2) → `results/timing_experiment.json` (~4 min on 4 cores). |
+| `empirical/` | Exploratory empirical check of the repricing prediction (manuscript Section 8.3) and the design for a real test. `DESIGN.md` (Korean) is the plan; `build_price_panel.py` rebuilds the LiteLLM price panel from git history (needs a blobless clone of BerriAI/litellm); `analyze_repricing.py` runs the host-type regressions; `collect_openrouter.py` appends a daily snapshot of host-level prices and uptime (run it once a day); `analyze_snapshots.py` analyses that panel after 28 days. |
 | `LLM_Capacity_Bertrand_ISR.docx` | Manuscript, ISR-style format. |
 
 ```bash

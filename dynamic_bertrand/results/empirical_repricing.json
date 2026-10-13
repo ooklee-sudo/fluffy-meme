@@ -1,0 +1,1370 @@
+{
+ "0.005": {
+  "change_threshold": 0.005,
+  "n_obs": 2555,
+  "n_providers": 34,
+  "providers": [
+   "anyscale",
+   "azure",
+   "baseten",
+   "bedrock",
+   "cerebras",
+   "cloudflare",
+   "crusoe",
+   "databricks",
+   "deepinfra",
+   "deepseek",
+   "fireworks_ai",
+   "friendliai",
+   "gmi",
+   "gradient_ai",
+   "groq",
+   "hyperbolic",
+   "lambda_ai",
+   "llamagate",
+   "mistral",
+   "nebius",
+   "novita",
+   "nscale",
+   "oci",
+   "openrouter",
+   "ovhcloud",
+   "perplexity",
+   "replicate",
+   "sambanova",
+   "scaleway",
+   "snowflake",
+   "together_ai",
+   "vercel_ai_gateway",
+   "vertex_ai",
+   "wandb"
+  ],
+  "months": [
+   "2023-09",
+   "2026-10"
+  ],
+  "variants": {
+   "baseline": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 21.358058420815876,
+    "se": 29.534226967842077,
+    "per_sd": 0.3734367897086643,
+    "sd_rate": 0.01748458508497698,
+    "perm_p": 0.133
+   },
+   "host-type controls": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 21.971778200657074,
+    "se": 29.088354622176503,
+    "per_sd": 0.38416742541763105,
+    "sd_rate": 0.01748458508497698,
+    "perm_p": 0.127
+   },
+   "specialists only": {
+    "n_obs": 1914,
+    "n_providers": 26,
+    "coef": 20.592867232895884,
+    "se": 29.688530498676514,
+    "per_sd": 0.4000774941183973,
+    "sd_rate": 0.01942796452741157,
+    "perm_p": 0.175
+   },
+   "excluding aggregators": {
+    "n_obs": 2294,
+    "n_providers": 31,
+    "coef": 20.751257998973816,
+    "se": 29.721362421173747,
+    "per_sd": 0.3727905492257337,
+    "sd_rate": 0.01796472046389519,
+    "perm_p": 0.17
+   }
+  },
+  "host_type_gap": {
+   "hyperscaler": {
+    "n": 380,
+    "median_log_rel_price": 0.6096879762313157,
+    "mean_log_rel_price": 0.6365814348469381
+   },
+   "aggregator": {
+    "n": 261,
+    "median_log_rel_price": -0.18392283816092836,
+    "mean_log_rel_price": -0.1908302917210711
+   },
+   "specialist or model maker": {
+    "n": 1914,
+    "median_log_rel_price": -0.032789822822990956,
+    "mean_log_rel_price": 0.095220327983351
+   }
+  },
+  "descriptives": {
+   "openai": {
+    "type": "specialist or model maker",
+    "pairs": 2081,
+    "repricing_rate": 0.0038443056222969728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "text-completion-openai": {
+    "type": "specialist or model maker",
+    "pairs": 230,
+    "repricing_rate": 0.008695652173913044,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "anthropic": {
+    "type": "specialist or model maker",
+    "pairs": 485,
+    "repricing_rate": 0.008247422680412371,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "vertex_ai": {
+    "type": "hyperscaler",
+    "pairs": 2756,
+    "repricing_rate": 0.018505079825834544,
+    "share_increases": 0.43137254901960786,
+    "sawtooth_per_cut": 0.2413793103448276
+   },
+   "cohere": {
+    "type": "specialist or model maker",
+    "pairs": 99,
+    "repricing_rate": 0.020202020202020204,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "openrouter": {
+    "type": "aggregator",
+    "pairs": 1962,
+    "repricing_rate": 0.023955147808358817,
+    "share_increases": 0.40425531914893614,
+    "sawtooth_per_cut": 0.0
+   },
+   "ai21": {
+    "type": "specialist or model maker",
+    "pairs": 309,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nlp_cloud": {
+    "type": "specialist or model maker",
+    "pairs": 74,
+    "repricing_rate": 0.02702702702702703,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "aleph_alpha": {
+    "type": "specialist or model maker",
+    "pairs": 180,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "bedrock": {
+    "type": "hyperscaler",
+    "pairs": 5373,
+    "repricing_rate": 0.010236367020286618,
+    "share_increases": 0.23636363636363636,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepinfra": {
+    "type": "specialist or model maker",
+    "pairs": 1449,
+    "repricing_rate": 0.047619047619047616,
+    "share_increases": 0.463768115942029,
+    "sawtooth_per_cut": 0.05405405405405406
+   },
+   "anyscale": {
+    "type": "specialist or model maker",
+    "pairs": 391,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "azure": {
+    "type": "hyperscaler",
+    "pairs": 3525,
+    "repricing_rate": 0.011631205673758865,
+    "share_increases": 0.0975609756097561,
+    "sawtooth_per_cut": 0.0
+   },
+   "palm": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "perplexity": {
+    "type": "specialist or model maker",
+    "pairs": 653,
+    "repricing_rate": 0.0030627871362940277,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "mistral": {
+    "type": "specialist or model maker",
+    "pairs": 892,
+    "repricing_rate": 0.023542600896860985,
+    "share_increases": 0.23809523809523808,
+    "sawtooth_per_cut": 0.0625
+   },
+   "cloudflare": {
+    "type": "specialist or model maker",
+    "pairs": 224,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "groq": {
+    "type": "specialist or model maker",
+    "pairs": 437,
+    "repricing_rate": 0.016018306636155607,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "cohere_chat": {
+    "type": "specialist or model maker",
+    "pairs": 176,
+    "repricing_rate": 0.022727272727272728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "replicate": {
+    "type": "specialist or model maker",
+    "pairs": 632,
+    "repricing_rate": 0.0015822784810126582,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepseek": {
+    "type": "specialist or model maker",
+    "pairs": 167,
+    "repricing_rate": 0.07784431137724551,
+    "share_increases": 0.38461538461538464,
+    "sawtooth_per_cut": 0.0
+   },
+   "databricks": {
+    "type": "specialist or model maker",
+    "pairs": 459,
+    "repricing_rate": 0.008714596949891068,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "friendliai": {
+    "type": "specialist or model maker",
+    "pairs": 65,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gemini": {
+    "type": "specialist or model maker",
+    "pairs": 705,
+    "repricing_rate": 0.029787234042553193,
+    "share_increases": 0.7619047619047619,
+    "sawtooth_per_cut": 0.0
+   },
+   "fireworks_ai": {
+    "type": "specialist or model maker",
+    "pairs": 2847,
+    "repricing_rate": 0.0024587284861257463,
+    "share_increases": 0.8571428571428571,
+    "sawtooth_per_cut": 0.0
+   },
+   "cerebras": {
+    "type": "specialist or model maker",
+    "pairs": 117,
+    "repricing_rate": 0.008547008547008548,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "together_ai": {
+    "type": "specialist or model maker",
+    "pairs": 591,
+    "repricing_rate": 0.01015228426395939,
+    "share_increases": 0.5,
+    "sawtooth_per_cut": 0.3333333333333333
+   },
+   "xai": {
+    "type": "specialist or model maker",
+    "pairs": 535,
+    "repricing_rate": 0.05046728971962617,
+    "share_increases": 0.5925925925925926,
+    "sawtooth_per_cut": 0.0
+   },
+   "sambanova": {
+    "type": "specialist or model maker",
+    "pairs": 287,
+    "repricing_rate": 0.013937282229965157,
+    "share_increases": 0.25,
+    "sawtooth_per_cut": 0.0
+   },
+   "watsonx": {
+    "type": "specialist or model maker",
+    "pairs": 347,
+    "repricing_rate": 0.020172910662824207,
+    "share_increases": 0.7142857142857143,
+    "sawtooth_per_cut": 0.0
+   },
+   "nscale": {
+    "type": "specialist or model maker",
+    "pairs": 238,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "lambda_ai": {
+    "type": "specialist or model maker",
+    "pairs": 300,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "hyperbolic": {
+    "type": "specialist or model maker",
+    "pairs": 240,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "moonshot": {
+    "type": "specialist or model maker",
+    "pairs": 273,
+    "repricing_rate": 0.003663003663003663,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "gradient_ai": {
+    "type": "specialist or model maker",
+    "pairs": 140,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "vercel_ai_gateway": {
+    "type": "aggregator",
+    "pairs": 1264,
+    "repricing_rate": 0.0007911392405063291,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "oci": {
+    "type": "hyperscaler",
+    "pairs": 302,
+    "repricing_rate": 0.006622516556291391,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "dashscope": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "ovhcloud": {
+    "type": "specialist or model maker",
+    "pairs": 195,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "wandb": {
+    "type": "specialist or model maker",
+    "pairs": 217,
+    "repricing_rate": 0.041474654377880185,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "minimax": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "zai": {
+    "type": "specialist or model maker",
+    "pairs": 102,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gmi": {
+    "type": "specialist or model maker",
+    "pairs": 151,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "novita": {
+    "type": "specialist or model maker",
+    "pairs": 820,
+    "repricing_rate": 0.0024390243902439024,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "llamagate": {
+    "type": "aggregator",
+    "pairs": 126,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nebius": {
+    "type": "specialist or model maker",
+    "pairs": 218,
+    "repricing_rate": 0.009174311926605505,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "baseten": {
+    "type": "specialist or model maker",
+    "pairs": 82,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "snowflake": {
+    "type": "hyperscaler",
+    "pairs": 76,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "scaleway": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "aihubmix": {
+    "type": "aggregator",
+    "pairs": 72,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   }
+  },
+  "overall": {
+   "share_changes_that_are_increases": 0.36879432624113473,
+   "monthly_repricing_rate": 0.012532219358279265
+  }
+ },
+ "0.02": {
+  "change_threshold": 0.02,
+  "n_obs": 2555,
+  "n_providers": 34,
+  "providers": [
+   "anyscale",
+   "azure",
+   "baseten",
+   "bedrock",
+   "cerebras",
+   "cloudflare",
+   "crusoe",
+   "databricks",
+   "deepinfra",
+   "deepseek",
+   "fireworks_ai",
+   "friendliai",
+   "gmi",
+   "gradient_ai",
+   "groq",
+   "hyperbolic",
+   "lambda_ai",
+   "llamagate",
+   "mistral",
+   "nebius",
+   "novita",
+   "nscale",
+   "oci",
+   "openrouter",
+   "ovhcloud",
+   "perplexity",
+   "replicate",
+   "sambanova",
+   "scaleway",
+   "snowflake",
+   "together_ai",
+   "vercel_ai_gateway",
+   "vertex_ai",
+   "wandb"
+  ],
+  "months": [
+   "2023-09",
+   "2026-10"
+  ],
+  "variants": {
+   "baseline": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 23.45267369273371,
+    "se": 31.09711955998602,
+    "per_sd": 0.4052727799371845,
+    "sd_rate": 0.01728045105845434,
+    "perm_p": 0.113
+   },
+   "host-type controls": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 24.018702329428763,
+    "se": 30.66996962619488,
+    "per_sd": 0.415054010091277,
+    "sd_rate": 0.01728045105845434,
+    "perm_p": 0.112
+   },
+   "specialists only": {
+    "n_obs": 1914,
+    "n_providers": 26,
+    "coef": 22.672122992975908,
+    "se": 31.477074086541396,
+    "per_sd": 0.43541308826936326,
+    "sd_rate": 0.01920477797356072,
+    "perm_p": 0.14
+   },
+   "excluding aggregators": {
+    "n_obs": 2294,
+    "n_providers": 31,
+    "coef": 22.82698266234768,
+    "se": 31.46066624281666,
+    "per_sd": 0.40543139220081653,
+    "sd_rate": 0.01776105927786775,
+    "perm_p": 0.14
+   }
+  },
+  "host_type_gap": {
+   "hyperscaler": {
+    "n": 380,
+    "median_log_rel_price": 0.6096879762313157,
+    "mean_log_rel_price": 0.6365814348469381
+   },
+   "aggregator": {
+    "n": 261,
+    "median_log_rel_price": -0.18392283816092836,
+    "mean_log_rel_price": -0.1908302917210711
+   },
+   "specialist or model maker": {
+    "n": 1914,
+    "median_log_rel_price": -0.032789822822990956,
+    "mean_log_rel_price": 0.095220327983351
+   }
+  },
+  "descriptives": {
+   "openai": {
+    "type": "specialist or model maker",
+    "pairs": 2081,
+    "repricing_rate": 0.0038443056222969728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "text-completion-openai": {
+    "type": "specialist or model maker",
+    "pairs": 230,
+    "repricing_rate": 0.008695652173913044,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "anthropic": {
+    "type": "specialist or model maker",
+    "pairs": 485,
+    "repricing_rate": 0.008247422680412371,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "vertex_ai": {
+    "type": "hyperscaler",
+    "pairs": 2756,
+    "repricing_rate": 0.018505079825834544,
+    "share_increases": 0.43137254901960786,
+    "sawtooth_per_cut": 0.2413793103448276
+   },
+   "cohere": {
+    "type": "specialist or model maker",
+    "pairs": 99,
+    "repricing_rate": 0.020202020202020204,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "openrouter": {
+    "type": "aggregator",
+    "pairs": 1962,
+    "repricing_rate": 0.023445463812436288,
+    "share_increases": 0.391304347826087,
+    "sawtooth_per_cut": 0.0
+   },
+   "ai21": {
+    "type": "specialist or model maker",
+    "pairs": 309,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nlp_cloud": {
+    "type": "specialist or model maker",
+    "pairs": 74,
+    "repricing_rate": 0.02702702702702703,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "aleph_alpha": {
+    "type": "specialist or model maker",
+    "pairs": 180,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "bedrock": {
+    "type": "hyperscaler",
+    "pairs": 5373,
+    "repricing_rate": 0.010050251256281407,
+    "share_increases": 0.24074074074074073,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepinfra": {
+    "type": "specialist or model maker",
+    "pairs": 1449,
+    "repricing_rate": 0.04485852311939269,
+    "share_increases": 0.49230769230769234,
+    "sawtooth_per_cut": 0.06060606060606061
+   },
+   "anyscale": {
+    "type": "specialist or model maker",
+    "pairs": 391,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "azure": {
+    "type": "hyperscaler",
+    "pairs": 3525,
+    "repricing_rate": 0.011631205673758865,
+    "share_increases": 0.0975609756097561,
+    "sawtooth_per_cut": 0.0
+   },
+   "palm": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "perplexity": {
+    "type": "specialist or model maker",
+    "pairs": 653,
+    "repricing_rate": 0.0030627871362940277,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "mistral": {
+    "type": "specialist or model maker",
+    "pairs": 892,
+    "repricing_rate": 0.02242152466367713,
+    "share_increases": 0.25,
+    "sawtooth_per_cut": 0.06666666666666667
+   },
+   "cloudflare": {
+    "type": "specialist or model maker",
+    "pairs": 224,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "groq": {
+    "type": "specialist or model maker",
+    "pairs": 437,
+    "repricing_rate": 0.016018306636155607,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "cohere_chat": {
+    "type": "specialist or model maker",
+    "pairs": 176,
+    "repricing_rate": 0.022727272727272728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "replicate": {
+    "type": "specialist or model maker",
+    "pairs": 632,
+    "repricing_rate": 0.0015822784810126582,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepseek": {
+    "type": "specialist or model maker",
+    "pairs": 167,
+    "repricing_rate": 0.07784431137724551,
+    "share_increases": 0.38461538461538464,
+    "sawtooth_per_cut": 0.0
+   },
+   "databricks": {
+    "type": "specialist or model maker",
+    "pairs": 459,
+    "repricing_rate": 0.008714596949891068,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "friendliai": {
+    "type": "specialist or model maker",
+    "pairs": 65,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gemini": {
+    "type": "specialist or model maker",
+    "pairs": 705,
+    "repricing_rate": 0.029787234042553193,
+    "share_increases": 0.7619047619047619,
+    "sawtooth_per_cut": 0.0
+   },
+   "fireworks_ai": {
+    "type": "specialist or model maker",
+    "pairs": 2847,
+    "repricing_rate": 0.0024587284861257463,
+    "share_increases": 0.8571428571428571,
+    "sawtooth_per_cut": 0.0
+   },
+   "cerebras": {
+    "type": "specialist or model maker",
+    "pairs": 117,
+    "repricing_rate": 0.008547008547008548,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "together_ai": {
+    "type": "specialist or model maker",
+    "pairs": 591,
+    "repricing_rate": 0.01015228426395939,
+    "share_increases": 0.5,
+    "sawtooth_per_cut": 0.3333333333333333
+   },
+   "xai": {
+    "type": "specialist or model maker",
+    "pairs": 535,
+    "repricing_rate": 0.05046728971962617,
+    "share_increases": 0.5925925925925926,
+    "sawtooth_per_cut": 0.0
+   },
+   "sambanova": {
+    "type": "specialist or model maker",
+    "pairs": 287,
+    "repricing_rate": 0.013937282229965157,
+    "share_increases": 0.25,
+    "sawtooth_per_cut": 0.0
+   },
+   "watsonx": {
+    "type": "specialist or model maker",
+    "pairs": 347,
+    "repricing_rate": 0.020172910662824207,
+    "share_increases": 0.7142857142857143,
+    "sawtooth_per_cut": 0.0
+   },
+   "nscale": {
+    "type": "specialist or model maker",
+    "pairs": 238,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "lambda_ai": {
+    "type": "specialist or model maker",
+    "pairs": 300,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "hyperbolic": {
+    "type": "specialist or model maker",
+    "pairs": 240,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "moonshot": {
+    "type": "specialist or model maker",
+    "pairs": 273,
+    "repricing_rate": 0.003663003663003663,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "gradient_ai": {
+    "type": "specialist or model maker",
+    "pairs": 140,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "vercel_ai_gateway": {
+    "type": "aggregator",
+    "pairs": 1264,
+    "repricing_rate": 0.0007911392405063291,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "oci": {
+    "type": "hyperscaler",
+    "pairs": 302,
+    "repricing_rate": 0.006622516556291391,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "dashscope": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "ovhcloud": {
+    "type": "specialist or model maker",
+    "pairs": 195,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "wandb": {
+    "type": "specialist or model maker",
+    "pairs": 217,
+    "repricing_rate": 0.041474654377880185,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "minimax": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "zai": {
+    "type": "specialist or model maker",
+    "pairs": 102,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gmi": {
+    "type": "specialist or model maker",
+    "pairs": 151,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "novita": {
+    "type": "specialist or model maker",
+    "pairs": 820,
+    "repricing_rate": 0.0024390243902439024,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "llamagate": {
+    "type": "aggregator",
+    "pairs": 126,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nebius": {
+    "type": "specialist or model maker",
+    "pairs": 218,
+    "repricing_rate": 0.009174311926605505,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "baseten": {
+    "type": "specialist or model maker",
+    "pairs": 82,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "snowflake": {
+    "type": "hyperscaler",
+    "pairs": 76,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "scaleway": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "aihubmix": {
+    "type": "aggregator",
+    "pairs": 72,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   }
+  },
+  "overall": {
+   "share_changes_that_are_increases": 0.37259615384615385,
+   "monthly_repricing_rate": 0.01232483038544722
+  }
+ },
+ "0.05": {
+  "change_threshold": 0.05,
+  "n_obs": 2555,
+  "n_providers": 34,
+  "providers": [
+   "anyscale",
+   "azure",
+   "baseten",
+   "bedrock",
+   "cerebras",
+   "cloudflare",
+   "crusoe",
+   "databricks",
+   "deepinfra",
+   "deepseek",
+   "fireworks_ai",
+   "friendliai",
+   "gmi",
+   "gradient_ai",
+   "groq",
+   "hyperbolic",
+   "lambda_ai",
+   "llamagate",
+   "mistral",
+   "nebius",
+   "novita",
+   "nscale",
+   "oci",
+   "openrouter",
+   "ovhcloud",
+   "perplexity",
+   "replicate",
+   "sambanova",
+   "scaleway",
+   "snowflake",
+   "together_ai",
+   "vercel_ai_gateway",
+   "vertex_ai",
+   "wandb"
+  ],
+  "months": [
+   "2023-09",
+   "2026-10"
+  ],
+  "variants": {
+   "baseline": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 26.005509205863156,
+    "se": 33.09927003794971,
+    "per_sd": 0.44383083191991046,
+    "sd_rate": 0.01706680028475832,
+    "perm_p": 0.09
+   },
+   "host-type controls": {
+    "n_obs": 2555,
+    "n_providers": 34,
+    "coef": 26.340880805675862,
+    "se": 32.555590497364534,
+    "per_sd": 0.4495545520350938,
+    "sd_rate": 0.01706680028475832,
+    "perm_p": 0.096
+   },
+   "specialists only": {
+    "n_obs": 1914,
+    "n_providers": 26,
+    "coef": 24.961725299485053,
+    "se": 33.28687119996671,
+    "per_sd": 0.47476512479199984,
+    "sd_rate": 0.0190197239612197,
+    "perm_p": 0.121
+   },
+   "excluding aggregators": {
+    "n_obs": 2294,
+    "n_providers": 31,
+    "coef": 25.119441054139283,
+    "se": 33.215175077379214,
+    "per_sd": 0.44191263713678247,
+    "sd_rate": 0.01759245503052156,
+    "perm_p": 0.121
+   }
+  },
+  "host_type_gap": {
+   "hyperscaler": {
+    "n": 380,
+    "median_log_rel_price": 0.6096879762313157,
+    "mean_log_rel_price": 0.6365814348469381
+   },
+   "aggregator": {
+    "n": 261,
+    "median_log_rel_price": -0.18392283816092836,
+    "mean_log_rel_price": -0.1908302917210711
+   },
+   "specialist or model maker": {
+    "n": 1914,
+    "median_log_rel_price": -0.032789822822990956,
+    "mean_log_rel_price": 0.095220327983351
+   }
+  },
+  "descriptives": {
+   "openai": {
+    "type": "specialist or model maker",
+    "pairs": 2081,
+    "repricing_rate": 0.0038443056222969728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "text-completion-openai": {
+    "type": "specialist or model maker",
+    "pairs": 230,
+    "repricing_rate": 0.008695652173913044,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "anthropic": {
+    "type": "specialist or model maker",
+    "pairs": 485,
+    "repricing_rate": 0.008247422680412371,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "vertex_ai": {
+    "type": "hyperscaler",
+    "pairs": 2756,
+    "repricing_rate": 0.018505079825834544,
+    "share_increases": 0.43137254901960786,
+    "sawtooth_per_cut": 0.2413793103448276
+   },
+   "cohere": {
+    "type": "specialist or model maker",
+    "pairs": 99,
+    "repricing_rate": 0.020202020202020204,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "openrouter": {
+    "type": "aggregator",
+    "pairs": 1962,
+    "repricing_rate": 0.02089704383282365,
+    "share_increases": 0.3902439024390244,
+    "sawtooth_per_cut": 0.0
+   },
+   "ai21": {
+    "type": "specialist or model maker",
+    "pairs": 309,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nlp_cloud": {
+    "type": "specialist or model maker",
+    "pairs": 74,
+    "repricing_rate": 0.02702702702702703,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "aleph_alpha": {
+    "type": "specialist or model maker",
+    "pairs": 180,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "bedrock": {
+    "type": "hyperscaler",
+    "pairs": 5373,
+    "repricing_rate": 0.009864135492276195,
+    "share_increases": 0.24528301886792453,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepinfra": {
+    "type": "specialist or model maker",
+    "pairs": 1449,
+    "repricing_rate": 0.04209799861973775,
+    "share_increases": 0.5245901639344263,
+    "sawtooth_per_cut": 0.06896551724137931
+   },
+   "anyscale": {
+    "type": "specialist or model maker",
+    "pairs": 391,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "azure": {
+    "type": "hyperscaler",
+    "pairs": 3525,
+    "repricing_rate": 0.011631205673758865,
+    "share_increases": 0.0975609756097561,
+    "sawtooth_per_cut": 0.0
+   },
+   "palm": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "perplexity": {
+    "type": "specialist or model maker",
+    "pairs": 653,
+    "repricing_rate": 0.0030627871362940277,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "mistral": {
+    "type": "specialist or model maker",
+    "pairs": 892,
+    "repricing_rate": 0.02242152466367713,
+    "share_increases": 0.25,
+    "sawtooth_per_cut": 0.06666666666666667
+   },
+   "cloudflare": {
+    "type": "specialist or model maker",
+    "pairs": 224,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "groq": {
+    "type": "specialist or model maker",
+    "pairs": 437,
+    "repricing_rate": 0.016018306636155607,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "cohere_chat": {
+    "type": "specialist or model maker",
+    "pairs": 176,
+    "repricing_rate": 0.022727272727272728,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "replicate": {
+    "type": "specialist or model maker",
+    "pairs": 632,
+    "repricing_rate": 0.0015822784810126582,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "deepseek": {
+    "type": "specialist or model maker",
+    "pairs": 167,
+    "repricing_rate": 0.07784431137724551,
+    "share_increases": 0.38461538461538464,
+    "sawtooth_per_cut": 0.0
+   },
+   "databricks": {
+    "type": "specialist or model maker",
+    "pairs": 459,
+    "repricing_rate": 0.008714596949891068,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "friendliai": {
+    "type": "specialist or model maker",
+    "pairs": 65,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gemini": {
+    "type": "specialist or model maker",
+    "pairs": 705,
+    "repricing_rate": 0.02127659574468085,
+    "share_increases": 0.6666666666666666,
+    "sawtooth_per_cut": 0.0
+   },
+   "fireworks_ai": {
+    "type": "specialist or model maker",
+    "pairs": 2847,
+    "repricing_rate": 0.0024587284861257463,
+    "share_increases": 0.8571428571428571,
+    "sawtooth_per_cut": 0.0
+   },
+   "cerebras": {
+    "type": "specialist or model maker",
+    "pairs": 117,
+    "repricing_rate": 0.008547008547008548,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "together_ai": {
+    "type": "specialist or model maker",
+    "pairs": 591,
+    "repricing_rate": 0.01015228426395939,
+    "share_increases": 0.5,
+    "sawtooth_per_cut": 0.3333333333333333
+   },
+   "xai": {
+    "type": "specialist or model maker",
+    "pairs": 535,
+    "repricing_rate": 0.05046728971962617,
+    "share_increases": 0.5925925925925926,
+    "sawtooth_per_cut": 0.0
+   },
+   "sambanova": {
+    "type": "specialist or model maker",
+    "pairs": 287,
+    "repricing_rate": 0.013937282229965157,
+    "share_increases": 0.25,
+    "sawtooth_per_cut": 0.0
+   },
+   "watsonx": {
+    "type": "specialist or model maker",
+    "pairs": 347,
+    "repricing_rate": 0.020172910662824207,
+    "share_increases": 0.7142857142857143,
+    "sawtooth_per_cut": 0.0
+   },
+   "nscale": {
+    "type": "specialist or model maker",
+    "pairs": 238,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "lambda_ai": {
+    "type": "specialist or model maker",
+    "pairs": 300,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "hyperbolic": {
+    "type": "specialist or model maker",
+    "pairs": 240,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "moonshot": {
+    "type": "specialist or model maker",
+    "pairs": 273,
+    "repricing_rate": 0.003663003663003663,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "gradient_ai": {
+    "type": "specialist or model maker",
+    "pairs": 140,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "vercel_ai_gateway": {
+    "type": "aggregator",
+    "pairs": 1264,
+    "repricing_rate": 0.0007911392405063291,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "oci": {
+    "type": "hyperscaler",
+    "pairs": 302,
+    "repricing_rate": 0.006622516556291391,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "dashscope": {
+    "type": "specialist or model maker",
+    "pairs": 204,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "ovhcloud": {
+    "type": "specialist or model maker",
+    "pairs": 195,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "wandb": {
+    "type": "specialist or model maker",
+    "pairs": 217,
+    "repricing_rate": 0.041474654377880185,
+    "share_increases": 0.0,
+    "sawtooth_per_cut": 0.0
+   },
+   "minimax": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "zai": {
+    "type": "specialist or model maker",
+    "pairs": 102,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "gmi": {
+    "type": "specialist or model maker",
+    "pairs": 151,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "novita": {
+    "type": "specialist or model maker",
+    "pairs": 820,
+    "repricing_rate": 0.0024390243902439024,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "llamagate": {
+    "type": "aggregator",
+    "pairs": 126,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "nebius": {
+    "type": "specialist or model maker",
+    "pairs": 218,
+    "repricing_rate": 0.009174311926605505,
+    "share_increases": 1.0,
+    "sawtooth_per_cut": null
+   },
+   "baseten": {
+    "type": "specialist or model maker",
+    "pairs": 82,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "snowflake": {
+    "type": "hyperscaler",
+    "pairs": 76,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "scaleway": {
+    "type": "specialist or model maker",
+    "pairs": 50,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   },
+   "aihubmix": {
+    "type": "aggregator",
+    "pairs": 72,
+    "repricing_rate": 0.0,
+    "share_increases": null,
+    "sawtooth_per_cut": null
+   }
+  },
+  "overall": {
+   "share_changes_that_are_increases": 0.3675,
+   "monthly_repricing_rate": 0.011850798447545403
+  }
+ }
+}
