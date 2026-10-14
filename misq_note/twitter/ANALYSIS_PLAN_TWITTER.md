@@ -27,4 +27,4 @@ Regression for HI1–HI3: |z| on N_c, U, N_c × U with year fixed effects; OLS; 
 RESULTS_TWITTER.md; code `build_frame.py`, `analysis_twitter.py`; outputs `results_twitter.json`. Deviations go into the amendments log.
 
 ## Amendments
-(none)
+**Amendment 1 (before labelling).** Codebook v2 (the human codebook of the Truth Social study) is applied with these clarifications for the 2017–2021 tweets, whose topics include energy policy: posts about energy or pipeline policy with no bearing on conflict or on oil-supply risk are OTHER; posts urging OPEC/Saudi Arabia to produce more or oil prices to fall, or announcing relief on oil-supply constraints (waivers, exemptions), are DEESC; posts threatening, announcing or celebrating sanctions on oil exporters, attacks, military action or other disruption are ESC; a post that is only a link or re-post with no stated stance is OTHER. Labelling instances see only the text, in an order unrelated to time.
