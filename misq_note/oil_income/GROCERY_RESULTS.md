@@ -6,3 +6,10 @@ Method as in the MRTS plan (rolling-origin deviation vs a 36-month month-effects
 - Grocery relative to restaurants (4451 vs 7225): −1.7% (p = 0.3); i.e., no shift from eating out to groceries.
 - Monthly grocery deviations 2026 (Mar–Jul): −2.4%, −0.4%, −0.1%, −1.9%, −0.9%, all within the placebo-year range for each month.
 **Reading.** There is no significant decline in grocery sales and no increase either: grocery sales in March–July 2026 are about 1% (nominal) to 2% (real) below the pre-war trend, within normal variation. The hypothesis that people shifted from restaurants to groceries is not visible in the national data. Offsetting movements are in alcohol stores and online/nonstore retail. SNAP participation fell ≈12% year over year over the same months (`../snap/RESULTS.md`), a possible contributor to weak grocery sales.
+
+## Addendum: beer, wine and liquor stores (4453) (exploratory; `analysis_liquor.py`, `results_liquor.json`)
+- Mar–Jul 2026: +2.7% above the pre-war trend, the highest of the ten reference years (others −1.3% to +1.9%); two-sided permutation p = 0.10, the minimum attainable with ten years, so the test cannot be more decisive. 24-month training +2.6% (p = 0.10); 48-month +2.0% (p = 0.30); Mar–Jun only +2.0% (p = 0.30); **without a trend −1.8% (p = 1.0)**.
+- Monthly deviation: Mar −0.7%, Apr +2.6%, May +2.7%, Jun +3.4%, Jul +5.6%; July is above the highest July of the reference years (+3.8%), the other months are inside their ranges.
+- Relative to grocery stores (4453 vs 4451): +3.9% (p = 0.10).
+- Nominal sales; no alcohol price index was used.
+**Reading.** Liquor-store sales are at the top of their historical range, rising month by month through July, but the evidence is fragile (depends on the trend model; ten reference years); not established as a significant increase.
