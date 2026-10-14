@@ -1,6 +1,8 @@
 # Surprise, Uncertainty, and Redundancy: An Information-Theoretic Account of How Platform-Mediated Executive Speech Reaches Markets
 
-[Author names and affiliations — to be added]
+Ook Lee  
+Department of Information Systems, Hanyang University, Seoul, Korea  
+ooklee@hanyang.ac.kr (corresponding author)
 
 *Manuscript prepared for submission to MIS Quarterly (version 2). Bracketed items are placeholders to be completed or verified before submission. Every analysis cited here has a dated pre-registration file in the project repository (Appendix A); results that were not pre-registered as confirmatory are labelled exploratory.*
 
