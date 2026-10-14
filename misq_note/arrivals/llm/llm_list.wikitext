@@ -1,0 +1,1594 @@
+{{Short description|none}}
+{{More citations needed|date=February 2026}}
+{{Use dmy dates|date=September 2026}}
+{{Dynamic list}}
+A [[large language model]] (LLM) is a type of [[machine learning]] [[Model#Conceptual model|model]] designed for [[natural language processing]] tasks such as language [[Generative artificial intelligence|generation]]. LLMs are [[language model]]s with many parameters, and are trained with [[self-supervised learning]] on a vast amount of text.
+
+==List==
+For the training cost column, 1 petaFLOP-day equals 1 petaFLOP/sec × 1 day, or {{Val|8.64|u=FLOP|e=19}} ([[Floating point operations per second|floating point operations]]). Only the cost of the largest model is shown. The number of parameters is measured in billions,{{efn|In many cases, researchers release or report on multiple versions of a model having different sizes. In these cases, the size of the largest model is listed here.}} and the training cost is measured in petaFLOP-days.
+
+===2018===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note|This is the date that documentation describing the model's architecture was first released.}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note|License applies only to the pre-trained model weights unless otherwise noted. In many cases, the training code, datasets and post-training data remain proprietary. LLMs may be licensed differently from the chatbots that use them; for the licenses of chatbots, see [[List of chatbots]].}}
+! Notes
+|-
+| [[GPT-1]]
+| {{dts|2018-06-11|abbr=on}}
+| [[OpenAI]]
+| {{sort|0.117|0.117B}}
+| {{Unknown}}
+| 1<ref name="oai-unsup">{{cite web |date=11 June 2018 |title=Improving language understanding with unsupervised learning |url=https://openai.com/research/language-unsupervised |url-status=live |archive-url=https://web.archive.org/web/20230318210736/https://openai.com/research/language-unsupervised |archive-date=18 March 2023 |access-date=18 March 2023 |website=openai.com }}</ref>
+| {{yes|[[MIT License|MIT]]}}<ref>{{cite web |work=GitHub |title=finetune-transformer-lm |url=https://github.com/openai/finetune-transformer-lm |access-date=2 January 2024 |archive-date=19 May 2023|archive-url=https://web.archive.org/web/20230519062127/https://github.com/openai/finetune-transformer-lm |url-status=live}}</ref>
+| {{Hidden||First GPT model, decoder-only transformer. Trained for 30 days on 8 P600 [[Graphics processing unit|GPUs]].<ref>{{cite web |last1=Radford |first1=Alec |title=Improving language understanding with unsupervised learning |url=https://openai.com/index/language-unsupervised/ |website=[[OpenAI]] |access-date=18 November 2025 |date=11 June 2018 |archive-url=https://web.archive.org/web/20241007094211/https://openai.com/index/language-unsupervised/ |archive-date=7 October 2024 |url-status=live}}</ref>}}
+|-
+| [[BERT (language model)|BERT]]
+| {{dts|2018-10|abbr=on}}
+| [[Google]]
+| {{sort|0.340|0.340B}}<ref name="bert-paper">{{cite arXiv |last1=Devlin |first1=Jacob |last2=Chang |first2=Ming-Wei |last3=Lee |first3=Kenton |last4=Toutanova |first4=Kristina |title=BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding |date=11 October 2018 |eprint=1810.04805v2|class=cs.CL }}</ref>
+| {{sort|3300000000|3.3B}} words<ref name="bert-paper" />
+| {{sort|9|9}}<ref name="bHZJ2">{{Cite web |last=Prickett |first=Nicole Hemsoth |date=24 August 2021 |title=Cerebras Shifts Architecture To Meet Massive AI/ML Models |url=https://www.nextplatform.com/2021/08/24/cerebras-shifts-architecture-to-meet-massive-ai-ml-models/ |access-date=20 June 2023 |website=The Next Platform |archive-date=20 June 2023 |archive-url=https://web.archive.org/web/20230620151619/https://www.nextplatform.com/2021/08/24/cerebras-shifts-architecture-to-meet-massive-ai-ml-models/ |url-status=live }}</ref>
+| {{yes|[[Apache 2.0]]}}<ref name="bert-web">{{Cite web|url=https://github.com/google-research/bert|title=BERT|date=13 March 2023|via=GitHub|access-date=13 March 2023|archive-date=13 January 2021|archive-url=https://web.archive.org/web/20210113211317/https://github.com/google-research/bert|url-status=live}}</ref>
+| {{Hidden||An early and influential language model.<ref name="Manning-2022">{{cite journal |last=Manning |first=Christopher D. |author-link=Christopher D. Manning |year=2022 |title=Human Language Understanding & Reasoning |url=https://www.amacad.org/publication/human-language-understanding-reasoning |journal=Daedalus |volume=151 |issue=2 |pages=127–138 |doi=10.1162/daed_a_01905 |s2cid=248377870 |doi-access=free |access-date=9 March 2023 |archive-date=17 November 2023 |archive-url=https://web.archive.org/web/20231117205531/https://www.amacad.org/publication/human-language-understanding-reasoning |url-status=live }}</ref> [[Transformer (deep learning architecture)#encoder-only|Encoder-only]] and thus not built to be prompted or generative.<ref name="Ir545">{{cite arXiv |last1=Patel |first1=Ajay |last2=Li |first2=Bryan |last3=Rasooli |first3=Mohammad Sadegh |last4=Constant |first4=Noah |last5=Raffel |first5=Colin |last6=Callison-Burch |first6=Chris |title=Bidirectional Language Models Are Also Few-shot Learners |date=2022 |class=cs.LG |eprint=2209.14500}}</ref> Training took 4 days on 64 TPUv2 chips.<ref name="bert-paper" />}}
+|}
+
+</div>
+
+===2019===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[T5 (language model)|T5]]
+| {{dts|2019-10|abbr=on}}
+| Google
+| {{sort|11|11B}}<ref name=":6">{{Cite journal |last1=Raffel |first1=Colin |last2=Shazeer |first2=Noam |last3=Roberts |first3=Adam |last4=Lee |first4=Katherine |last5=Narang |first5=Sharan |last6=Matena |first6=Michael |last7=Zhou |first7=Yanqi |last8=Li |first8=Wei |last9=Liu |first9=Peter J. |date=2020 |title=Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer |url=http://jmlr.org/papers/v21/20-074.html |journal=Journal of Machine Learning Research |volume=21 |issue=140 |pages=1–67 |arxiv=1910.10683 |issn=1533-7928 |archive-url=https://web.archive.org/web/20241005064732/https://jmlr.org/papers/v21/20-074.html |archive-date=5 October 2024 |access-date=26 December 2024 |url-status=live}}</ref>
+| 34B tokens<ref name=":6" />
+| {{Unknown}}
+| {{yes|[[Apache 2.0]]}}<ref>{{Citation |title=google-research/text-to-text-transfer-transformer |date=2 April 2024 |url=https://github.com/google-research/text-to-text-transfer-transformer |access-date=4 April 2024 |publisher=Google Research |archive-date=29 March 2024 |archive-url=https://web.archive.org/web/20240329112957/https://github.com/google-research/text-to-text-transfer-transformer |url-status=live }}</ref>
+| {{Hidden||Base model for Google projects like Imagen.<ref>{{Cite web |title=Imagen: Text-to-Image Diffusion Models |url=https://imagen.research.google/ |access-date=4 April 2024 |website=imagen.research.google |archive-date=27 March 2024 |archive-url=https://web.archive.org/web/20240327201713/https://imagen.research.google/ |url-status=live }}</ref>}}
+|-
+| [[XLNet]]
+| {{dts|2019-06|abbr=on}}
+| Google
+| {{sort|0.340|0.340B}}<ref>{{Cite web |title=Pretrained models — transformers 2.0.0 documentation |url=https://huggingface.co/transformers/v2.0.0/pretrained_models.html |access-date=5 August 2024 |website=huggingface.co |archive-date=5 August 2024 |archive-url=https://web.archive.org/web/20240805032110/https://huggingface.co/transformers/v2.0.0/pretrained_models.html |url-status=live }}</ref>
+| {{sort|3300000000|33B}} words
+| 330
+| {{yes|[[Apache 2.0]]}}<ref name="xlnet">{{cite web|work=GitHub|title=xlnet|url=https://github.com/zihangdai/xlnet/|access-date=2 January 2024|archive-date=2 January 2024|archive-url=https://web.archive.org/web/20240102191842/https://github.com/zihangdai/xlnet/|url-status=live}}</ref>
+| {{Hidden||An alternative to BERT; designed as encoder-only. Trained on 512 TPU v3 chips for 5.5 days.<ref name="LX3rI">{{cite arXiv |last1=Yang |first1=Zhilin |last2=Dai |first2=Zihang |last3=Yang |first3=Yiming |last4=Carbonell |first4=Jaime |last5=Salakhutdinov |first5=Ruslan |last6=Le |first6=Quoc V. |title=XLNet: Generalized Autoregressive Pretraining for Language Understanding |date=2 January 2020 |class=cs.CL |eprint=1906.08237}}</ref>}}
+|-
+| [[GPT-2]]
+| {{dts|2019-02|abbr=on}}
+| [[OpenAI]]
+| {{sort|1.5|1.5B}}<ref name="15Brelease">{{Cite web |url = https://openai.com/blog/gpt-2-1-5b-release/ |title = GPT-2: 1.5B Release |date = 5 November 2019 |website = OpenAI |access-date = 14 November 2019 |archive-date = 14 November 2019 |archive-url = https://web.archive.org/web/20191114074358/https://openai.com/blog/gpt-2-1-5b-release/ |url-status = live}}</ref>
+| 40GB<ref name="5T8u5">{{cite web |title=Better language models and their implications |url=https://openai.com/research/better-language-models |website=openai.com |access-date=13 March 2023 |archive-date=16 March 2023 |archive-url=https://web.archive.org/web/20230316160730/https://openai.com/research/better-language-models |url-status=live }}</ref> (~{{sort|10000000000|10B}} tokens)<ref name="LambdaLabs">{{cite web |title=OpenAI's GPT-3 Language Model: A Technical Overview |url=https://lambdalabs.com/blog/demystifying-gpt-3 |website=lambdalabs.com |date=3 June 2020 |access-date=13 March 2023 |archive-date=27 March 2023 |archive-url=https://web.archive.org/web/20230327213811/https://lambdalabs.com/blog/demystifying-gpt-3 |url-status=live }}</ref>
+| 28<ref name=":10">{{Cite web |title=openai-community/gpt2-xl · Hugging Face |url=https://huggingface.co/openai-community/gpt2-xl |access-date=24 July 2024 |website=huggingface.co |date=21 October 2019 |archive-date=24 July 2024 |archive-url=https://web.archive.org/web/20240724041702/https://huggingface.co/openai-community/gpt2-xl |url-status=live }}</ref>
+| {{yes|[[MIT License|MIT]]}}<ref name="Sudbe">{{cite web|work=GitHub|title=gpt-2|url=https://github.com/openai/gpt-2|access-date=13 March 2023|archive-date=11 March 2023|archive-url=https://web.archive.org/web/20230311154936/https://github.com/openai/gpt-2|url-status=live}}</ref>
+| {{Hidden||Trained on 32 TPUv3 chips for 1 week.<ref name=":10" />}}
+|}
+
+</div>
+
+===2020===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[GPT-3]]
+| {{dts|2020-05|abbr=on}}
+| OpenAI
+| {{sort|175|175B}}<ref name="Wiggers">{{cite web |last=Wiggers |first=Kyle |date=28 April 2022 |title=The emerging types of language models and why they matter |url=https://techcrunch.com/2022/04/28/the-emerging-types-of-language-models-and-why-they-matter/ |work=TechCrunch |access-date=9 March 2023 |archive-date=16 March 2023 |archive-url=https://web.archive.org/web/20230316072443/https://techcrunch.com/2022/04/28/the-emerging-types-of-language-models-and-why-they-matter/ |url-status=live }}</ref>
+| {{sort|300000000000|300B}} tokens<ref name="LambdaLabs" />
+| 3640<ref name=":2">Table D.1 in {{Cite arXiv |last1=Brown |first1=Tom B. |last2=Mann |first2=Benjamin |last3=Ryder |first3=Nick |last4=Subbiah |first4=Melanie |last5=Kaplan |first5=Jared |last6=Dhariwal |first6=Prafulla |last7=Neelakantan |first7=Arvind |last8=Shyam |first8=Pranav |last9=Sastry |first9=Girish |last10=Askell |first10=Amanda |last11=Agarwal |first11=Sandhini |last12=Herbert-Voss |first12=Ariel |last13=Krueger |first13=Gretchen |last14=Henighan |first14=Tom |last15=Child |first15=Rewon |date=28 May 2020 |title=Language Models are Few-Shot Learners |eprint=2005.14165v4 |first16=Aditya |last16=Ramesh |first17=Daniel M. |last17=Ziegler |first18=Jeffrey |last18=Wu |first19=Clemens |last19=Winter |first20=Christopher |last20=Hesse |first21=Mark |last21=Chen |first22=Eric |last22=Sigler |first23=Mateusz |last23=Litwin |first24=Scott |last24=Gray |first25=Benjamin |last25=Chess |first26=Jack |last26=Clark |first27=Christopher |last27=Berner |first28=Sam |last28=McCandlish |first29=Alec |last29=Radford |first30=Ilya |last30=Sutskever |first31=Dario |last31=Amodei|class=cs.CL}}</ref>
+| {{proprietary}}
+| {{Hidden||A fine-tuned variant of GPT-3, termed GPT-3.5, was made available to the public through [[ChatGPT]] in 2022.<ref name="chatgpt-blog">{{Cite web |date=30 November 2022 |title=ChatGPT: Optimizing Language Models for Dialogue |url=https://openai.com/blog/chatgpt/ |access-date=13 January 2023 |website=OpenAI |archive-date=30 November 2022 |archive-url=https://web.archive.org/web/20221130180912/https://openai.com/blog/chatgpt/ |url-status=live}}</ref>}}
+|}
+
+</div>
+
+===2021===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| GPT-Neo
+| {{dts|2021-03|abbr=on}}
+| [[EleutherAI]]
+| {{sort|2.7|2.7B}}<ref name="gpt-neo">{{Cite web |url=https://github.com/EleutherAI/gpt-neo |title=GPT Neo |date=15 March 2023 |via=GitHub |access-date=12 March 2023 |archive-date=12 March 2023 |archive-url=https://web.archive.org/web/20230312225202/https://github.com/EleutherAI/gpt-neo |url-status=live}}</ref>
+| 825 GiB<ref name="Pile">{{cite arXiv |last1=Gao |first1=Leo |last2=Biderman |first2=Stella |last3=Black |first3=Sid |last4=Golding |first4=Laurence |last5=Hoppe |first5=Travis |last6=Foster |first6=Charles |last7=Phang |first7=Jason |last8=He |first8=Horace |last9=Thite |first9=Anish |last10=Nabeshima |first10=Noa |last11=Presser |first11=Shawn |last12=Leahy |first12=Connor |title=The Pile: An 800GB Dataset of Diverse Text for Language Modeling |eprint=2101.00027|date=31 December 2020 |class=cs.CL}}</ref>
+| {{Unknown}}
+| {{yes|[[MIT License|MIT]]}}<ref name="vb-gpt-neo"/>
+| {{Hidden||The first of [[EleutherAI#GPT models|a series of free GPT-3 alternatives]] released by EleutherAI. GPT-Neo outperformed an equivalent-size GPT-3 model on some benchmarks, but was significantly worse than the largest GPT-3.<ref name="vb-gpt-neo">{{cite web |work=VentureBeat |last=Iyer |first=Abhishek |title=GPT-3's free alternative GPT-Neo is something to be excited about |date=15 May 2021 |url=https://venturebeat.com/ai/gpt-3s-free-alternative-gpt-neo-is-something-to-be-excited-about/ |access-date=13 March 2023 |archive-date=9 March 2023 |archive-url=https://web.archive.org/web/20230309012717/https://venturebeat.com/ai/gpt-3s-free-alternative-gpt-neo-is-something-to-be-excited-about/ |url-status=live}}</ref>}}
+|-
+| [[Clova (virtual assistant)|HyperCLOVA]]
+| {{dts|2021-05|abbr=on}}<ref name="Yonhap-May-2021">{{Cite news |title=Naver unveils supersized AI platform HyperCLOVA |url=https://en.yna.co.kr/view/AEN20210525005400320 |date=25 May 2021 |access-date=15 June 2026 |last=Kim |first=Han-joo |website=Yonhap News Agency |archive-url=https://web.archive.org/web/20260615181551/https://en.yna.co.kr/view/AEN20210525005400320 |archive-date=15 June 2026 |url-status=live }}</ref>
+| [[Naver Corporation|Naver]]
+| {{sort|204|204B}}<ref name="VentureBeat-June-2021">{{Cite news |title=Naver trained a 'GPT-3-like' Korean language model |url=https://venturebeat.com/ai/naver-trained-a-gpt-3-like-korean-language-model |date=1 June 2021|access-date=15 June 2026 |last=Wiggers| first=Kyle |website=VentureBeat ∣ Transformative tech coverage that matters |archive-date=20 September 2022 |archive-url=https://web.archive.org/web/20220920090145/https://venturebeat.com/ai/naver-trained-a-gpt-3-like-korean-language-model |url-status=live }}</ref><br>82B<ref name="DOI:10.18653/v1/2021.emnlp-main.274">{{cite conference |last1=Kim |first1=Boseop |last2=Kim |first2=HyoungSeok |last3=Lee |first3=Sang-Woo |last4=Lee |first4=Gichang |last5=Kwak |first5=Donghyun |last6=Dong Hyeon |first6=Jeon |last7=Park |first7=Sunghyun |last8=Kim |first8=Sungju |last9=Kim |first9=Seonhoon |last10=Seo |first10=Dongpil |last11=Lee |first11=Heungsub |last12=Jeong |first12=Minyoung |last13=Lee |first13=Sungjae |last14=Kim |first14=Minsub |last15=Ko |first15=Suk Hyun |last16=Kim |first16=Seokhun |last17=Park |first17=Taeyong |last18=Kim |first18=Jinuk |last19=Kang |first19=Soyoung |last20=Ryu |first20=Na-Hyeon |last21=Yoo |first21=Kang Min |last22=Chang |first22=Minsuk |last23=Suh |first23=Soobin |last24=In |first24=Sookyo |last25=Park |first25=Jinseong |last26=Kim |first26=Kyungduk |last27=Kim |first27=Hiun |last28=Jeong |first28=Jisu |last29=Yeo |first29=Yong Goo |last30=Ham |first30=Donghoon |last31=Park |first31=Dongju |last32=Lee |first32=Min Young |last33=Kang |first33=Jaewook |last34=Kang |first34=Inho |last35=Ha |first35=Jung-Woo |last36=Park |first36=Woomyoung |last37=Sung |first37=Nako |editor1-last=Moens |editor1-first=Marie-Francine |editor2-last=Huang |editor2-first=Xuanjing |editor3-last=Specia |editor3-first=Lucia |editor4-last=Yih |editor4-first=Scott Wen-tau |title=What Changes Can Large-scale Language Models Bring? Intensive Study on HyperCLOVA: Billions-scale Korean Generative Pretrained Transformers |book-title=Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing |date=November 2021 |publisher=Association for Computational Linguistics |location=Online and Punta Cana, Dominican Republic |pages=3405–3424 |doi=10.18653/v1/2021.emnlp-main.274 |url=https://aclanthology.org/2021.emnlp-main.274/ |arxiv=2109.04650}}</ref>
+| 560B Tokens<ref name="VentureBeat-June-2021" />
+| Unknown
+| Unreleased
+| {{Hidden||Its technical report says the model is the "first discovery on near 100B-scale non-English LM" by "constructing a large Korean-centric corpus of 560B tokens."<ref name="DOI:10.18653/v1/2021.emnlp-main.274" />}}
+|-
+| [[GPT-J]]
+| {{dts|2021-06|abbr=on}}
+| EleutherAI
+| {{sort|6|6B}}<ref name="JxohJ">{{Cite web |title=GPT-J-6B: An Introduction to the Largest Open Source GPT Model {{!}} Forefront |url=https://www.forefront.ai/blog-posts/gpt-j-6b-an-introduction-to-the-largest-open-sourced-gpt-model |access-date=28 February 2023 |website=www.forefront.ai |archive-date=9 March 2023 |archive-url=https://web.archive.org/web/20230309205439/https://www.forefront.ai/blog-posts/gpt-j-6b-an-introduction-to-the-largest-open-sourced-gpt-model |url-status=dead }}</ref>
+| 825 GiB<ref name="Pile" />
+| 200<ref name=":3">{{Cite arXiv |last1=Dey |first1=Nolan |last2=Gosal |first2=Gurpreet |last3=Zhiming |last4=Chen |last5=Khachane |first5=Hemant |last6=Marshall |first6=William |last7=Pathria |first7=Ribhu |last8=Tom |first8=Marvin |last9=Hestness |first9=Joel |date=1 April 2023 |title=Cerebras-GPT: Open Compute-Optimal Language Models Trained on the Cerebras Wafer-Scale Cluster |class=cs.LG |eprint=2304.03208}}</ref>
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| Megatron-Turing NLG
+| {{dts|2021-10|abbr=on}}<ref name="BwnW5">{{cite web |last1=Alvi |first1=Ali |last2=Kharya |first2=Paresh |title=Using DeepSpeed and Megatron to Train Megatron-Turing NLG 530B, the World's Largest and Most Powerful Generative Language Model |url=https://www.microsoft.com/en-us/research/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/ |website=Microsoft Research |date=11 October 2021 |access-date=13 March 2023 |archive-date=13 March 2023 |archive-url=https://web.archive.org/web/20230313180531/https://www.microsoft.com/en-us/research/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/ |url-status=live }}</ref>
+| [[Microsoft]] and [[Nvidia]]
+| {{sort|530|530B}}<ref name="mtnlg-preprint">{{Cite arXiv |last1=Smith |first1=Shaden |last2=Patwary |first2=Mostofa |last3=Norick |first3=Brandon |last4=LeGresley |first4=Patrick |last5=Rajbhandari |first5=Samyam |last6=Casper |first6=Jared |last7=Liu |first7=Zhun |last8=Prabhumoye |first8=Shrimai |last9=Zerveas |first9=George |last10=Korthikanti |first10=Vijay |last11=Zhang |first11=Elton |last12=Child |first12=Rewon |last13=Aminabadi |first13=Reza Yazdani |last14=Bernauer |first14=Julie |last15=Song |first15=Xia |date=4 February 2022 |title=Using DeepSpeed and Megatron to Train Megatron-Turing NLG 530B, A Large-Scale Generative Language Model |class=cs.CL |eprint=2201.11990}}</ref>
+| {{sort|338600000000|338.6B}} tokens<ref name="mtnlg-preprint" />
+| 38000<ref name=":11" />
+| {{Unreleased}}
+| {{Hidden||Trained for 3 months on over 2000 [[A100 GPU|A100]] GPUs on the NVIDIA [[Selene (supercomputer)|Selene Supercomputer]], for over 3 million GPU-hours.<ref name=":11">{{Citation |last1=Rajbhandari |first1=Samyam |title=DeepSpeed-MoE: Advancing Mixture-of-Experts Inference and Training to Power Next-Generation AI Scale |date=21 July 2022 |arxiv=2201.05596 |last2=Li |first2=Conglong |last3=Yao |first3=Zhewei |last4=Zhang |first4=Minjia |last5=Aminabadi |first5=Reza Yazdani |last6=Awan |first6=Ammar Ahmad |last7=Rasley |first7=Jeff |last8=He |first8=Yuxiong}}</ref>}}
+|-
+| Ernie 3.0 Titan
+| {{dts|2021-12|abbr=on}}
+| [[Baidu]]
+| {{sort|260|260B}}<ref name="qeOB8">{{Cite arXiv|title=ERNIE 3.0 Titan: Exploring Larger-scale Knowledge Enhanced Pre-training for Language Understanding and Generation|first1=Shuohuan|last1=Wang|first2=Yu|last2=Sun|first3=Yang|last3=Xiang|first4=Zhihua|last4=Wu|first5=Siyu|last5=Ding|first6=Weibao|last6=Gong|first7=Shikun|last7=Feng|first8=Junyuan|last8=Shang|first9=Yanbin|last9=Zhao|first10=Chao|last10=Pang|first11=Jiaxiang|last11=Liu|first12=Xuyi|last12=Chen|first13=Yuxiang|last13=Lu|first14=Weixin|last14=Liu|first15=Xi|last15=Wang|first16=Yangfan|last16=Bai|first17=Qiuliang|last17=Chen|first18=Li|last18=Zhao|first19=Shiyong|last19=Li|first20=Peng|last20=Sun|first21=Dianhai|last21=Yu|first22=Yanjun|last22=Ma|first23=Hao|last23=Tian|first24=Hua|last24=Wu|first25=Tian|last25=Wu|first26=Wei|last26=Zeng|first27=Ge|last27=Li|first28=Wen|last28=Gao|first29=Haifeng|last29=Wang|date=23 December 2021|class=cs.CL |eprint=2112.12731}}</ref>
+| 4TB
+| {{Unknown}}
+| rowspan="4" {{proprietary}}
+|
+|-
+| [[Claude (language model)|Claude]]<ref name="i8jc4">{{cite web |title=Product |url=https://www.anthropic.com/product |website=Anthropic |access-date=14 March 2023 |archive-date=16 March 2023 |archive-url=https://web.archive.org/web/20230316145444/https://www.anthropic.com/product |url-status=live }}</ref>
+| {{dts|2021-12|abbr=on}}
+| [[Anthropic]]
+| {{sort|52|52B}}<ref name="AnthroArch">{{cite arXiv |last1=Askell |first1=Amanda |last2=Bai |first2=Yuntao |last3=Chen |first3=Anna |last4=Drain |first4=Dawn |last5=Ganguli |first5=Deep |last6=Henighan |first6=Tom |last7=Jones |first7=Andy |last8=Joseph |first8=Nicholas |last9=Mann |first9=Ben |last10=DasSarma |first10=Nova |last11=Elhage |first11=Nelson |last12=Hatfield-Dodds |first12=Zac |last13=Hernandez |first13=Danny |last14=Kernion |first14=Jackson |last15=Ndousse |first15=Kamal |last16=Olsson |first16=Catherine |last17=Amodei |first17=Dario |last18=Brown |first18=Tom |last19=Clark |first19=Jack |last20=McCandlish |first20=Sam |last21=Olah |first21=Chris |last22=Kaplan |first22=Jared |display-authors=3 |title=A General Language Assistant as a Laboratory for Alignment |eprint=2112.00861 |date=9 December 2021 |class=cs.CL}}</ref>
+| {{sort|400000000000|400B}} tokens<ref name="AnthroArch" />
+| {{Unknown}}
+| {{Hidden||Fine-tuned for desirable behavior in conversations.<ref name="RZqhw">{{cite arXiv |last1=Bai |first1=Yuntao |last2=Kadavath |first2=Saurav |last3=Kundu |first3=Sandipan |last4=Askell |first4=Amanda |last5=Kernion |first5=Jackson |last6=Jones |first6=Andy |last7=Chen |first7=Anna |last8=Goldie |first8=Anna |last9=Mirhoseini |first9=Azalia |last10=McKinnon |first10=Cameron |last11=Chen |first11=Carol |last12=Olsson |first12=Catherine |last13=Olah |first13=Christopher |last14=Hernandez |first14=Danny |last15=Drain |first15=Dawn |last16=Ganguli |first16=Deep |last17=Li |first17=Dustin |last18=Tran-Johnson |first18=Eli |last19=Perez |first19=Ethan |last20=Kerr |first20=Jamie |last21=Mueller |first21=Jared |last22=Ladish |first22=Jeffrey |last23=Landau |first23=Joshua |last24=Ndousse |first24=Kamal |last25=Lukosuite |first25=Kamile |last26=Lovitt |first26=Liane |last27=Sellitto |first27=Michael |last28=Elhage |first28=Nelson |last29=Schiefer |first29=Nicholas |last30=Mercado |first30=Noemi |last31=DasSarma |first31=Nova |last32=Lasenby |first32=Robert |last33=Larson |first33=Robin |last34=Ringer |first34=Sam |last35=Johnston |first35=Scott |last36=Kravec |first36=Shauna |last37=Showk |first37=Sheer El |last38=Fort |first38=Stanislav |last39=Lanham |first39=Tamera |last40=Telleen-Lawton |first40=Timothy |last41=Conerly |first41=Tom |last42=Henighan |first42=Tom |last43=Hume |first43=Tristan |last44=Bowman |first44=Samuel R. |last45=Hatfield-Dodds |first45=Zac |last46=Mann |first46=Ben |last47=Amodei |first47=Dario |last48=Joseph |first48=Nicholas |last49=McCandlish |first49=Sam |last50=Brown |first50=Tom |last51=Kaplan |first51=Jared |display-authors=3 |title=Constitutional AI: Harmlessness from AI Feedback |eprint=2212.08073 |date=15 December 2022 |class=cs.CL}}</ref>}}
+|-
+| GLaM (Generalist Language Model)
+| {{dts|2021-12|abbr=on}}
+| [[Google]]
+| {{sort|1162|1162B}}<ref name="glam-blog" />
+| {{sort|1600000000000|1.6T}} tokens<ref name="glam-blog">{{Cite web |last1=Dai |first1=Andrew M |last2=Du |first2=Nan |date=9 December 2021 |title=More Efficient In-Context Learning with GLaM |url=https://ai.googleblog.com/2021/12/more-efficient-in-context-learning-with.html |access-date=9 March 2023 |website=ai.googleblog.com |archive-date=12 March 2023 |archive-url=https://web.archive.org/web/20230312072042/https://ai.googleblog.com/2021/12/more-efficient-in-context-learning-with.html |url-status=live}}</ref>
+| 5600<ref name="glam-blog" />
+|
+|-
+| Gopher
+| {{dts|2021-12|abbr=on}}
+| [[Google DeepMind]]
+| {{sort|280|280B}}<ref name="mD5eE">{{cite web |title=Language modelling at scale: Gopher, ethical considerations, and retrieval |url=https://www.deepmind.com/blog/language-modelling-at-scale-gopher-ethical-considerations-and-retrieval |website=www.deepmind.com |date=8 December 2021 |access-date=20 March 2023 |archive-date=20 March 2023 |archive-url=https://web.archive.org/web/20230320082323/https://www.deepmind.com/blog/language-modelling-at-scale-gopher-ethical-considerations-and-retrieval |url-status=live }}</ref>
+| {{sort|300000000000|300B}} tokens<ref name="hoffman" />
+| 5833<ref name=":4">Table 20 and page 66 of ''[https://arxiv.org/pdf/2204.02311 PaLM: Scaling Language Modeling with Pathways] {{Webarchive|url=https://web.archive.org/web/20230610040050/https://storage.googleapis.com/pathways-language-model/PaLM-paper.pdf |date=10 June 2023 }}''</ref>
+|
+|}
+
+</div>
+
+===2022===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[LaMDA]] (Language Models for Dialog Applications)
+| {{dts|2022-01|abbr=on}}
+| Google
+| {{sort|137|137B}}<ref name="lamda-blog" />
+| 1.56T words,<ref name="lamda-blog">{{Cite web |last1=Cheng |first1=Heng-Tze |last2=Thoppilan |first2=Romal |date=21 January 2022 |title=LaMDA: Towards Safe, Grounded, and High-Quality Dialog Models for Everything |url=https://ai.googleblog.com/2022/01/lamda-towards-safe-grounded-and-high.html |access-date=9 March 2023 |website=ai.googleblog.com |archive-date=25 March 2022 |archive-url=https://web.archive.org/web/20220325014118/https://ai.googleblog.com/2022/01/lamda-towards-safe-grounded-and-high.html |url-status=live}}</ref> {{sort|168000000000|168B}} tokens<ref name="hoffman" />
+| 4110<ref name="DMs9Z">{{Cite arXiv |last1=Thoppilan |first1=Romal |last2=De Freitas |first2=Daniel |last3=Hall |first3=Jamie |last4=Shazeer |first4=Noam |last5=Kulshreshtha |first5=Apoorv |last6=Cheng |first6=Heng-Tze |last7=Jin |first7=Alicia |last8=Bos |first8=Taylor |last9=Baker |first9=Leslie |last10=Du |first10=Yu |last11=Li |first11=YaGuang |last12=Lee |first12=Hongrae |last13=Zheng |first13=Huaixiu Steven |last14=Ghafouri |first14=Amin |last15=Menegali |first15=Marcelo |date=1 January 2022 |title=LaMDA: Language Models for Dialog Applications |class=cs.CL |eprint=2201.08239}}</ref>
+| {{proprietary}}
+|
+|-
+| GPT-NeoX
+| {{dts|2022-02|abbr=on}}
+| [[EleutherAI]]
+| {{sort|20|20B}}<ref name="gpt-neox-20b">{{cite conference |title=GPT-NeoX-20B: An Open-Source Autoregressive Language Model |conference=Proceedings of BigScience Episode #5 – Workshop on Challenges & Perspectives in Creating Large Language Models |date=1 May 2022 |last1=Black |first1=Sidney |last2=Biderman |first2=Stella |last3=Hallahan |first3=Eric |display-authors=etal |volume=Proceedings of BigScience Episode #5 – Workshop on Challenges & Perspectives in Creating Large Language Models |pages=95–136 |url=https://aclanthology.org/2022.bigscience-1.9/ |access-date=19 December 2022 |archive-date=10 December 2022 |archive-url=https://web.archive.org/web/20221210082456/https://aclanthology.org/2022.bigscience-1.9/ |url-status=live }}</ref>
+| 825 GiB<ref name="Pile" />
+| 740<ref name=":3" />
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| [[Chinchilla (language model)|Chinchilla scaling]]
+| {{dts|2022-03|abbr=on}}
+| Google DeepMind
+| {{sort|70|70B}}<ref name="chinchilla-blog" />
+| {{sort|1400000000000|1.4T}} tokens<ref name="chinchilla-blog">{{cite web |work=Deepmind Blog |title=An empirical analysis of compute-optimal large language model training |first1=Jordan |last1=Hoffmann |first2=Sebastian |last2=Borgeaud |first3=Arthur |last3=Mensch |first4=Laurent |last4=Sifre |date=12 April 2022 |url=https://www.deepmind.com/blog/an-empirical-analysis-of-compute-optimal-large-language-model-training |access-date=9 March 2023 |archive-date=13 April 2022 |archive-url=https://web.archive.org/web/20220413014510/https://www.deepmind.com/blog/an-empirical-analysis-of-compute-optimal-large-language-model-training |url-status=live}}</ref><ref name="hoffman">{{cite arXiv |last1=Hoffmann |first1=Jordan |last2=Borgeaud |first2=Sebastian |last3=Mensch |first3=Arthur |last4=Buchatskaya |first4=Elena |last5=Cai |first5=Trevor |last6=Rutherford |first6=Eliza |last7=Casas |first7=Diego de Las |last8=Hendricks |first8=Lisa Anne |last9=Welbl |first9=Johannes |last10=Clark |first10=Aidan |last11=Hennigan |first11=Tom |last12=Noland |first12=Eric |last13=Millican |first13=Katie |last14=Driessche |first14=George van den |last15=Damoc |first15=Bogdan |last16=Guy |first16=Aurelia |last17=Osindero |first17=Simon |last18=Simonyan |first18=Karen |last19=Elsen |first19=Erich |last20=Rae |first20=Jack W. |last21=Vinyals |first21=Oriol |last22=Sifre |first22=Laurent |title=Training Compute-Optimal Large Language Models |eprint=2203.15556 |date=29 March 2022 |class=cs.CL |display-authors=3}}</ref>
+| 6805<ref name=":4" />
+| rowspan="2" {{proprietary}}
+|
+|-
+| [[PaLM]] (Pathways Language Model)
+| {{dts|2022-04|abbr=on}}
+| Google
+| {{sort|540|540B}}<ref name="palm-blog">{{Cite web |last1=Narang |first1=Sharan |last2=Chowdhery |first2=Aakanksha |date=4 April 2022 |title=Pathways Language Model (PaLM): Scaling to 540 Billion Parameters for Breakthrough Performance |url=https://ai.googleblog.com/2022/04/pathways-language-model-palm-scaling-to.html |access-date=9 March 2023 |website=ai.googleblog.com |archive-date=4 April 2022 |archive-url=https://web.archive.org/web/20220404161447/https://ai.googleblog.com/2022/04/pathways-language-model-palm-scaling-to.html |url-status=live}}</ref>
+| {{sort|768000000000|768B}} tokens<ref name="chinchilla-blog" />
+| {{sort|29250|29,250}}<ref name=":4" />
+| {{Hidden||Trained for ~60 days on ~6000 [[Tensor Processing Unit|TPU v4]] chips.<ref name=":4" />}}
+|-
+| OPT (Open Pretrained Transformer)
+| {{dts|2022-05|abbr=on}}
+| [[Meta Platforms|Meta]]
+| {{sort|175|175B}}<ref name="jlof8">{{cite web |title=Democratizing access to large-scale language models with OPT-175B |last1=Zhang |first1=Susan |last2=Diab |first2=Mona |last3=Zettlemoyer |first3=Luke |url=https://ai.facebook.com/blog/democratizing-access-to-large-scale-language-models-with-opt-175b/ |website=ai.facebook.com |access-date=12 March 2023 |archive-date=12 March 2023 |archive-url=https://web.archive.org/web/20230312231820/https://ai.facebook.com/blog/democratizing-access-to-large-scale-language-models-with-opt-175b/ |url-status=live }}</ref>
+| {{sort|180000000000|180B}} tokens<ref name="QjTIc">{{cite arXiv |last1=Zhang |first1=Susan |last2=Roller |first2=Stephen |last3=Goyal |first3=Naman |last4=Artetxe |first4=Mikel |last5=Chen |first5=Moya |last6=Chen |first6=Shuohui |last7=Dewan |first7=Christopher |last8=Diab |first8=Mona |last9=Li |first9=Xian |last10=Lin |first10=Xi Victoria |last11=Mihaylov |first11=Todor |last12=Ott |first12=Myle |last13=Shleifer |first13=Sam |last14=Shuster |first14=Kurt |last15=Simig |first15=Daniel |last16=Koura |first16=Punit Singh |last17=Sridhar |first17=Anjali |last18=Wang |first18=Tianlu |last19=Zettlemoyer |first19=Luke |title=OPT: Open Pre-trained Transformer Language Models |eprint=2205.01068 |date=21 June 2022|class=cs.CL}}</ref>
+| 310<ref name=":3" />
+| {{partial success|Non-commercial research}}
+| {{Hidden||GPT-3 architecture with some adaptations from Megatron. The training logbook written by the team was published.<ref>{{Cite web |title=metaseq/projects/OPT/chronicles at main · facebookresearch/metaseq |url=https://github.com/facebookresearch/metaseq/tree/main/projects/OPT/chronicles |access-date=18 October 2024 |website=GitHub |archive-url=https://web.archive.org/web/20240124035658/https://github.com/facebookresearch/metaseq/tree/main/projects/OPT/chronicles |archive-date=24 January 2024 |url-status=live }}</ref> The smaller models including 66B are publicly available, while the 175B model is available on request.}}
+|-
+| YaLM 100B
+| {{dts|2022-06|abbr=on}}
+| [[Yandex]]
+| {{sort|100|100B}}<ref name="yalm-repo">{{Citation |last1=Khrushchev |first1=Mikhail |title=YaLM 100B |date=22 June 2022 |url=https://github.com/yandex/YaLM-100B |access-date=18 March 2023 |last2=Vasilev |first2=Ruslan |last3=Petrov |first3=Alexey |last4=Zinov |first4=Nikolay |archive-date=16 June 2023 |archive-url=https://web.archive.org/web/20230616050056/https://github.com/yandex/YaLM-100B |url-status=live }}</ref>
+| 1.7TB<ref name="yalm-repo" />
+| rowspan="5" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| Minerva
+| {{dts|2022-06|abbr=on}}
+| [[Google]]
+| {{sort|540|540B}}<ref name="minerva-paper" />
+| 38.5B tokens from webpages filtered for math content and from [[arXiv]]<ref name="minerva-paper">{{cite arXiv |last1=Lewkowycz |first1=Aitor |last2=Andreassen |first2=Anders |last3=Dohan |first3=David |last4=Dyer |first4=Ethan |last5=Michalewski |first5=Henryk |last6=Ramasesh |first6=Vinay |last7=Slone |first7=Ambrose |last8=Anil |first8=Cem |last9=Schlag |first9=Imanol |last10=Gutman-Solo |first10=Theo |last11=Wu |first11=Yuhuai |last12=Neyshabur |first12=Behnam |last13=Gur-Ari |first13=Guy |last14=Misra |first14=Vedant |title=Solving Quantitative Reasoning Problems with Language Models |date=30 June 2022 |class=cs.CL |eprint=2206.14858}}</ref>
+| {{proprietary}}
+| {{Hidden||For solving "mathematical and scientific questions using step-by-step reasoning".<ref name="FfCNK">{{cite web |title=Minerva: Solving Quantitative Reasoning Problems with Language Models |url=https://ai.googleblog.com/2022/06/minerva-solving-quantitative-reasoning.html |website=ai.googleblog.com |date=30 June 2022 |access-date=20 March 2023 |archive-url=https://web.archive.org/web/20230320084249/https://ai.googleblog.com/2022/06/minerva-solving-quantitative-reasoning.html |archive-date=20 March 2023 |url-status=live }}</ref>}}
+|-
+| [[BLOOM (language model)|BLOOM]]
+| {{dts|2022-07|abbr=on}}
+| Large collaboration led by [[Hugging Face]]
+| {{sort|175|175B}}<ref name="bigger-better">{{cite journal |journal=Nature |last=Ananthaswamy |first=Anil |title=In AI, is bigger always better? |date=8 March 2023 |volume=615 |issue=7951 |pages=202–205 |doi=10.1038/d41586-023-00641-w |pmid=36890378 |bibcode=2023Natur.615..202A |s2cid=257380916 |url=https://www.nature.com/articles/d41586-023-00641-w |access-date=9 March 2023 |archive-date=16 March 2023 |archive-url=https://web.archive.org/web/20230316181013/https://www.nature.com/articles/d41586-023-00641-w |url-status=live |url-access=subscription }}</ref>
+| {{sort|350000000000|350B}} tokens (1.6TB)<ref name="B8wB2">{{cite web |title=bigscience/bloom · Hugging Face |url=https://huggingface.co/bigscience/bloom |website=huggingface.co |date=9 November 2022 |access-date=13 March 2023 |archive-date=12 April 2023 |archive-url=https://web.archive.org/web/20230412002547/https://huggingface.co/bigscience/bloom |url-status=live }}</ref>
+| {{partial success|Responsible AI}}
+|
+|-
+| Galactica
+| {{dts|2022-11|abbr=on}}
+| Meta
+| {{sort|120|120B}}
+| {{sort|350000000000|106B}} tokens<ref name="37sY6">{{cite arXiv |last1=Taylor |first1=Ross |last2=Kardas |first2=Marcin |last3=Cucurull |first3=Guillem |last4=Scialom |first4=Thomas |last5=Hartshorn |first5=Anthony |last6=Saravia |first6=Elvis |last7=Poulton |first7=Andrew |last8=Kerkez |first8=Viktor |last9=Stojnic |first9=Robert |title=Galactica: A Large Language Model for Science |date=16 November 2022 |class=cs.CL |eprint=2211.09085}}</ref>
+| {{partial success|CC-BY-NC-4.0}}
+|
+|-
+| AlexaTM (Teacher Models)
+| {{dts|2022-11|abbr=on}}
+| [[Amazon (company)|Amazon]]
+| {{sort|20|20B}}<ref name="u5szh">{{cite web |title=20B-parameter Alexa model sets new marks in few-shot learning |url=https://www.amazon.science/blog/20b-parameter-alexa-model-sets-new-marks-in-few-shot-learning |website=Amazon Science |date=2 August 2022 |access-date=12 March 2023 |archive-date=15 March 2023 |archive-url=https://web.archive.org/web/20230315190223/https://www.amazon.science/blog/20b-parameter-alexa-model-sets-new-marks-in-few-shot-learning |url-status=live }}</ref>
+| {{sort|1300000000000|1.3T}}<ref name="HaA7l">{{cite arXiv |last1=Soltan |first1=Saleh |last2=Ananthakrishnan |first2=Shankar |last3=FitzGerald |first3=Jack |last4=Gupta |first4=Rahul |last5=Hamza |first5=Wael |last6=Khan |first6=Haidar |last7=Peris |first7=Charith |last8=Rawls |first8=Stephen |last9=Rosenbaum |first9=Andy |last10=Rumshisky |first10=Anna |last11=Prakash |first11=Chandana Satya |last12=Sridhar |first12=Mukund |last13=Triefenbach |first13=Fabian |last14=Verma |first14=Apurv |last15=Tur |first15=Gokhan |last16=Natarajan |first16=Prem |display-authors=3|title=AlexaTM 20B: Few-Shot Learning Using a Large-Scale Multilingual Seq2Seq Model |eprint=2208.01448 |date=3 August 2022|class=cs.CL}}</ref>
+| {{proprietary}}<ref name="rpehM">{{cite web |title=AlexaTM 20B is now available in Amazon SageMaker JumpStart {{!}} AWS Machine Learning Blog |url=https://aws.amazon.com/blogs/machine-learning/alexatm-20b-is-now-available-in-amazon-sagemaker-jumpstart/ |website=aws.amazon.com |access-date=13 March 2023 |date=17 November 2022 |archive-date=13 March 2023 |archive-url=https://web.archive.org/web/20230313163933/https://aws.amazon.com/blogs/machine-learning/alexatm-20b-is-now-available-in-amazon-sagemaker-jumpstart/ |url-status=live }}</ref>
+|
+|}
+
+</div>
+
+===2023===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[Llama (language model)|Llama]]
+| {{dts|2023-02|abbr=on}}
+| [[Meta AI]]
+| {{sort|65|65B}}<ref name="llama-blog" />
+| {{sort|1400000000000|1.4T}}<ref name="llama-blog">{{cite web |work=Meta AI |title=Introducing LLaMA: A foundational, 65-billion-parameter large language model |date=24 February 2023 |url=https://ai.facebook.com/blog/large-language-model-llama-meta-ai/ |access-date=9 March 2023 |archive-date=3 March 2023 |archive-url=https://web.archive.org/web/20230303112302/https://ai.facebook.com/blog/large-language-model-llama-meta-ai/ |url-status=live}}</ref>
+| 6300<ref name=":5">{{Cite web |title=The Falcon has landed in the Hugging Face ecosystem |url=https://huggingface.co/blog/falcon |access-date=20 June 2023 |website=huggingface.co |date=19 May 2023 |archive-date=20 June 2023 |archive-url=https://web.archive.org/web/20230620002832/https://huggingface.co/blog/falcon |url-status=live }}</ref>
+| {{partial success|Non-commercial research}}
+| {{Hidden||Facebook's license and distribution scheme restricted access to approved researchers, but the model weights were leaked and became widely available.}}
+|-
+| [[Stanford Alpaca]]
+| {{dts|2023-03-13|abbr=on}}
+| [[Stanford University]]
+| {{sort|7|7B}}<ref name="Alpaca2023">{{cite web |last1=Taori |first1=Rohan |last2=Gulrajani |first2=Ishaan |last3=Zhang |first3=Tianyi |last4=Dubois |first4=Yann |last5=Li |first5=Xuechen |last6=Guestrin |first6=Carlos |last7=Liang |first7=Percy |last8=Hashimoto |first8=Tatsunori B. |title=Alpaca: A Strong, Replicable Instruction-Following Model |url=https://crfm.stanford.edu/2023/03/13/alpaca.html |website=Stanford Center for Research on Foundation Models |publisher=[[Stanford University]] |date=13 March 2023 |access-date=13 September 2026 |archive-url=https://web.archive.org/web/20230406082332/https://crfm.stanford.edu/2023/03/13/alpaca.html |archive-date=6 April 2023 |url-status=live}}</ref>
+| {{sort|52000|52K demonstrations}}
+| {{sort|100|&lt;US$100}}
+| {{partial success|Non-commercial}}
+| {{Hidden||Fine-tuned from [[Llama (language model)|LLaMA 7B]] on instruction-following demonstrations generated using OpenAI's text-davinci-003.}}
+|-
+| [[GPT-4]]
+| {{dts|2023-03|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| Cerebras-GPT
+| {{dts|2023-03|abbr=on}}
+| [[Cerebras]]
+| {{sort|13|13B}}<ref name="D0k2a">{{Cite web|url=https://www.cerebras.net/blog/cerebras-gpt-a-family-of-open-compute-efficient-large-language-models/|title=Cerebras-GPT: A Family of Open, Compute-efficient, Large Language Models|first=Nolan|last=Dey|date=28 March 2023|website=Cerebras|access-date=28 March 2023|archive-date=28 March 2023|archive-url=https://web.archive.org/web/20230328213339/https://www.cerebras.net/blog/cerebras-gpt-a-family-of-open-compute-efficient-large-language-models/|url-status=live}}</ref>
+|
+| 270<ref name=":3" />
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| Falcon
+| {{dts|2023-03|abbr=on}}
+| [[Technology Innovation Institute]]
+| {{sort|40|40B}}<ref name="falcon">{{cite web |title=Abu Dhabi-based TII launches its own version of ChatGPT |url=https://fastcompanyme.com/news/abu-dhabi-based-tii-launches-its-own-version-of-chatgpt/ |website=tii.ae |access-date=3 April 2023 |archive-date=3 April 2023 |archive-url=https://web.archive.org/web/20230403021729/https://fastcompanyme.com/news/abu-dhabi-based-tii-launches-its-own-version-of-chatgpt/ |url-status=live }}</ref>
+| 1T tokens, from RefinedWeb (filtered web text corpus)<ref name="Xb1gq">{{Cite arXiv |last1=Penedo |first1=Guilherme |last2=Malartic |first2=Quentin |last3=Hesslow |first3=Daniel |last4=Cojocaru |first4=Ruxandra |last5=Cappelli |first5=Alessandro |last6=Alobeidli |first6=Hamza |last7=Pannier |first7=Baptiste |last8=Almazrouei |first8=Ebtesam |last9=Launay |first9=Julien |date=1 June 2023 |title=The RefinedWeb Dataset for Falcon LLM: Outperforming Curated Corpora with Web Data, and Web Data Only |class=cs.CL |eprint=2306.01116}}</ref> plus some "curated corpora".<ref name="gzTNw">{{Cite web |date=9 June 2023 |title=tiiuae/falcon-40b · Hugging Face |url=https://huggingface.co/tiiuae/falcon-40b |access-date=20 June 2023 |website=huggingface.co |archive-url=https://web.archive.org/web/20230620002830/https://huggingface.co/tiiuae/falcon-40b |archive-date=20 June 2023 |url-status=live}}</ref>
+| 2800<ref name=":5" />
+| {{yes|[[Apache 2.0]]}}<ref name="Wmlcs">[https://www.businesswire.com/news/home/20230531005608/en/UAE's-Falcon-40B-World's-Top-Ranked-AI-Model-from-Technology-Innovation-Institute-is-Now-Royalty-Free UAE's Falcon 40B, World's Top-Ranked AI Model from Technology Innovation Institute, is Now Royalty-Free] {{Webarchive|url=https://web.archive.org/web/20240208133040/https://www.businesswire.com/news/home/20230531005608/en/UAE%27s-Falcon-40B-World%27s-Top-Ranked-AI-Model-from-Technology-Innovation-Institute-is-Now-Royalty-Free |date=8 February 2024 }}, 31 May 2023</ref>
+|
+|-
+| BloombergGPT
+| {{dts|2023-03|abbr=on}}
+| [[Bloomberg L.P.]]
+| {{sort|50|50B}}
+| 363B tokens from Bloomberg's proprietary data sources, plus 345B tokens from general purpose datasets<ref name="nGOSu">{{Cite arXiv|title=BloombergGPT: A Large Language Model for Finance|first1=Shijie|last1=Wu|first2=Ozan|last2=Irsoy|first3=Steven|last3=Lu|first4=Vadim|last4=Dabravolski|first5=Mark|last5=Dredze|first6=Sebastian|last6=Gehrmann|first7=Prabhanjan|last7=Kambadur|first8=David|last8=Rosenberg|first9=Gideon|last9=Mann|date=30 March 2023|class=cs.LG |eprint=2303.17564}}</ref>
+| rowspan="3" {{Unknown}}
+| {{Unreleased}}
+| {{Hidden||Designed for financial tasks.<ref name="nGOSu" />}}
+|-
+| [[Huawei PanGu|PanGu-Σ]]
+| {{dts|2023-03|abbr=on}}
+| [[Huawei]]
+| {{sort|1085|1085B}}
+| 329B tokens<ref name="9WSFw">{{Cite arXiv|title=PanGu-Σ: Towards Trillion Parameter Language Model with Sparse Heterogeneous Computing|first1=Xiaozhe|last1=Ren|first2=Pingyi|last2=Zhou|first3=Xinfan|last3=Meng|first4=Xinjing|last4=Huang|first5=Yadao|last5=Wang|first6=Weichao|last6=Wang|first7=Pengfei|last7=Li|first8=Xiaoda|last8=Zhang|first9=Alexander|last9=Podolskiy|first10=Grigory|last10=Arshinov|first11=Andrey|last11=Bout|first12=Irina|last12=Piontkovskaya|first13=Jiansheng|last13=Wei|first14=Xin|last14=Jiang|first15=Teng|last15=Su|first16=Qun|last16=Liu|first17=Jun|last17=Yao|date=19 March 2023|class=cs.CL |eprint=2303.10845}}</ref>
+| {{proprietary}}
+|
+|-
+| OpenAssistant<ref name="JiOl8">{{Cite arXiv |last1=Köpf |first1=Andreas |last2=Kilcher |first2=Yannic |last3=von Rütte |first3=Dimitri |last4=Anagnostidis |first4=Sotiris |last5=Tam |first5=Zhi-Rui |last6=Stevens |first6=Keith |last7=Barhoum |first7=Abdullah |last8=Duc |first8=Nguyen Minh |last9=Stanley |first9=Oliver |last10=Nagyfi |first10=Richárd |last11=ES |first11=Shahul |last12=Suri |first12=Sameer |last13=Glushkov |first13=David |last14=Dantuluri |first14=Arnav |last15=Maguire |first15=Andrew |date=14 April 2023 |title=OpenAssistant Conversations – Democratizing Large Language Model Alignment |class=cs.CL |eprint=2304.07327}}</ref>
+| {{dts|2023-03|abbr=on}}
+| [[LAION]]
+| {{sort|17|17B}}
+| 1.5T tokens
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| [[Vicuna LLM|Vicuna]]
+| {{dts|2023-03|abbr=on}}
+| LMSYS
+| {{sort|13|13B}}
+| {{sort|70000|70K conversations}}<ref name="Vicuna2023">{{cite web |last1=Chiang |first1=Wei-Lin |last2=Li |first2=Zhuohan |last3=Lin |first3=Zi |last4=Sheng |first4=Ying |last5=Wu |first5=Zhanghao |last6=Zhang |first6=Hao |last7=Zheng |first7=Lianmin |last8=Zhuang |first8=Siyuan |last9=Zhuang |first9=Yonghao |last10=Gonzalez |first10=Joseph E. |last11=Stoica |first11=Ion |last12=Xing |first12=Eric P. |title=Vicuna: An Open-Source Chatbot Impressing GPT-4 with 90%* ChatGPT Quality |url=https://lmsys.org/blog/2023-03-30-vicuna/ |website=LMSYS Org |date=30 March 2023 |access-date=13 September 2026}}</ref>
+| {{US$|300}}
+| {{partial success|Non-commercial}}
+| {{Hidden||Fine-tuned from [[Llama (language model)|LLaMA]] on user-shared conversations collected from ShareGPT.}}
+|-
+| Jurassic-2<ref>{{cite news |last=Wrobel |first=Sharon |title=Tel Aviv startup rolls out new advanced AI language model to rival OpenAI |url=https://www.timesofisrael.com/ai21-labs-rolls-out-new-advanced-ai-language-model-to-rival-openai/ |access-date=24 July 2023 |website=[[The Times of Israel]] |archive-date=24 July 2023 |archive-url=https://web.archive.org/web/20230724191823/https://www.timesofisrael.com/ai21-labs-rolls-out-new-advanced-ai-language-model-to-rival-openai/ |url-status=live |issn=0040-7909}}</ref><ref>{{Cite web |last=Wiggers |first=Kyle |date=13 April 2023 |title=With Bedrock, Amazon enters the generative AI race |url=https://techcrunch.com/2023/04/13/with-bedrock-amazon-enters-the-generative-ai-race/ |access-date=24 July 2023 |website=TechCrunch |archive-date=24 July 2023 |archive-url=https://web.archive.org/web/20230724102458/https://techcrunch.com/2023/04/13/with-bedrock-amazon-enters-the-generative-ai-race/ |url-status=live }}</ref>
+| {{dts|2023-03|abbr=on}}
+| [[AI21 Labs]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Unknown}}
+| rowspan="3" {{proprietary}}
+|
+|-
+| [[PaLM|PaLM 2]] (Pathways Language Model 2)
+| {{dts|2023-05|abbr=on}}
+| [[Google]]
+| {{sort|340|340B}}<ref name="cnbc-20230516">{{cite web |last=Elias |first=Jennifer |url=https://www.cnbc.com/2023/05/16/googles-palm-2-uses-nearly-five-times-more-text-data-than-predecessor.html |title=Google's newest A.I. model uses nearly five times more text data for training than its predecessor |work=[[CNBC]] |date=16 May 2023 |access-date=18 May 2023 |archive-date=16 May 2023 |archive-url=https://web.archive.org/web/20230516225326/https://www.cnbc.com/2023/05/16/googles-palm-2-uses-nearly-five-times-more-text-data-than-predecessor.html |url-status=live }}</ref>
+| {{sort|3600000000000|3.6T}} tokens<ref name="cnbc-20230516" />
+| {{sort|85000|85,000}}<ref name=":5" />
+| {{Hidden||Used in the [[Google Gemini#Bard|Bard]] chatbot.<ref name="pWyLA">{{Cite web|url=https://blog.google/technology/ai/google-palm-2-ai-large-language-model/|title=Introducing PaLM 2|date=10 May 2023|website=Google|access-date=18 May 2023|archive-date=18 May 2023|archive-url=https://web.archive.org/web/20230518213209/https://blog.google/technology/ai/google-palm-2-ai-large-language-model/|url-status=live}}</ref>}}
+|-
+| [[YandexGPT]]
+| {{dts|2023-05-17|abbr=on}}
+| [[Yandex]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Unknown}}
+|
+|-
+| [[Phi (language model)|Phi-1]]
+| {{dts|2023-06-21|abbr=on}}
+| [[Microsoft]]
+| {{sort|1.3|1.3B}}<ref name="2306.11644">{{cite arXiv |last1=Gunasekar |first1=Suriya |last2=Zhang |first2=Yi |last3=Aneja |first3=Jyoti |author4=Caio César Teodoro Mendes |author5=Allie Del Giorno |last6=Gopi |first6=Sivakanth |last7=Javaheripi |first7=Mojan |last8=Kauffmann |first8=Piero |author9=Gustavo de Rosa |last10=Saarikivi |first10=Olli |last11=Salim |first11=Adil |last12=Shah |first12=Shital |author13=Harkirat Singh Behl |last14=Wang |first14=Xin |last15=Bubeck |first15=Sébastien |last16=Eldan |first16=Ronen |author17=Adam Tauman Kalai |author18=Yin Tat Lee |last19=Li |first19=Yuanzhi |title=Textbooks Are All You Need |date=2023 |class=cs.CL |eprint=2306.11644}}</ref>
+| 7B tokens<ref name="2306.11644" />
+| {{Unknown}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Trained for 4 days on 8 A100s.<ref name="2306.11644" />}}
+|-
+| [[Llama (language model)#Llama 2|Llama 2]]
+| {{dts|2023-07|abbr=on}}
+| [[Meta AI]]
+| {{sort|70|70B}}<ref name="meta-20230719">{{Cite web | url = https://ai.meta.com/llama/ | title = Introducing Llama 2: The Next Generation of Our Open Source Large Language Model | access-date = 19 July 2023 | website = Meta AI | date = 2023 | archive-date = 5 January 2024 | archive-url = https://web.archive.org/web/20240105234629/https://ai.meta.com/llama/ | url-status = live }}</ref>
+| {{sort|2000000000000|2T}} tokens<ref name="meta-20230719" />
+| {{sort|21000|21,000}}
+| {{partial success|[[Llama (language model)#Licensing|Llama 2]]}}
+| {{Hidden||Trained over 3.3 million GPU (A100) hours.<ref>{{Cite web |title=llama/MODEL_CARD.md at main · meta-llama/llama |url=https://github.com/meta-llama/llama/blob/main/MODEL_CARD.md |access-date=28 May 2024 |website=GitHub |archive-date=28 May 2024 |archive-url=https://web.archive.org/web/20240528090541/https://github.com/meta-llama/llama/blob/main/MODEL_CARD.md |url-status=live }}</ref>}}
+|-
+| [[Claude (language model)|Claude 2]]
+| {{dts|2023-07|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| rowspan="8" {{Unknown}}
+| rowspan="8" {{Unknown}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||Used in the Claude chatbot.<ref>{{cite web |title=Claude 2 |url=https://www.anthropic.com/index/claude-2 |website=anthropic.com |access-date=12 December 2023 |archive-date=15 December 2023 |archive-url=https://web.archive.org/web/20231215212208/https://www.anthropic.com/index/claude-2 |url-status=live }}</ref>}}
+|-
+| [[IBM Granite|Granite 13b]]
+| {{dts|2023-07|abbr=on}}
+| [[IBM]]
+| {{Unknown}}
+| {{Hidden||Used in [[IBM Watsonx]].<ref>{{Cite web |last=Nirmal |first=Dinesh |date=7 September 2023 |title=Building AI for business: IBM's Granite foundation models |url=https://www.ibm.com/blog/building-ai-for-business-ibms-granite-foundation-models |access-date=11 August 2024 |website=IBM Blog |language=en-US |archive-date=22 July 2024 |archive-url=https://web.archive.org/web/20240722083855/https://www.ibm.com/blog/building-ai-for-business-ibms-granite-foundation-models/ |url-status=live }}</ref>}}
+|-
+| [[Mistral 7B]]
+| {{dts|2023-09|abbr=on}}
+| [[Mistral AI]]
+| {{sort|7.3|7.3B}}<ref name="mistral-20230927">{{Cite web | url = https://mistral.ai/news/announcing-mistral-7b/ | title = Announcing Mistral 7B | access-date = 6 October 2023 | website = Mistral | date = 2023 | archive-date = 6 January 2024 | archive-url = https://web.archive.org/web/20240106051047/https://mistral.ai/news/announcing-mistral-7b/ | url-status = live }}</ref>
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| [[YandexGPT|YandexGPT 2]]
+| {{dts|2023-09-07|abbr=on}}
+| Yandex
+| {{Unknown}}
+| rowspan="2" {{proprietary}}
+|
+|-
+| [[Claude 2.1]]
+| {{dts|2023-11|abbr=on}}
+| Anthropic
+| {{Unknown}}
+| {{Hidden||Used in the Claude chatbot. Has a context window of 200,000 tokens, or ~500 pages.<ref>{{cite web |title=Introducing Claude 2.1 |url=https://www.anthropic.com/index/claude-2-1 |website=anthropic.com |access-date=12 December 2023 |archive-date=15 December 2023 |archive-url=https://web.archive.org/web/20231215201726/https://www.anthropic.com/index/claude-2-1 |url-status=live }}</ref>}}
+|-
+| [[Grok-1]]<ref>{{Citation |title=xai-org/grok-1 |date=19 March 2024 |url=https://github.com/xai-org/grok-1 |access-date=19 March 2024 |publisher=xai-org |archive-date=28 May 2024 |archive-url=https://web.archive.org/web/20240528170731/https://github.com/xai-org/grok-1 |url-status=live }}</ref>
+| {{dts|2023-11|abbr=on}}
+| [[XAI (company)|xAI]]
+| {{sort|314|314B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Used in the [[Grok (chatbot)|Grok]] chatbot. Grok 1 has a context length of 8,192 tokens and has access to X (Twitter).<ref>{{cite web |title=Grok-1 model card |url=https://x.ai/model-card/ |website=x.ai |access-date=12 December 2023 |archive-url=https://web.archive.org/web/20231211183908/https://x.ai/model-card/ |archive-date=11 December 2023 |url-status=live}}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 1.0]]
+| {{dts|2023-12|abbr=on}}
+| [[Google DeepMind]]
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Multimodal model, comes in three sizes. Used in [[Gemini (chatbot)|the chatbot of the same name]].<ref>{{cite web |title=Gemini – Google DeepMind |url=https://deepmind.google/technologies/gemini/#capabilities |website=deepmind.google |access-date=12 December 2023 |archive-date=8 December 2023 |archive-url=https://web.archive.org/web/20231208015607/https://deepmind.google/technologies/gemini/#capabilities |url-status=live }}</ref>}}
+|-
+| [[Mixtral 8x7B]]
+| {{dts|2023-12|abbr=on}}
+| [[Mistral AI]]
+| {{sort|46.7|46.7B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Outperforms GPT-3.5 and Llama 2 70B on many benchmarks.<ref>{{cite web |last1=Franzen |first1=Carl |title=Mistral shocks AI community as latest open source model eclipses GPT-3.5 performance |url=https://venturebeat.com/ai/mistral-shocks-ai-community-as-latest-open-source-model-eclipses-gpt-3-5-performance/ |website=VentureBeat |access-date=12 December 2023 |date=11 December 2023 |archive-date=11 December 2023 |archive-url=https://web.archive.org/web/20231211213640/https://venturebeat.com/ai/mistral-shocks-ai-community-as-latest-open-source-model-eclipses-gpt-3-5-performance/ |url-status=live }}</ref> [[Mixture of experts]] model, with 12.9 billion parameters activated per token.<ref>{{cite web |date=11 December 2023 |title=Mixtral of experts |url=https://mistral.ai/news/mixtral-of-experts/ |access-date=12 December 2023 |website=mistral.ai |archive-date=13 February 2024 |archive-url=https://web.archive.org/web/20240213104049/https://mistral.ai/news/mixtral-of-experts/ |url-status=live }}</ref>}}
+|-
+| [[DeepSeek-LLM]]
+| {{DTS|2023-11-29|abbr=on}}
+| [[DeepSeek]]
+| {{sort|67|67B}}
+| 2T tokens<ref name=":1">{{cite arXiv|last1=DeepSeek-AI |title=DeepSeek LLM: Scaling Open-Source Language Models with Longtermism |date=5 January 2024 |eprint=2401.02954 |last2=Bi |first2=Xiao |last3=Chen |first3=Deli |last4=Chen |first4=Guanting |last5=Chen |first5=Shanhuang |last6=Dai |first6=Damai |last7=Deng |first7=Chengqi |last8=Ding |first8=Honghui |last9=Dong |first9=Kai |class=cs.CL }}</ref>{{Pg|location=table 2}}
+| {{sort|12000|12,000}}
+| {{partial success|DeepSeek}}
+| {{Hidden||Trained on English and Chinese text. Used {{10^|24}} training FLOPs for 67B model, {{10^|b}} FLOPs for 7B.<ref name=":1" />{{Pg|location=figure 5}}}}
+|-
+| [[Phi (LLM)|Phi-2]]
+| {{dts|2023-12|abbr=on}}
+| [[Microsoft]]
+| {{sort|2.7|2.7B}}
+| 1.4T tokens
+| 419<ref name=":9" />
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Trained on real and synthetic "textbook-quality" data over 14 days on 96 A100 GPUs.<ref name=":9">{{cite web |last1=Hughes |first1=Alyssa |title=Phi-2: The surprising power of small language models |url=https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/ |website=Microsoft Research |access-date=13 December 2023 |date=12 December 2023 |archive-date=12 December 2023 |archive-url=https://web.archive.org/web/20231212232647/https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/ |url-status=live }}</ref>}}
+|}
+</div>
+
+===2024===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size
+! Training cost
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[Gemini (language model)|Gemini 1.5]]
+| {{dts|2024-02|abbr=on}}
+| rowspan="3" | [[Google DeepMind]]
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{Unknown}}
+| rowspan="14" {{Unknown}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||Multimodal model based on a MoE architecture. Context window above 1 million tokens.<ref>{{cite web |title=Our next-generation model: Gemini 1.5 |url=https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#context-window |website=Google |access-date=16 February 2024 |date=15 February 2024 |quote=This means 1.5 Pro can process vast amounts of information in one go — including 1 hour of video, 11 hours of audio, codebases with over 30,000 lines of code or over 700,000 words. In our research, we’ve also successfully tested up to 10 million tokens. |archive-date=16 February 2024 |archive-url=https://web.archive.org/web/20240216003052/https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#context-window |url-status=live }}</ref>}}
+|-
+| [[Gemini (language model)|Gemini Ultra]]
+| {{dts|2024-02|abbr=on}}
+|
+|-
+| [[Gemma (language model)|Gemma]]
+| {{dts|2024-02|abbr=on}}
+| {{sort|7|7B}}
+| 6T tokens
+| {{partial success|Gemma Terms of Use}}<ref name="gemma">{{cite web|url=https://ai.google.dev/gemma/terms|title=Gemma|via=GitHub|access-date=26 December 2024|archive-url=https://web.archive.org/web/20250105191125/https://ai.google.dev/gemma/terms|archive-date=5 January 2025|url-status=live}}</ref>
+|
+|-
+| OLMo
+| {{dts|2024-02|abbr=on}}
+| [[Allen Institute for AI]]
+| {{sort|7|7B}}<ref>{{Cite web |title=OLMo: Open Language Model {{!}} Ai2 |url=https://allenai.org/blog/olmo-open-language-model-87ccfc95f580 |access-date=17 March 2026 |website=allenai.org |archive-url=https://web.archive.org/web/20260313161713/https://allenai.org/blog/olmo-open-language-model-87ccfc95f580 |archive-date=13 March 2026 |url-status=live }}</ref>
+| 2T tokens<ref>{{cite arXiv|last1=Groeneveld |first1=Dirk |title=OLMo: Accelerating the Science of Language Models |date=7 June 2024  |eprint=2402.00838 |last2=Beltagy |first2=Iz |last3=Walsh |first3=Pete |last4=Bhagia |first4=Akshita |last5=Kinney |first5=Rodney |last6=Tafjord |first6=Oyvind |last7=Jha |first7=Ananya Harsh |last8=Ivison |first8=Hamish |last9=Magnusson |first9=Ian |class=cs.CL }}</ref>
+| {{yes|[[Apache 2.0]]}}{{efn|name=open_source|Stack is fully open-source, including training code, datasets and post-training data.}}
+|
+|-
+| [[Claude (language model)|Claude 3]]
+| {{dts|2024-03|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Includes three models: Haiku, Sonnet, and Opus.<ref>{{Cite web |title=Introducing the next generation of Claude |url=https://www.anthropic.com/news/claude-3-family |access-date=4 March 2024 |website=Anthropic |archive-date=4 March 2024 |archive-url=https://web.archive.org/web/20240304143650/https://www.anthropic.com/news/claude-3-family |url-status=live }}</ref>}}
+|-
+| [[DBRX]]
+| {{dts|2024-03|abbr=on}}
+| [[Databricks]] and [[Mosaic ML]]
+| {{sort|136|136B}}
+| 12T tokens
+| {{partial success|Databricks Open Model}}<ref>{{cite web |title=Databricks Open Model License |url=https://www.databricks.com/legal/open-model-license |website=[[Databricks]] |access-date=6 August 2025 |date=27 March 2024 |archive-url=https://web.archive.org/web/20250825190747/https://www.databricks.com/legal/open-model-license |archive-date=25 August 2025 |url-status=live}}</ref><ref>{{cite web |title=Databricks Open Model Acceptable Use Policy |url=https://www.databricks.com/legal/acceptable-use-policy-open-model |website=[[Databricks]] |access-date=6 August 2025 |date=27 March 2024 |archive-url=https://web.archive.org/web/20250916054650/https://www.databricks.com/legal/acceptable-use-policy-open-model |archive-date=16 September 2025 |url-status=live}}</ref>
+|
+|-
+| [[YandexGPT|YandexGPT 3 Pro]]
+| {{dts|2024-03-28|abbr=on}}
+| [[Yandex]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| Fugaku-LLM<ref name="FugakuLLMRelease">{{cite web |title=Release of "Fugaku-LLM" - a large language model trained on the supercomputer "Fugaku" |url=https://info.archives.global.fujitsu/global/about/resources/news/press-releases/2024/0510-01.html |website=Fujitsu |date=10 May 2024 |access-date=20 April 2026 |archive-url=https://web.archive.org/web/20260519002828/https://info.archives.global.fujitsu/global/about/resources/news/press-releases/2024/0510-01.html |archive-date=19 May 2026 |url-status=live}}</ref>
+| {{dts|2024-05|abbr=on}}
+| [[Fujitsu]], [[Tokyo Institute of Technology]], [[Tohoku University]], [[RIKEN]], etc.
+| {{sort|13|13B}}
+| 380B tokens
+| {{partial success|Fugaku-LLM Terms of Use}}<ref>{{cite web |title=Fugaku-LLM Terms of Use |url=https://huggingface.co/Fugaku-LLM/Fugaku-LLM-13B/blob/main/LICENSE |access-date=6 August 2025 |date=23 April 2024 |via=[[Hugging Face]] |archive-url=https://web.archive.org/web/20250907204947/https://huggingface.co/Fugaku-LLM/Fugaku-LLM-13B/blob/main/LICENSE |archive-date=7 September 2025 |url-status=live}}</ref>
+| {{Hidden||The largest model ever trained on CPU-only, on the [[Fugaku (supercomputer)|Fugaku]] supercomputer; the model was trained from scratch on 380 billion tokens using 13,824 Fugaku nodes.<ref name="FugakuLLMRelease" /><ref>{{Cite web |title=Fugaku-LLM/Fugaku-LLM-13B · Hugging Face |url=https://huggingface.co/Fugaku-LLM/Fugaku-LLM-13B |access-date=17 May 2024 |website=huggingface.co |archive-date=17 May 2024 |archive-url=https://web.archive.org/web/20240517135225/https://huggingface.co/Fugaku-LLM/Fugaku-LLM-13B |url-status=live }}</ref>}}
+|-
+| Chameleon
+| {{dts|2024-05|abbr=on}}
+| [[Meta AI]]
+| {{sort|34|34B}}<ref>{{cite news |last1=Dickson |first1=Ben |title=Meta introduces Chameleon, a state-of-the-art multimodal model |url=https://venturebeat.com/ai/meta-introduces-chameleon-a-state-of-the-art-multimodal-model/ |work=VentureBeat |date=22 May 2024 |archive-url=https://web.archive.org/web/20250211044647/https://venturebeat.com/ai/meta-introduces-chameleon-a-state-of-the-art-multimodal-model/ |archive-date=11 February 2025 |access-date=26 December 2024 |url-status=live}}</ref>
+| {{sort|4400000000000|4.4T}}
+| {{partial success|Non-commercial research}}<ref>{{cite web |title=chameleon/LICENSE at e3b711ef63b0bb3a129cf0cf0918e36a32f26e2c · facebookresearch/chameleon |url=https://github.com/facebookresearch/chameleon/blob/e3b711ef63b0bb3a129cf0cf0918e36a32f26e2c/LICENSE |publisher=Meta Research |access-date=6 August 2025 |via=[[GitHub]] |archive-url=https://web.archive.org/web/20250915043002/https://github.com/facebookresearch/chameleon/blob/e3b711ef63b0bb3a129cf0cf0918e36a32f26e2c/LICENSE |archive-date=15 September 2025 |url-status=live}}</ref>
+|
+|-
+| [[Mixtral 8x22B]]<ref>{{Cite web |last=AI |first=Mistral |date=17 April 2024 |title=Cheaper, Better, Faster, Stronger |url=https://mistral.ai/news/mixtral-8x22b/ |access-date=5 May 2024 |website=mistral.ai |archive-date=5 May 2024 |archive-url=https://web.archive.org/web/20240505023828/https://mistral.ai/news/mixtral-8x22b/ |url-status=live }}</ref>
+| {{dts|2024-04-17|abbr=on}}
+| [[Mistral AI]]
+| {{sort|141|141B}}
+| {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| [[Phi (LLM)|Phi-3]]
+| {{dts|2024-04-23|abbr=on}}
+| [[Microsoft]]
+| {{sort|14|14B}}<ref name="phi-3-blog">{{cite web |last=Bilenko |first=Misha |title=Introducing Phi-3: Redefining what's possible with SLMs |url=https://azure.microsoft.com/en-us/blog/introducing-phi-3-redefining-whats-possible-with-slms/ |website=azure.microsoft.com |date=23 April 2024 |access-date=8 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260508164010/https://azure.microsoft.com/en-us/blog/introducing-phi-3-redefining-whats-possible-with-slms/ |archive-date=8 May 2026}}</ref>
+| 4.8T tokens<ref>{{cite arXiv |last1=Abdin |first1=Marah |last2=Aneja |first2=Jyoti |last3=Awadalla |first3=Hany |last4=Awadallah |first4=Ahmed |author5=Ammar Ahmad Awan |last6=Bach |first6=Nguyen |last7=Bahree |first7=Amit |last8=Bakhtiari |first8=Arash |last9=Bao |first9=Jianmin |last10=Behl |first10=Harkirat |last11=Benhaim |first11=Alon |last12=Bilenko |first12=Misha |last13=Bjorck |first13=Johan |last14=Bubeck |first14=Sébastien |last15=Cai |first15=Martin |last16=Cai |first16=Qin |last17=Chaudhary |first17=Vishrav |last18=Chen |first18=Dong |last19=Chen |first19=Dongdong |last20=Chen |first20=Weizhu |last21=Chen |first21=Yen-Chun |last22=Chen |first22=Yi-Ling |last23=Cheng |first23=Hao |last24=Chopra |first24=Parul |last25=Dai |first25=Xiyang |last26=Dixon |first26=Matthew |last27=Eldan |first27=Ronen |last28=Fragoso |first28=Victor |last29=Gao |first29=Jianfeng |last30=Gao |first30=Mei |display-authors=1 |title=Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone |date=2024 |class=cs.CL |eprint=2404.14219}}</ref>
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Marketed by Microsoft as a "small language model".<ref name="phi-3-blog" />}}
+|-
+| [[IBM Granite|Granite Code Models]]
+| {{dts|2024-05|abbr=on}}
+| [[IBM]]
+| {{Unknown}}
+| {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+|
+|-
+| [[YandexGPT|YandexGPT 3 Lite]]
+| {{dts|2024-05-28|abbr=on}}
+| [[Yandex]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| [[Qwen2]]
+| {{dts|2024-06|abbr=on}}
+| [[Alibaba Cloud]]
+| {{sort|72|72B}}<ref>{{cite web|title= Qwen2|website= [[GitHub]]|url= https://github.com/QwenLM/Qwen2?spm=a3c0i.28768018.7084722650.1.5cd35c10NEqBXm&file=Qwen1.5|access-date= 17 June 2024|archive-date= 17 June 2024|archive-url= https://web.archive.org/web/20240617072401/https://github.com/QwenLM/Qwen2?spm=a3c0i.28768018.7084722650.1.5cd35c10NEqBXm&file=Qwen1.5|url-status= live}}</ref>
+| 3T tokens
+| {{partial success|[[Qwen#List of models|Various]]}}
+|
+|-
+| [[DeepSeek-V2]]
+| {{DTS|2024-06|abbr=on}}
+| [[DeepSeek]]
+| {{sort|236|236B}}
+| 8.1T tokens
+| {{sort|28000|28,000}}
+| {{partial success|DeepSeek}}
+| {{Hidden||1.4M hours on H800.<ref>{{cite arXiv|last1=DeepSeek-AI |title=DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model |date=19 June 2024 |eprint=2405.04434 |last2=Liu |first2=Aixin |last3=Feng |first3=Bei |last4=Wang |first4=Bin |last5=Wang |first5=Bingxuan |last6=Liu |first6=Bo |last7=Zhao |first7=Chenggang |last8=Dengr |first8=Chengqi |last9=Ruan |first9=Chong |class=cs.CL }}</ref>}}
+|-
+| [[Nemotron]]-4
+| {{dts|2024-06|abbr=on}}
+| [[Nvidia]]
+| {{sort|340|340B}}
+| 9T tokens
+| {{sort|200000|200,000}}
+| {{partial success|NVIDIA Open Model}}<ref>{{cite web |title=NVIDIA Open Models License |url=https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/ |website=[[Nvidia]] |access-date=6 August 2025 |date=16 June 2025}}</ref><ref>{{cite web |title=Trustworthy AI |url=https://www.nvidia.com/en-us/agreements/trustworthy-ai/terms/ |website=[[Nvidia]] |access-date=6 August 2025 |date=27 June 2024 |archive-url=https://web.archive.org/web/20250803212921/https://www.nvidia.com/en-us/agreements/trustworthy-ai/terms/ |archive-date=3 August 2025 |url-status=live}}</ref>
+| {{Hidden||Trained for 1 epoch. Trained on 6144 H100 GPUs between December 2023 and May 2024.<ref>{{Cite web |date=14 June 2024 |title=nvidia/Nemotron-4-340B-Base · Hugging Face |url=https://huggingface.co/nvidia/Nemotron-4-340B-Base |access-date=15 June 2024 |website=huggingface.co |archive-date=15 June 2024 |archive-url=https://web.archive.org/web/20240615010323/https://huggingface.co/nvidia/Nemotron-4-340B-Base |url-status=live }}</ref><ref>{{Cite web |title=Nemotron-4 340B {{!}} Research |url=https://research.nvidia.com/publication/2024-06_nemotron-4-340b |access-date=15 June 2024 |website=research.nvidia.com |date=14 June 2024 |archive-date=15 June 2024 |archive-url=https://web.archive.org/web/20240615010323/https://research.nvidia.com/publication/2024-06_nemotron-4-340b |url-status=live }}</ref>}}
+|-
+| [[Claude (language model)|Claude 3.5]]
+| {{dts|2024-06|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Initially, only one model, Sonnet, was released.<ref>{{cite web |title=Introducing Claude 3.5 Sonnet |url=https://www.anthropic.com/news/claude-3-5-sonnet |website=Anthropic |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20260715025135/https://www.anthropic.com/news/claude-3-5-sonnet |archive-date=15 July 2026 |url-status=live }}</ref> In October 2024, Sonnet 3.5 was upgraded, and Haiku 3.5 became available.<ref>{{cite web |title=Introducing computer use, a new Claude 3.5 Sonnet, and Claude 3.5 Haiku |url=https://www.anthropic.com/news/3-5-models-and-computer-use |website=Anthropic |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20260715025039/https://www.anthropic.com/news/3-5-models-and-computer-use |archive-date=15 July 2026 |url-status=live }}</ref>}}
+|-
+| [[Llama 3.1]]
+| {{dts|2024-07|abbr=on}}
+| [[Meta AI]]
+| {{sort|405|405B}}
+| 15.6T tokens
+| {{sort|440000|440,000}}
+| {{partial success|[[Llama (language model)#Licensing|Llama 3]]}}
+| {{Hidden||405B version took 31 million hours on [[Hopper (microarchitecture)|H100]]-80GB, at 3.8E25 FLOPs.<ref>[https://ai.meta.com/research/publications/the-llama-3-herd-of-models/ "The Llama 3 Herd of Models" (July 23, 2024) Llama Team, AI @ Meta]</ref><ref>{{Cite web |title=llama-models/models/llama3_1/MODEL_CARD.md at main · meta-llama/llama-models |url=https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md |access-date=23 July 2024 |website=GitHub |archive-date=23 July 2024 |archive-url=https://web.archive.org/web/20240723151851/https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md |url-status=live }}</ref>}}
+|-
+| [[Grok-2]]
+| {{dts|2024-08-14|abbr=on}}
+| [[XAI (company)|xAI]]
+| {{Unknown}}
+| {{Unknown}}
+| rowspan="6" {{Unknown}}
+| {{partial success|xAI Community License Agreement<ref>{{cite web |title=LICENSE · xai-org/grok-2 at main |url=https://huggingface.co/xai-org/grok-2/blob/main/LICENSE |access-date=18 November 2025 |date=5 November 2025 |via=[[Hugging Face]] |archive-url=https://web.archive.org/web/20251205152603/https://huggingface.co/xai-org/grok-2/blob/main/LICENSE |archive-date=5 December 2025 |url-status=live}}</ref><ref>{{cite web |title=xAI Acceptable Use Policy |url=https://x.ai/legal/acceptable-use-policy |website=[[xAI (company)|xAI]] |access-date=18 November 2025 |date=2 January 2025}}</ref>}}
+| {{Hidden||Originally closed-source, then re-released as "Grok 2.5" under a source-available license in August 2025.<ref>{{cite web |last1=Weatherbed |first1=Jess |title=xAI's new Grok-2 chatbots bring AI image generation to X |url=https://www.theverge.com/2024/8/14/24220127/grok-ai-chatbot-beta-image-generation-x-xai-update |website=[[The Verge]] |access-date=18 November 2025 |date=14 August 2024 |archive-url=https://web.archive.org/web/20241117000048/https://www.theverge.com/2024/8/14/24220127/grok-ai-chatbot-beta-image-generation-x-xai-update |archive-date=17 November 2024 |url-status=live}}</ref><ref>{{cite web |last1=Ha |first1=Anthony |title=Elon Musk says xAI has open sourced Grok 2.5 |url=https://techcrunch.com/2025/08/24/elon-musk-says-xai-has-open-sourced-grok-2-5/ |website=[[TechCrunch]] |access-date=18 November 2025 |date=24 August 2025}}</ref>}}
+|-
+| [[OpenAI o1]]
+| {{dts|2024-09-12|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||First LLM described as a "[[reasoning model]]".<ref>{{cite web |title=Introducing OpenAI o1 |url=https://openai.com/o1/ |website=openai.com |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20250208011107/https://openai.com/o1/ |archive-date=8 February 2025 |url-status=live}}</ref><ref>{{Cite web |last1=Paul |first1=Katie |last2=Tong |first2=Anna |date=13 September 2024 |title=OpenAI launches new series of AI models with 'reasoning' abilities |url=https://www.reuters.com/technology/artificial-intelligence/openai-launches-new-series-ai-models-solve-hard-problems-2024-09-12/ |website=[[Reuters]]}}</ref>{{Better source needed|reason=The current source is insufficiently reliable ([[WP:NOTRS]]).|date=March 2026}}}}
+|-
+| [[Sarvam-1]]
+| {{dts|2024-10-24|abbr=on}}
+| [[Sarvam AI]]
+| {{sort|2|2B}}
+| ~2T tokens
+| {{partial|Sarvam AI Research}}
+| {{Hidden||Supports 10 Indic languages and English<ref>{{cite web |last1=Jindal |first1=Siddharth |title=Sarvam AI Launches Sarvam-1, Outperforms Gemma-2 and Llama-3.2 |url=https://analyticsindiamag.com/ai-news-updates/sarvam-ai-launches-sarvam-1-outperforms-gemma-2-and-llama-3-2/ |website=Analytics India Magazine |access-date=20 April 2026 |archive-url=https://web.archive.org/web/20250725131430/https://analyticsindiamag.com/ai-news-updates/sarvam-ai-launches-sarvam-1-outperforms-gemma-2-and-llama-3-2/ |archive-date=25 July 2025 |date=24 October 2024 |url-access=limited}}</ref><ref>{{cite web |title=LICENSE.md · sarvamai/sarvam-1 |url=https://huggingface.co/sarvamai/sarvam-1/blob/d3880226af5d8adffd44250463f31ae6fe16073b/LICENSE.md |via=[[Hugging Face]] |access-date=20 April 2026 |date=23 October 2024}}</ref>}}
+|-
+| [[YandexGPT|YandexGPT 4 Lite]] and [[YandexGPT|Pro]]
+| {{dts|2024-10-24|abbr=on}}
+| [[Yandex]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| [[Mistral Large]]
+| rowspan="2" | {{dts|2024-11|abbr=on}}
+| rowspan="2" | [[Mistral AI]]
+| rowspan="2" | {{sort|123|123B}}
+| rowspan="2" {{Unknown}}
+| rowspan="2"  {{partial success|Mistral Research}}
+| {{Hidden||Upgraded over time. The latest version is 24.11.<ref name="Mistral models overview">{{cite web |url=https://docs.mistral.ai/getting-started/models/models_overview/ |title=Models Overview |website=mistral.ai |access-date=3 March 2025 |archive-url=https://web.archive.org/web/20250409095851/https://docs.mistral.ai/getting-started/models/models_overview/ |archive-date=9 April 2025 |url-status=live}}</ref>}}
+|-
+| [[Pixtral]]
+| {{Hidden||Multimodal. There is also a 12B version which is under Apache 2 license.<ref name="Mistral models overview" />}}
+|-
+| OLMo 2
+| {{dts|2024-11|abbr=on}}
+| [[Allen Institute for AI]]
+| {{sort|32|32B}}<ref>{{Cite web |title=OLMo 2: The best fully open language model to date {{!}} Ai2 |url=https://allenai.org/blog/olmo2 |access-date=17 March 2026 |website=allenai.org |archive-url=https://web.archive.org/web/20260311071336/https://allenai.org/blog/olmo2 |archive-date=11 March 2026 |url-status=live }}</ref><ref name=":7">{{cite arXiv |last1=OLMo |first1=Team |title=2 OLMo 2 Furious |date=8 October 2025 |eprint=2501.00656 |last2=Walsh |first2=Pete |last3=Soldaini |first3=Luca |last4=Groeneveld |first4=Dirk |last5=Lo |first5=Kyle |last6=Arora |first6=Shane |last7=Bhagia |first7=Akshita |last8=Gu |first8=Yuling |last9=Huang |first9=Shengyi |class=cs.CL }}</ref>
+| 6.6T tokens<ref name=":7" />
+| 15,000<ref name=":7" />
+| {{yes|[[Apache 2.0]]}}{{efn|name=open_source}}
+|
+|-
+| [[Phi (LLM)|Phi-4]]
+| {{dts|2024-12-12|abbr=on}}
+| [[Microsoft]]
+| {{sort|14|14B}}<ref>{{cite web|title=Phi-4 Model Card|url=https://huggingface.co/microsoft/phi-4|access-date=11 November 2025|website=huggingface.co|date=10 July 2025|archive-url=https://web.archive.org/web/20251118163902/https://huggingface.co/microsoft/phi-4|archive-date=18 November 2025|url-status=live }}</ref>
+| {{sort|9800000000000|9.8T}} tokens
+| {{Unknown}}
+| rowspan="2" {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Marketed by Microsoft as a "small language model".<ref>{{cite web|title=Introducing Phi-4: Microsoft's Newest Small Language Model Specializing in Complex Reasoning|url=https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/introducing-phi-4-microsoft%E2%80%99s-newest-small-language-model-specializing-in-comple/4357090|access-date=11 November 2025|website=techcommunity.microsoft.com|archive-url=https://web.archive.org/web/20251113140922/https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/introducing-phi-4-microsoft%E2%80%99s-newest-small-language-model-specializing-in-comple/4357090|archive-date=13 November 2025|url-status=dead}}</ref>}}
+|-
+| [[DeepSeek-V3]]
+| {{dts|2024-12|abbr=on}}
+| [[DeepSeek]]
+| {{sort|671|671B}}
+| 14.8T tokens
+| {{sort|56000|56,000}}
+| {{Hidden||Used 2.788M training hours on H800 GPUs.<ref>{{Citation |title=deepseek-ai/DeepSeek-V3 |date=26 December 2024 |url=https://github.com/deepseek-ai/DeepSeek-V3?tab=readme-ov-file |access-date=26 December 2024 |publisher=DeepSeek |archive-url=https://web.archive.org/web/20250327065113/https://github.com/deepseek-ai/DeepSeek-V3?tab=readme-ov-file |archive-date=27 March 2025 |url-status=live}}</ref> Originally released under the DeepSeek License, then re-released under the MIT License as "DeepSeek-V3-0324" in March 2025.<ref>{{cite web |last1=Feng |first1=Coco |title=DeepSeek wows coders with more powerful open-source V3 model |url=https://www.scmp.com/tech/big-tech/article/3303798/deepseeks-upgraded-foundational-model-excels-coding-and-maths |website=[[South China Morning Post]] |access-date=6 April 2025 |date=25 March 2025}}</ref>}}
+|-
+| Amazon Nova
+| {{dts|2024-12|abbr=on}}
+| [[Amazon (company)|Amazon]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Includes three models: Nova Micro, Nova Lite, and Nova Pro.<ref>{{Citation |title=Amazon Nova Micro, Lite, and Pro - AWS AI Service Cards3 |date=27 December 2024 |url=https://docs.aws.amazon.com/ai/responsible-ai/nova-micro-lite-pro/overview.html |access-date=27 December 2024 |publisher=Amazon |archive-url=https://web.archive.org/web/20250211044701/https://docs.aws.amazon.com/ai/responsible-ai/nova-micro-lite-pro/overview.html |archive-date=11 February 2025 |url-status=live}}</ref>}}
+|}
+
+</div>
+
+===2025===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size{{efn|name=corpus_size_note}}
+! License{{efn|name=license_note}}
+! Notes
+|-
+| [[DeepSeek-R1]]
+| {{dts|2025-01-20|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|671|671B}}
+| {{n/a|Unknown}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||No pretraining; reinforcement-learned upon V3-Base.<ref>{{Citation |title=deepseek-ai/DeepSeek-R1 |date=21 January 2025 |url=https://github.com/deepseek-ai/DeepSeek-R1 |access-date=21 January 2025 |publisher=DeepSeek |archive-url=https://web.archive.org/web/20250120120617/https://github.com/deepseek-ai/DeepSeek-R1 |archive-date=20 January 2025 |url-status=live}}</ref><ref>{{Citation |last1=DeepSeek-AI |title=DeepSeek-R1 incentivizes reasoning in LLMS through reinforcement learning |date=22 January 2025 |arxiv=2501.12948 |last2=Guo |first2=Daya |last3=Yang |first3=Dejian |last4=Zhang |first4=Haowei |last5=Song |first5=Junxiao |last6=Zhang |first6=Ruoyu |last7=Xu |first7=Runxin |last8=Zhu |first8=Qihao |last9=Ma |first9=Shirong |journal=Nature |volume=645 |issue=8081 |pages=633–638 |doi=10.1038/s41586-025-09422-z |pmid=40962978 |pmc=12443585 |bibcode=2025Natur.645..633G }}</ref>}}
+|-
+| [[Qwen2.5]]
+| {{dts|2025-01-26|format=md|abbr=on}}
+| [[Alibaba Group|Alibaba]]
+| {{sort|72|72B}}
+| {{sort|18000|18T}}
+| {{partial success|[[Qwen#List of models|Various]]}}
+| {{Hidden||7 dense models with parameter counts from 0.5B to 72B. Alibaba also released 2 MoE variants.<ref>{{cite arXiv|last1=Qwen |title=Qwen2.5 Technical Report |date=3 January 2025 |eprint=2412.15115 |last2=Yang |first2=An |last3=Yang |first3=Baosong |last4=Zhang |first4=Beichen |last5=Hui |first5=Binyuan |last6=Zheng |first6=Bo |last7=Yu |first7=Bowen |last8=Li |first8=Chengyuan |last9=Liu |first9=Dayiheng |class=cs.CL }}</ref>}}
+|-
+| MiniMax-Text-01
+| {{dts|2025-01-14|format=md|abbr=on}}
+| [[MiniMax (company)|Minimax]]
+| {{sort|456|456B}}
+| {{sort|4700|4.7T}}
+| {{partial success|Minimax Model}}
+| {{Hidden||<ref>{{Citation |title=MiniMax-AI/MiniMax-01 |date=26 January 2025 |url=https://github.com/MiniMax-AI/MiniMax-01?tab=readme-ov-file |access-date=26 January 2025 |publisher=MiniMax |archive-url=https://web.archive.org/web/20250128053759/https://github.com/MiniMax-AI/MiniMax-01?tab=readme-ov-file |archive-date=28 January 2025 |url-status=live}}</ref><ref>{{cite arXiv|last1=MiniMax |title=MiniMax-01: Scaling Foundation Models with Lightning Attention |date=14 January 2025 |eprint=2501.08313 |last2=Li |first2=Aonian |last3=Gong |first3=Bangwei |last4=Yang |first4=Bo |last5=Shan |first5=Boji |last6=Liu |first6=Chang |last7=Zhu |first7=Cheng |last8=Zhang |first8=Chunhao |last9=Guo |first9=Congchao |class=cs.CL }}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 2.0]]
+| {{dts|2025-02-05|format=md|abbr=on}}
+| [[Google DeepMind]]
+| rowspan="7" {{Unknown}}
+| rowspan="7" {{Unknown}}
+| rowspan="7" {{proprietary}}
+| {{Hidden||Three models released: Flash, Flash-Lite and Pro.<ref>{{cite web |last1=Kavukcuoglu |first1=Koray |title=Gemini 2.0 is now available to everyone |url=https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/ |website=Google |date=5 February 2025 |access-date=6 February 2025 |archive-url=https://web.archive.org/web/20250410135013/https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/ |archive-date=10 April 2025 |url-status=live}}</ref><ref>{{cite web |title=Gemini 2.0: Flash, Flash-Lite and Pro |url=https://developers.googleblog.com/en/gemini-2-family-expands/ |website=Google for Developers |access-date=6 February 2025 |archive-url=https://web.archive.org/web/20250410204543/https://developers.googleblog.com/en/gemini-2-family-expands/ |archive-date=10 April 2025 |url-status=live}}</ref><ref>{{cite news |last1=Franzen |first1=Carl |title=Google launches Gemini 2.0 Pro, Flash-Lite and connects reasoning model Flash Thinking to YouTube, Maps and Search |url=https://venturebeat.com/ai/google-launches-gemini-2-0-pro-flash-lite-and-connects-reasoning-model-flash-thinking-to-youtube-maps-and-search/ |access-date=6 February 2025 |work=VentureBeat |date=5 February 2025 |archive-url=https://web.archive.org/web/20250317230022/https://venturebeat.com/ai/google-launches-gemini-2-0-pro-flash-lite-and-connects-reasoning-model-flash-thinking-to-youtube-maps-and-search/ |archive-date=17 March 2025 |url-status=live}}</ref>}}
+|-
+| [[Grok 3]]
+| {{dts|2025-02-19|format=md|abbr=on}}
+| [[XAI (company)|xAI]]
+| {{Hidden||Training cost claimed to be "10x the compute of previous state-of-the-art models".<ref>{{Cite web |title=Grok 3 Beta — The Age of Reasoning Agents |url=https://x.ai/blog/grok-3 |access-date=22 February 2025 |website=x.ai |archive-url=https://web.archive.org/web/20250222015918/https://x.ai/blog/grok-3 |archive-date=22 February 2025 |url-status=live }}</ref>}}
+|-
+| [[Claude (language model)|Claude 3.7]]
+| {{dts|2025-02-24|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Hidden||One model, Sonnet 3.7.<ref>{{cite web |title=Claude 3.7 Sonnet and Claude Code |url=https://www.anthropic.com/news/claude-3-7-sonnet |website=Anthropic |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20250224183042/https://www.anthropic.com/news/claude-3-7-sonnet |archive-date=24 February 2025 |url-status=live }}</ref>}}
+|-
+| [[YandexGPT|YandexGPT 5 Lite Pretrain]] and [[YandexGPT|Pro]]
+| {{dts|2025-02-25|format=md|abbr=on}}
+| [[Yandex]]
+|
+|-
+| [[GPT-4.5]]
+| {{dts|2025-02-27|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Hidden||OpenAI's largest non-reasoning model at the time.<ref>{{cite web |title=Introducing GPT-4.5 |url=https://openai.com/index/introducing-gpt-4-5/ |website=openai.com |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20250227152825/https://openai.com/index/introducing-gpt-4-5/ |archive-date=27 February 2025 |url-status=live}}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 2.5]]
+| {{dts|2025-03-25|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{Hidden||Three models released: Flash, Flash-Lite and Pro.<ref>{{cite web |last1=Kavukcuoglu |first1=Koray |title=Gemini 2.5: Our most intelligent AI model |url=https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/ |website=Google |date=25 March 2025 |access-date=23 September 2025 |archive-url=https://web.archive.org/web/20260105223342/https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/ |archive-date=5 January 2026 |url-status=live}}</ref>}}
+|-
+| [[YandexGPT|YandexGPT 5 Lite Instruct]]
+| {{dts|2025-03-31|format=md|abbr=on}}
+| [[Yandex]]
+|
+|-
+| [[Llama 4]]
+| {{dts|2025-04-05|format=md|abbr=on}}
+| [[Meta AI]]
+| {{sort|400|400B}}
+| {{sort|40000|40T}}
+| {{partial success|[[Llama (language model)#Licensing|Llama 4]]}}
+| {{Hidden||<ref>{{Cite web |date=5 April 2025 |title=meta-llama/Llama-4-Maverick-17B-128E · Hugging Face |url=https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E |access-date=6 April 2025 |website=huggingface.co |archive-url=https://web.archive.org/web/20260521063904/https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E |archive-date=21 May 2026 |url-status=live}}</ref><ref>{{Cite web |title=The Llama 4 herd: The beginning of a new era of natively multimodal AI innovation |url=https://ai.meta.com/blog/llama-4-multimodal-intelligence/ |archive-url=https://web.archive.org/web/20250405185132/https://ai.meta.com/blog/llama-4-multimodal-intelligence/ |archive-date=5 April 2025 |access-date=5 April 2025 |website=ai.meta.com }}</ref>}}
+|-
+| [[OpenAI o3]] and o4-mini
+| {{dts|2025-04-16|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Reasoning models.<ref>{{cite web |title=Introducing OpenAI o3 and o4-mini |url=https://openai.com/index/introducing-o3-and-o4-mini/ |website=openai.com |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20250416170840/https://openai.com/index/introducing-o3-and-o4-mini/ |archive-date=16 April 2025 |url-status=live}}</ref>}}
+|-
+| [[Qwen3]]
+| {{dts|2025-04-28|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{sort|235|235B}}
+| {{sort|36000|36T}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Multiple sizes, the smallest being 0.6B.<ref>{{Cite web |last=Team |first=Qwen |date=29 April 2025 |title=Qwen3: Think Deeper, Act Faster |url=https://qwenlm.github.io/blog/qwen3/ |access-date=29 April 2025 |website=Qwen |archive-url=https://web.archive.org/web/20250429020635/https://qwenlm.github.io/blog/qwen3/ |archive-date=29 April 2025 |url-status=live }}</ref>}}
+|-
+| [[Claude (language model)|Claude 4]]
+| {{dts|2025-05-22|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Includes two models, Sonnet and Opus.<ref>{{cite web |title=Introducing Claude 4 |url=https://www.anthropic.com/news/claude-4 |website=Anthropic |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20250805144053/https://www.anthropic.com/news/claude-4 |archive-date=5 August 2025 |url-status=live }}</ref>}}
+|-
+| Sarvam-M
+| {{dts|2025-05-23|format=md|abbr=on}}
+| [[Sarvam AI]]
+| {{sort|24|24B}}
+| {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Hybrid reasoning model fine-tuned on Mistral Small base; optimized for math, programming, and Indian languages.<ref>{{Cite web |last=Yadav |first=Nandini |date=26 May 2025 |title=Indian AI startup launches Sarvam-M model: What is it, why is everyone talking about it |url=https://www.indiatoday.in/technology/features/story/indian-ai-startup-launches-sarvam-m-model-what-is-it-why-is-everyone-talking-about-it-2730778-2025-05-26 |access-date=18 March 2026 |website=India Today |archive-url=https://web.archive.org/web/20251006120025/https://www.indiatoday.in/technology/features/story/indian-ai-startup-launches-sarvam-m-model-what-is-it-why-is-everyone-talking-about-it-2730778-2025-05-26 |archive-date=6 October 2025 |url-status=live }}</ref><ref>{{Cite web |date=23 May 2025 |title=Sarvam-M: Open Source Hybrid Indic LLM {{!}} Sarvam AI |url=https://www.sarvam.ai/blogs/sarvam-m |access-date=18 March 2026 |website=Sarvam AI }}</ref>}}
+|-
+| [[Grok 4]]
+| {{dts|2025-07-09|format=md|abbr=on}}
+| [[XAI (company)|xAI]]
+| {{Unknown}}
+| {{Unknown}}
+|{{proprietary}}
+|{{Hidden||<ref>{{cite web |title=Grok 4 |url=https://x.ai/news/grok-4 |website=x.ai |date=9 July 2025 |access-date=9 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260509094258/https://x.ai/news/grok-4 |archive-date=9 May 2026}}</ref>}}
+|-
+| Param-1
+| {{dts|2025-07-21|format=md|abbr=on}}
+| [[Artificial intelligence in India#BharatGen|BharatGen]]
+| {{sort|2.9|2.9B}}
+| {{sort|5000|5T}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Corpus is "focus[ed] on India’s linguistic landscape".<ref>{{cite arXiv |last1=Pundalik |first1=Kundeshwar |title=PARAM-1 BharatGen 2.9B Model |date=16 July 2025 |eprint=2507.13390 |last2=Sawarkar |first2=Piyush |last3=Sahoo |first3=Nihar |last4=Shinde |first4=Abhishek |last5=Chanda |first5=Prateek |last6=Goswami |first6=Vedant |last7=Nagpal |first7=Ajay |last8=Singh |first8=Atul |last9=Thakur |first9=Viraj |class=cs.CL }}</ref><ref>{{cite web |title=README.md · bharatgenai/Param-1 |url=https://huggingface.co/bharatgenai/Param-1/blob/main/README.md |via=[[Hugging Face]] |access-date=12 April 2026 |date=24 February 2026 |archive-url=https://web.archive.org/web/20260422104634/https://huggingface.co/bharatgenai/Param-1/blob/main/README.md |archive-date=22 April 2026 |url-status=live}}</ref>}}
+|-
+| [[GLM (AI)|GLM-4.5]]
+| {{dts|2025-07-29|format=md|abbr=on}}
+| [[Z.ai]]
+| {{sort|355|355B}}
+| {{sort|22000|22T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Released in 355B and 106B sizes.<ref>{{Cite web |date=4 August 2025 |title=zai-org/GLM-4.5 · Hugging Face |url=https://huggingface.co/zai-org/GLM-4.5 |access-date=6 August 2025 |website=huggingface.co |archive-url=https://web.archive.org/web/20250806154308/https://huggingface.co/zai-org/GLM-4.5 |archive-date=6 August 2025 |url-status=live}}</ref> Corpus size was calculated by combining the 15 trillion tokens and the 7 trillion tokens pre-training mix.<ref>{{Cite web |title=GLM-4.5: Reasoning, Coding, and Agentic Abililties |url=https://z.ai/blog/glm-4.5 |access-date=6 August 2025 |website=z.ai }}</ref>}}
+|-
+| [[GPT-OSS]]
+| {{dts|2025-08-05|format=md|abbr=on}}
+| [[OpenAI]]
+| {{sort|117|117B}}
+| {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Released in 20B and 120B sizes.<ref>{{cite web |last1=Whitwam |first1=Ryan |title=OpenAI announces two "gpt-oss" open AI models, and you can download them today |url=https://arstechnica.com/ai/2025/08/openai-releases-its-first-open-source-models-since-2019/ |website=[[Ars Technica]] |access-date=6 August 2025 |date=5 August 2025 |archive-url=https://web.archive.org/web/20250806000328/https://arstechnica.com/ai/2025/08/openai-releases-its-first-open-source-models-since-2019/ |archive-date=6 August 2025 |url-status=live}}</ref>}}
+|-
+| [[Claude (language model)|Claude 4.1]]
+| {{dts|2025-08-05|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| {{Unknown}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||Includes one model, Opus.<ref>{{cite web |title=Claude Opus 4.1 |url=https://www.anthropic.com/news/claude-opus-4-1 |website=Anthropic |access-date=8 August 2025 |archive-url=https://web.archive.org/web/20260715025110/https://www.anthropic.com/news/claude-opus-4-1 |archive-date=15 July 2026 |url-status=live }}</ref>}}
+|-
+| [[GPT-5]]
+| {{dts|2025-08-07|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| {{Unknown}}
+| {{Hidden||Includes three models: GPT-5, GPT-5 mini, and GPT-5 nano. GPT-5 is available in ChatGPT and API. It includes reasoning abilities.<ref>{{cite web |title=Introducing GPT-5 |url=https://openai.com/index/introducing-gpt-5/ |website=openai.com |access-date=8 August 2025 |date=7 August 2025 |archive-url=https://web.archive.org/web/20251109054506/https://openai.com/index/introducing-gpt-5/ |archive-date=9 November 2025 |url-status=live}}</ref><ref>{{cite web|title=OpenAI Platform: GPT-5 Model Documentation|url=https://platform.openai.com/docs/models/gpt-5|website=openai.com|access-date=18 August 2025|archive-url=https://web.archive.org/web/20250817212345/https://platform.openai.com/docs/models/gpt-5|archive-date=17 August 2025|url-status=live}}</ref>}}
+|-
+| DeepSeek-V3.1
+| {{dts|2025-08-21|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|671|671B}}
+| {{sort|15639|15.639T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Corpus size based on DeepSeek V3 (trained on 14.8T tokens); further trained on 839B tokens from the extension phases (630B + 209B).<ref>{{Cite web |date=21 August 2025 |title=deepseek-ai/DeepSeek-V3.1 · Hugging Face |url=https://huggingface.co/deepseek-ai/DeepSeek-V3.1 |access-date=25 August 2025 |website=huggingface.co |archive-url=https://web.archive.org/web/20250825140737/https://huggingface.co/deepseek-ai/DeepSeek-V3.1 |archive-date=25 August 2025 |url-status=live}}</ref> A hybrid model that can switch between thinking and non-thinking modes.<ref>{{Cite web |title=DeepSeek-V3.1 Release {{!}} DeepSeek API Docs |url=https://api-docs.deepseek.com/news/news250821 |access-date=25 August 2025 |website=api-docs.deepseek.com |archive-url=https://web.archive.org/web/20250824202825/https://api-docs.deepseek.com/news/news250821 |archive-date=24 August 2025 |url-status=live }}</ref>}}
+|-
+| [[YandexGPT|YandexGPT 5.1 Pro]]
+| {{dts|2025-08-28|format=md|abbr=on}}
+| [[Yandex]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| [[Apertus (LLM)|Apertus]]
+| {{dts|2025-09-02|format=md|abbr=on}}
+| [[ETH Zurich]] and [[École Polytechnique Fédérale de Lausanne|EPF Lausanne]]
+| {{sort|70|70B}}
+| {{sort|15000|15T}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||The first LLM to be compliant with the [[Artificial Intelligence Act]] of the [[European Union]].<ref>{{cite news |last1=Kirchner |first1=Malte |title=Apertus: Schweiz stellt erstes offenes und mehrsprachiges KI-Modell vor |url=https://www.heise.de/news/Apertus-Schweiz-stellt-erstes-offenes-und-mehrsprachiges-KI-Modell-vor-10629412.html |access-date=7 November 2025 |work=heise online |date=2 September 2025 |language=de}}</ref><ref>{{cite web |title=Apertus: Ein vollständig offenes, transparentes und mehrsprachiges Sprachmodell |url=https://ethz.ch/de/news-und-veranstaltungen/eth-news/news/2025/09/medienmitteilung-apertus-ein-vollstaendig-offenes-transparentes-und-mehrsprachiges-sprachmodell.html |publisher=ETH Zürich |access-date=7 November 2025 |location=Zürich |language=de |date=2 September 2025}}</ref>}}
+|-
+| [[Claude (language model)#Claude Sonnet 4.5|Claude Sonnet 4.5]]
+| {{dts|2025-09-29|format=md|abbr=on}}
+| Anthropic
+| {{Unknown}}
+| rowspan="4" {{Unknown}}
+| {{proprietary}}
+| {{Hidden||<ref>{{cite web |title=Introducing Claude Sonnet 4.5 |url=https://www.anthropic.com/news/claude-sonnet-4-5 |website=Anthropic |access-date=29 September 2025 |archive-url=https://web.archive.org/web/20260717032500/https://www.anthropic.com/news/claude-sonnet-4-5 |archive-date=17 July 2026 |url-status=live }}</ref>}}
+|-
+| [[GLM (AI)|GLM-4.6]]
+| {{dts|2025-09-30|format=md|abbr=on}}
+| Z.ai
+| {{sort|357|357B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||<ref>{{Cite web |title=GLM-4.6: Advanced Agentic, Reasoning and Coding Capabilities |url=https://z.ai/blog/glm-4.6 |access-date=1 October 2025 |website=z.ai }}</ref><ref>{{Cite web |date=30 September 2025 |title=zai-org/GLM-4.6 · Hugging Face |url=https://huggingface.co/zai-org/GLM-4.6 |access-date=1 October 2025 |website=huggingface.co |archive-url=https://web.archive.org/web/20250930165928/https://huggingface.co/zai-org/GLM-4.6 |archive-date=30 September 2025 |url-status=live}}</ref><ref>{{Cite web |title=GLM-4.6 |url=https://modelscope.cn/models/ZhipuAI/GLM-4.6 |access-date=1 October 2025 |website=modelscope.cn}}</ref>}}
+|-
+| [[YandexGPT|Alice AI LLM 1.0]]
+| {{dts|2025-10-28|format=md|abbr=on}}
+| Yandex
+| {{Unknown}}
+| rowspan="2" {{proprietary}}
+|
+|-
+| [[Gemini (language model)|Gemini 3]]
+| {{dts|2025-11-18|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{Unknown}}
+| {{Hidden||Models released: Deep Think and Pro.<ref>{{cite web |title=A new era of intelligence with Gemini 3 |url=https://blog.google/products/gemini/gemini-3/ |website=Google |date=18 November 2025 |access-date=5 January 2026 |archive-url=https://web.archive.org/web/20251129051752/https://blog.google/products/gemini/gemini-3/ |archive-date=29 November 2025 |url-status=live}}</ref>}}
+|-
+| Olmo 3<ref>{{Cite web |date=20 November 2025 |title=Olmo 3: Charting a path through the model flow to lead open-source AI |url=https://allenai.org/blog/olmo3 |website=Ai2 |access-date=17 March 2026 |archive-url=https://web.archive.org/web/20260315175032/https://allenai.org/blog/olmo3 |archive-date=15 March 2026 |url-status=live}}</ref>
+| {{dts|2025-11-20|format=md|abbr=on}}
+| [[Allen Institute for AI]]
+| {{sort|32|32B}}
+| {{sort|5900|5.9T}}
+| {{yes|[[Apache 2.0]]}}{{efn|name=open_source}}
+| {{Hidden||Includes 7B and 32B parameter versions, alongside reasoning and instruction-following models.<ref>{{cite arXiv|last1=Olmo |first1=Team |title=Olmo 3 |date=15 December 2025 |eprint=2512.13961 |last2=Ettinger |first2=Allyson |last3=Bertsch |first3=Amanda |last4=Kuehl |first4=Bailey |last5=Graham |first5=David |last6=Heineman |first6=David |last7=Groeneveld |first7=Dirk |last8=Brahman |first8=Faeze |last9=Timbers |first9=Finbarr |class=cs.CL }}</ref>}}
+|-
+| [[Claude (language model)#Claude Opus 4.5|Claude Opus 4.5]]
+| {{dts|2025-11-24|format=md|abbr=on}}
+| Anthropic
+| {{Unknown}}
+| rowspan="4" {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Largest model in the Claude family.<ref>{{cite web |title=Introducing Claude Opus 4.5 |url=https://www.anthropic.com/news/claude-opus-4-5 |website=Anthropic |access-date=8 January 2026 |archive-url=https://web.archive.org/web/20260116221338/https://www.anthropic.com/news/claude-opus-4-5 |archive-date=16 January 2026 |url-status=live }}</ref>}}
+|-
+| DeepSeek-V3.2
+| {{dts|2025-12-01|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|685|685B}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||Uses a custom DeepSeek Sparse Attention (DSA) mechanism<ref name="Binder-2025">{{cite web |last1=Binder |first1=Matt |title=DeepSeek v3.2: What it is, how it compares to ChatGPT, how to try it |url=https://mashable.com/article/deepseek-v3-2-models-released |website=[[Mashable]] |access-date=12 April 2026 |date=3 December 2025 |archive-url=https://web.archive.org/web/20260421105154/https://mashable.com/article/deepseek-v3-2-models-released |archive-date=21 April 2026 |url-status=live}}</ref><ref name="DeepSeek-V3.2 release">{{cite web |title=DeepSeek-V3.2 Release |url=https://api-docs.deepseek.com/news/news251201 |website=DeepSeek API Docs |access-date=12 April 2026 |date=1 December 2025 |archive-url=https://web.archive.org/web/20260412001416/https://api-docs.deepseek.com/news/news251201 |archive-date=12 April 2026 |url-status=live}}</ref><ref>{{cite web |title=DeepSeek-V3.2: Efficient Reasoning & Agentic AI |url=https://huggingface.co/deepseek-ai/DeepSeek-V3.2 |website=[[Hugging Face]] |access-date=12 April 2026 |date=1 December 2025 |archive-url=https://web.archive.org/web/20260401182358/https://huggingface.co/deepseek-ai/DeepSeek-V3.2 |archive-date=1 April 2026 |url-status=live}}</ref>}}
+|-
+| [[GPT 5.2]]
+| {{dts|2025-12-11|format=md|abbr=on}}
+| OpenAI
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||It was able to solve an open problem in statistical learning theory that had previously remained unresolved by human researchers.<ref>{{cite web |title=Advancing science and math with GPT-5.2 |url=https://openai.com/index/gpt-5-2-for-science-and-math/ |website=openai.com |access-date=4 January 2026}}</ref>}}
+|-
+| [[GLM (AI)|GLM-4.7]]
+| {{dts|2025-12-22|format=md|abbr=on}}
+| Z.ai
+| {{sort|355|355B}}
+| {{yes|[[Apache 2.0]]}}
+|
+|}
+
+</div>
+
+===2026===
+<div class="overflowbugx" style="overflow-x:auto;">
+{{table alignment}}
+{{sort-under}}
+{| class="wikitable sortable sort-under col2right col4right col5right col6right"
+|+
+|-
+! style="min-width:125px" | Name
+! Release date{{efn|name=release_date_note}}
+! Developer
+! {{No.}} of {{Abbr|params|parameters}}
+! Corpus size{{efn|name=corpus_size_note|Expressed in number of tokens, unless otherwise specified}}
+! License{{efn|name=license_note}}
+! Notes
+|-
+| Qwen3-Max-Thinking
+| {{dts|2026-01-26|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{Unknown}}
+| {{Unknown}}
+| {{proprietary}}
+| {{Hidden||Proprietary reasoning model with adaptive tool-use, test-time scaling, and iterative self-reflection.<ref>{{Cite web |date=25 January 2026 |title=Pushing Qwen3-Max-Thinking Beyond its Limits |url=https://qwen.ai/blog?id=qwen3-max-thinking |url-status=live |archive-url=https://web.archive.org/web/20260206191613/https://qwen.ai/blog?id=qwen3-max-thinking |archive-date=6 February 2026 |access-date=6 February 2026 |website=Qwen |quote=We further enhance Qwen3-Max-Thinking with two key innovations: (1) adaptive tool-use capabilities [...]; and (2) advanced test-time scaling techniques [...]. [...] We limit [parallel trajectories] and redirect saved computation to iterative self-reflection guided by a “take-experience” mechanism.}}</ref>}}
+|-
+| K2 Think V2
+| rowspan=2| {{dts|2026-01-27|format=md|abbr=on}}
+| [[Mohamed bin Zayed University of Artificial Intelligence|MBUZAI]] / {{abbr|IFM|Institute of Foundational Models}}
+| {{sort|70|70B}}
+| {{sort|12000|12T}}<ref>{{cite web|url=https://mbzuai.ac.ae/news/k2-an-open-source-model-that-delivers-frontier-capabilities|title=K2: An open source model that delivers frontier capabilities|date=5 December 2025|publisher=Mohamed bin Zayed University of Artificial Intelligence|access-date=10 September 2026|archive-url=https://web.archive.org/web/20260113212241/https://mbzuai.ac.ae/news/k2-an-open-source-model-that-delivers-frontier-capabilities |archive-date=13 January 2026 }}</ref>
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||<ref>{{cite web|url=https://mbzuai.ac.ae/news/k2-think-v2-a-fully-sovereign-reasoning-model|title=K2 Think V2: a fully sovereign reasoning model|date=27 January 2026|publisher=Mohamed bin Zayed University of Artificial Intelligence|access-date=10 September 2026|archive-url=https://web.archive.org/web/20260808204033/https://mbzuai.ac.ae/news/k2-think-v2-a-fully-sovereign-reasoning-model |archive-date=8 August 2026 }}</ref>}}
+|-
+| [[Kimi (chatbot)|Kimi K2.5]]
+| style="text-align: left" | [[Moonshot AI]]
+| {{sort|1000|1T}}
+| {{sort|15000|15T}}
+| {{partial success|Modified MIT<ref>{{cite web |title=LICENSE · moonshotai/Kimi-K2.5 |url=https://huggingface.co/moonshotai/Kimi-K2.5/blob/70a8ad02d86dbb7459abd22b8a4feca294d2c993/LICENSE |via=[[Hugging Face]] |access-date=1 August 2026 |date=1 January 2026 |archive-url=https://web.archive.org/web/20260801191511/https://huggingface.co/moonshotai/Kimi-K2.5/blob/70a8ad02d86dbb7459abd22b8a4feca294d2c993/LICENSE |archive-date=1 August 2026 |url-status=live}}</ref>}}
+| {{Hidden||Multimodal MoE with 32B active parameters, derived from Kimi K2.<ref>{{cite arXiv |last1=Team |first1=Kimi |title=Kimi K2: Open Agentic Intelligence |date=3 February 2026  |eprint=2507.20534 |last2=Bai |first2=Yifan |last3=Bao |first3=Yiping |last4=Charles |first4=Y. |last5=Chen |first5=Cheng |last6=Chen |first6=Guanduo |last7=Chen |first7=Haiting |last8=Chen |first8=Huarong |last9=Chen |first9=Jiahao |class=cs.LG }}</ref> Can use "Agent Swarm" technology to coordinate up to 100 parallel sub-agents.<ref>{{cite arXiv|last1=Team |first1=Kimi |title=Kimi K2.5: Visual Agentic Intelligence |date=2 February 2026  |eprint=2602.02276 |last2=Bai |first2=Tongtong |last3=Bai |first3=Yifan |last4=Bao |first4=Yiping |last5=Cai |first5=S. H. |last6=Cao |first6=Yuan |last7=Charles |first7=Y. |last8=Che |first8=H. S. |last9=Chen |first9=Cheng |class=cs.CL }}</ref><ref>{{Cite web |title=Kimi K2.5: Chat with Kimi K2.5 for Free |url=https://kimi-k25.com/blog/kimi-k2-5-agent-swarm |access-date=18 March 2026 |website=Kimi K2.5 }}</ref>}}
+|-
+| [[Step 3.5 Flash]]
+| {{dts|2026-02-12|format=md|abbr=on}}
+| [[StepFun]]
+| {{sort|196|196B}}
+| rowspan="3" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||MoE model with 11B active parameters out of 196B total<ref>{{cite web |last1=Jiang |first1=Ben |title=Compact AI model from China's StepFun outshines rivals from DeepSeek, Moonshot |url=https://www.scmp.com/tech/article/3342222/punches-above-its-weight-compact-ai-model-chinas-stepfun-outshines-larger-rivals |website=[[South China Morning Post]] |access-date=14 April 2026 |date=3 February 2026 |archive-url=https://web.archive.org/web/20260204144713/https://www.scmp.com/tech/article/3342222/punches-above-its-weight-compact-ai-model-chinas-stepfun-outshines-larger-rivals |archive-date=4 February 2026 |url-access=limited}}</ref><ref>{{cite web |title=Step 3.5 Flash: Fast Enough to Think. Reliable Enough to Act. |url=https://static.stepfun.com/blog/step-3.5-flash/ |website=[[StepFun]] |access-date=20 April 2026 |date=12 February 2026 |archive-url=https://web.archive.org/web/20260416233452/https://static.stepfun.com/blog/step-3.5-flash/ |archive-date=16 April 2026 |url-status=live}}</ref><ref>{{cite web |title=stepfun-ai/Step-3.5-Flash |url=https://huggingface.co/stepfun-ai/Step-3.5-Flash |via=[[Hugging Face]] |access-date=14 April 2026 |date=14 March 2026 |archive-url=https://web.archive.org/web/20260412102752/https://huggingface.co/stepfun-ai/Step-3.5-Flash |archive-date=12 April 2026 |url-status=live}}</ref>}}
+|-
+| [[Claude (language model)#Claude 4.6|Claude Opus 4.6]]
+| {{dts|2026-02-05|format=md|abbr=on}}
+| [[Anthropic]]
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{proprietary}}
+|
+|-
+| [[GPT-5.3-Codex]]
+| {{dts|2026-02-05|format=md|abbr=on}}
+| [[OpenAI]]
+|
+|-
+| [[GLM (AI)|GLM-5]]
+| {{dts|2026-02-12|format=md|abbr=on}}
+| [[Z.ai]]
+| {{sort|744|744B}}
+| {{sort|28500|28.5T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||40B active parameters<ref name="Mo-2026">{{Cite news |last1=Mo |first1=Liam |last2=Goh |first2=Brenda |last3=Chen |first3=Laurie |date=11 February 2026 |editor-last=D'Silva |editor-first=Anil |title=Chinese AI startup Zhipu releases new flagship model GLM-5 |url=https://www.reuters.com/technology/chinas-ai-startup-zhipu-releases-new-flagship-model-glm-5-2026-02-11/ |access-date=17 February 2026 |work=Reuters}}</ref><ref name="GLM-5 GitHub">{{cite web |title=GLM-5 / README.md |url=https://github.com/zai-org/GLM-5/blob/c9d779052c2fa214b09d36a75c58c78ca9509578/README.md |access-date=28 August 2026 |date=27 August 2026 |via=[[GitHub]]}}</ref>}}
+|-
+| Qwen3.5
+| rowspan="2" | {{dts|2026-02-15|format=md|abbr=on}}
+| rowspan="2" | [[Alibaba Cloud]]
+| {{sort|397|397B}}
+| rowspan="3" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||17B active parameters<ref name="Butts-2026">{{cite web |url=https://www.cnbc.com/2026/02/17/china-alibaba-qwen-ai-agent-latest-model.html |title=Alibaba unveils Qwen3.5 as China's chatbot race shifts to AI agents |date=16 February 2026 |last=Butts |first=Dylan |website=CNBC |access-date=26 February 2026}}</ref><ref name="Qwen3.5">{{cite web |date=15 February 2026 |access-date=18 July 2026 |title=Qwen3.5: Towards Native Multimodal Agents |url=https://qwen.ai/blog?id=qwen3.5 |website=[[Qwen]] |archive-url=https://web.archive.org/web/20260222085409/https://qwen.ai/blog?id=qwen3.5 |archive-date=22 February 2026 |url-status=live}}</ref><ref>{{cite web |title=LICENSE · Qwen/Qwen3.5-397B-A17B |url=https://huggingface.co/Qwen/Qwen3.5-397B-A17B/blob/7f74e137107f2d2e056d995ef37f898a1f270d8d/LICENSE |via=[[Hugging Face]] |access-date=10 April 2026 |date=16 February 2026 |archive-url=https://web.archive.org/web/20260429191924/https://huggingface.co/Qwen/Qwen3.5-397B-A17B/blob/7f74e137107f2d2e056d995ef37f898a1f270d8d/LICENSE |archive-date=29 April 2026 |url-status=live}}</ref>}}
+|-
+| Qwen3.5-Plus
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||<ref name="Butts-2026" /><ref name="Qwen3.5" />}}
+|-
+| [[Claude (language model)#Claude 4.6|Claude Sonnet 4.6]]
+| {{dts|2026-02-17|format=md|abbr=on}}
+| [[Anthropic]]
+|
+|-
+| Param-2
+| {{dts|2026-02-17|format=md|abbr=on}}
+| [[Artificial intelligence in India#BharatGen|BharatGen]]
+| {{sort|17|17B}}
+| {{sort|22000|22T}}
+| {{partial|BharatGen Research<ref>{{cite web |title=LICENSE · bharatgenai/Param2-17B-A2.4B-Thinking |url=https://huggingface.co/bharatgenai/Param2-17B-A2.4B-Thinking/blob/9c8cc097a1211f1f18d177ab99e73846ca549c38/LICENSE |via=[[Hugging Face]] |access-date=12 April 2026 |date=16 February 2026}}</ref>}}
+| {{Hidden||Mixture-of-experts model, successor of Param-1; many more Indic languages are supported. Trained on H100 GPUs for 24 days.<ref>{{Cite web |title=bharatgenai/Param2-17B-A2.4B-Thinking |url=https://huggingface.co/bharatgenai/Param2-17B-A2.4B-Thinking |access-date=8 March 2026 |via=[[Hugging Face]] |archive-url=https://web.archive.org/web/20260228115432/https://huggingface.co/bharatgenai/Param2-17B-A2.4B-Thinking |archive-date=28 February 2026 |url-status=live}}</ref>}}
+|-
+| Sarvam-105B
+| rowspan="2" | {{dts|2026-02-18|format=md|abbr=on}}
+| rowspan="2" | [[Sarvam AI]]
+| {{sort|105|105B}}
+| {{sort|12000|12T}}
+| rowspan="2" {{yes|[[Apache 2.0]]}}
+| rowspan="2" | {{Hidden||India's first independently-trained foundation model; has 105B and 30B versions. Based on mixture-of-experts model, using only 10.3B active parameters at a time.<ref>{{Cite web |title=sarvamai/sarvam-105b · Hugging Face |url=https://huggingface.co/sarvamai/sarvam-105b |access-date=8 March 2026 |website=huggingface.co |archive-url=https://web.archive.org/web/20260308042018/https://huggingface.co/sarvamai/sarvam-105b |archive-date=8 March 2026 |url-status=live}}</ref> Interprets Indic languages and [[Hinglish]].<ref>{{Cite web |last=Kumar |first=Abhijeet |date=19 February 2026 |title=Why Sarvam's new 105B model marks a shift in India's sovereign AI ambitions |url=https://www.business-standard.com/technology/tech-news/sarvam-105b-model-sovereign-ai-india-foundation-model-launch-impact-summit-126021900551_1.html |website=[[Business Standard]] |access-date=18 March 2026 |archive-url=https://web.archive.org/web/20260304181221/https://www.business-standard.com/technology/tech-news/sarvam-105b-model-sovereign-ai-india-foundation-model-launch-impact-summit-126021900551_1.html |archive-date=4 March 2026 |url-status=live}}</ref><ref>{{Cite web |last=Singh |first=Jagmeet |date=18 February 2026 |title=Indian AI lab Sarvam's new models are a major bet on the viability of open source AI |url=https://techcrunch.com/2026/02/18/indian-ai-lab-sarvams-new-models-are-a-major-bet-on-the-viability-of-open-source-ai/ |access-date=18 March 2026 |website=TechCrunch |language=en-US}}</ref><ref name="sarvam-30b-105b-blog">{{cite web |title=Open-Sourcing Sarvam 30B and 105B |url=https://www.sarvam.ai/blogs/sarvam-30b-105b |website=[[Sarvam AI]] |date=6 March 2026 |access-date=8 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260508171015/https://www.sarvam.ai/blogs/sarvam-30b-105b |archive-date=8 May 2026}}</ref> An early checkpoint of the model was released in January.<ref>{{Cite web |title=sarvamai/sarvam-1-v0.5 · Hugging Face |url=https://huggingface.co/sarvamai/sarvam-1-v0.5 |access-date=8 March 2026 |website=huggingface.co}}</ref>}}
+|-
+| Sarvam-30B
+| {{sort|30|30B}}
+| style="text-align: right;" | {{sort|16000|16T}}
+|-
+| [[GPT-5.4]]
+| {{dts|2026-03-05|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| rowspan="5" {{Unknown}}
+| {{proprietary}}
+|
+|-
+| Mistral Small 4
+| {{dts|2026-03-17|format=md|abbr=on}}
+| [[Mistral AI]]
+| {{sort|119|119B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||MoE model with 6B active parameters out of 119B total<ref>{{cite web |last1=Marquez |first1=Javier |title=Una IA para reunir todas las funciones posibles: la apuesta de Mistral con Small 4 es hacer más con menos cosas |url=https://www.xataka.com/robotica-e-ia/europea-mistral-acaba-lanzar-small-4-su-apuesta-carrera-ia-reunir-varias-funciones-solo-modelo |website=Xataka |access-date=20 April 2026 |language=es |date=17 March 2026 |trans-title=An AI to bring together all possible functions: Mistral's bet with Small 4 is to do more with less}}</ref><ref>{{cite web |title=Introducing Mistral Small 4 |url=https://mistral.ai/news/mistral-small-4 |website=[[Mistral AI]] |access-date=20 April 2026 |archive-url=https://web.archive.org/web/20260421154221/https://mistral.ai/news/mistral-small-4 |archive-date=21 April 2026 |url-status=live }}</ref>}}
+|-
+| [[Xiaomi MiMo#MiMo-V2-Pro|MiMo-V2-Pro]]
+| {{dts|2026-03-18|format=md|abbr=on}}
+| [[Xiaomi]]
+| {{sort|1000|1T}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||[[Mixture-of-experts]] (MoE) model with more than 1 trillion parameters (43 billion active). Designed for agentic scenarios. Initially available on OpenRouter under the codename "Hunter Alpha" before official release.<ref>{{cite news |url=https://www.reuters.com/business/media-telecom/mystery-ai-model-has-developers-buzzing-is-this-deepseeks-latest-blockbuster-2026-03-18/ |title=Mystery AI model revealed to be Xiaomi's following suspicions it was DeepSeek's |work=[[Reuters]] |date=18 March 2026 |access-date=3 April 2026}}</ref><ref>{{Cite news |date=19 March 2026 |title=Xiaomi Launches Powerful AI Model MiMo-V2 Pro With 1 Trillion Parametres, 1 Million Token Context Window |url=https://www.ndtvprofit.com/technology/xiaomi-launches-powerful-ai-model-mimo-v2-pro-with-1-trillion-parametres-1-million-token-context-window-11236705 |work=[[NDTV Profit]] |archive-url=https://web.archive.org/web/20260412201654/https://www.ndtvprofit.com/technology/xiaomi-launches-powerful-ai-model-mimo-v2-pro-with-1-trillion-parametres-1-million-token-context-window-11236705 |archive-date=12 April 2026 |access-date=3 April 2026 |url-status=live}}</ref>}}
+|-
+| Qwen3.6-Plus
+| {{dts|2026-04-01|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{Unknown}}
+| {{Hidden||<ref>{{cite news |title=Qwen 3.6-Plus has been released, featuring an agent function that autonomously performs tasks. |url=https://gigazine.net/gsc_news/en/20260403-qwen-3-6-plus/ |access-date=18 July 2026 |work=[[Gigazine]] |date=3 April 2026 }}</ref><ref>{{cite web |title=Qwen3.6-Plus: Towards Real World Agents |url=https://qwen.ai/blog?id=qwen3.6 |website=[[Qwen]] |access-date=18 July 2026 |date=1 April 2026 |archive-url=https://web.archive.org/web/20260814042111/https://qwen.ai/blog?id=qwen3.6 |archive-date=14 August 2026 |url-status=live}}</ref>}}
+|-
+| [[Gemma 4]]
+| {{dts|2026-04-02|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{sort|31|31B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Released in 31B, 26B A4B (3.8B active parameters), E4B (4B effective parameters), and E2B variants<ref>{{cite web |last1=Whitwam |first1=Ryan |title=Google announces Gemma 4 open AI models, switches to Apache 2.0 license |url=https://arstechnica.com/ai/2026/04/google-announces-gemma-4-open-ai-models-switches-to-apache-2-0-license/ |website=[[Ars Technica]] |access-date=3 April 2026 |date=2 April 2026 |archive-url=https://web.archive.org/web/20260402234225/https://arstechnica.com/ai/2026/04/google-announces-gemma-4-open-ai-models-switches-to-apache-2-0-license/ |archive-date=2 April 2026 |url-status=live}}</ref><ref>{{cite web |last1=Mann |first1=Tobias |title=Google battles Chinese open weights models with Gemma 4 |url=https://www.theregister.com/2026/04/02/googles_gemma_4_open_weights/ |access-date=3 April 2026 |date=2 April 2026}}</ref>}}
+|-
+| [[GLM (AI)|GLM-5.1]]
+| {{dts|2026-04-07|format=md|abbr=on}}
+| [[Z.ai]]
+| {{sort|744|744B}}
+| {{sort|28500|28.5T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||40B active parameters<ref name="GLM-5 GitHub" /><ref>{{cite web |last1=Franzen |first1=Carl |title=AI joins the 8-hour work day as GLM ships 5.1 open source LLM, beating Opus 4.6 and GPT-5.4 on SWE-Bench Pro |url=https://venturebeat.com/technology/ai-joins-the-8-hour-work-day-as-glm-ships-5-1-open-source-llm-beating-opus-4 |website=[[VentureBeat]] |access-date=12 April 2026 |date=7 April 2026}}</ref><ref>{{Cite web |title=GLM-5.1: Towards Long-Horizon Tasks |url=https://z.ai/blog/glm-5.1 |access-date=12 April 2026 |website=Z.ai |archive-url=https://web.archive.org/web/20260410094311/https://z.ai/blog/glm-5.1 |archive-date=10 April 2026 |url-status=live }}</ref>}}
+|-
+| [[Muse Spark]]
+| {{dts|2026-04-08|format=md|abbr=on}}
+| [[Meta Superintelligence Labs|Meta]]
+| {{Unknown}}
+| rowspan="6" {{Unknown}}
+| {{proprietary}}
+| {{Hidden||<ref>{{cite web |title=Introducing Muse Spark: Scaling Towards Personal Superintelligence |url=https://ai.meta.com/blog/introducing-muse-spark-msl/ |website=ai.meta.com |date=8 April 2026 |access-date=9 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260509102400/https://ai.meta.com/blog/introducing-muse-spark-msl/ |archive-date=9 May 2026}}</ref>}}
+|-
+| Qwen3.6
+| {{dts|2026-04-15|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{sort|35|35B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||MoE model with 3B active parameters out of 35B total<ref>{{cite web |title=A Chinese AI called 'Qwen3.6-35B-A3B,' which is more powerful than Gemma4, has been released as an open model. |url=https://gigazine.net/gsc_news/en/20260417-qwen36-35b-a3b |website=[[Gigazine]] |access-date=17 April 2026 |date=17 April 2026}}</ref><ref>{{cite web |title=README.md · Qwen/Qwen3.6-35B-A3B |url=https://huggingface.co/Qwen/Qwen3.6-35B-A3B/blob/main/README.md |via=[[Hugging Face]] |access-date=17 April 2026 |date=15 April 2026}}</ref>}}
+|-
+| [[Claude (language model)#Claude 4.7|Claude Opus 4.7]]
+| {{dts|2026-04-16|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| Kimi K2.6
+| {{dts|2026-04-20|format=md|abbr=on}}
+| [[Moonshot AI]]
+| {{sort|1000|1T}}
+| {{partial success|Modified MIT<ref>{{cite web |title=LICENSE · moonshotai/Kimi-K2.6 |url=https://huggingface.co/moonshotai/Kimi-K2.6/blob/5a49d036ab7472b7d5912ded487150ec1358c11d/LICENSE |via=[[Hugging Face]] |access-date=1 August 2026 |date=14 April 2026 |archive-url=https://web.archive.org/web/20260803080732/https://huggingface.co/moonshotai/Kimi-K2.6/blob/5a49d036ab7472b7d5912ded487150ec1358c11d/LICENSE |archive-date=3 August 2026 |url-status=live}}</ref>}}
+| {{Hidden||32B active parameters<ref name="Gewirtz-2026">{{cite web |last1=Gewirtz |first1=David |title=Moonshot AI's new Kimi K2.6 swarms your complex tasks with 1,000 collaborating agents |url=https://www.zdnet.com/article/moonshot-ai-kimi-k2-6-swarms-complex-tasks-collaborating-agents/ |website=[[ZDNET]] |access-date=17 June 2026 |date=21 April 2026 |archive-url=https://web.archive.org/web/20260504073641/https://www.zdnet.com/article/moonshot-ai-kimi-k2-6-swarms-complex-tasks-collaborating-agents/ |archive-date=4 May 2026 |url-status=live}}</ref><ref name="Li-2026">{{cite web |last=Li |first=Yutong |editor-last=Du |editor-first=Yu |script-title=zh:13小时编码、5天自主运行！Kimi K2.6开源“硬刚”闭源巨头，长程战力能否撕开AGI工业化新赛道？ |url=https://www.nbd.com.cn/articles/2026-04-22/4351579.html |website=[[National Business Daily]] |language=zh |access-date=17 June 2026 |date=22 April 2026 |trans-title=13 hours of coding, 5 days of autonomous operation! Kimi K2.6 open-source "goes head-on" against closed-source giants. Can its long-term capabilities carve out a new path for AGI industrialization? |archive-url=https://web.archive.org/web/20260826210504/https://www.nbd.com.cn/articles/2026-04-22/4351579.html |archive-date=26 August 2026 |url-status=live}}</ref><ref>{{cite web |title=README.md · moonshotai/Kimi-K2.6 |url=https://huggingface.co/moonshotai/Kimi-K2.6/blob/5a49d036ab7472b7d5912ded487150ec1358c11d/README.md |access-date=17 June 2026 |date=23 April 2026 |via=[[Hugging Face]]}}</ref>}}
+|-
+| [[GPT-5.5]]
+| {{dts|2026-04-23|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Unknown}}
+| {{proprietary}}
+|
+|-
+| [[Tencent Hy|Hy3 preview]]
+| {{dts|2026-04-23|format=md|abbr=on}}
+| [[Tencent]]
+| {{sort|295|295B}}
+| {{partial|Tencent Hy Community<ref>{{cite web |title=LICENSE · Tencent-Hunyuan/Hy3-preview |url=https://github.com/Tencent-Hunyuan/Hy3-preview/blob/main/LICENSE |via=[[GitHub]] |access-date=8 September 2026 |archive-url=https://web.archive.org/web/20260909030226/https://github.com/Tencent-Hunyuan/Hy3-preview/blob/main/LICENSE |archive-date=9 September 2026 |url-status=live}}</ref>}}
+| {{Hidden||[[Mixture-of-experts]] model with 21B active parameters and a 256K-token context window. Preview predecessor to Hy3.<ref>{{cite web |title=Tencent Unveils Hy3 preview; Model Enhances Agent Capabilities and Real-World Usability |url=https://www.tencent.com/index.php/en-us/articles/2202320.html |website=[[Tencent]] |date=24 April 2026 |access-date=8 September 2026 |archive-url=https://web.archive.org/web/20260908001014/https://www.tencent.com/index.php/en-us/articles/2202320.html |archive-date=8 September 2026 |url-status=live}}</ref>}}
+|-
+| MiMo-V2.5-Pro
+| rowspan="2" | {{dts|2026-04-27|format=md|abbr=on}}
+| rowspan="2" | [[Xiaomi]]
+| {{sort|1020|1.02T}}
+| {{sort|48000|48T}}
+| rowspan="2" {{yes|[[MIT License|MIT]]}}
+| {{Hidden||MoE model designed for agentic coding and long-horizon software engineering tasks.<ref>{{Cite web |title=MiMo-V2.5-Pro {{!}} Xiaomi |url=https://mimo.xiaomi.com/mimo-v2-5-pro |access-date=3 May 2026 |website=mimo.xiaomi.com |archive-url=https://web.archive.org/web/20260429130002/https://mimo.xiaomi.com/mimo-v2-5-pro |archive-date=29 April 2026 |url-status=live}}</ref><ref>{{cite web |last1=Thomas |first1=Prasanth Aby |title=Xiaomi releases MIT-licensed MiMo models for long-running AI agents |url=https://www.computerworld.com/article/4164220/xiaomi-releases-mit%E2%80%91licensed-mimo-models-for-long%E2%80%91running-ai-agents-2.html |website=[[Computerworld]] |access-date=6 May 2026 |date=28 April 2026 |archive-url=https://web.archive.org/web/20260429051714/https://www.computerworld.com/article/4164220/xiaomi-releases-mit%E2%80%91licensed-mimo-models-for-long%E2%80%91running-ai-agents-2.html |archive-date=29 April 2026 |url-status=live}}</ref>}}
+|-
+| MiMo-V2.5
+| {{sort|310|310B}}
+| style="text-align: right;" | {{sort|27000|27T}}
+| {{Hidden||Omni-modal MoE model with agentic capabilities and 1M-token context.<ref>{{cite web |title=XiaomiMiMo/MiMo-V2.5 |url=https://huggingface.co/XiaomiMiMo/MiMo-V2.5 |access-date=3 May 2026 |website=Hugging Face |date=27 April 2026 |publisher=XiaomiMiMo |archive-url=https://web.archive.org/web/20260428052838/https://huggingface.co/XiaomiMiMo/MiMo-V2.5 |archive-date=28 April 2026 |url-status=live}}</ref>}}
+|-
+|Mistral Medium 3.5
+| {{dts|2026-04-28|format=md|abbr=on}}
+|[[Mistral AI]]
+|128B
+| rowspan="7" {{Unknown}}
+| {{partial|Modified MIT<ref>{{cite web |title=LICENSE · mistralai/Mistral-Medium-3.5-128B |url=https://huggingface.co/mistralai/Mistral-Medium-3.5-128B/blob/32f566da413d9fde169ee1276a7551f4a2d660fb/LICENSE |via=[[Hugging Face]] |access-date=14 August 2026 |date=29 April 2026 |archive-url=https://web.archive.org/web/20260814212728/https://huggingface.co/mistralai/Mistral-Medium-3.5-128B/blob/32f566da413d9fde169ee1276a7551f4a2d660fb/LICENSE |archive-date=14 August 2026 |url-status=live}}</ref>}}
+| {{Hidden||Mistral AI's flagship model that merges instruction-following, reasoning, and coding into a single 128B dense model<ref>{{cite web |title=Mistral Medium 3.5 - Mistral AI |url=https://docs.mistral.ai/models/model-cards/mistral-medium-3-5-26-04 |website=docs.mistral.ai |access-date=10 July 2026 |archive-url=https://web.archive.org/web/20260715025103/https://docs.mistral.ai/models/model-cards/mistral-medium-3-5-26-04 |archive-date=15 July 2026 |url-status=live }}</ref>}}
+|-
+| Composer 2.5
+| {{dts|2026-05-18|format=md|abbr=on}}
+| [[Cursor (code editor)|Cursor]]
+| {{sort|1000|1T}}
+| rowspan="4" {{proprietary}}
+| {{Hidden||Agentic coding model available in the Cursor IDE. Built on [[Kimi (chatbot)|Kimi]] K2.5 with additional reinforcement learning; reported 1T total / 32B active parameters.<ref>{{cite web |title=Composer 2.5 |url=https://cursor.com/changelog/composer-2-5 |website=Cursor |date=18 May 2026 |access-date=24 July 2026 |archive-url=https://web.archive.org/web/20260724202818/https://cursor.com/changelog/composer-2-5 |archive-date=24 July 2026 |url-status=live}}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 3.5 Flash]]
+| {{dts|2026-05-19|format=md|abbr=on}}
+| [[Google DeepMind]]
+| rowspan="3" {{Unknown}}
+| {{Hidden||<ref>{{cite web |title=Gemini 3.5: frontier intelligence with action |url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/ |website=Google |language=en-us |date=19 May 2026 |access-date=20 May 2026 |archive-url=https://web.archive.org/web/20260713172325/https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/ |archive-date=13 July 2026 |url-status=live}}</ref>}}
+|-
+| Qwen3.7-Max
+| {{dts|2026-05-20|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{Hidden||<ref>{{cite news |last1=Bhati |first1=Divya |title=Alibaba AI Qwen latest model beats Google Gemini and ChatGPT in coding |url=https://www.indiatoday.in/technology/news/story/alibaba-ai-qwen-latest-model-beats-google-gemini-and-chatgpt-in-coding-2918356-2026-05-28 |work=[[India Today]] |access-date=18 July 2026 |date=28 May 2026 |archive-url=https://web.archive.org/web/20260721123319/https://www.indiatoday.in/technology/news/story/alibaba-ai-qwen-latest-model-beats-google-gemini-and-chatgpt-in-coding-2918356-2026-05-28 |archive-date=21 July 2026 |url-status=live}}</ref><ref>{{cite web |title=Qwen3.7: The Agent Frontier |url=https://qwen.ai/blog?id=qwen3.7 |website=[[Qwen]] |access-date=18 July 2026 |date=20 May 2026 |archive-url=https://web.archive.org/web/20260720072717/https://qwen.ai/blog?id=qwen3.7 |archive-date=20 July 2026 |url-status=live}}</ref>}}
+|-
+| [[Claude (language model)#Claude 4.8|Claude Opus 4.8]]
+| {{dts|2026-05-28|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Hidden||<ref>{{cite web |title=Introducing Claude Opus 4.8 |url=https://www.anthropic.com/news/claude-opus-4-8 |website=Anthropic |date=28 May 2026 |access-date=30 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260530073105/https://www.anthropic.com/news/claude-opus-4-8 |archive-date=30 May 2026}}</ref>}}
+|-
+| Step 3.7 Flash
+| {{dts|2026-05-29|format=md|abbr=on}}
+| [[StepFun]]
+| {{sort|198|198B}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||Parameter count is 196B (base) + 1.8B ([[ViT]]).<ref>{{cite web |title=Step 3.7 Flash |url=https://static.stepfun.com/blog/step-3.7-flash/ |website=StepFun |date=29 May 2026 |access-date=30 May 2026 |url-status=live |archive-url=https://web.archive.org/web/20260530102737/https://static.stepfun.com/blog/step-3.7-flash/ |archive-date=30 May 2026}}</ref>}}
+|-
+| [[MiniMax-M3]]
+| {{dts|2026-06-01|format=md|abbr=on}}
+| [[MiniMax Group|MiniMax]]
+| {{sort|428|428B}}
+| {{partial|MiniMax Community<ref>{{cite web |title=LICENSE · MiniMaxAI/MiniMax-M3 |url=https://huggingface.co/MiniMaxAI/MiniMax-M3/blob/3a41b311ffa5719cef48fed3974ccf2cc03733ea/LICENSE |access-date=19 July 2026 |date=12 June 2026 |via=[[Hugging Face]]}}</ref>}}
+| {{Hidden||23B active parameters<ref>{{cite news |last1=Chang |first1=Minxiao |title=MiniMax debuts AI model built for long and complex coding tasks |url=https://www.scmp.com/tech/tech-trends/article/3355529/minimax-debuts-ai-model-built-long-and-complex-coding-tasks |access-date=19 July 2026 |work=[[South China Morning Post]] |date=1 June 2026 |archive-url=https://web.archive.org/web/20260823001453/https://www.scmp.com/tech/tech-trends/article/3355529/minimax-debuts-ai-model-built-long-and-complex-coding-tasks |archive-date=23 August 2026 |url-status=live }}</ref><ref>{{cite web |title=README.md · MiniMaxAI/MiniMax-M3 |url=https://huggingface.co/MiniMaxAI/MiniMax-M3/blob/3a41b311ffa5719cef48fed3974ccf2cc03733ea/README.md |access-date=19 July 2026 |date=12 June 2026 |via=[[Hugging Face]]}}</ref>}}
+|-
+| [[Nemotron]] 3 Ultra
+| {{dts|2026-06-04|format=md|abbr=on}}
+| [[Nvidia]]
+| {{sort|550|550B}}
+| {{sort|20000|20T}}
+| {{yes|OpenMDW 1.1<ref name="OpenMDW-1.1">{{cite web |title=OpenMDW-1.1 |url=https://openmdw.ai/license/1-1/ |website=OpenMDW |access-date=19 July 2026 |archive-url=https://web.archive.org/web/20260720122752/https://openmdw.ai/license/1-1/ |archive-date=20 July 2026 |url-status=live}}</ref>}}
+| {{Hidden||55B active parameters<ref>{{cite news |title=NVIDIA announces its most powerful open-source model in the US, the 'Nemotron 3 Ultra,' and reports the start of mass production of its AI server, 'Vera Rubin.' |url=https://gigazine.net/gsc_news/en/20260601-nemotron-3-ultra/ |access-date=16 July 2026 |work=[[Gigazine]] |date=1 June 2026 }}</ref><ref>{{cite news |title=README.md · nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4 |url=https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/blob/183968f87ae4cedce3039313cac1fd43d112c578/README.md |access-date=16 July 2026 |date=24 June 2026 |via=[[Hugging Face]]}}</ref>}}
+|-
+| [[Claude (language model)#Claude 5|Claude Fable 5]]
+| {{dts|2026-06-09|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Unknown}}
+| rowspan="2" {{Unknown}}
+| {{proprietary}}
+| {{Hidden||<ref>{{Cite web |title=Claude Fable 5 and Claude Mythos 5 |url=https://www.anthropic.com/news/claude-fable-5-mythos-5 |website=Anthropic |date=9 June 2026 |access-date=11 June 2026 |url-status=live |archive-url=https://web.archive.org/web/20260610121601/https://www.anthropic.com/news/claude-fable-5-mythos-5 |archive-date=10 June 2026}}</ref>}}
+|-
+| Kimi K2.7 Code
+| {{dts|2026-06-16|format=md|abbr=on}}
+| [[Moonshot AI]]
+| {{sort|1000|1T}}
+| {{partial success|Modified MIT<ref>{{cite web |title=LICENSE · moonshotai/Kimi-K2.7-Code |url=https://huggingface.co/moonshotai/Kimi-K2.7-Code/blob/da26fe4d239c5c9d14507f1f909894201f911ede/LICENSE |via=[[Hugging Face]] |access-date=1 August 2026 |date=11 June 2026 |archive-url=https://web.archive.org/web/20260801170902/https://huggingface.co/moonshotai/Kimi-K2.7-Code/blob/da26fe4d239c5c9d14507f1f909894201f911ede/LICENSE |archive-date=1 August 2026 |url-status=live}}</ref>}}
+| {{Hidden||32B active parameters<ref>{{cite web |title=The Chinese-made AI model 'Kimi K2.7 Code' has been released as an open model, boasting the best coding performance in the Kimi series and low token consumption. |url=https://gigazine.net/gsc_news/en/20260615-kimi-k2-7-code/ |website=[[Gigazine]] |access-date=17 June 2026 |date=15 June 2026}}</ref><ref>{{cite web |title=README.md · moonshotai/Kimi-K2.7-Code |url=https://huggingface.co/moonshotai/Kimi-K2.7-Code/blob/78b5c461e9cd0ffa168d8b5c2151bcf6b0799d7d/README.md |access-date=17 June 2026 |date=12 June 2026 |via=[[Hugging Face]]}}</ref>}}
+|-
+| [[GLM (AI)|GLM-5.2]]
+| {{dts|2026-06-16|format=md|abbr=on}}
+| [[Z.ai]]
+| {{sort|744|744B}}
+| {{sort|28500|28.5T}}
+| rowspan="2" {{yes|[[MIT License|MIT]]}}
+| {{Hidden||40B active parameters<ref name="Chang-2026-2">{{cite web |last1=Chang |first1=Minxiao |title=Zhipu AI's stock rockets after Chinese firm launches GLM-5.2 model |url=https://www.scmp.com/tech/tech-trends/article/3357115/zhipu-ais-stock-rockets-after-chinese-firm-makes-glm-52-open-source |website=[[South China Morning Post]] |access-date=17 June 2026 |date=15 June 2026}}</ref><ref name="Economic-Times-2026">{{cite web |title=China's Z.ai GLM-5.2 tops OpenAI's GPT 5.5 model on key benchmarks |url=https://economictimes.indiatimes.com/tech/artificial-intelligence/chinas-z-ai-glm-5-2-tops-openais-gpt-5-5-model-on-key-benchmarks/articleshow/131805202.cms |website=[[The Economic Times]] |access-date=17 June 2026 |date=17 June 2026 |archive-url=https://web.archive.org/web/20260619103338/https://economictimes.indiatimes.com/tech/artificial-intelligence/chinas-z-ai-glm-5-2-tops-openais-gpt-5-5-model-on-key-benchmarks/articleshow/131805202.cms |archive-date=19 June 2026 |url-status=live}}</ref><ref name="GLM-5.2 release">{{Cite web |title=GLM-5.2: Built for Long-Horizon Tasks |url=https://z.ai/blog/glm-5.2 |access-date=16 June 2026 |website=Z.ai |archive-url=https://web.archive.org/web/20260616175106/https://z.ai/blog/glm-5.2 |archive-date=16 June 2026 |url-status=live }}</ref>}}
+|-
+| [[LongCat-2.0]]
+| {{dts|2026-06-30|format=md|abbr=on}}
+| [[Meituan]]
+| {{sort|1600|1.6T}}
+| {{sort|35000|35T}}
+| {{Hidden||48B active parameters. Preview version previously released as "Owl Alpha" on OpenRouter.<ref>{{cite news |last1=Franzen |first1=Carl |title=Meituan open sources LongCat-2.0, the 1.6T, near-frontier agentic coding model that's been leading OpenRouter — trained entirely on Chinese chips |url=https://venturebeat.com/technology/meituan-open-sources-longcat-2-0-the-1-6t-near-frontier-agentic-coding-model-thats-been-leading-openrouter-trained-entirely-on-chinese-chips |website=[[VentureBeat]] |access-date=16 July 2026 |date=29 June 2026 |archive-url=https://web.archive.org/web/20260701164813/https://venturebeat.com/technology/meituan-open-sources-longcat-2-0-the-1-6t-near-frontier-agentic-coding-model-thats-been-leading-openrouter-trained-entirely-on-chinese-chips |archive-date=1 July 2026 |url-status=live}}</ref><ref>{{cite web |title=Introducing LongCat-2.0 |url=https://longcat.chat/blog/longcat-2.0/ |website=LongCat |access-date=16 July 2026 |date=30 June 2026}}</ref>}}
+|-
+| [[Tencent Hy|Hy3]]
+| {{dts|2026-07-06|format=md|abbr=on}}
+| [[Tencent]]
+| {{sort|295|295B}}
+| rowspan="5" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||21B active parameters<ref>{{cite news |last1=Witteveen |first1=Sam |title=Tencent's Apache-licensed Hy3 takes on GLM-5.2 at half the size — and wins everywhere except coding |url=https://venturebeat.com/technology/tencents-apache-licensed-hy3-takes-on-glm-5-2-at-half-the-size-and-wins-everywhere-except-coding |access-date=15 July 2026 |work=[[VentureBeat]] |date=6 July 2026}}</ref>}}
+|-
+| [[Grok (chatbot)|Grok 4.5]]
+| {{dts|2026-07-08|format=md|abbr=on}}
+| [[XAI (company)|SpaceXAI]]
+| rowspan="4" {{Unknown}}
+| rowspan="4" {{proprietary}}
+| {{Hidden||Frontier model for coding, agentic tasks, and knowledge work; trained alongside Cursor. Public availability followed on 9 July 2026.<ref>{{cite web |title=Introducing Grok 4.5 |url=https://x.ai/news/grok-4-5 |website=x.ai |access-date=24 July 2026 |archive-url=https://web.archive.org/web/20260724214146/https://x.ai/news/grok-4-5 |archive-date=24 July 2026 |url-status=live}}</ref><ref>{{cite web |title=SpaceXAI releases Grok 4.5, which Elon describes as an 'Opus-class model' |url=https://techcrunch.com/2026/07/08/spacexai-releases-grok-4-5-which-elon-describes-as-an-opus-class-model/ |website=TechCrunch |date=8 July 2026 |access-date=24 July 2026 |archive-url=https://web.archive.org/web/20260724050057/https://techcrunch.com/2026/07/08/spacexai-releases-grok-4-5-which-elon-describes-as-an-opus-class-model/ |archive-date=24 July 2026 |url-status=live}}</ref>}}
+|-
+| SWE-1.7
+| {{dts|2026-07-08|format=md|abbr=on}}
+| [[Cognition AI]]
+| {{Hidden||Coding model for the [[Devin (artificial intelligence)|Devin]] agent; trained from a [[Kimi (chatbot)|Kimi]] K2.7 base with Cognition's reinforcement-learning pipeline. Available via Devin (not as open weights).<ref>{{cite web |title=SWE-1.7 |url=https://cognition.com/blog/swe-1-7 |website=Cognition |date=8 July 2026 |access-date=24 July 2026}}</ref>}}
+|-
+| [[Muse Spark]] 1.1
+| {{dts|2026-07-09|format=md|abbr=on}}
+| [[Meta Superintelligence Labs|Meta]]
+| {{Hidden||<ref>{{cite news |last1=Varghese |first1=Harshita |title=Meta debuts Muse Spark 1.1 model with preview open to developers |url=https://www.reuters.com/business/meta-debuts-muse-spark-11-with-preview-open-developers-2026-07-09/ |access-date=9 July 2026 |work=Reuters |date=9 July 2026}}</ref>}}
+|-
+| [[GPT-5.6]]
+| {{dts|2026-07-09|format=md|abbr=on}}
+| [[OpenAI]]
+|
+|-
+| [[Inkling (large language model)|Inkling]]
+| {{dts|2026-07-15|format=md|abbr=on}}
+| [[Thinking Machines Lab]]
+| {{sort|975|975B}}
+| {{sort|45000|45T}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||41B active parameters<ref>{{cite web |last1=Loizos |first1=Connie |title=Thinking Machines amps up its bet against one-size-fits-all AI with its first open model, Inkling |url=https://techcrunch.com/2026/07/15/thinking-machines-amps-up-its-bet-against-one-size-fits-all-ai-with-its-first-open-model-inkling/ |website=[[TechCrunch]] |access-date=15 July 2026 |date=15 July 2026 |archive-url=https://web.archive.org/web/20260715180621/https://techcrunch.com/2026/07/15/thinking-machines-amps-up-its-bet-against-one-size-fits-all-ai-with-its-first-open-model-inkling/ |archive-date=15 July 2026 |url-status=live}}</ref><ref>{{cite web |last1=Franzen |first1=Carl |title=Thinking Machines open sources first multimodal language model, Inkling, focused on low cost and 'resistance to censorship' |url=https://venturebeat.com/technology/thinking-machines-open-sources-first-multimodal-language-model-inkling-focused-on-low-cost-and-resistance-to-censorship |website=[[VentureBeat]] |access-date=15 July 2026 |date=15 July 2026}}</ref>}}
+|-
+| [[Kimi K3]]
+| {{dts|2026-07-16|format=md|abbr=on}}
+| [[Moonshot AI]]
+| {{sort|2800|2.8T}}
+| rowspan="5" {{Unknown}}
+| {{partial|Kimi K3<ref>{{cite web |last1=Franzen |first1=Carl |title=Kimi K3's full weights are here, but they're 'open' with a caveat: What enterprises should know |url=https://venturebeat.com/technology/kimi-k3s-full-weights-are-here-but-theyre-open-with-a-caveat-what-enterprises-should-know |website=[[VentureBeat]] |access-date=1 August 2026 |date=27 July 2026}}</ref>}}
+| {{Hidden||104B active parameters. Weights released on 27 July.<ref>{{cite news |title=Moonshot AI releases Kimi K3 model weights under custom licence: What it means for enterprises |url=https://indianexpress.com/article/technology/artificial-intelligence/china-moonshot-ai-kimi-k3-model-weights-custom-licence-10807478/ |work=[[The Indian Express]] |access-date=1 August 2026 |date=28 July 2026 |archive-url=https://web.archive.org/web/20260801163221/https://indianexpress.com/article/technology/artificial-intelligence/china-moonshot-ai-kimi-k3-model-weights-custom-licence-10807478/ |archive-date=1 August 2026 |url-status=live}}</ref><ref>{{cite news |last1=Yildirim |first1=Ece |title=China Just Dropped Another Bomb on America's Frontier AI Companies |url=https://gizmodo.com/china-just-dropped-another-bomb-on-americas-frontier-ai-companies-2000786670 |work=[[Gizmodo]] |access-date=16 July 2026 |date=16 July 2026}}</ref>}}
+|-
+| [[Qwen3.8]]
+| {{dts|2026-07-19|format=md|abbr=on}}
+| [[Alibaba Cloud]]
+| {{sort|2400|2.4T}}
+| {{partial|[[Qwen#List of models|Various]]}}
+| {{Hidden||Available in 2.4T (95B active parameters) and 27B variants.<ref name="Gigazine Qwen3.8">{{cite web |title=Qwen3.8, a Chinese AI with 2.4 trillion parameters, has been released as an open model for free, boasting performance comparable to the most advanced models from OpenAI and Anthropic. |url=https://gigazine.net/gsc_news/en/20260813-alibaba-qwen-3-8-open/ |website=[[Gigazine]] |access-date=13 August 2026 |date=13 August 2026}}</ref><ref name="ITHome-Qwen3.8-27B">{{cite web |author1=Qing Yuan |script-title=zh:阿里开源 Qwen3.8-27B 模型，编程、办公场景表现超越 Qwen3.7-Plus |url=https://www.ithome.com/0/989/953.htm |website=[[ITHome (website)|ITHome]] |access-date=15 August 2026 |date=14 August 2026 |trans-title=Alibaba open-sources Qwen3.8-27B model, which outperforms Qwen3.7-Plus in programming and office applications |archive-url=https://web.archive.org/web/20260815105001/https://www.ithome.com/0/989/953.htm |archive-date=15 August 2026 |url-status=live}}</ref> Preview of Qwen3.8-Max (proprietary variant with image input) was released on 19 July.<ref>{{cite news |title=Alibaba's Qwen Unveils Preview of Flagship AI Model |url=https://www.bloomberg.com/news/articles/2026-07-19/alibaba-s-qwen-unveils-preview-of-flagship-ai-model |access-date=19 July 2026 |work=[[Bloomberg News]] |date=19 July 2026 |archive-url=https://web.archive.org/web/20260819110715/https://www.bloomberg.com/news/articles/2026-07-19/alibaba-s-qwen-unveils-preview-of-flagship-ai-model |archive-date=19 August 2026 |url-status=live}}</ref> Weights for 2.4T variant released on 12 August.<ref name="Gigazine Qwen3.8" /> 27B variant released on 14 August.<ref name="ITHome-Qwen3.8-27B" />}}
+|-
+| [[Gemini (language model)|Gemini 3.5 Flash Lite]]
+| {{DTS|2026-07-21|format=md|abbr=on}}
+| [[Google DeepMind]]
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{Proprietary}}
+| {{Hidden||<ref name="blog.google">{{Cite web |date=21 July 2026 |title=Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber |url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/ |access-date=22 July 2026 |website=Google |language=en-us}}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 3.6 Flash]]
+| {{DTS|2026-07-21|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{Hidden||<ref name="blog.google"/>}}
+|-
+| [[Laguna S 2.1]]
+| {{dts|2026-07-21|format=md|abbr=on}}
+| [[Poolside AI]]
+| {{sort|118|118B}}
+| {{yes|OpenMDW 1.1<ref name="OpenMDW-1.1" />}}
+| {{Hidden||8B active parameters<ref>{{cite web |last1=Martin |first1=Iain |title=American Open-Source Labs Think They Can Beat China's Best AI Startups |url=https://www.forbes.com/sites/iainmartin/2026/07/21/american-open-source-labs-think-they-can-beat-chinas-best-ai-startups/ |website=[[Forbes]] |access-date=23 July 2026 |date=21 July 2026}}</ref><ref>{{cite web |last1=Nuñez |first1=Michael |title=Poolside drops Laguna S 2.1, an open-weight coding model that beats rivals 10x its size |url=https://venturebeat.com/infrastructure/poolside-drops-laguna-s-2-1-an-open-weight-coding-model-that-beats-rivals-10x-its-size |website=[[VentureBeat]] |access-date=23 July 2026 |date=21 July 2026}}</ref>}}
+|-
+| Motif 3
+| {{dts|2026-07-21|format=md|abbr=on}}
+| Motif Technologies
+| {{sort|314|314B}}
+| {{sort|12500|12.5T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||13.2B active parameters. Preview release on 21 July.<ref>{{cite web |last1=Yoon |first1=Jeong-hoon |script-title=ko:한국 AI의 쾌거…모티프3, 中 딥시크V4·키미K.26 어깨 나란히 |url=https://www3.edaily.co.kr/News/Read?newsId=03460406645516816 |website={{ill|Edaily|ko|이데일리}} |access-date=14 August 2026 |language=ko |date=21 July 2026 |trans-title=A Triumph for Korean AI... Motif 3 Stands Shoulder to Shoulder with China's DeepSeek-V4 and Kimi K2.6 |archive-url=https://web.archive.org/web/20260721083640/https://www.edaily.co.kr/News/Read?newsId=03460406645516816 |archive-date=21 July 2026 |url-status=live}}</ref> Official version and weights released on 13 August.<ref>{{cite web |last1=Kwon |first1=Yong-man |script-title=ko:독파모 ‘모티프 3’, 한국 1위·글로벌 10위권 평가… 오픈소스 공개 |url=https://it.chosun.com/news/articleView.html?idxno=2023092168121 |website=[[IT Chosun]] |access-date=14 August 2026 |date=13 August 2026 |trans-title=Dokpamo's "Motif 3" Ranked No. 1 in Korea and Among the Top 10 Globally... Released as Open-Source}}</ref><ref>{{cite web |title=README.md · Motif-Technologies/Motif-3 |url=https://huggingface.co/Motif-Technologies/Motif-3/blob/ccceb1a5fd7b5eb32e47841216b3caf5666c07bc/README.md |via=[[Hugging Face]] |access-date=14 August 2026 |date=12 August 2026}}</ref>}}
+|-
+| Solar Open 2
+| {{dts|2026-07-23|format=md|abbr=on}}
+| [[Upstage (company)|Upstage]]
+| {{sort|250|250B}}
+| {{sort|12000|12T}}
+| {{partial|Upstage Solar<ref>{{cite web |title=LICENSE · upstage/Solar-Open2-250B |url=https://huggingface.co/upstage/Solar-Open2-250B/blob/8d1dda5ad2af58207c65348d825772d2f4d72481/LICENSE |via=[[Hugging Face]] |access-date=14 August 2026 |date=22 July 2026}}</ref>}}
+| {{Hidden||15B active parameters<ref>{{cite web |last1=Jhoo |first1=Dong-chan |title=Upstage unveils Solar Open 2, open-weight AI model built for autonomous tasks |url=https://www.koreatimes.co.kr/business/companies/20260723/upstage-unveils-solar-open-2-open-weight-ai-model-built-for-autonomous-tasks |website=[[The Korea Times]] |access-date=14 August 2026 |date=23 July 2026 |archive-url=https://web.archive.org/web/20260814132221/https://www.koreatimes.co.kr/business/companies/20260723/upstage-unveils-solar-open-2-open-weight-ai-model-built-for-autonomous-tasks |archive-date=14 August 2026 |url-status=live}}</ref><ref>{{cite web |title=README.md · upstage/Solar-Open2-250B |url=https://huggingface.co/upstage/Solar-Open2-250B/blob/9190fbe63a2ad8e17fc766ccceb36de7c66f004b/README.md |via=[[Hugging Face]] |access-date=14 August 2026 |date=31 July 2026 |archive-url=https://web.archive.org/web/20260814072107/https://huggingface.co/upstage/Solar-Open2-250B/blob/9190fbe63a2ad8e17fc766ccceb36de7c66f004b/README.md |archive-date=14 August 2026 |url-status=live}}</ref>}}
+|-
+| Fugu-Ultra v1.1
+| {{dts|2026-07-24|format=md|abbr=on}}
+| [[Sakana AI]]
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{proprietary}}
+| {{Hidden||Upgraded Fugu-Ultra with stronger coding, agentic, and reasoning benchmarks vs v1.0.<ref>{{cite web |title=Fugu |url=https://sakana.ai/fugu |website=Sakana AI |access-date=24 July 2026 |archive-url=https://web.archive.org/web/20260724023857/https://sakana.ai/fugu/ |archive-date=24 July 2026 |url-status=live}}</ref>}}
+|-
+| Claude Opus 5
+| {{dts|2026-07-24|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Hidden||<ref>{{cite web |last1=Brandom |first1=Russell |title=Anthropic launches Opus 5 |url=https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/ |website=TechCrunch |date=24 July 2026 |access-date=24 July 2026 |archive-url=https://web.archive.org/web/20260825141907/https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/ |archive-date=25 August 2026 |url-status=live}}</ref>}}
+|-
+| A.X K2
+| {{dts|2026-07-29|format=md|abbr=on}}
+| [[SK Telecom]]
+| {{sort|688|688B}}
+| {{sort|8200|8.2T}}
+| rowspan="3" {{yes|[[Apache 2.0]]}}
+| {{Hidden||33B active parameters<ref>{{cite web |last1=Shim |first1=Min-gwan |title=SK Telecom debuts A.X K2, drives Korea's AI into industry, defense, biotech |url=https://biz.chosun.com/en/en-it/2026/07/29/X6RUYHAE25BWREQ2XMRA7IBJLA/ |website=[[ChosunBiz]] |access-date=14 August 2026 |date=29 July 2026 |archive-url=https://web.archive.org/web/20260814034415/https://biz.chosun.com/en/en-it/2026/07/29/X6RUYHAE25BWREQ2XMRA7IBJLA/ |archive-date=14 August 2026 |url-status=live}}</ref><ref>{{cite web |title=README.md · skt/A.X-K2 |url=https://huggingface.co/skt/A.X-K2/blob/7b3969c2a84b43c03718b9acc82e15a68b1a4c5a/README.md |via=[[Hugging Face]] |access-date=14 August 2026 |date=8 August 2026}}</ref>}}
+|-
+| [[Inkling Small]]
+| {{dts|2026-07-31|format=md|abbr=on}}
+| [[Thinking Machines Lab]]
+| {{sort|276|276B}}
+| rowspan="2" {{Unknown}}
+| {{Hidden||12B active parameters<ref>{{cite web |last1=Franzen |first1=Carl |title=Thinking Machines debuts Inkling Small open source AI model nearing performance of predecessor at about 1/4 size |url=https://venturebeat.com/technology/thinking-machines-debuts-inkling-small-open-source-ai-model-nearing-performance-of-predecessor-at-about-1-4-size |website=[[VentureBeat]] |access-date=1 August 2026 |date=30 July 2026}}</ref>}}
+|-
+| K-Exaone 2.0
+| {{dts|2026-07-31|format=md|abbr=on}}
+| [[LG]]
+| {{sort|750|750B}}
+| {{Hidden||37B active parameters<ref>{{cite web |last1=Jo |first1=He-rim |title=LG unveils Korea's largest AI model with 750 billion parameters |url=https://www.koreaherald.com/article/10827054 |website=[[The Korea Herald]] |access-date=14 August 2026 |date=31 July 2026}}</ref><ref>{{cite web |last1=Choi |first1=A-ri |title=Four AI Teams Face Elimination in National Project Evaluation |url=https://www.chosun.com/english/industry-en/2026/08/10/AQ2U237LPRGOJGTQJZB2TSZSGE/ |website=[[The Chosun Daily]] |access-date=14 August 2026 |date=10 August 2026}}</ref>}}
+|-
+| DeepSeek-V4-Flash
+| {{DTS|2026-07-31|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|284|284B}}
+| {{sort|32000|32T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||13B active parameters.<ref>{{cite web |title=DeepSeek Doubles Down on Low-Cost AI With V4-Flash Update |url=https://www.mitsloanme.com/article/deepseek-doubles-down-on-low-cost-ai-with-v4-flash-update/ |website=[[MIT Sloan Management Review Middle East]] |access-date=14 August 2026 |date=3 August 2026}}</ref> Preview released on 24 April 2026.<ref name="Butts-20261">{{cite web |last1=Butts |first1=Dylan |title=China's DeepSeek releases preview of long-awaited V4 model as AI race intensifies |url=https://www.cnbc.com/2026/04/24/deepseek-v4-llm-preview-open-source-ai-competition-china.html |website=CNBC |date=24 April 2026}}</ref> Official release on 31 July 2026.<ref>{{cite web |last1=Baptista |first1=Eduardo |title=DeepSeek's new AI model is by far the cheapest of well-known models to run, research firm says |url=https://www.reuters.com/business/retail-consumer/deepseeks-new-ai-model-is-by-far-cheapest-well-known-models-run-research-firm-2026-08-03/ |website=[[Reuters]] |access-date=13 August 2026 |date=3 August 2026}}</ref>}}
+|-
+| [[Muse Spark#Muse Glimmer|Muse Glimmer]]
+| {{dts|2026-08-10|format=md|abbr=on}}
+| [[Meta Superintelligence Labs|Meta]]
+| {{sort|30|30B}}
+| rowspan="2" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||<ref>{{cite news |last1=Mohanty |first1=Tamanna |title=Meta launches Muse Glimmer, a 30B open-weight AI model designed to run locally |url=https://www.fortuneindia.com/technology/meta-launches-muse-glimmer-a-30b-open-weight-ai-model-designed-to-run-locally/153062 |access-date=10 August 2026 |work=[[Fortune India]] |date=10 August 2026 |archive-url=https://web.archive.org/web/20260810145946/https://www.fortuneindia.com/technology/meta-launches-muse-glimmer-a-30b-open-weight-ai-model-designed-to-run-locally/153062 |archive-date=10 August 2026 |url-status=live }}</ref>}}
+|-
+| [[Gemini (language model)|Gemini 3.7 Flash]]
+| {{DTS|2026-08-13|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{Unknown}}
+| {{Proprietary}}
+| {{Hidden||<ref>{{Cite web |date=13 August 2026 |title=Gemini 3.7 Flash |url=https://deepmind.google/models/model-cards/gemini-3-7-flash/ |access-date=13 August 2026 |website=Google |language=en-us |archive-url=https://web.archive.org/web/20260813173436/https://deepmind.google/models/model-cards/gemini-3-7-flash/ |archive-date=13 August 2026 |url-status=live}}</ref>}}
+|-
+| DeepSeek-V4-Pro
+| {{DTS|2026-08-13|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|1600|1.6T}}
+| {{sort|32000|32T}}
+| {{yes|[[MIT License|MIT]]}}
+| {{Hidden||49B active parameters.<ref name="Gigazine DeepSeek-V4-Pro">{{cite web |title=Chinese AI startup DeepSeek quietly released 'DeepSeek V4 Pro 0813'. |url=https://gigazine.net/gsc_news/en/20260813-deepseek-v4-pro-0813 |website=[[Gigazine]] |access-date=13 August 2026 |date=13 August 2026}}</ref> Preview released on 24 April 2026.<ref name="Butts-20261" /> Official release on 13 August 2026.<ref name="Gigazine DeepSeek-V4-Pro" />}}
+|-
+| [[GLM-5.3]]
+| {{dts|2026-08-14|format=md|abbr=on}}
+| rowspan=2|[[Z.ai]]
+| {{sort|744|744B}}
+| {{sort|30000|30T}}
+| {{partial|[[GLM (AI)#Models|Various]]}}
+| 40B active
+|-
+| GLM-5.3-flash
+| 28 August
+| 320B
+| 30T
+| {{yes|[[MIT License|MIT]]}}
+| 18B active
+|-
+| [[Tencent Hy|Hy4 preview]]
+| {{dts|2026-08-28|format=md|abbr=on}}
+| [[Tencent]]
+| {{sort|770|770B}}
+| rowspan="5" {{Unknown}}
+| {{yes|[[Apache 2.0]]}}
+| {{Hidden||<ref>{{cite web |title=LICENSE · tencent/Hy4-preview |url=https://huggingface.co/tencent/Hy4-preview/blob/79c38554846799f70bcd54b9142eac71fbecafaf/LICENSE |via=[[Hugging Face]] |access-date=30 August 2026 |date=28 August 2026}}</ref> 49B active parameters. Preview release.<ref>{{cite web |last1=Bhati |first1=Divya |title=Tencent releases new AI model, says it beat ZAI and Moonshoot in testing |url=https://www.indiatoday.in/technology/news/story/tencent-releases-new-ai-model-says-it-beat-zai-and-moonshoot-in-testing-2981956-2026-08-28 |website=[[India Today]] |access-date=30 August 2026 |date=28 August 2026 |archive-url=https://web.archive.org/web/20260830112748/https://www.indiatoday.in/technology/news/story/tencent-releases-new-ai-model-says-it-beat-zai-and-moonshoot-in-testing-2981956-2026-08-28 |archive-date=30 August 2026 |url-status=live}}</ref><ref>{{cite web |title=Tencent Touts New AI Model It Claims Outperforms Z.AI, Moonshot |url=https://www.bloomberg.com/news/articles/2026-08-28/tencent-touts-new-ai-model-it-claims-outperforms-z-ai-moonshot |website=[[Bloomberg News]] |access-date=30 August 2026 |date=28 August 2026}}</ref>}}
+|-
+| [[Claude (AI)#Claude Fable 5.1 and Claude Mythos 5.1|Claude Mythos 5.1]]
+| {{dts|2026-09-01|format=md|abbr=on}}
+| [[Anthropic]]
+| rowspan="4" {{Unknown}}
+| rowspan="4" {{Proprietary}}
+| {{Hidden||<ref name=":0">{{cite web |last1=Patterson |first1=Ben |title=Claude's updated Fable and Mythos models watermark their replies |url=https://www.pcworld.com/article/3224834/claudes-updated-fable-and-mythos-models-watermark-their-replies.html |website=PCWorld |access-date=2 September 2026 |date=1 September 2026}}</ref>}}
+|-
+| [[Claude (AI)#Claude Fable 5.1 and Claude Mythos 5.1|Claude Fable 5.1]]
+| {{dts|2026-09-01|format=md|abbr=on}}
+| [[Anthropic]]
+| {{Hidden||<ref name=":0" />}}
+|-
+| [[Gemini (language model)|Gemini 3.8 Flash]]
+| {{DTS|2026-09-02|format=md|abbr=on}}
+| [[Google DeepMind]]
+| {{Hidden||<ref>{{Cite web |date=2 September 2026 |title=Gemini 3.8 Flash |url=https://deepmind.google/models/model-cards/gemini-3-8-flash/ |access-date=2 September 2026 |website=Google |language=en-us |archive-url=https://web.archive.org/web/20260902151410/https://deepmind.google/models/model-cards/gemini-3-8-flash/ |archive-date=2 September 2026 |url-status=live}}</ref>}}
+|-
+| [[GPT-6 Astra]]
+| rowspan=2| {{dts|2026-09-03|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Hidden||<ref>{{cite news |last1=Bensinger |first1=Greg |title=OpenAI launches new Astra model amid growing scrutiny over agents' safety |url=https://www.reuters.com/legal/litigation/openai-launches-new-astra-model-amid-growing-scrutiny-over-agents-safety-2026-09-03/ |access-date=4 September 2026 |work=Reuters |date=3 September 2026 |location=San Francisco}}</ref>}}
+|-
+| K2 Horizon
+| style="text-align: left;" | [[Mohamed bin Zayed University of Artificial Intelligence|MBUZAI]] / IFM
+| 0.9B to 375B
+| {{sort|20000|20T}}
+| {{yes|[[Apache 2.0]]}}{{efn|name=open_source}}
+| {{Hidden||A family of six different models<ref>{{cite web|url=https://ifm.ai/blog/k2|title=Introducing K2 Horizon: Frontier Performance, Radically Open|date=3 September 2026|publisher=Mohamed bin Zayed University of Artificial Intelligence|access-date=10 September 2026|archive-url=https://web.archive.org/web/20260909095526/https://ifm.ai/blog/k2/|archive-date=9 September 2026|url-status=live}}</ref>}}
+|-
+| [[DeepSeek-V4.1-Flash]]
+| {{dts|2026-09-10|format=md|abbr=on}}
+| [[DeepSeek]]
+| {{sort|552|552B}}
+| {{sort|45000|45T}}
+| rowspan="1" {{yes|[[MIT License|MIT]]}}
+| {{Hidden||8B (prefill) and 16B (decode) active parameters.<ref>{{cite news |last1=Haralu |first1=Kileuna |title=DeepSeek Launches V4.1-Flash to Make Large-Scale AI Inference Cheaper |url=https://analyticsindiamag.com/ai-news/deepseek-launches-v41-flash-to-make-large-scale-ai-inference-cheaper |magazine=Analytics India Mag |access-date=10 September 2026 |date=10 September 2026}}</ref><ref>{{cite web |title=README.md · deepseek-ai/DeepSeek-V4.1-Flash |url=https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/df42c109f1defefcbfcedbe7d905718a12266e40/README.md |via=[[Hugging Face]] |access-date=10 September 2026 |date=10 September 2026}}</ref>}}
+|-
+| [[Grok 4.7]]
+| {{dts|2026-09-21|format=md|abbr=on}}
+| [[SpaceXAI]]
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{Unknown}}
+| rowspan="2" {{Proprietary}}
+| {{Hidden||<ref>{{cite web |title=Introducing Grok 4.7 |url=https://x.ai/news/grok-4-7 |publisher=[[SpaceXAI]] |access-date=30 September 2026 |date=September 21, 2026}}</ref>}}
+|-
+| [[GPT 6|GPT-6 Sol]]
+| rowspan="4"| {{dts|2026-09-22|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Hidden||<ref>{{cite news |last1=Wright |first1=Webb |title=OpenAI Releases New GPT-6 Sol and Luna Models, Sells Them as Mini-Astras |url=https://gizmodo.com/openai-releases-new-gpt-6-sol-and-luna-models-sells-them-as-mini-astras-2000815731 |access-date=30 September 2026 |work=[[Gizmodo]] |date=22 September 2026}}</ref>}}
+|-
+| MiMo-V2.6-Pro
+| rowspan="2", style="text-align: left;" | [[Xiaomi]]
+| {{sort|1020|1.02T}}<ref name="MiMo-V2.6-report">{{cite web |title=MiMo-V2.6: Scaling Reinforcement Learning Toward Self-Improvement |url=https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf |website=[[Hugging Face]] |publisher=XiaomiMiMo |date=22 September 2026 |access-date=30 September 2026 |archive-url=https://web.archive.org/web/20260927220024/https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf |archive-date=27 September 2026 |url-status=live}}</ref>
+| {{sort|30000|30T}}<ref name="MiMo-V2.6-report" />
+| rowspan="2" {{yes|[[MIT License|MIT]]}}
+| rowspan="2" | {{Hidden||Native omni-modal models released as part of the MiMo-V2.6 series.<ref>{{cite web |title=Introducing MiMo-V2.6 series |url=https://mimo.xiaomi.com/mimo-v2-6 |website=Xiaomi MiMo |date=22 September 2026 |access-date=30 September 2026}}</ref>}}
+|-
+| MiMo-V2.6-Flash
+| {{sort|310|310B}}<ref name="MiMo-V2.6-report" />
+| style="text-align: right;" | {{sort|48000|48T}}<ref name="MiMo-V2.6-report" />
+|-
+| Claude Opus 5.5
+| style="text-align: left;", rowspan="2" | [[Anthropic]]
+| rowspan="4" {{Unknown}}
+| rowspan="4" {{Unknown}}
+| rowspan="4" {{Proprietary}}
+| {{Hidden||<ref>{{cite news |title=Anthropic unveils Claude Opus 5.5 |url=https://www.reuters.com/business/anthropic-unveils-claude-opus-55-2026-09-22/ |work=Reuters |date=22 September 2026}}</ref>}}
+|-
+| Claude Sonnet 5.5
+| {{dts|2026-09-28|format=md|abbr=on}}
+| {{Hidden||<ref>{{cite web |last1=Capoot |first1=Ashley |title=Anthropic launches cheaper AI model, its second release since CEO’s call for a slowdown |url=https://www.cnbc.com/2026/09/28/anthropic-sonnet-5-5-launch.html |website=[[CNBC]] |date=28 September 2026 |access-date=30 September 2026 |archive-url=https://web.archive.org/web/20260928193928/https://www.cnbc.com/2026/09/28/anthropic-sonnet-5-5-launch.html |archive-date=28 September 2026 |url-status=live}}</ref>}}
+|-
+| [[GPT 6.1]]
+| {{dts|2026-09-29|format=md|abbr=on}}
+| [[OpenAI]]
+| {{Hidden||<ref>{{cite web |last1=Dellinger |first1=Aj |title=With No Astra to Release, OpenAI Pivots to New GPT-6.1 Sol Model |url=https://gizmodo.com/with-no-astra-to-release-openai-pivots-to-new-gpt-6-1-sol-model-2000819044 |website=[[Gizmodo]] |date=29 September 2026 |access-date=30 September 2026 |archive-url=https://web.archive.org/web/20261001065126/https://gizmodo.com/with-no-astra-to-release-openai-pivots-to-new-gpt-6-1-sol-model-2000819044 |archive-date=1 October 2026 |url-status=live}}</ref>}}
+|-
+| Gemini 4 Argon
+| {{dts|2026-09-30|format=md|abbr=on}}
+| Google DeepMind
+| {{Hidden||<ref>{{cite web |last1=Subin |first1=Samantha | last2=Sigalos |first2=MacKenzie |title=Google rolls out Gemini 4 Argon, its most advanced AI model |url=https://www.cnbc.com/2026/09/30/google-gemini-4-argon-ai.html |website=CNBC}}</ref>}}
+|-
+| Mistral Large 4 Preview<!-- remove preview label and move date to notes on public release -->
+| {{dts|2026-10-07|format=md|abbr=on}}
+| Mistral AI
+| {{sort|1050|1.05T}}
+| {{Unknown}}
+| {{Unknown}}
+| {{Hidden||<ref>{{cite web |last1=Lellouche |first1=Nicolas |title=Mistral relance la France dans la course à l'IA et dévoile « Le Chonk », un modèle de frontière à 1000 milliards de paramètres |url=https://www.numerama.com/tech/2347595-mistral-relance-la-france-dans-la-course-a-lia-et-devoile-le-chonk-un-modele-de-frontiere-a-1000-milliards-de-parametres.html |website=Numerama |lang=fr}}</ref>}}
+|}
+</div>
+
+== See also ==
+* [[Comparison of deep learning software]]
+* [[Comparison of machine learning software]]
+* [[List of AI-assisted software development tools]]
+* [[List of chatbots]]
+* [[List of language model benchmarks]]
+* [[OpenRouter]] – LLM gateway to multiple AI providers
+* [[Open weights]]
+* [[Small language model]]
+
+== Notes ==
+<references group="lower-alpha" />
+
+== References ==
+{{reflist}}
+
+{{Artificial intelligence navbox}}
+{{Large language models}}
+{{Generative AI}}
+{{Portal bar|Language}}
+{{Authority control}}
+
+[[Category:Software comparisons]]
+[[Category:Large language models|*]]
