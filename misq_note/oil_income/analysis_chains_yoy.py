@@ -1,7 +1,9 @@
+import sys; sys.path.insert(0,".")
 import json,glob,numpy as np,pandas as pd
 from scipy import stats
 Q=[f"Q{q} {y}" for y in range(2023,2027) for q in range(1,5)][:14]
-D={f.split('/')[1][:-5]:{r['quarter_label']:r['comps_pct'] for r in json.load(open(f)) if r['comps_pct'] is not None} for f in sorted(glob.glob('chains/*.json'))}
+from chain_loader import load
+D=load()
 P=pd.DataFrame(D).reindex(Q).astype(float)
 def tt(x):
     x=x.dropna(); t=stats.ttest_1samp(x,0); w=stats.wilcoxon(x)
@@ -20,5 +22,5 @@ pl=mm.loc['Q1 2024':'Q1 2026'][cnt.loc['Q1 2024':'Q1 2026']>=10]
 res['Y2_means_by_quarter']={k:round(float(v),2) for k,v in mm.dropna().items()}
 res['Y2_rank_from_lowest']=int(1+(pl.values<mm['Q2 2026']).sum()); res['Y2_n_placebo']=int(len(pl))
 res['Y2_per_chain']=d4.loc['Q2 2026'].round(1).to_dict()
-json.dump(res,open('chains_yoy_results.json','w'),indent=1)
+json.dump(res,open('chains_yoy_results_calendar.json','w'),indent=1)
 print(json.dumps(res,indent=1))

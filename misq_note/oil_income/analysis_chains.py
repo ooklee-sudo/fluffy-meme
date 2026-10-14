@@ -1,11 +1,10 @@
+import sys; sys.path.insert(0,".")
 """Pre-registered chain analysis (ANALYSIS_PLAN_CHAINS.md). Quarters 2023Q1..2026Q2 only; Q4 2022 / Q3 2026 rows dropped."""
 import json,glob,numpy as np,pandas as pd
 from scipy import stats
 Q=[f"Q{q} {y}" for y in range(2023,2027) for q in range(1,5)][:14]  # Q1 2023..Q2 2026
-D={}
-for f in sorted(glob.glob('chains/*.json')):
-    t=f.split('/')[1][:-5]
-    D[t]={r['quarter_label']:r['comps_pct'] for r in json.load(open(f)) if r['comps_pct'] is not None}
+from chain_loader import load
+D=load()
 P=pd.DataFrame(D).reindex(Q).astype(float)
 print(P.round(1).to_string())
 def rank_p(vals,shock): return (np.sum(np.array(vals)<=shock))/len(vals)
@@ -37,5 +36,5 @@ res['check_stacked']=dict(shock=float(s2),placebo_n=len(pl2),rank_p=float(rank_p
 res['check_median']=dict(shock=float(dl.median(axis=1).loc["Q2 2026"]),rank_p=float(rank_p(list(dl.median(axis=1).loc["Q2 2023":"Q4 2025"].values)+[dl.median(axis=1).loc["Q2 2026"]],dl.median(axis=1).loc["Q2 2026"])))
 # also report Q1 2026 transitional delta (descriptive)
 res['descriptive_Q1_2026_delta']=float(d.loc["Q1 2026"])
-json.dump(res,open('chains_results.json','w'),indent=1,default=str)
+json.dump(res,open('chains_results_calendar.json','w'),indent=1,default=str)
 print(json.dumps(res,indent=1,default=str))
