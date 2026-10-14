@@ -1,0 +1,265 @@
+# Surprise, Uncertainty, and Redundancy: An Information-Theoretic Account of How Platform-Mediated Executive Speech Reaches Markets
+
+[Author names and affiliations — to be added]
+
+*Manuscript prepared for submission to MIS Quarterly (version 2). Bracketed items are placeholders to be completed or verified before submission. Every analysis cited here has a dated pre-registration file in the project repository (Appendix A); results that were not pre-registered as confirmatory are labelled exploratory.*
+
+---
+
+## Abstract
+
+Heads of state now announce policy on social platforms, and markets read those feeds in real time. Existing accounts explain market reactions to such speech with attention, salience, or sentiment, but they say little about why identical channels produce messages that sometimes move prices and sometimes do not. We propose an information-theoretic account. A post updates a market's belief over states of the world; the size of the update depends on the message's surprisal under the market's prior, on the prior's entropy, and on the channel's reliability, while redundant messages carry no bits. We examine the account using 4,838 posts from the U.S. president's platform (March–October 2026), hourly futures data, and the 2026 closure of the Strait of Hormuz, a period of unusually high prior uncertainty about a single physical state. Posting is overdispersed and bursty yet conditionally Poisson, and it follows volatile hours. During the closure, oil fell 1.29% (median 0.31%) over two hours after posts coded as de-escalation, with no response to escalation posts or to posts on monetary policy or non-tariff China matters. This co-movement survives rank-based and week-block inference but cannot be separated from a pre-post drift at hourly resolution. Pre-registered measures of novelty and prior uncertainty have the predicted sign in every topic and in a 2022–2024 replication, but none clears its threshold (p = 0.08, 0.07), while mutual information between post class and return direction is above its null during the closure (p = 0.041) and not before. We read the account as an organizing framework that fits the evidence without being confirmed by it, and we document the design that makes that statement credible.
+
+**Keywords:** information theory, social media, executive communication, event study, pre-registration, large language models as coders, financial markets
+
+---
+
+## 1. Introduction
+
+On the evening of 7 April 2026 a post on the president's platform announced a conditional two-week ceasefire with Iran, contingent on the reopening of the Strait of Hormuz. Oil, which had risen from about $67 to $114.6 per barrel since the first U.S. trading day of the war, fell by double digits within hours. Two weeks after the war began, on 23 March, a post announcing a five-day postponement of strikes had produced a drop of similar size. Between those dates, and many times since, other posts threatened strikes, restated demands, or linked to commentary, and the market often barely moved. The puzzle is not that platform speech occasionally matters; it is that the same author, on the same channel, produces messages whose consequences differ by an order of magnitude.
+
+Research on social media and markets has mostly asked whether platform content predicts prices (Bollen et al. 2011; for the news-media precursor, Tetlock 2007), and the closest work on presidential communication studies tweets and firm values or intraday reactions (Born et al. 2017; Ge et al. [verify]). Explanations typically invoke attention (Barber and Odean 2008), rational inattention (Sims 2003), or the distinction between words and actions in central-bank communication (Gürkaynak et al. 2005). Those accounts name factors but offer no common currency in which they can be compared.
+
+Information theory supplies one. In Shannon's (1948) formulation, the information carried by a message is its surprisal, the entropy of the receiver's uncertainty is what the message can reduce, and a noisy channel limits how much of the message is received as intended; a message already implied by prior messages is redundant and carries nothing new (Cover and Thomas 2006). A market's belief update after a message is a Kullback–Leibler divergence between posterior and prior (Kullback and Leibler 1951). Read this way, a post moves prices to the extent that it is surprising given what the market already believes, that the market was uncertain about the state it concerns, and that the message is credible; a repeated threat, a re-post, or a link to commentary should move nothing, and a decision that resolves a physical uncertainty should move the price of the thing that was uncertain.
+
+The 2026 Hormuz closure is a favorable setting for such an account because the prior uncertainty about one physical state (strait open or closed) was unusually high and changed over time. We examine five implications and the arrival side of the channel. We find that posting is overdispersed and bursty yet conditionally Poisson, which is what a source with a time-varying entropy rate looks like; that, during the closure, oil co-moves strongly with de-escalation posts and not with escalation posts; that this co-movement is not separable from a pre-post drift at hourly resolution and that posts are more likely in volatile hours, so that causal wording is unwarranted; that the novelty and prior-uncertainty variables have the predicted signs in every topic and in a replication sample but fall short of conventional significance; and that the information transferred from post class to return direction exceeds chance during the closure and not before.
+
+We therefore claim a framework and a pattern of evidence, not a confirmed mechanism. Three further contributions are secondary. First, we document the arrival process of presidential posts and show that event-study designs that treat posting times as random are fragile. Second, we show how pre-registered plans, independent model-instance coders working blind to outcomes, and explicit power reporting can make negative and ambiguous results interpretable; three earlier mechanisms (binding constraint, salience, habituation) were pre-registered and none was confirmed, and we report all of them. Third, we describe what we could not do, namely establish causality, validate model coding against human coders (under way), and test the account with a continuous measure of the physical constraint.
+
+The paper proceeds as follows. Section 2 develops the account and its implications. Section 3 describes the setting, data, and design. Section 4 reports results. Section 5 discusses contributions, implications, and limitations. Section 6 concludes.
+
+## 2. An Information-Theoretic Account of Platform-Mediated Executive Speech
+
+### 2.1 The channel
+
+When the author of a message is also the decision-maker, the message may be the decision's first public form. In speech-act terms, an announcement that strikes are postponed is closer to a declarative act than to an assertion about the world (Austin 1962; Searle 1969); a threat is a directive or commissive whose force depends on the speaker's ability and intent to act. A platform adds two features: it lowers the cost of producing messages and it removes intermediaries that would filter, summarize, or confirm them. Both bear on how receivers should treat the message. Cheap, frequent messages from an actor who may be strategic are sent through a channel whose reliability the receiver must infer; this is the problem studied in the economics of strategic information transmission (Crawford and Sobel 1982) and of persuasion by information design (Kamenica and Gentzkow 2011), and it maps onto channel noise in information theory.
+
+### 2.2 The account
+
+Let S be a state variable that the market cares about (here, whether Hormuz transit is open) with prior distribution π over a finite set of values and prior entropy H(π). A message m is received with some reliability ρ (the probability that the message corresponds to what the sender will do). Receiving m changes the belief to π′, and the information gained is the divergence KL(π′ ‖ π). Three implications follow in expectation.
+
+(i) *Surprisal.* A message whose content has low probability under π produces a larger update than a message the market already expected. Messages that repeat earlier messages (including re-posts and links to commentary) are redundant and produce no update.
+
+(ii) *Prior uncertainty.* For a given message, the update is larger when H(π) is larger, because there is more uncertainty to resolve. State dependence in the response to the same type of message therefore follows from variation in H(π), not from a separate mechanism.
+
+(iii) *Channel reliability.* Reliability scales the update: a message from a channel that the market expects to be reversed, denied, or contradicted moves beliefs less, and a denial by a counterparty reduces the net update.
+
+Two corollaries connect the account to the earlier mechanisms we pre-registered. Salience (reaction rising with posting intensity) is an attention-allocation story; in an information-theoretic frame, higher posting intensity changes surprisal only if it signals a regime change, and otherwise adds redundancy. Habituation (reaction falling with the number of recent similar posts) is the redundancy implication (i) applied to a sequence. The binding-constraint hypothesis is implication (ii) when H(π) is dominated by one physical state.
+
+A further implication concerns the *sign* of impact. The account predicts magnitude, |reaction|, rather than the sign assigned by a classifier; the sign depends on which direction the message moves π. During the closure, the prior probability of de-escalation was low and that of continued closure high, so a de-escalation announcement is high-surprisal and an escalation threat low-surprisal. The apparent asymmetry between de-escalation and escalation posts is thus an implication of the prior, not an additional assumption.
+
+### 2.3 Source side
+
+On the source side, the arrival of messages has its own entropy rate. A homogeneous Poisson source has maximal entropy for a given rate and no burst structure; a source whose rate varies, such as a Poisson–Gamma mixture, is partly predictable from its own recent history and from the environment (Cameron and Trivedi 2013). If the rate of posting reflects the state of the environment, posting times are informative about the state and are not exogenous for the purposes of event-study identification.
+
+### 2.4 Propositions
+
+We state five propositions, each with a pre-registered operationalization in Section 3.5.
+
+P1 (surprisal): |reaction| increases in the novelty of the post relative to recent posts.
+P2 (prior uncertainty): |reaction| increases in the market's prior uncertainty.
+P3 (interaction): the effect of novelty is larger when prior uncertainty is higher.
+P4 (information transfer): the mutual information between post class and the direction of the subsequent price move is positive when the prior uncertainty about the relevant state is high and close to zero otherwise.
+P5 (redundancy): re-posts, links, and repeats carry little information and produce little reaction.
+
+The account does not by itself address identification: a post and a price move may both respond to the same news. We treat that as a limitation to be measured, not assumed away (Sections 4.2 and 4.4).
+
+## 3. Research Design
+
+### 3.1 Setting
+
+The war that began on Saturday 28 February 2026 provides an unusual combination: a topic on which the president posted frequently, a physical constraint (the strait was effectively closed from early March), and a commodity market in which the constraint was priced continuously. The first U.S. trading day was 2 March. WTI rose from about $67 to $114.6 by 7 April and was near $96 by the end of the sample. The same posts, assets, and design can be applied to periods and topics in which no comparable uncertainty existed (before the war; monetary policy; non-tariff China matters; tariffs).
+
+### 3.2 Data
+
+*Posts.* We use the CNN-maintained archive of the president's posts. Between 1 March and 13 October 2026 there are 4,838 original posts after removing pure re-posts for the arrival analysis; 373 mention Iran, and 108 mention Iran with a threat term. The archive extends to 2022, which we use for an out-of-time replication.
+
+*Markets.* Hourly bars for WTI and Brent futures, E-mini S&P 500 futures, ten-year Treasury futures, the dollar index, USD/CNH, USD/KRW, gold, and several equities cover October 2024 to October 2026; five-minute bars cover the final 60 days; daily WTI and S&P 500 cover earlier years.
+
+### 3.3 Classifying posts
+
+Each post was classified by two independent model instances that received only the post text, for direction (escalation, de-escalation, mixed, other) and type (action versus rhetoric). Cohen's (1960) kappa for direction was 0.84 for oil, 0.86 for tariffs, 0.92 for monetary policy and 0.87 for China, 0.75 in the extension sample, and 0.62 (oil) and 0.96 (tariffs) in the 2022–2024 sample. The two instances are copies of the same model; their agreement measures consistency, not validity against human judgment, and a human-coded subsample of 150 posts is under way [update before submission]. The headline war-period estimate (Section 4.2) uses the first coder's blind labels, adopted in a dated amendment after a first pass with keyword classes proved misleading (the "threat" class contained the principal de-escalation posts); results on posts where both coders agree are reported as robustness.
+
+### 3.4 Reactions
+
+The reaction to a post is the log change from the open of the hourly bar containing the post to the close of the next bar (two hours), signed so that positive values are in the direction the post implies. We also decompose it into bar returns k−1, k, k+1, k+2 around the bar k that contains the post, standardize by the standard deviation of two-hour changes in the previous 300 bars (|z|), and use week-block bootstrap, rank-based, and permutation tests. Posts within three hours of another post on the same topic are dropped from the main sample.
+
+### 3.5 Measures of information
+
+*Novelty* N_c is a conditional compression ratio: the compressed length of the post appended to the account's last 30,000 characters of posts from the preceding seven days, minus the compressed length of that context, divided by the compressed length of the post alone. Higher values indicate more novel content, lower values indicate redundancy; it is a computable proxy for conditional surprisal (Cover and Thomas 2006). A TF-IDF measure (one minus the maximum cosine similarity to any post in the previous seven days) serves as a robustness check. *Prior uncertainty* U is the log ratio of the standard deviation of the previous 24 one-bar returns to that of the previous 300 in the post's primary asset. *Mutual information* is estimated between post class (de-escalation, escalation, none) and the sign of the two-hour return over all war-period bars, with a permutation null.
+
+### 3.6 Pre-registration
+
+Each analysis had a written plan committed to the repository before estimation. Plans state what the authors had already seen, define primary and secondary outcomes and decision rules, and are amended only through dated entries (Appendix A). The practice follows the argument for pre-registration in observational work with many analytic choices (Nosek et al. 2018). The plans are files in the authors' repository, not entries in an independent registry; we therefore treat them as a transparency device, not as a guarantee against specification search. Several plans were written after earlier results had been seen, and the headline result in Section 4.2 arose from an amendment; we label it exploratory.
+
+### 3.7 Content analysis
+
+To generate hypotheses about which posts were consequential, 136 posts were shuffled, stripped of labels and market data, and coded by two model-instance analysts; codebooks were reconciled and fixed before reactions were attached; 20 cases (the eight largest reactions, six moves opposite to the post's direction, and six near-zero de-escalation posts) were compared with contemporaneous market-wire coverage collected without access to our reaction values. Because the analysts are model instances and the study involves no human interpreter, we describe this as LLM-assisted content analysis for hypothesis generation, not as interpretive or critical research.
+
+## 4. Results
+
+### 4.1 Source side: how posts arrive
+
+For the 108 posts that mention Iran with a threat term, daily counts have mean 0.48 and variance 0.74; the dispersion index is 350 on 226 degrees of freedom (p < 0.001), and a negative binomial with size 0.79 fits much better than a Poisson (LR p = 3 × 10⁻⁶). Inter-arrival times are bursty (mean 51 hours, median 21, coefficient of variation 1.94; exponential: 1). With week fixed effects, the Pearson dispersion of daily counts falls to 0.89, consistent with a Poisson process whose weekly rate varies (Figure 1). Because this keyword class is known to mix threats with de-escalation posts, we repeated the analysis on the blind-coded classes: de-escalation posts (57 in the war period) have a dispersion index of 367 and a negative-binomial size of 0.36; escalation posts (60), 430 and 0.32 (all p < 10⁻⁸). The overdispersion is not an artifact of the keyword class.
+
+![Figure 1](figs/fig1_arrivals.png)
+
+*Figure 1. Iran-related posts with threat terms (n = 108). A: observed daily counts versus Poisson and negative binomial fits. B: weekly counts.*
+
+Posting is not independent of market conditions. In an hourly logit over 3,605 war-period bars, the absolute prior six-hour oil return predicts a de-escalation post (coefficient 0.115, p = 0.033) and an escalation post (0.144, p = 0.024), and regular trading hours predict escalation posts (p = 0.012); the signed prior return does not (p = 0.32 and 0.18). Posts follow volatile hours. This is what a source whose rate depends on the environment looks like, and it implies that posting times cannot be treated as random for identification.
+
+### 4.2 Market co-movement during the closure
+
+During the war, WTI fell by 1.29% in the two hours after a de-escalation post (n = 33), with a median of 0.31% (trimmed means 0.81% and 0.73%; 24 of 33 declines; sign test p = 0.007; Wilcoxon p = 0.005; week-block bootstrap 95% CI 0.43 to 2.27, 16 weeks; leave-one-week-out range 0.96 to 1.44). Two events (23 March, −9.8%; 7 April, −12.0%) account for half of the summed move; without them the mean is 0.67% and the median 0.30%. Brent fell by 1.21%, USD/KRW by 0.14%, and the S&P 500 rose by 0.23% (n = 14 events with equity hours). Escalation posts (n = 28) show no response (WTI −0.02%; week-block CI −0.58 to 0.35). The difference between the two classes is 1.31 percentage points (permutation p = 0.011; rank-based Mann-Whitney p = 0.051), and the escalation cell can rule out only effects larger than about 0.75 points. After de-escalation posts, Treasury futures rose 0.10% (Holm-adjusted p = 0.004), the dollar index fell 0.11% (p = 0.014), and USD/CNH fell 0.04% (p = 0.02). These responses are measured on the same events and share a common oil and geopolitical factor; they are one finding in several assets, not independent confirmations. The result does not change materially when the cluster filter is dropped or widened to six hours (means 1.15% and 1.52%).
+
+In volatility units the state difference survives: the mean standardized reaction to war-period de-escalation posts is 0.93, against 0.07 for pre-war de-escalation posts in the low-uncertainty regime (n = 25; permutation p = 0.013). A matched-hour placebo (fake post times drawn from the same clock hour within three days) gives a mean of −0.16 against the observed 1.29, although the candidate pools are small and this placebo is weak.
+
+![Figure 2](figs/fig2_event_time.png)
+
+*Figure 2. WTI path around war-period posts: de-escalation n = 33; escalation n = 27 with complete windows. A: mean ± 1 SE. B: median.*
+
+*Timing and endogeneity.* Figure 3 shows what two-hour windows hide. The return in the hour before the post bar is already +0.36% in the direction of the post (p = 0.10), and the first full hour after the post bar adds only +0.34% (p = 0.18; this was the revised primary statistic and is not supported). The post bar itself, which includes the part of the hour before the post, carries +0.96% (p = 0.007). The paired difference between the hour after and the hour before is −0.02%. At hourly resolution, a pre-post drift of the same size as the post-post move exists and the contribution of the post cannot be separated from it. A momentum control (abnormal reaction relative to a null fit on ordinary hours) leaves the estimate unchanged (1.32%), but ordinary hours show no momentum (slope −0.027), so the control is uninformative about common news. Of 20 triangulated cases, all show other reported drivers. We therefore describe the finding as co-movement, not as an effect of the posts.
+
+![Figure 3](figs/fig3_bar_decomposition.png)
+
+*Figure 3. Directional WTI return by hour relative to the bar k containing the post (mean ± 1 SE).*
+
+*Other regimes and topics.* Before the war, de-escalation posts about Iran show the same sign at about a quarter of the size, significant only for posts on which both coders agree (−0.62%, n = 8, p = 0.008). For posts about Russia, Venezuela, and other oil-related geopolitics the pattern reverses: escalation raises oil (+0.46%, p = 0.013). Posts about monetary policy and non-tariff China matters show essentially no hourly reaction. After escalation posts, oil drifts upward over four to twelve hours (+0.71% at four hours, +1.36% at twelve; week-block CIs touch zero); this lies outside the pre-registered window and was not tested.
+
+### 4.3 Tests of the information-theoretic propositions
+
+Table 1 reports the pre-registered tests on 271 hourly signal posts across four topics (oil 112, tariffs 74, Fed 47, China 38), with topic fixed effects and standard errors clustered by day; the outcome is |z|.
+
+| Proposition | Estimate | One-sided p | Decision |
+|---|---|---|---|
+| P1 novelty N_c | +0.77 (SE 0.56) | 0.084 | Not supported; same sign in all four topics |
+| P1 replication, 2022–24 daily (n = 49) | +0.26 (SE 0.37) | 0.24 | Same sign |
+| P1 robustness, TF-IDF novelty | +0.52 (SE 0.36) | 0.073 | — |
+| P2 prior uncertainty U | +0.29 (SE 0.20) | 0.072 | Not supported |
+| P3 N_c × U | −0.08 (SE 1.52) | 0.52 | Not supported |
+| P4 mutual information, war | 0.0014 bits (null 0.0004) | 0.041 | Supported (marginal) |
+| P4 mutual information, pre-war | 0.0003 bits (null 0.0002) | 0.28 | Consistent |
+| P5 redundancy | corr(N_c, same-topic posts in prior 24 h) −0.10 | — | Direction as expected; uninformative |
+
+*Table 1. Pre-registered information-theoretic tests (Section 3.5; ANALYSIS_PLAN_INFO.md).*
+
+The coefficients of novelty and prior uncertainty have the predicted sign in every topic and in the replication, but none reaches the pre-registered threshold of p < 0.05, and the interaction is absent. With 271 posts the standard error of the novelty coefficient is 0.56 against an estimate of 0.77, so effects below about 1.5 in these units cannot be excluded. The mutual-information result is the only supported hypothesis, and its p-value is close to the threshold; in absolute terms the information transferred is about one thousandth of a bit per hour-bar, as expected when posts are rare relative to bars.
+
+*First source.* Because the account treats the platform as a possible first source of a decision, we classified all 61 war-period signal posts by whether an outside public source had reported the decision earlier (searchers saw only the post's time and text). Thirty-two were POST_FIRST, 14 OTHER_FIRST, 10 SIMULTANEOUS (six of them 6–9 minutes after the post), and five undeterminable; nine of the 14 OTHER_FIRST posts were links to articles or re-posts. The mean directional reaction was +0.73% for POST_FIRST and +0.04% for OTHER_FIRST (difference 0.70; permutation p = 0.176; not supported). "Post first" means that no earlier report was found by keyword-based search; several outlets could not be opened, and the classification should be read as an upper bound on how often the post was first.
+
+### 4.4 Earlier pre-registered mechanisms
+
+Three mechanisms were pre-registered before the information-theoretic account. *Binding constraint:* oil de-escalation posts moved WTI by a directional 1.40% during the war and 0.01% before it (p = 0.014; Holm-adjusted 0.056); the other three primary comparisons did not support the prediction (oil escalation p = 0.86; tariff escalation, opposite sign, p = 0.09; tariff relief, three pre-period posts). *Salience:* in hold-out topics the coefficient of log posts in the previous seven days is +0.045 (p = 0.44), and those topics show no hourly reaction at all. *Habituation:* −0.24 pooled in-sample (p = 0.036, exploratory); −0.09 (SE 0.29) in the pre-registered 2022–2024 test, whose minimum detectable effect (0.82) is more than three times the in-sample estimate, so the test can neither confirm nor refute it. The action-versus-rhetoric difference (a verifiability premium) was +0.56 points for oil (p = 0.12) and not significant pooled (p = 0.20). Under the information-theoretic account, habituation is the redundancy implication and the binding constraint the prior-uncertainty implication, but the evidence for each is no stronger when stated that way.
+
+### 4.5 What the content analysis suggests
+
+The two analysts' codebooks mapped onto each other on all six themes of one analyst's list (some merged); post-level agreement on shared concepts ranged from kappa 0.37 (claims of agreement) and 0.42 (boasts) to 0.96 (amplification). Five themes were retained: pressure-then-pause cycles; concrete acts versus atmospheric statements; counterparty denial and partial retracement (after the 23 March postponement, the Iranian state denied that talks had occurred and oil rebounded the next session); posts that are themselves the first announcement of a decision (four of the eight largest reactions); and multi-causality (all 20 triangulated cases show other reported drivers; seven were not mentioned in market coverage). Two propositions derived from these themes were tested on held-out data and not supported: that re-posts and links produce no reaction while originals do (difference −0.13 standard deviations, CI −0.57 to +0.31, minimum detectable effect 0.75; in that sample original posts also showed almost no reaction), and that after-hours posts are better measured at the next open (−0.10 points, p = 0.63). The themes of counterparty denial and the carrying of decisions correspond to the channel-reliability and surprisal implications of the account, but they were generated from the same cases they describe and are not independent support.
+
+## 5. Discussion
+
+### 5.1 What the evidence supports
+
+The evidence supports four statements. First, platform speech by a head of state arrives as an overdispersed, bursty process whose timing follows volatile market hours. Second, during a period of high uncertainty about one physical state, oil co-moved strongly with de-escalation posts and not with escalation posts or with posts on topics lacking comparable uncertainty. Third, that co-movement is robust to rank-based and block inference and to standardization, yet at hourly resolution it cannot be separated from drift that precedes the post. Fourth, variables that the information-theoretic account says should matter, novelty and prior uncertainty, have the predicted sign consistently but are not individually significant, while the information transferred from post class to return direction is detectably above chance during the closure only.
+
+### 5.2 Contributions
+
+The paper's main contribution is a framework. By expressing the determinants of a post's market impact in a common currency (surprisal, prior entropy, channel reliability, redundancy), the account generates comparable propositions out of what had been separate stories about attention, habituation, and credibility, and it explains why a topic with high prior uncertainty (the closed strait) shows the response while topics without it (monetary policy, non-tariff China matters) do not. It also locates the platform's role: it lowers the cost of messages, which raises their number and the share that is redundant, and it removes intermediaries, which makes reliability the receiver's problem.
+
+A second contribution concerns the source side. A Poisson–Gamma structure with a rate that responds to the environment implies that posting times are informative and not exogenous, so event studies of executive posts that treat them as random overstate their identification. We show this directly with the hazard of posting.
+
+A third contribution is methodological. The design (written plans before estimation, independent model coders blind to outcomes, explicit power calculations, dated amendments, pre-registered placebos, and independent timing checks) allowed us to report that the headline result is robust in some respects and not in others, and that three mechanisms and two content-analytic propositions could not be confirmed. It also caught a misclassification that would have produced a false headline.
+
+### 5.3 Implications for practice
+
+For analysts who monitor executive feeds, the account suggests weighting a message by its novelty relative to recent messages and by the current uncertainty about the state it concerns, and ignoring re-posts and links. For platform operators and regulators, the account highlights that when a platform is the first channel for decisions, the information advantage in the interval before secondary coverage is concentrated at the platform; we make no claim about any trading behavior.
+
+### 5.4 Limitations
+
+The coders are model instances; their agreement is not validation, and human validation is pending. The two coder instances are copies of one model. Posting times are endogenous: posts follow volatile hours, and all 20 triangulated cases show other drivers; neither the momentum control nor the first-source classification resolves simultaneity, and the latter is itself an upper bound. Hourly bars cannot separate the post from the preceding hour; only a high-frequency sample (the 60-day five-minute subsample contains nine oil posts) can, and we have not been able to do so. Prior uncertainty is proxied by relative volatility and novelty by redundancy relative to the account's own recent posts, neither of which is the market's information set; weak measures of both would lower power. The war-period result rests on 33 events, two of which supply half of the mean. The sample contains one conflict and one administration. We tested four sets of mechanisms and confirmed none; we cannot exclude that a different formulation would succeed. The plans are not registered with an independent registry, and several were written after related results had been seen.
+
+### 5.5 Future research
+
+The most informative next steps are a high-frequency design around platform posts with exact timestamps; a continuous measure of physical constraint (tanker transits, insurance spreads, term-structure) as a measure of prior uncertainty; prospective collection, under the protocol we registered, of counterparty denials and concurrent news; and a sample large enough to test redundancy (roughly 480 to 560 signal posts for the habituation effect).
+
+## 6. Conclusion
+
+An information-theoretic reading of platform-mediated executive speech organizes the evidence we have: posts that resolve a high-uncertainty physical state move the price of that state, repeated or content-free posts do not, and the novelty and uncertainty variables point in the predicted direction. It does not confirm the account, and it does not identify an effect of posts on prices. We offer the account as a framework that makes the questions sharper and the design as a baseline for work that can answer them.
+
+---
+
+## Declarations [to be completed]
+
+*Use of generative AI.* Large language models were used as classification instruments in the study and for drafting and analysis support. The journal's disclosure requirements should be checked and the declaration completed accordingly [required].
+
+*Data and code availability.* Code, pre-registration files, coder outputs, and results are in the project repository; the post archive and market data come from public sources [add repository DOI].
+
+## References
+
+[All references must be checked against the originals, including volume, page, and year, before submission; items marked "verify" are not confirmed.]
+
+Austin, J. L. 1962. *How to Do Things with Words*. Oxford: Clarendon Press.
+
+Barber, B. M., and Odean, T. 2008. "All That Glitters: The Effect of Attention and News on the Buying Behavior of Individual and Institutional Investors," *Review of Financial Studies* (21:2), pp. 785–818.
+
+Blankespoor, E., Miller, G. S., and White, H. D. 2014. "The Role of Dissemination in Market Liquidity: Evidence from Firms' Use of Twitter," *The Accounting Review* (89:1), pp. 79–112 [verify].
+
+Bollen, J., Mao, H., and Zeng, X. 2011. "Twitter Mood Predicts the Stock Market," *Journal of Computational Science* (2:1), pp. 1–8.
+
+Born, J. A., Myers, D. H., and Clark, W. J. 2017. "Trump Tweets and the Efficient Market Hypothesis," *Algorithmic Finance* (6:3–4), pp. 103–109 [verify].
+
+Cameron, A. C., and Trivedi, P. K. 2013. *Regression Analysis of Count Data* (2nd ed.). Cambridge: Cambridge University Press.
+
+Chen, H., De, P., Hu, Y. J., and Hwang, B.-H. 2014. "Wisdom of Crowds: The Value of Stock Opinions Transmitted Through Social Media," *Review of Financial Studies* (27:5), pp. 1367–1403 [verify].
+
+Cohen, J. 1960. "A Coefficient of Agreement for Nominal Scales," *Educational and Psychological Measurement* (20:1), pp. 37–46.
+
+Cover, T. M., and Thomas, J. A. 2006. *Elements of Information Theory* (2nd ed.). Hoboken, NJ: Wiley.
+
+Crawford, V. P., and Sobel, J. 1982. "Strategic Information Transmission," *Econometrica* (50:6), pp. 1431–1451.
+
+Ge, Q., Kurov, A., and Wolfe, M. H. [year]. "Stock Market Reactions to Presidential Social Media Usage: Evidence from Company-Specific Tweets," [journal, volume, pages] [verify].
+
+Gürkaynak, R. S., Sack, B., and Swanson, E. 2005. "Do Actions Speak Louder Than Words? The Response of Asset Prices to Monetary Policy Actions and Statements," *International Journal of Central Banking* (1:1), pp. 55–93.
+
+Holm, S. 1979. "A Simple Sequentially Rejective Multiple Test Procedure," *Scandinavian Journal of Statistics* (6:2), pp. 65–70.
+
+Kamenica, E., and Gentzkow, M. 2011. "Bayesian Persuasion," *American Economic Review* (101:6), pp. 2590–2615.
+
+Kullback, S., and Leibler, R. A. 1951. "On Information and Sufficiency," *Annals of Mathematical Statistics* (22:1), pp. 79–86.
+
+Nosek, B. A., Ebersole, C. R., DeHaven, A. C., and Mellor, D. T. 2018. "The Preregistration Revolution," *Proceedings of the National Academy of Sciences* (115:11), pp. 2600–2606.
+
+Searle, J. R. 1969. *Speech Acts: An Essay in the Philosophy of Language*. Cambridge: Cambridge University Press.
+
+Shannon, C. E. 1948. "A Mathematical Theory of Communication," *Bell System Technical Journal* (27:3), pp. 379–423.
+
+Sims, C. A. 2003. "Implications of Rational Inattention," *Journal of Monetary Economics* (50:3), pp. 665–690.
+
+Tetlock, P. C. 2007. "Giving Content to Investor Sentiment: The Role of Media in the Stock Market," *Journal of Finance* (62:3), pp. 1139–1168.
+
+## Appendix A. Pre-registration ledger
+
+| Block | Plan | Outcome |
+|---|---|---|
+| Arrivals | poisson_posts/ANALYSIS_PLAN.md | Overdispersed; conditionally Poisson |
+| Weekly market tests | ANALYSIS_PLAN_MARKETS.md | Null |
+| Intraday core | hf/ANALYSIS_PLAN.md (Amendment 1) | De-escalation co-movement; none for escalation (exploratory after amendment) |
+| Instrumental variables | ANALYSIS_PLAN_IV.md | Weak first stage (F = 2.8) |
+| Extension | ANALYSIS_PLAN_EXT.md | Coder-robust; partial pre-war replication; reversal for other oil posts |
+| Binding constraint | THEORY_AND_PAPER_PLAN.md | Partly supported |
+| Salience | THEORY_V2_SALIENCE.md | Rejected |
+| Habituation | THEORY_V3_HABITUATION.md | Underpowered |
+| Content analysis | ANALYSIS_PLAN_QUAL.md (Amendments 1–2) | Five themes; four propositions |
+| Held-out tests of propositions | ANALYSIS_PLAN_QUAL_TESTS.md | Not supported |
+| Pre-trend control | ANALYSIS_PLAN_PRETREND.md | Estimate unchanged; control uninformative |
+| First source | ANALYSIS_PLAN_WIRE.md | Not supported (p = 0.176) |
+| Revision analyses | ANALYSIS_PLAN_REVISION.md | Revised primary not supported; robust inference supports; posting follows volatility |
+| Information-theoretic hypotheses | ANALYSIS_PLAN_INFO.md | P1–P3 not supported (p = 0.08, 0.07, 0.52); P4 supported (p = 0.041) |
+
+## Appendix B. Coding protocol
+
+[Summary of direction and type definitions, blind-coding instructions, the primary-label rule, reconciliation of content-analysis codebooks, the model and prompt provenance, and a reference to the repository files.]
+
+## Appendix C. Human validation
+
+[To be completed when the 150-post human-coded subsample is returned: kappa between model labels and human labels, and the headline estimate on human labels.]
