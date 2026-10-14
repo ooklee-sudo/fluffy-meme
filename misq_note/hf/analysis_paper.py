@@ -2,10 +2,13 @@ import re,json,glob,numpy as np,pandas as pd
 from collections import Counter
 rng=np.random.default_rng(31)
 arch=pd.read_csv("raw/truth_archive.csv"); arch["t"]=pd.to_datetime(arch.created_at,utc=True); arch["id"]=arch.id.astype(str); T=arch.set_index("id").t
-topic={x["id"]:x["topic"] for x in json.load(open("posts_type_all.json"))}
-def load(c): 
-    L=[]; [L.extend(json.load(open(f"posts_type_coder{c}_part{i}.json"))) for i in range(1,5)]; return pd.DataFrame(L).set_index("id")
-a=load(1); b=load(2); P=pd.DataFrame({"topic":pd.Series(topic)}); P["c1"]=a.cls; P["c2"]=b.cls; P["t1"]=a.typ; P["t2"]=b.typ; P["t"]=T.reindex(P.index); P=P.dropna(subset=["t","c1","c2"])
+def load(c):
+    L=[]
+    for i in range(1,5):
+        tp={x["id"]:x["topic"] for x in json.load(open(f"posts_type_part{i}.json"))}
+        for r in json.load(open(f"posts_type_coder{c}_part{i}.json")): r=dict(r); r["topic"]=tp[r["id"]]; L.append(r)
+    D=pd.DataFrame(L); D["key"]=D.id+"|"+D.topic; return D.set_index("key")
+a=load(1); b=load(2); P=pd.DataFrame({"id":a.id,"topic":a.topic}); P["c1"]=a.cls; P["c2"]=b.cls.reindex(P.index); P["t1"]=a.typ; P["t2"]=b.typ.reindex(P.index); P["t"]=pd.to_datetime(T.reindex(P.id).values,utc=True); P=P.dropna(subset=["t","c1","c2"])
 P["ep"]=(P.t-pd.Timestamp("1970-01-01",tz="UTC")).dt.total_seconds().astype(int)
 def kappa(x,y):
     cats=sorted(set(x)|set(y)); n=len(x); po=np.mean([i==j for i,j in zip(x,y)]); pe=sum((Counter(x)[c]/n)*(Counter(y)[c]/n) for c in cats); return float((po-pe)/(1-pe)),float(po)
