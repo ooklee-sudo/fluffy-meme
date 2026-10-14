@@ -284,7 +284,7 @@ Tetlock, P. C. 2007. "Giving Content to Investor Sentiment: The Role of Media in
 | First source | ANALYSIS_PLAN_WIRE.md | Not supported (p = 0.176) |
 | Tick-level timing | ANALYSIS_PLAN_5MIN.md | H5a, H5b supported for de-escalation posts; H5c pending |
 | Twitter-era oil/Iran sample | twitter/ANALYSIS_PLAN_TWITTER.md (Amendment 1) | HI1–HI3 not supported (Holm p ≥ 0.45); H10 supported for escalation (p = 0.001), not for de-escalation |
-| Twitter-era tariff/trade sample | twitter/ANALYSIS_PLAN_TARIFF.md (Amendments 1–2: P6/H12 state-dependent sign; secondary semiconductor channel H13, daily, not supported, not discussed in the text) | HI2 supported (Holm p < 0.001; volatility caveat); HI1, HI3 not supported; H10 supported (small); H12 not supported, opposite sign (β = −0.097) |
+| Twitter-era tariff/trade sample | twitter/ANALYSIS_PLAN_TARIFF.md (Amendment 1: P6/H12 state-dependent sign) | HI2 supported (Holm p < 0.001; volatility caveat); HI1, HI3 not supported; H10 supported (small); H12 not supported, opposite sign (β = −0.097) |
 | Human validation, H7 (human-labelled sample) | ANALYSIS_PLAN_HUMAN.md (Amendments 1–2) | H7a, H7b supported for de-escalation (p = 0.0002, 0.030); escalation +0.48% (p = 0.007) |
 | Human validation (round 2) | ANALYSIS_PLAN_HUMAN.md (Amendment 1) | Round 1 κ 0.43–0.56; round 2 (61 war-period posts, adjudicated) κ 0.29, H6a supported, H6c not supported |
 | Revision analyses | ANALYSIS_PLAN_REVISION.md | Revised primary not supported; robust inference supports; posting follows volatility |
