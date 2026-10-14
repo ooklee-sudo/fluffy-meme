@@ -51,7 +51,7 @@ The war that began on Saturday 28 February 2026 provides a topic on which the pr
 
 *Model labels.* Each post was classified by two independent runs of a large language model that received only the post text, for direction (escalation, de-escalation, mixed, other). The two runs are copies of one model; their agreement (κ = 0.74 on the human-validation sample, 0.62–0.96 elsewhere) measures consistency. The headline analysis of the first stage (Section 4.2) uses the first run's labels.
 
-*Human labels.* Two human coders labelled the posts independently from the text alone in three rounds (Section 4.3), and agreement is reported as Cohen's (1960) kappa. Disagreements were adjudicated from the text by the principal investigator, who knew the research question; 23.6% of the final labels are adjudicated. We use the consensus-only subsample as a robustness check (Section 4.4). The two coders were doctoral students in the Department of Information System at Hanyang University with extensive training in the field; neither had seen market data or had a particular interest in oil prices. [State whether they knew the research question.] Because the war was a widely reported event, they remembered its course, and the labels may reflect that knowledge.
+*Human labels.* Two human coders labelled the posts independently from the text alone in three rounds (Section 4.3), and agreement is reported as Cohen's (1960) kappa. Disagreements were adjudicated from the text by the principal investigator, who knew the research question; 23.6% of the final labels are adjudicated. We use the consensus-only subsample as a robustness check (Section 4.4). The two coders were doctoral students in the Department of Information System at Hanyang University with extensive training in the field; neither had seen market data or had a particular interest in oil prices. They did not know the research question; because the war was a widely reported event, they remembered its course, and the labels may reflect that knowledge.
 
 ### 3.3 Outcomes
 
@@ -300,7 +300,25 @@ Plans are files in the authors' repository, dated 13–14 October 2026 in the co
 
 ## Appendix B. Coding protocol
 
-[Summary of direction and type definitions, blind-coding instructions, the primary-label rule, reconciliation of content-analysis codebooks, the model and prompt provenance, and a reference to the repository files.]
+**B.1 Model labelling.** Two independent runs of a large language model each received only the text of a post, with no market data, time stamp or other posts, and returned a direction class (escalation, de-escalation, mixed, other) and a type (action or rhetoric). The runs are copies of the same model. Prompts, outputs and the code that merges them are in the project repository. The first run's labels were adopted as primary in a dated amendment after a first pass with keyword classes proved misleading (the "threat" class contained the principal de-escalation posts).
+
+**B.2 Human coders.** Two coders, doctoral students in the Department of Information System at Hanyang University, coded independently from a spreadsheet that contained the codebook and, for each item, only the post text. They were told to use only the text shown, not to look anything up or look at prices, not to discuss items with each other, and to code the post's own stance (for a re-post or link, the stance of a quoted headline if clear, otherwise "other"). Items were in a different random order for each coder in round 2. Each item also received a confidence rating (1 = clear, 2 = somewhat unclear). The coders did not know the research question. Disagreements were adjudicated by the principal investigator from the text alone, without market information; a post for which no resolution was reached would have been excluded (sensitivity: treated as mixed).
+
+**B.3 Codebook, round 1 (v1; 150 posts, 2024–2026 posts matching keywords about Iran, oil or oil-producing countries).** Exactly one class per post.
+- ESC: the post raises the risk of military conflict or oil-supply disruption; threatens, warns of, announces or celebrates attacks, strikes, blockade or destruction (for example on Iran); ultimatums; new sanctions or secondary tariffs on oil buyers or oil-exporting countries; threats against such countries or their energy infrastructure.
+- DEESC: the post lowers that risk; announces or hints at holding off, cancelling or postponing strikes; ceasefire; deal, memorandum or agreement progress; talks; reopening of routes (for example the Strait of Hormuz); peace; sanctions relief; higher oil production or lower oil prices through supply.
+- MIXED: clear escalation and clear de-escalation in the same post (for example "deal or we strike").
+- OTHER: not about the military or diplomatic course of conflicts involving oil-producing countries or about oil supply; polls, domestic politics, attacks on the media, tariffs on non-oil goods, unrelated mentions; re-posts or links of others' commentary without a clear stance.
+
+**B.4 Codebook, rounds 2 and 3 (v2; 61 and 130 war-period posts).** Written after round 1 showed moderate agreement (κ = 0.51) and a dominant model error (a de-escalation label on unrelated posts). Changes from v1:
+- ESC includes demands or conditions addressed to Iran that are backed by pressure ("Iran must …, or …") and criticism that the other side is failing to agree, when no pause, concession or progress is announced; it covers posts that raise or keep up the risk.
+- DEESC requires an announced or clearly signalled pause, postponement or cancellation of strikes, ceasefire, agreement or deal, progress in talks, reopening of the Strait or lifting of the blockade, sanctions relief or other relief. A post that only describes terms or demands is not DEESC.
+- MIXED requires a clear announcement of de-escalation and a clear threat or escalation in the same post ("we will hold off, but if they do not sign we will strike").
+- OTHER: domestic politics, attacks on the media or critics without a stance on the conflict, boasts without a stance on what happens next, polls and unrelated topics; re-posts and bare links with no stated stance in the visible text. If the visible text quotes a headline with a clear stance, the stance of that headline is coded.
+
+Eighteen of the 61 round-2 posts had been coded in round 1 and give a test–retest comparison. Codebook v2 was written after the investigators knew where the model had gone wrong, and it was fixed before the round-2 and round-3 labels returned; this is a researcher degree of freedom that Table 3 partly addresses by repeating the main result on posts where the coders agreed before adjudication.
+
+**B.5 Content analysis (hypothesis generation, Appendix E.2).** 136 posts were shuffled, stripped of labels and market data, and coded by two model-instance analysts; codebooks were reconciled and fixed before reactions were attached.
 
 ## Appendix C. Human validation
 
