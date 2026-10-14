@@ -22,3 +22,12 @@ If model-v2 agrees with the humans at κ ≥ 0.60 and its escalation precision i
 
 ## Not allowed after the labels are seen
 Changing the codebook text, the run set, the majority rule, or the event set.
+
+## Amendment 1 (2026-10-14, after simulated review round 4; before the analyses below are computed)
+Seen before this amendment: all results of the original plan. Added analyses:
+- F1 Matched placebo: for each headline event, placebo times are drawn from the same candidate pool as before but restricted to the 20% of candidates whose directional 30-minute return before the placebo time (sign applied as for the event) is nearest to the event's own; statistic and 10,000 draws as in part E.
+- F2 Next-open return for signal posts without a window (human labels, three-hour filter): the directional log return from the last tick before the post to the first tick after the market reopens, by class; descriptive.
+- F3 Discordant-event decomposition: for the v2 majority and for model 1, the events labelled escalation (de-escalation) by the model but not by the humans, split by the human label (de-escalation, mixed, other), with the mean directional return of each group (sign of the model's class).
+- F4 Two-sided p for Table-6 variants (Wilcoxon, post > pre and post ≠ 0).
+- F5 Forest plot of the class mean and day-clustered 95% CI by label set.
+Deviation noted: the label-set difference bootstrap used 4,000 resamples, not the 10,000 of part C. Part D(iv) (adjudicated items set to OTHER) is the "coder consensus only" row of the adjudication table.
