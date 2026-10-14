@@ -24,3 +24,12 @@ Sign flips relative to model 1: 4 model-ESC posts are human-DEESC; 0 model-DEESC
 1. The de-escalation response is not an artefact of model labelling: it is present, and similar in size, on posts that two humans agree are de-escalation.
 2. The claim that escalation posts do not move oil depends on the model's escalation label, which is mostly not escalation by human judgment (precision 0.32). Human-labelled escalation posts (n = 6, all with positive 30-minute directional returns, Wilcoxon p = 0.016; exploratory, six observations) moved oil in the escalation direction by +0.74%. The data cannot support "no response to escalation"; they support "no response for posts the model labels escalation".
 3. The post-versus-drift claim is weakened on human labels (p = 0.082, n = 25).
+
+## Final human labels after adjudication (all 61 labelled; plan Amendment 1)
+The principal investigator adjudicated the 13 disagreements from text only: ESC 5, OTHER 5, MIXED 3, DEESC 0. Final human labels for the 61 posts: DEESC 25, OTHER 13, MIXED 12, ESC 11. Model 1 against the final labels: κ = 0.29 (agreement 51%). Model-DEESC (33): human DEESC 21, ESC 1, MIXED 5, OTHER 6. Model-ESC (28): human ESC 10, DEESC 4, MIXED 7, OTHER 7 (precision 0.36). Sign flips: 1 model-DEESC post is human-ESC; 4 model-ESC posts are human-DEESC; 25 model-signal posts are MIXED or OTHER for the humans.
+
+| Final human class | n | mean 5 min | mean 30 min | median 30 min | one-sided Wilcoxon post30 > 0 | pre-30 mean | paired post − pre | Wilcoxon p |
+|---|---|---|---|---|---|---|---|---|
+| DEESC (sign −1) | 25 | +0.59 | +1.03 | +0.47 | 0.0015 | +0.69 | +0.35 | 0.082 |
+| ESC (sign +1) | 11 | +0.56 | +0.53 | +0.35 | 0.016 | +0.29 | +0.24 | 0.10 |
+Decision: unchanged — H6a supported, H6c not supported. Human-labelled escalation (n = 11): 9 of 11 positive (oil rose after the post), range −0.75 to +1.78; exploratory (not a pre-registered hypothesis; one-sided test, no correction).
