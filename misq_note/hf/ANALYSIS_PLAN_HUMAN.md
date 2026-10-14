@@ -24,3 +24,12 @@ Pre-specified analyses on the returned sheets (descriptive agreement as above pl
 - H6c: for human-labelled DEESC, the paired difference post-30-minute minus pre-30-minute return > 0, one-sided Wilcoxon (analogue of H5b). 
 - Comparison: the same statistics with model-1 labels on the same posts, and the number of posts whose sign flips when the human label replaces the model label.
 - The headline (human labels) is claimed only if H6a and H6c are both supported at α = .05 with at least 12 human-labelled DEESC posts; otherwise the paper must state that the de-escalation result is not confirmed on human labels.
+
+**Amendment 2 (2026-10-14, before round 3 is returned).** Round 2 labelled only the 61 posts that the model had already selected as signals with usable bars, so the human-labelled sample inherits the model's selection. Round 3 gives humans the remaining 130 of the 191 keyword-selected war-period posts (those dropped by the model's cluster filter or labelled MIXED/OTHER, plus signal posts without bars), coded with codebook v2 by the same two coders; disagreements are adjudicated from text only. Pre-specified analyses once all 191 are human-labelled (final label = consensus, else adjudicated):
+- R3a (recall of the model): among the 130 new posts, the share with a final human label ESC or DEESC, overall and by model label (OTHER, MIXED, signal dropped by the filter).
+- R3b (human-based sample): rebuild the signal set from human labels over all 191 posts, apply the same three-hour cluster filter (a post is kept if at least three hours have passed since the previous post of any coded class), and keep posts with a tick-level window (market open at the post time and at +30 minutes).
+- H7a: for human-DEESC posts in that set the mean directional 30-minute return after the post > 0 (one-sided Wilcoxon, α = .05).
+- H7b: the paired difference post-30 minus pre-30 > 0 (one-sided Wilcoxon, α = .05).
+- H7c: same for human-ESC (sign +1), reported without a directional claim beyond H6b.
+- Decision: the paper may use the human-labelled sample as the primary sample for the war-period result when it has at least 20 human-DEESC posts after the filter; the post-versus-drift claim requires H7b at α = .05.
+- Tick data for the new posts require additional downloaded hours; posts whose windows are not covered are excluded and counted.
