@@ -8,7 +8,7 @@ def get(sid):
     f = f"{O}/{sid}.csv"
     if os.path.exists(f) and os.path.getsize(f) > 100: return pd.read_csv(f)
     for k in range(6):
-        r = subprocess.run(["curl", "-sS", "--http1.1", "-m", "40", "-L", "-A", "Mozilla/5.0 (research)", f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}"], capture_output=True, text=True)
+        r = subprocess.run(["curl", "-sS", "-m", "40", f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}"], capture_output=True, text=True)
         raw = r.stdout
         if raw.startswith("observation_date") or raw.startswith("DATE"): open(f, "w").write(raw); time.sleep(1.2); return pd.read_csv(io.StringIO(raw))
         time.sleep(3 * (k + 1))
