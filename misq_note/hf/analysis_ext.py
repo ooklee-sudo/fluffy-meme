@@ -14,7 +14,7 @@ def kappa(a,b):
 res={"n_posts":len(P)}
 k,po=kappa(P.c1.tolist(),P.c2.tolist()); res["kappa_all"]=dict(kappa=float(k),agree=float(po),n=len(P))
 for s in["W","A","B"]:
-    q=P[P.sample==s]; kk,pp=kappa(q.c1.tolist(),q.c2.tolist()); res["kappa_"+s]=dict(kappa=float(kk),agree=float(pp),n=len(q))
+    q=P[P["sample"]==s]; kk,pp=kappa(q.c1.tolist(),q.c2.tolist()); res["kappa_"+s]=dict(kappa=float(kk),agree=float(pp),n=len(q))
 # 3-class collapsed (ESC / DEESC / other incl. MIXED, OTHER)
 col=lambda s:s if s in("ESC","DEESC") else "OTH"
 kk,pp=kappa([col(x) for x in P.c1],[col(x) for x in P.c2]); res["kappa_collapsed"]=dict(kappa=float(kk),agree=float(pp))
@@ -29,7 +29,7 @@ def run(coder):
     Q=P[P[coder].isin(["ESC","DEESC","MIXED"])].copy()
     keep=[];last=-10**12
     for ep in Q.ep: keep.append(ep-last>=3*3600); last=ep
-    Q=Q[keep]; out={"n_signal":int(len(Q)),"by_sample":{s:Q[Q.sample==s][coder].value_counts().to_dict() for s in["W","A","B"]}}
+    Q=Q[keep]; out={"n_signal":int(len(Q)),"by_sample":{s:Q[Q["sample"]==s][coder].value_counts().to_dict() for s in["W","A","B"]}}
     allep=P[P[coder].isin(["ESC","DEESC","MIXED"])].ep.values
     for var in["CL","BZ","SPX","NDX","NVDA","KRW"]:
         b=BARS[var]; o={}
@@ -38,7 +38,7 @@ def run(coder):
             post=b[(b.t>=ta)&(b.t<tz_)&b.r2.notna()]; dist=np.abs(post.t.values[:,None]-allep[None,:]).min(axis=1); null=post[dist>2*3600].r2.values
             for cls in["DEESC","ESC"]:
                 for smp in["A","B","W","all"]:
-                    q=Q[(Q.period==per)&(Q[coder]==cls)&((Q.sample==smp)|(smp=="all"))]
+                    q=Q[(Q.period==per)&(Q[coder]==cls)&((Q["sample"]==smp)|(smp=="all"))]
                     r=np.array([reaction(b,ep) for ep in q.ep.values]); r=r[~np.isnan(r)]
                     if len(r)<3: continue
                     m=r.mean(); sim=np.array([rng.choice(null,len(r),replace=False).mean() for _ in range(3000)])
@@ -46,14 +46,14 @@ def run(coder):
         out[var]=o
     # pooled WTI regression with sample FE, permutation of ESC/DEESC labels within sample
     b=BARS["CL"]; Q["r"]=[reaction(b,ep) for ep in Q.ep]; R=Q[Q[coder].isin(["ESC","DEESC"])&Q.r.notna()].copy(); R["D"]=(R[coder]=="DEESC").astype(float); R["E"]=1-R.D
-    X=pd.get_dummies(R.sample,dtype=float); 
+    X=pd.get_dummies(R["sample"],dtype=float); 
     def fit(Dv):
         M=np.column_stack([Dv,1-Dv,X.values]); beta,*_=np.linalg.lstsq(M,R.r.values,rcond=None); return beta[0],beta[1]
     bD,bE=fit(R.D.values); sims=[]
     for _ in range(3000):
         perm=R.D.values.copy()
-        for s in R.sample.unique():
-            idx=np.where(R.sample.values==s)[0]; perm[idx]=rng.permutation(perm[idx])
+        for s in R["sample"].unique():
+            idx=np.where(R["sample"].values==s)[0]; perm[idx]=rng.permutation(perm[idx])
         a,b2=fit(perm); sims.append(a-b2)
     out["pooled_WTI"]=dict(n=int(len(R)),beta_DEESC=float(bD),beta_ESC=float(bE),diff=float(bD-bE),p_perm_diff=float(np.mean(np.abs(sims)>=abs(bD-bE))),p_perm_DEESC_low=float(np.mean(np.array(sims)<=(bD-bE))))
     return out
