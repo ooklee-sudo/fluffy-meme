@@ -1,0 +1,21 @@
+# Gasoline prices and restaurant/food-service spending by neighbourhood income, 2021–2024 (Opportunity Insights tracker): analysis plan fixed before any spending value is examined
+
+**Status.** Written 2026-10-14. Only file structure, variable names, and the non-missing share by year were inspected; no spending value and no gasoline value was looked at. The tracker ends in June 2024, so the 2026 Iran-war shock cannot be studied with it. This study asks whether the 2022 gasoline-price surge (Russia's invasion of Ukraine 24 Feb 2022; US regular gasoline peak mid-June 2022) shifted food-service spending away from low-income neighbourhoods. It is independent of the 2026 chain/Census analyses and its result does not change them.
+
+**Data.**
+- Opportunity Insights Economic Tracker, Affinity Solutions card spending (GitHub `OpportunityInsights/EconomicTracker`, `Affinity - National - Daily.csv`, downloaded 2026-10-14): seasonally adjusted spending relative to 6 Jan–2 Feb 2020, 7-day moving average, by merchant category and by quartile of the median income of the cardholder's ZIP code (q1 lowest, q4 highest). Variables: `spend_acf_q1..q4` (accommodation and food service), `spend_grf_q1..q4` if present (grocery; placebo outcome), rows with freq == "d". Note: income is the ZIP-code median, not the household's income (ecological).
+- FRED `GASREGW` (US regular all-formulations gasoline price, weekly).
+Aggregation: daily values are averaged by calendar week (Monday–Sunday); a week is kept only if all seven days are present. Sample: weeks from 2021-07-05 to 2024-06-10 (the reopening and stimulus-driven months of early 2021 are excluded).
+
+**Outcome.** Gap_w = acf_q1 − acf_q4 (percentage-point difference in spending relative to the early-2020 baseline; falling means low-income neighbourhoods spend less relative to high-income ones). Secondary outcomes: acf_q1 and acf_q4 separately; grocery gap grf_q1 − grf_q4 (specificity).
+
+**Hypothesis G1 (primary, directional).** When gasoline prices rise, low-income neighbourhoods reduce food-service spending relative to high-income ones: the cumulative effect β = Σ_{k=0..3} β_k < 0 in
+ ΔGap_w = a + Σ_{k=0..3} β_k Δln(gas)_{w−k} + e_w, with Newey-West (8 lags) standard errors. Rejection: two-sided p < 0.05 with β < 0. First differences remove slow level drift (the series are indexes against 2020 and trend with inflation).
+
+**Hypothesis G2 (event window, descriptive).** D = mean Gap over 2022-05-02..2022-06-26 minus mean Gap over 2022-01-03..2022-02-27 (before the invasion; peak-price run-up). Reference distribution: the same statistic for every start date from 2021-07-05 in the sample for which both windows fit (windows 17 weeks apart, same lengths); rank-based p = share of reference values at most D (one-sided).
+
+**Checks fixed in advance.** (i) Lags 0–6 instead of 0–3; (ii) 4-week differences with non-overlapping weeks; (iii) q1 and q4 separately; (iv) the grocery gap as a placebo/specificity outcome (G1 on grocery; a similar negative β would suggest a general income-quartile drift rather than food-service-specific); (v) sample excluding 2021 H2; (vi) levels regression of Gap on ln(gas) with a linear trend (reported only as descriptive, because of spurious-trend risk).
+
+**Interpretation rules.** G1 is supported only if β < 0, p < 0.05, and the grocery placebo β is not significantly of the same sign. A non-significant result is not evidence of no effect (one episode; weekly sample of about 150 weeks with strong autocorrelation).
+
+**Limitations stated in advance.** One national episode; gasoline prices were jointly moved by the war, inflation, and the post-COVID recovery; spending is nominal (price rises in restaurants raise nominal spending, differently by neighbourhood); ZIP-code income is an ecological proxy; Affinity's cardholder panel and merchant coverage are not representative; the tracker was discontinued in June 2024, so there is no 2026 data; accommodation is included in the food-service category.
