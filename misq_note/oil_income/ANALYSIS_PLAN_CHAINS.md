@@ -23,3 +23,10 @@ Hypothesis H_C1 (directional): the average chain's comps growth falls from 2026Q
 **Interpretation rules.** H_C1 is supported only if the one-sided rank p ≤ 0.10. Because the number of reference quarters is small (11), a non-significant result is not evidence of no effect.
 
 **Limitations stated in advance.** Comparable sales mix price, quantity and mix; promotions, menu changes, calendar shifts and base effects differ by chain; the sample is 13 listed chains; no traffic (transaction) data for most chains; a single post quarter; no heterogeneity analysis by income or price tier; fuel prices cannot be separated from other concurrent shocks.
+
+---
+## Addendum 1: comparison with the year-ago quarter (written 2026-10-14 at the author's request, after the primary analysis in `CHAINS_RESULTS.md` had been run; therefore exploratory, not blind)
+The author asked to compare the chains' data with the data one year earlier and to see whether the change is significant. Two year-ago comparisons are defined (same 13 chains, unweighted, `analysis_chains_yoy.py`):
+- **Y1 (sales vs year ago).** comps_{c,2026Q2} is already the year-over-year growth of same-store sales; test whether its cross-chain mean differs from 0 (one-sample t, n = 13; Wilcoxon signed-rank; share of chains with positive growth). Reference: the same statistic for every earlier quarter 2023Q2–2026Q1 (rank of 2026Q2 among them).
+- **Y2 (change in growth vs year ago).** Δ4_{c,t} = comps_{c,t} − comps_{c,t−4} (this quarter's growth minus growth in the same quarter last year, which nets out seasonality and base effects). Test the 2026Q2 cross-chain mean against 0 (one-sample t, Wilcoxon, share negative), and its rank among the placebo quarters t = 2024Q1…2026Q1 (those with at least 10 chains).
+Also reported: the same for 2026Q1 (transitional) and the median. Inference rules as in the main plan: a fall is supported only if the mean is negative, p < 0.10, and the rank is within the lowest two of the quarters.
