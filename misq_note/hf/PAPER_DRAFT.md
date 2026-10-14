@@ -1,4 +1,4 @@
-# Draft v0.1 — working title
+# Draft v0.2 — working title
 
 **When Do Presidential Posts Move Markets? A Pre-Registered Mixed-Methods Study of Truth Social, Oil, and the 2026 Hormuz Closure**
 
@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Executive communication on social platforms is now a real-time input to financial markets, yet it is unclear whether this reflects a general "attention" channel or something narrower. We study 4,838 original Truth Social posts (1 March–13 October 2026) and two years of hourly futures data (October 2024–October 2026), centred on the 2026 Iran war and the closure of the Strait of Hormuz. We make three contributions. First, a descriptive one: post arrivals are not homogeneous Poisson (dispersion index 350 on 226 df; inter-arrival CV 1.94) but are well described by a Poisson process with a time-varying rate (week-fixed-effects dispersion 0.89), the Poisson–Gamma structure familiar from count data on digital platforms. Second, an empirical one: during the Hormuz closure, posts that blind coders classified as de-escalation were followed by WTI falling 1.29% over the next one to two hours (p < 0.001), together with a stronger dollar index, a weaker USD/CNH and higher Treasury futures (Holm-adjusted p ≤ 0.02); escalation posts show no detectable response, and posts on Fed policy and non-tariff China matters show none either. Third, a methodological and epistemic one: we pre-registered three successive theories (binding constraint, salience, habituation) and tested them out of sample. The first is only partly supported, the second is rejected, and the third cannot be confirmed or refuted for lack of power (MDE 0.82 versus an in-sample estimate of 0.24). An interpretive layer (136 posts coded blind by two analysts, triangulated against 20 market-wire cases) generates five themes and four propositions; the two testable propositions are not supported. We argue that the defensible claim is a state-dependent, context-bound response rather than a general law, and we report the negative results as findings.
+Executive communication on social platforms is now a real-time input to financial markets, yet it is unclear whether this reflects a general "attention" channel or something narrower. We study 4,838 original Truth Social posts (1 March–13 October 2026) and two years of hourly futures data (October 2024–October 2026), centred on the 2026 Iran war and the closure of the Strait of Hormuz. We make three contributions. First, a descriptive one: post arrivals are not homogeneous Poisson (dispersion index 350 on 226 df; inter-arrival CV 1.94) but are well described by a Poisson process with a time-varying rate (week-fixed-effects dispersion 0.89), the Poisson–Gamma structure familiar from count data on digital platforms. Second, an empirical one: during the Hormuz closure, posts that blind coders classified as de-escalation were followed by WTI falling 1.29% over the next one to two hours (p < 0.001), together with a stronger dollar index, a weaker USD/CNH and higher Treasury futures (Holm-adjusted p ≤ 0.02); escalation posts show no detectable response within two hours, and posts on Fed policy and non-tariff China matters show none either. Third, a methodological and epistemic one: we pre-registered three successive theories (binding constraint, salience, habituation) and tested them out of sample. The first is only partly supported, the second is rejected, and the third cannot be confirmed or refuted for lack of power (MDE 0.82 versus an in-sample estimate of 0.24). An interpretive layer (136 posts coded blind by two analysts, triangulated against 20 market-wire cases) generates five themes and four propositions; the two testable propositions are not supported. We argue that the defensible claim is a state-dependent, context-bound response rather than a general law, and we report the negative results as findings.
 
 ## 1. Introduction
 
@@ -46,14 +46,22 @@ The 2026 Iran war gives an unusual setting. From the first U.S. trading day (2 M
 ## 4. Results
 
 ### 4.1 Arrivals
+![Figure 1](figs/fig1_arrivals.png)
+*Figure 1. Posts mentioning Iran with a threat term (S1; n = 108; 1 March–13 October 2026). A: observed daily counts versus fitted Poisson and negative binomial (log scale; the Poisson tail is too thin). B: weekly counts; the rate changes across weeks. Script: `make_figures.py`.*
+
 Daily counts: variance 0.74 versus mean 0.48; dispersion index 350 (χ² p = 2e-7); negative binomial fits far better (size ≈ 0.79; LR p = 3e-6). Inter-arrival times: mean 51 h, median 21 h, CV 1.94, KS test against exponential p = 0.0001. With week fixed effects the Pearson dispersion is 0.89, close to Poisson: bursts in rate (11–14 March; 11–22 April), not within-week clustering. Weekly signal counts show no relation to weekly market outcomes (null). [`poisson_posts/RESULTS.md`, `RESULTS_MARKETS.md`]
 
 ### 4.2 The state-dependent response
+![Figure 2](figs/fig2_event_time.png)
+*Figure 2. WTI hourly path around blind-coded war-period posts (coders' agreed labels; de-escalation n = 33, escalation n = 27 with complete hourly windows). A: mean ± 1 SE; B: median. The path is the log change of the bar close relative to the open of the bar containing the post.*
+
 Blind-coded de-escalation posts during the war (n = 33 with WTI bars): WTI −1.29%, Brent −1.21%, USD/KRW −0.14%, S&P 500 +0.23% (n = 14). Two posts (23 March, −9.8%; 7 April, −12.0%) contribute heavily; without them WTI still falls 0.67% (p = 0.002; median −0.30%). Escalation posts (n = 28): WTI −0.02% (p = 0.92). The result is similar under the second coder (−1.37%) and for posts on which both agree (−1.45%, n = 30). [`hf/RESULTS.md`, `RESULTS_EXT.md`]
 
 Other assets (war period, de-escalation): ZN +0.10% (Holm p = 0.004), DXY −0.11% (0.014), USD/CNH −0.04% (0.02); gold not significant. A 5-minute subsample has only 9 oil posts and is uninformative (sign-flip p = 0.13). [`RESULTS_HOLDOUT.md`]
 
 Before the war, Iran de-escalation posts give a smaller response in the same direction (about a quarter in size; significant only among agreed posts, n = 7–9), while for Russia/Venezuela-type posts the asymmetry reverses (escalation raises oil: +0.46%, p = 0.013). The effect is therefore context-bound. [`RESULTS_EXT.md`]
+
+Figure 2 also shows what the pre-registered two-hour window does not: (a) the oil move into the post has the same sign as the move after it—WTI rose 1.38% (t = 1.57) in the five to six hours before escalation posts and fell 0.55% (t = −0.95) before de-escalation posts—so part of the post-window move may reflect the same news that prompted the post (the placebo window of two hours showed no systematic pre-trend); (b) the median path after de-escalation posts is much shallower than the mean (about −0.4 to −0.6% over 2–7 hours), consistent with the influence of the two extreme events; and (c) escalation posts are followed by a rise in WTI at 4–7 hours in both mean and median (exploratory; outside the pre-registered window, not tested).
 
 Identification. De-escalation posts are a strong two-hour oil instrument but a weak daily one (first-stage F = 2.8), so effects on Korean airlines cannot be identified from them; the reduced form is null. [`RESULTS_IV.md`]
 
@@ -105,4 +113,4 @@ Posts by a head of state can coincide with large, fast market moves, but our evi
 2. Prospective collection protocol for Q2/Q3 and for a confirmatory habituation test (≥ 480 signal posts).
 3. Replace approximate quotations in the triangulation with directly verified wire text where outlets allow.
 4. Decide the journal fit: this is currently an empirical research note whose main contributions are descriptive plus negative; a theory-development outlet would require a confirmed mechanism.
-5. Language edit and figures (arrival histogram, event-time plots of WTI around the ten largest de-escalation posts).
+5. Language edit; figure 3 (cell means of directional impact by topic and direction) if a third figure is wanted.
