@@ -1,0 +1,11 @@
+# Fast-food chain same-store sales around the 2026 fuel shock: results (pre-registered, `ANALYSIS_PLAN_CHAINS.md`)
+
+Data: 13 listed chains, US comparable-sales growth 2023Q1–2026Q2 from SEC 8-K Exhibit 99.1; all 192 quotes were checked programmatically against the cited exhibit text (`verify_quotes.py`, 0 mismatches). McDonald's was re-extracted directly from EDGAR (`build_mcd.py`) after the first extraction failed. CAVA has no 2023Q1 figure (IPO June 2023). Starbucks "flat" and Papa John's "flat" were coded as 0. Script: `analysis_chains.py`; output: `chains_results.json`.
+
+**H_C1 is NOT supported; the sign is opposite.**
+- Primary: mean change in comps growth 2026Q1→2026Q2 is **+0.80 pp** (13 chains). The 11 placebo quarters range from −3.08 to +0.88; the shock quarter ranks 11th of 12 from the lowest, one-sided rank p = 0.92.
+- C2 (level vs previous four quarters): +1.18 pp, above all 8 reference quarters (all negative, −0.9 to −4.0), one-sided p = 1.0.
+- C3 (cross-chain): mean Δ +0.80, t = 1.10, two-sided p = 0.29; 6 of 13 chains decreased (McDonald's −3.1, Papa John's −1.9, Shake Shack −1.1, Yum −1.0, Domino's −0.8, CAVA −0.7); Sweetgreen +6.6, Starbucks +3.1, Jack in the Box +2.9, Burger King/RBI +2.7.
+- Check (ii) two-year stacked comps: +0.06, rank p = 0.88. Median instead of mean: +0.80, p = 1.0. Check (i) no disclosed one-off was flagged in the extraction notes, so none was excluded; (iii) no sales weights, unweighted only.
+
+**Interpretation.** Across listed chains, comparable-sales growth did not deteriorate after the shock quarter relative to the previous quarter; it improved on average, driven by chains recovering from weak 2025 bases (Starbucks, Burger King, Sweetgreen, Jack in the Box). Individual chains with the weakest Q2 (McDonald's, Papa John's) are consistent with the press narrative, but the pooled test gives no support, and the comps measure is year-over-year (base effects: 2025Q2 was weak for many). The test has little power (11 placebo quarters). Combined with the Census MRTS result (no deviation in limited-service sales), the data do not show a fast-food downturn attributable to the fuel shock through June 2026; they cannot rule out heterogeneous effects within chains or effects on traffic (comps include price).
