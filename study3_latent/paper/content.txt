@@ -1,0 +1,161 @@
+@TITLE Measuring Without a Gold Standard: Correcting LLM-Coded Outcomes in Difference-in-Differences Designs
+
+@H1 Abstract
+
+@NOINDENT Researchers increasingly use large language models (LLMs) to turn text into outcome variables and then estimate treatment effects on those variables. Validating such measures usually requires human labels, which are costly and themselves imperfect. We show that the design of a difference-in-differences (DiD) study can stand in for a gold standard. When an outcome is misclassified at rates that do not depend on treatment or period, the DiD on the LLM-coded outcome equals the true DiD multiplied by the classifier’s Youden index; and when two or more classifiers with conditionally independent errors are available, the four cells of the design identify each classifier’s sensitivity and specificity, the cell prevalences, and hence the corrected DiD, without any human labels. With three classifiers, the model is over-identified, so the assumption that errors do not vary with treatment can be tested. We apply the approach to 17,476 Amazon reviews in a pre-registered study of the 2016 ban on incentivized reviews, in which LLM-coded measures of defect reports, negative sentiment, and performance praise showed no effect of the ban. Combining the LLM coding with a keyword rule, a supervised sentiment model, and a zero-shot classifier, we estimate that the LLM’s Youden index is 0.81 to 0.91, that its errors do not vary across the cells of the design, and that the corrected effects remain indistinguishable from zero. The null results are therefore not an artifact of measurement error. The procedure gives researchers a low-cost way to audit LLM-coded outcomes in quasi-experimental designs.
+
+@NOINDENT *Keywords:* Large language models, measurement error, misclassification, latent class models, difference-in-differences, online reviews
+
+@H1 Introduction
+
+Text has become one of the main sources of outcome variables in information systems and marketing research. Reviews, posts, and messages are coded into categories such as sentiment, complaint type, or product attributes, and these codes then serve as dependent variables in event studies and difference-in-differences (DiD) designs. Large language models (LLMs) have made such coding cheap and fast, and they often match or exceed crowd workers in agreement with expert coders (Gilardi et al. 2023; Ziems et al. 2024). The resulting measures are nonetheless imperfect, and a misclassified outcome can bias the very estimates that the design is meant to identify.
+
+The standard remedy is validation against human labels. Researchers report agreement between the model and human coders, and recent methods use a human-labelled subsample to correct downstream estimates (Angelopoulos et al. 2023; Egami et al. 2023). This remedy has two costs. Human coding of enough items to support correction is expensive, often more expensive than the LLM coding it is meant to check. And human labels are themselves noisy: coders disagree, and adjudication can introduce the researcher’s expectations. A validation strategy that does not depend on human labels would therefore be useful, provided that it rests on assumptions that can be stated and, ideally, tested.
+
+This paper develops such a strategy for the common case in which an LLM-coded binary outcome enters a DiD design. We make two observations. The first is a familiar result from the econometrics of misclassified dependent variables (Hausman et al. 1998) restated for DiD: if the classifier’s error rates do not depend on treatment or period, the DiD on the coded outcome equals the true DiD scaled by the classifier’s Youden index, its sensitivity plus specificity minus one. A null result on the coded outcome is then a null result on the true outcome, attenuated by a known factor. The second observation is less familiar. The four cells of a DiD design are populations with different prevalences of the outcome, which is exactly the structure that, in the literature on diagnostic tests, allows the error rates of two or more imperfect tests to be identified without a reference standard (Hui and Walter 1980; Dawid and Skene 1979). If several classifiers with conditionally independent errors are applied to the same texts, the design itself identifies their sensitivities and specificities, the true prevalence in each cell, and therefore the corrected DiD. With three classifiers, the model is over-identified, so the key assumption that error rates do not vary with treatment can be tested.
+
+We apply this approach to a pre-registered study of Amazon’s October 2016 ban on incentivized reviews. In the matched sample, a 10-percentage-point higher pre-ban share of incentivized reviews predicts a 0.18-star larger decline in ratings after the ban, but LLM-coded measures of review content (defect reports, negative sentiment, and praise for performance) show no detectable change. Were these nulls genuine, or did misclassification by the LLM hide an effect? Without any human coding, we combine the LLM labels with three classifiers whose errors arise from different mechanisms: a keyword rule, a supervised sentiment model, and a zero-shot natural-language-inference model. The LLM’s Youden index is 0.81 for defect reports and 0.91 for both negative sentiment and performance praise, its accuracy does not vary across the cells of the design, and the classifiers’ errors show no detectable dependence. The corrected effects remain indistinguishable from zero.
+
+The paper makes three contributions. First, it states the conditions under which a DiD on an LLM-coded outcome is attenuated, biased, or uninformative, and it shows that the design’s own structure identifies the attenuation without a gold standard. Second, it provides a procedure that researchers can apply at low cost and that comes with its own specification tests. Third, it reports a substantive result on the economics of incentivized reviews: the ban lowered ratings but did not change what reviewers wrote about defects, sentiment, or performance, and this conclusion survives correction for measurement error.
+
+@H1 Related Literature
+
+*LLMs as annotators.* A growing body of work evaluates LLMs as replacements for human coders in the social sciences (Gilardi et al. 2023; Ziems et al. 2024). The text-as-data literature has long stressed that automated measures must be validated before they are used in downstream inference (Grimmer and Stewart 2013), and recent methods correct downstream estimates using a randomly drawn subsample with human labels, either by prediction-powered inference (Angelopoulos et al. 2023) or by design-based supervised learning (Egami et al. 2023). These methods treat human labels as the truth. We instead treat every classifier, the LLM included, as an imperfect measurement and use the research design to identify their error rates.
+
+*Misclassification in econometrics and latent class models.* Misclassification of a binary variable is necessarily correlated with the true value, so its consequences differ from those of classical measurement error (Aigner 1973; Bound et al. 2001). When the misclassified variable is the dependent variable, its conditional mean is a linear function of the true conditional mean with intercept equal to the false-positive rate and slope equal to the Youden index (Hausman et al. 1998). Identification of error rates without a gold standard has a long history in the evaluation of diagnostic tests: with two tests and two populations of different prevalence, and with errors independent given the true status, sensitivities and specificities are identified (Hui and Walter 1980), and with several raters the error rates can be estimated by maximum likelihood (Dawid and Skene 1979). Conditional dependence between tests biases such estimates (Vacek 1985), which is why we rely on classifiers with different error mechanisms and test for dependence. In econometrics, repeated measurements or instruments identify misclassified discrete variables under related conditions (Mahajan 2006; Lewbel 2007; Hu 2008), and when such conditions fail, bounds remain available (Horowitz and Manski 1995).
+
+*Incentivized and manipulated reviews.* Reviews influence demand (Chevalier and Mayzlin 2006), which gives sellers an incentive to manipulate them. Promotional reviews are more common where the cost of manipulation is low (Mayzlin et al. 2014), review fraud responds to reputational incentives (Luca and Zervas 2016), and a market for fake reviews raises ratings temporarily (He et al. 2022). Incentivized reviews, written in exchange for free or discounted products, are a disclosed and, until October 2016, permitted form of this practice on Amazon. The ban offers a setting in which the composition of reviews changed abruptly and differently across products, which is the variation our DiD exploits.
+
+@H1 Misclassified Outcomes in a Difference-in-Differences Design
+
+Let y ∈ {0, 1} be the true outcome of a text (for example, whether a review reports a defect), and let c index the four cells of a DiD design: treated or control, before or after the policy. Let p_c denote the prevalence of y in cell c. A classifier k reports ỹ_k with sensitivity Se_k = P(ỹ_k = 1 | y = 1) and specificity Sp_k = P(ỹ_k = 0 | y = 0). Its Youden index is J_k = Se_k + Sp_k − 1, which is positive for any classifier better than chance.
+
+*Proposition 1 (attenuation).* If classifier k’s error rates do not depend on the cell, then
+
+@EQ E[ỹ_k | c] = (1 − Sp_k) + J_k · p_c,     (1)
+
+@NOINDENT so the DiD of ỹ_k equals J_k times the DiD of y. Because equation (1) is linear in p_c, the same scaling holds for any linear DiD estimator with unit and period fixed effects. A DiD of zero on the coded outcome thus implies a DiD of zero on the true outcome, and a non-zero DiD on the coded outcome understates the true effect by the factor J_k.
+
+*Proposition 2 (differential misclassification).* If the error rates vary by cell, the DiD of ỹ_k equals
+
+@EQ DiD[ỹ_k] = DiD[1 − Sp_k(c)] + DiD[J_k(c) · p_c],     (2)
+
+@NOINDENT which can be non-zero when the true DiD is zero, or zero when it is not. This case is plausible when the policy changes the style of the texts, for example their length or vocabulary, in ways that affect the classifier’s accuracy.
+
+*Proposition 3 (identification without a gold standard).* Suppose K ≥ 2 classifiers have cell-invariant error rates, their errors are independent given y, and the prevalence p_c differs across at least two cells. Then Se_k, Sp_k for every k and p_c for every c are identified from the joint distribution of the classifier outputs within cells (Hui and Walter 1980), and so is the true DiD, p_11 − p_10 − p_01 + p_00. With K = 3 binary classifiers and four cells, the cell-pattern frequencies provide 28 independent moments against 10 parameters, so the model is over-identified. The over-identification permits two tests: whether one classifier’s error rates vary by cell, which addresses Proposition 2, and whether two classifiers’ errors are dependent given y.
+
+Two estimators of the corrected effect follow. The first is the DiD of the estimated cell prevalences. The second divides the fixed-effects DiD on the LLM-coded outcome by the LLM’s estimated Youden index, which by Proposition 1 recovers the fixed-effects DiD on the true outcome. The second estimator retains the unit and period fixed effects of the original analysis; the first relies only on the four cell means.
+
+The assumptions deserve emphasis. Cell invariance of the error rates can be tested when K ≥ 3. Conditional independence cannot be tested fully, and it is most doubtful for classifiers that share training data and architecture, such as two LLMs from one family. We therefore pair the LLM with classifiers whose errors arise from different mechanisms and test the pairwise dependence that the over-identification allows.
+
+@H1 Setting and Data
+
+*Policy.* On October 3, 2016, Amazon banned reviews written in exchange for free or discounted products, except those collected through its own Vine program, in all categories except books. The announcement was public and widely reported.
+
+*Data.* We use the Appliances category of the Amazon Reviews 2023 data set (Hou et al. 2024), which contains 2,128,605 reviews of 94,319 products from October 2000 to September 2023. A review is flagged as incentivized if its text discloses that the product was received free or at a discount in exchange for a review, using a rule fixed in the pre-registration (estimated precision about 95% in a hand check; recall unknown and expected to be well below one, because only disclosed incentives are visible).
+
+*Design.* The pre-registered analysis plan defines exposure as a product’s share of flagged reviews between January 2014 and September 2016. For the content analysis, products with at least two flagged pre-ban reviews were matched one to one to products with none, by Mahalanobis distance on log pre-ban review count, pre-ban mean rating, and year of first review. For each product, up to 40 non-flagged reviews were drawn at random from January to September 2016 (pre) and up to 40 from October 2016 to September 2017 (post). The resulting sample contains 17,476 reviews of 273 products: 4,609 and 4,177 reviews of control products before and after the ban, and 4,527 and 4,163 reviews of treated products.
+
+*LLM coding.* Each review was coded from its text alone, using a written codebook, by sub-agents of an LLM coding agent (Claude Code) running claude-haiku-5-5 on October 13, 2026, with default sampling settings. The three pre-registered content outcomes are whether the review reports a defect, whether its overall sentiment is negative, and whether it praises the product’s performance. A second LLM, claude-sonnet-5-5, coded 399 randomly drawn reviews for a reliability check; the two LLMs agree on 94% to 99% of these reviews.
+
+*Substantive results.* Table 1 summarizes the pre-registered results. The ban did not detectably change the number of reviews (H1). It lowered ratings: a 10-percentage-point higher pre-ban share of incentivized reviews predicts a 0.18-star larger decline in the average rating of non-incentivized reviews after the ban (p = 0.003; Holm-adjusted p = 0.015), with no corresponding change at a placebo date one year earlier (p = 0.94). The LLM-coded content outcomes, however, show no detectable change (H3; p = 0.25 to 0.84). The rest of the paper asks whether these nulls could be an artifact of the LLM’s classification errors.
+
+@TABLE T1
+
+@H1 Classifiers and Estimation
+
+We wrote a plan for the latent-class analysis before running any additional classifier and before estimating any latent-class model. It records what had already been seen (the LLM-coded DiD results and the agreement between the two LLMs), fixes the classifiers, thresholds, and decision rules, and was amended once before any output of the affected classifier was inspected (Appendix B).
+
+*Classifiers.* Besides the LLM (H), we use three classifiers chosen for their different error mechanisms (Appendix B gives their exact specifications). A keyword rule (L) flags defect reports by the presence of any of 39 phrases such as “stopped working” or “dead on arrival,” deliberately without handling negation. A supervised sentiment model trained on social media text (S; Loureiro et al. 2022) labels a review negative when that is its most probable class. A zero-shot classifier based on natural-language inference (Z; Laurer et al. 2024; Yin et al. 2019) labels a review as positive for an outcome when the probability that the review entails a fixed hypothesis sentence is at least 0.5. Because Z is slow on the available hardware, it was run on a random subsample of 300 reviews per cell; the likelihood treats Z as missing elsewhere, which is missing at random by design. The star rating (two stars or fewer) serves as an additional test of negative sentiment in a sensitivity analysis only, because it is not a reading of the text. The classifiers available for each outcome are H, Z, and L for defect reports; H, S, and Z for negative sentiment; and H and Z for performance praise.
+
+*Estimation.* For each outcome, we estimate the latent-class model of Proposition 3 by maximum likelihood with the EM algorithm, with cell-specific prevalences and cell-invariant sensitivities and specificities. We compute the two corrected DiD estimators described above, using the same specification as the pre-registered analysis for the fixed-effects estimator (a linear probability model with product and quarter fixed effects). Confidence intervals come from a bootstrap of 500 resamples of products, which re-estimates both the latent-class model and the fixed-effects regression in each resample. We test the over-identifying restrictions by likelihood-ratio tests of the primary model against a model in which the LLM’s error rates vary by cell (6 degrees of freedom) and, on the subsample where all classifiers are observed, against a model in which the LLM and the zero-shot classifier have an unrestricted joint distribution given y (2 degrees of freedom).
+
+*Estimator check.* Before estimating anything on the real data, we checked that the estimator recovers known parameters in simulated data of the same size, with prevalences between 0.10 and 0.17 and three classifiers of differing accuracy. Across 200 replications, the estimated DiD and all sensitivities and specificities fell within two standard deviations of the truth in 94% to 98% of replications, above the 90% threshold set in the plan (Appendix A).
+
+@H1 Results
+
+*Classifier accuracy.* Table 2 reports the estimated error rates. The LLM is the most accurate classifier for every outcome. Its specificity is high (0.96 to 0.99), so false positives are rare, while its sensitivity is lower for defect reports (0.82) than for negative sentiment (0.93) or performance praise (0.95). Its Youden index is 0.81 for defect reports and 0.91 for both sentiment outcomes. The supervised sentiment model is nearly as accurate as the LLM for negative sentiment (J = 0.89). The keyword rule misses about half of all defect reports (sensitivity 0.49) but rarely flags a review that does not report one. The zero-shot classifier is less accurate throughout and has low specificity for performance praise (0.65).
+
+@TABLE T2
+
+*Corrected effects.* Table 3 and Figure 1 compare the DiD on the LLM-coded outcomes with the two corrected estimates. Because the LLM’s Youden index is close to one, the fixed-effects estimates change little after correction: from 0.85 to 1.05 percentage points for defect reports, from 1.77 to 1.95 for negative sentiment, and from 0.32 to 0.35 for performance praise. The DiDs of the latent cell prevalences are smaller still (0.24, 0.83, and 0.60 points). Every corrected 95% interval includes zero. By the decision rule fixed in the plan, the null results on the LLM-coded outcomes hold after correction for measurement error.
+
+@TABLE T3
+
+@FIG fig_latent_did.png | Figure 1. Uncorrected and Corrected Difference-in-Differences Estimates for the LLM-Coded Outcomes | Percentage points; bars are 95% intervals from a bootstrap of 500 resamples of products.
+
+*Specification tests.* Table 4 reports the over-identification tests. Allowing the LLM’s error rates to differ across the four cells does not improve the fit significantly for defect reports (p = 0.35) or negative sentiment (p = 0.39); the cell-specific Youden indices range from 0.74 to 0.82 and from 0.88 to 0.92. There is thus no evidence that the ban changed the accuracy of the LLM, which is the condition under which Proposition 2 would bias the DiD. Allowing the LLM’s errors to depend on those of the zero-shot classifier also does not improve the fit (p = 0.82 and 0.92). For performance praise, only two classifiers are available, so the model is just identified and these tests are not possible.
+
+@TABLE T4
+
+*Sensitivity.* Adding the star rating as a fourth test for negative sentiment changes the corrected DiD of the cell prevalences from 0.83 to 1.12 percentage points, still within the interval of the primary estimate. The two LLMs agree on 94% to 99% of the reviews they both coded, which is consistent with the concern that LLMs of one family make similar errors and supports the choice of classifiers with different error mechanisms.
+
+@H1 Discussion
+
+*What the evidence supports.* In this setting, the LLM’s classification errors are small and do not vary with treatment, and correcting for them does not change the conclusion that the ban on incentivized reviews left the content of non-incentivized reviews unchanged while lowering their ratings. The value of the exercise lies less in a changed estimate than in a tested one: before correction, a reader could not tell whether the nulls reflected the absence of an effect or a misclassification that masked it.
+
+*Contributions.* The paper shows that a DiD design contains the information needed to audit an LLM-coded outcome without human labels. Because the cells of the design differ in the prevalence of the outcome, several imperfect classifiers suffice to identify each classifier’s error rates, the attenuation of the DiD, and the corrected effect, and with three classifiers the key assumptions can be tested. The procedure complements validation with human labels. It is cheapest when classifiers with different error mechanisms are available, as they are for sentiment and for many complaint or attribute categories, and it is most informative when the LLM is one of several reasonable measurements rather than the only one.
+
+*Implications for research practice.* Researchers who use LLM-coded outcomes in DiD or event-study designs can (1) report the classifier’s Youden index, estimated from the design if no gold standard is available, and interpret a coded effect as the true effect times that index; (2) pair the LLM with at least two classifiers whose errors arise from different mechanisms, such as keyword rules, supervised models, and zero-shot models; (3) test whether the LLM’s accuracy varies across the cells of the design, which is the condition under which misclassification can create or hide an effect; and (4) when the tests reject, fall back on bounds that require only an upper bound on the error rates (Horowitz and Manski 1995).
+
+*Limitations.* Conditional independence of the classifiers’ errors is an assumption. Our tests do not reject it for the LLM and the zero-shot classifier, but they cannot rule out every form of dependence, and they could not be run for performance praise, for which only two classifiers were available. The zero-shot classifier was run on a subsample because of computing limits, which reduces the power of the dependence tests. The estimated error rates describe the classifiers relative to a latent class that the classifiers jointly define; if all of them share a systematic misunderstanding of the codebook, that error is not detected. The substantive results come from one product category and one policy, and the exposure measure captures only disclosed incentives, which biases the substantive estimates toward zero. Finally, the latent-class analysis was planned after the uncorrected content results were known, although before any additional classifier was run.
+
+*Future research.* Natural extensions are a comparison of design-based estimates of error rates with those obtained from a small set of human labels, which would validate the approach itself; designs with more cells, such as staggered adoption, which add identifying variation; continuous or ordinal outcomes; and the use of the same idea for LLM-coded treatment variables rather than outcomes.
+
+@H1 Conclusion
+
+LLM-coded outcomes are measurements, and their errors can attenuate, hide, or create treatment effects. We show that a DiD design carries the information needed to estimate those errors without a gold standard, provided that several classifiers with different error mechanisms are available, and that the key assumption can be tested. Applied to Amazon’s ban on incentivized reviews, the procedure confirms that the LLM measured review content well, that its accuracy did not change with the policy, and that the ban did not change what reviewers wrote about defects, sentiment, or performance.
+
+@H1 Declarations
+
+@NOINDENT *Use of generative AI.* Large language models were used as classification instruments in the study, as described in the Setting and Data section and Appendix B. Generative AI tools were also used to write analysis code and to draft and edit the manuscript; the authors reviewed all content and take full responsibility for it. [Authors: check this statement against the journal’s disclosure policy before submission.]
+
+@NOINDENT *Data and code availability.* The review data are public (Amazon Reviews 2023). Analysis plans, classifier outputs, code, and results are available in an anonymized repository on request.
+
+@PAGEBREAK
+
+@H1 References
+
+@REF Aigner, D. J. 1973. “Regression with a Binary Independent Variable Subject to Errors of Observation,” *Journal of Econometrics* (1:1), pp. 49-59.
+@REF Angelopoulos, A. N., Bates, S., Fannjiang, C., Jordan, M. I., and Zrnic, T. 2023. “Prediction-Powered Inference,” *Science* (382:6671), pp. 669-674.
+@REF Bound, J., Brown, C., and Mathiowetz, N. 2001. “Measurement Error in Survey Data,” in *Handbook of Econometrics* (Volume 5), J. J. Heckman and E. Leamer (eds.), Amsterdam: North-Holland, pp. 3705-3843.
+@REF Chevalier, J. A., and Mayzlin, D. 2006. “The Effect of Word of Mouth on Sales: Online Book Reviews,” *Journal of Marketing Research* (43:3), pp. 345-354.
+@REF Dawid, A. P., and Skene, A. M. 1979. “Maximum Likelihood Estimation of Observer Error-Rates Using the EM Algorithm,” *Journal of the Royal Statistical Society, Series C (Applied Statistics)* (28:1), pp. 20-28.
+@REF Egami, N., Hinck, M., Stewart, B., and Wei, H. 2023. “Using Imperfect Surrogates for Downstream Inference: Design-Based Supervised Learning for Social Science Applications of Large Language Models,” in *Advances in Neural Information Processing Systems 36*, pp. 68589-68601.
+@REF Gilardi, F., Alizadeh, M., and Kubli, M. 2023. “ChatGPT Outperforms Crowd Workers for Text-Annotation Tasks,” *Proceedings of the National Academy of Sciences* (120:30), e2305016120.
+@REF Grimmer, J., and Stewart, B. M. 2013. “Text as Data: The Promise and Pitfalls of Automatic Content Analysis Methods for Political Texts,” *Political Analysis* (21:3), pp. 267-297.
+@REF Hausman, J. A., Abrevaya, J., and Scott-Morton, F. M. 1998. “Misclassification of the Dependent Variable in a Discrete-Response Setting,” *Journal of Econometrics* (87:2), pp. 239-269.
+@REF He, S., Hollenbeck, B., and Proserpio, D. 2022. “The Market for Fake Reviews,” *Marketing Science* (41:5), pp. 896-921.
+@REF Horowitz, J. L., and Manski, C. F. 1995. “Identification and Robustness with Contaminated and Corrupted Data,” *Econometrica* (63:2), pp. 281-302.
+@REF Hou, Y., Li, J., He, Z., Yan, A., Chen, X., and McAuley, J. 2024. “Bridging Language and Items for Retrieval and Recommendation,” arXiv:2403.03952.
+@REF Hu, Y. 2008. “Identification and Estimation of Nonlinear Models with Misclassification Error Using Instrumental Variables: A General Solution,” *Journal of Econometrics* (144:1), pp. 27-61.
+@REF Hui, S. L., and Walter, S. D. 1980. “Estimating the Error Rates of Diagnostic Tests,” *Biometrics* (36:1), pp. 167-171.
+@REF Laurer, M., van Atteveldt, W., Casas, A., and Welbers, K. 2024. “Less Annotating, More Classifying: Addressing the Data Scarcity Issue of Supervised Machine Learning with Deep Transfer Learning and BERT-NLI,” *Political Analysis* (32:1), pp. 84-100.
+@REF Lewbel, A. 2007. “Estimation of Average Treatment Effects with Misclassification,” *Econometrica* (75:2), pp. 537-551.
+@REF Loureiro, D., Barbieri, F., Neves, L., Espinosa Anke, L., and Camacho-Collados, J. 2022. “TimeLMs: Diachronic Language Models from Twitter,” in *Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics: System Demonstrations*, pp. 251-260.
+@REF Luca, M., and Zervas, G. 2016. “Fake It Till You Make It: Reputation, Competition, and Yelp Review Fraud,” *Management Science* (62:12), pp. 3412-3427.
+@REF Mahajan, A. 2006. “Identification and Estimation of Regression Models with Misclassification,” *Econometrica* (74:3), pp. 631-665.
+@REF Mayzlin, D., Dover, Y., and Chevalier, J. 2014. “Promotional Reviews: An Empirical Investigation of Online Review Manipulation,” *American Economic Review* (104:8), pp. 2421-2455.
+@REF Vacek, P. M. 1985. “The Effect of Conditional Dependence on the Evaluation of Diagnostic Tests,” *Biometrics* (41:4), pp. 959-968.
+@REF Yin, W., Hay, J., and Roth, D. 2019. “Benchmarking Zero-Shot Text Classification: Datasets, Evaluation and Entailment Approach,” in *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing*, pp. 3914-3923.
+@REF Ziems, C., Held, W., Shaikh, O., Chen, J., Zhang, Z., and Yang, D. 2024. “Can Large Language Models Transform Computational Social Science?,” *Computational Linguistics* (50:1), pp. 237-291.
+
+@PAGEBREAK
+
+@H1 Appendix A. Estimator Check by Simulation
+
+Before the real data were analysed, we simulated 200 data sets with 4,300 reviews per cell, true cell prevalences of 0.12, 0.15, 0.10, and 0.17 (a true DiD of 0.04), and three classifiers with sensitivities 0.80, 0.70, and 0.60 and specificities 0.95, 0.90, and 0.97, with errors independent given the true outcome. Table A1 compares the estimates with the truth. The plan required that each parameter fall within two standard deviations of the truth in at least 90% of replications. In the same data, the DiD on the first classifier alone would be 0.03, the true DiD times that classifier’s Youden index of 0.75, as Proposition 1 implies.
+
+@TABLE TA1
+
+@H1 Appendix B. Classifier Specifications and Plan Amendment
+
+*LLM (H).* claude-haiku-5-5, run as sub-agents of the Claude Code agent (version 2.1.300) on October 13, 2026, with default sampling settings, coding each review from its text with the study codebook. Outcomes: defect reported (defect = 1); negative overall sentiment (overall = neg); performance praised (performance = +1). The reliability coder was claude-sonnet-5-5 (399 reviews).
+
+*Keyword rule (L).* A review is flagged as reporting a defect if it contains, as whole words and in any case, any of the phrases: broke, broken, breaks, stopped working, quit working, stop working, doesn’t work, does not work, didn’t work, did not work, not working, won’t work, defective, defect, malfunction, malfunctioned, failed, fails, failure, damaged, dented, cracked, leak, leaks, leaking, leaked, wrong item, wrong part, missing parts, missing part, dead on arrival, doa, died, burned out, burnt out, shorted, faulty, not as described, wrong size.
+
+*Sentiment model (S).* cardiffnlp/twitter-roberta-base-sentiment-latest (revision 3216a57f2a0d9c45a2e6c20157c20c49fb4bf9c7); texts truncated to 512 tokens; negative if “negative” is the most probable of three classes.
+
+*Zero-shot classifier (Z).* MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33 (revision 262ae02f29173eec1c250f90804dc7edc677dcff); texts truncated to 256 tokens; positive if the entailment probability is at least 0.5. Hypotheses: “The reviewer reports that the product was defective, broken, damaged, or stopped working.” “The reviewer is dissatisfied with the product.” “The reviewer praises how well the product works.” Random subsample of 300 reviews per cell (seed 20261015).
+
+*Amendment.* The plan originally specified a larger zero-shot model (MoritzLaurer/deberta-v3-base-zeroshot-v2.0) on 1,000 reviews per cell. On the available CPU, it processed 96 reviews in ten minutes, implying about seven hours for the subsample. Its 96 outputs were deleted without being inspected, and the smaller model, shorter truncation, and smaller subsample above were adopted in a dated amendment before any output of the smaller model existed.

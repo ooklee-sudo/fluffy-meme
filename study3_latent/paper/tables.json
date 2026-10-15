@@ -1,0 +1,282 @@
+{
+"T1": {
+"title": "Table 1. Pre-Registered Results of the Incentivized-Review Ban",
+"rows": [
+[
+"Hypothesis",
+"Outcome and estimator",
+"Estimate (SE)",
+"p",
+"Holm p"
+],
+[
+"H1 (supply)",
+"Monthly reviews; Poisson PML, exposure × post, per +10 pp of pre-ban incentive share (2,454 products)",
+"+0.41 (0.27)",
+".13",
+".51"
+],
+[
+"H2 (rating)",
+"Star rating of non-incentivized reviews; exposure × post, per +10 pp (306,825 reviews)",
+"−0.18 (0.06)",
+".003",
+".015"
+],
+[
+"H2 placebo",
+"Same, placebo date one year earlier",
+"+0.01 (0.17)",
+".94",
+"—"
+],
+[
+"H3 (content)",
+"Defect reported (LLM-coded); treated × post, LPM (17,476 reviews)",
+"+0.0085 (0.0140)",
+".54",
+"1.00"
+],
+[
+"H3 (content)",
+"Negative sentiment (LLM-coded)",
+"+0.0177 (0.0154)",
+".25",
+".75"
+],
+[
+"H3 (content)",
+"Performance praised (LLM-coded)",
+"+0.0032 (0.0162)",
+".84",
+"1.00"
+]
+],
+"note": "All models include unit and period fixed effects with standard errors clustered by product. Holm adjustment over the five primary tests (H1, H2, and the three H3 outcomes).",
+"widths": null
+},
+"T2": {
+"title": "Table 2. Estimated Classifier Accuracy Without a Gold Standard",
+"rows": [
+[
+"Outcome",
+"Classifier",
+"Reviews coded",
+"Sensitivity",
+"Specificity",
+"Youden index J"
+],
+[
+"Defect reported",
+"LLM (claude-haiku-5-5)",
+"17,476",
+"0.82",
+"0.99",
+"0.81 (0.74–0.90)"
+],
+[
+"",
+"Zero-shot NLI",
+"1,200",
+"0.79",
+"0.97",
+"0.76"
+],
+[
+"",
+"Keyword rule",
+"17,476",
+"0.49",
+"0.98",
+"0.46"
+],
+[
+"Negative sentiment",
+"LLM (claude-haiku-5-5)",
+"17,476",
+"0.93",
+"0.97",
+"0.91 (0.86–0.95)"
+],
+[
+"",
+"Supervised sentiment model",
+"17,476",
+"0.91",
+"0.98",
+"0.89"
+],
+[
+"",
+"Zero-shot NLI",
+"1,200",
+"0.76",
+"0.99",
+"0.75"
+],
+[
+"Performance praised",
+"LLM (claude-haiku-5-5)",
+"17,476",
+"0.95",
+"0.96",
+"0.91 (0.57–0.98)"
+],
+[
+"",
+"Zero-shot NLI",
+"1,200",
+"0.88",
+"0.65",
+"0.53"
+]
+],
+"note": "Maximum-likelihood estimates from the latent-class model with cell-specific prevalence and cell-invariant error rates. Intervals for the LLM are from a bootstrap of 500 resamples of products.",
+"widths": null
+},
+"T3": {
+"title": "Table 3. Uncorrected and Corrected Difference-in-Differences Estimates (Percentage Points)",
+"rows": [
+[
+"Outcome",
+"LLM-coded DiD (95% CI)",
+"LLM Youden index Ĵ",
+"Corrected: FE DiD / Ĵ (95% CI)",
+"Corrected: latent cell prevalences (95% CI)"
+],
+[
+"Defect reported",
+"+0.85 (−1.55, 3.71)",
+"0.81",
+"+1.05 (−1.95, 4.64)",
+"+0.24 (−2.84, 3.51)"
+],
+[
+"Negative sentiment",
+"+1.77 (−1.06, 5.06)",
+"0.91",
+"+1.95 (−1.16, 5.53)",
+"+0.83 (−2.24, 4.25)"
+],
+[
+"Performance praised",
+"+0.32 (−2.44, 3.42)",
+"0.91",
+"+0.35 (−3.35, 4.64)",
+"+0.60 (−2.97, 5.84)"
+]
+],
+"note": "The LLM-coded DiD is the pre-registered fixed-effects estimate (Table 1). All intervals are from the same bootstrap of 500 resamples of products, which re-estimates the latent-class model and the fixed-effects regression in each resample.",
+"widths": null
+},
+"T4": {
+"title": "Table 4. Tests of the Over-Identifying Restrictions",
+"rows": [
+[
+"Outcome",
+"Test",
+"LR statistic",
+"df",
+"p",
+"Detail"
+],
+[
+"Defect reported",
+"LLM error rates vary by cell",
+"6.71",
+"6",
+".35",
+"Ĵ by cell 0.78, 0.82, 0.74, 0.82"
+],
+[
+"",
+"LLM and zero-shot errors dependent given y",
+"0.40",
+"2",
+".82",
+"n = 1,200"
+],
+[
+"Negative sentiment",
+"LLM error rates vary by cell",
+"6.30",
+"6",
+".39",
+"Ĵ by cell 0.89, 0.88, 0.89, 0.92"
+],
+[
+"",
+"LLM and zero-shot errors dependent given y",
+"0.16",
+"2",
+".92",
+"n = 1,200"
+]
+],
+"note": "Cells in the order control–pre, control–post, treated–pre, treated–post. With only two classifiers, the model for performance praise is just identified and cannot be tested.",
+"widths": null
+},
+"TA1": {
+"title": "Table A1. Recovery of Known Parameters in 200 Simulated Data Sets",
+"rows": [
+[
+"Parameter",
+"Truth",
+"Mean estimate",
+"SD",
+"Share within 2 SD"
+],
+[
+"DiD",
+"0.040",
+"0.039",
+"0.013",
+"0.98"
+],
+[
+"Se, classifier 1",
+"0.80",
+"0.802",
+"0.016",
+"0.98"
+],
+[
+"Se, classifier 2",
+"0.70",
+"0.701",
+"0.014",
+"0.94"
+],
+[
+"Se, classifier 3",
+"0.60",
+"0.601",
+"0.015",
+"0.96"
+],
+[
+"Sp, classifier 1",
+"0.95",
+"0.950",
+"0.003",
+"0.96"
+],
+[
+"Sp, classifier 2",
+"0.90",
+"0.900",
+"0.003",
+"0.96"
+],
+[
+"Sp, classifier 3",
+"0.97",
+"0.970",
+"0.002",
+"0.96"
+]
+],
+"note": null,
+"widths": null
+}
+}
