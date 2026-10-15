@@ -1,0 +1,769 @@
+{
+"T1": {
+"title": "Table 1. Agreement Between the Human Coders and Between Model 1 and the Final Human Labels",
+"rows": [
+[
+"Round",
+"Posts",
+"Human–human κ",
+"Model 1 vs humans κ",
+"Model 1 escalation precision",
+"Model 1 de-escalation precision"
+],
+[
+"1",
+"150",
+"0.51",
+"0.43 (97 consensus posts)",
+"not computed",
+"0.52"
+],
+[
+"2",
+"61",
+"0.69",
+"0.28",
+"0.29 (8 of 28)",
+"0.70 (23 of 33)"
+],
+[
+"3",
+"130",
+"0.61",
+"0.50",
+"0.40 (14 of 35)",
+"0.54 (13 of 24)"
+],
+[
+"Rounds 2–3, all war-period posts",
+"191",
+"0.67",
+"0.48",
+"0.35 (22 of 63)",
+"0.63 (36 of 57)"
+]
+],
+"note": "Rounds 2 and 3 use the final human labels (after the third coder). Round 1 is a separate validation sample compared with the two coders’ consensus; there, the second model run reaches κ = 0.56.",
+"widths": null
+},
+"T2": {
+"title": "Table 2. Agreement of Model Label Sets with the Final Human Labels",
+"rows": [
+[
+"Labels",
+"Model",
+"κ (95% CI)",
+"AC1",
+"Escalation predicted",
+"Escalation precision / recall",
+"De-escalation precision / recall"
+],
+[
+"Model 1 (original)",
+"claude-sonnet-5-5",
+"0.48 (0.39–0.56)",
+"0.50",
+"63",
+"0.35 / 0.79",
+"0.63 / 0.78"
+],
+[
+"v2 opus",
+"claude-opus-5-5",
+"0.47 (0.39–0.55)",
+"0.48",
+"78",
+"0.32 / 0.89",
+"0.70 / 0.80"
+],
+[
+"v2 sonnet",
+"claude-sonnet-5-5",
+"0.44 (0.37–0.53)",
+"0.45",
+"85",
+"0.29 / 0.89",
+"0.76 / 0.74"
+],
+[
+"v2 haiku",
+"claude-haiku-5-5",
+"0.49 (0.40–0.57)",
+"0.50",
+"76",
+"0.34 / 0.93",
+"0.77 / 0.74"
+],
+[
+"v2 sonnet repeat",
+"claude-sonnet-5-5",
+"0.45 (0.36–0.53)",
+"0.45",
+"73",
+"0.34 / 0.89",
+"0.70 / 0.70"
+],
+[
+"v2 majority",
+"four runs",
+"0.49 (0.42–0.58)",
+"0.50",
+"77",
+"0.32 / 0.89",
+"0.73 / 0.80"
+]
+],
+"note": "191 war-period posts; the humans label 28 posts escalation and 46 de-escalation. AC1 is Gwet’s prevalence-robust agreement coefficient. Against the investigator-adjudicated labels, κ ranges from 0.48 to 0.51 and escalation precision from 0.45 to 0.49.",
+"widths": null
+},
+"T3": {
+"title": "Table 3. Directional 30-Minute WTI Return (Percent) by Class Under Each Label Set",
+"rows": [
+[
+"Label set",
+"De-escalation: n, mean (median), p",
+"Escalation: n, mean (median), p",
+"Human minus label set, escalation: difference (95% CI), p"
+],
+[
+"Human (final labels)",
+"32, 0.94 (0.46), .0003",
+"10, 0.45 (0.36), .084",
+"—"
+],
+[
+"Model 1",
+"34, 0.90 (0.46), .0008",
+"24, 0.17 (0.11), .53",
+"+0.28 (−0.07, 0.69), .12"
+],
+[
+"v2 majority",
+"33, 0.95 (0.47), .0001",
+"30, 0.32 (0.31), .047",
+"+0.13 (−0.26, 0.54), .50"
+],
+[
+"v2 sonnet",
+"28, 1.04 (0.46), .0002",
+"38, 0.24 (0.25), .072",
+"+0.21 (−0.17, 0.62), .26"
+],
+[
+"v2 haiku",
+"28, 1.04 (0.54), .0002",
+"29, 0.35 (0.35), .019",
+"+0.10 (−0.28, 0.50), .60"
+],
+[
+"v2 sonnet repeat",
+"28, 0.99 (0.48), .0002",
+"31, 0.22 (0.25), .16",
+"+0.23 (−0.17, 0.68), .25"
+]
+],
+"note": "Same 95 events under every label set. p-values are two-sided Wilcoxon tests. Differences use a day-clustered bootstrap with 10,000 resamples; the two-sided p is taken from the bootstrap distribution. The v2 opus run gives the same results as the majority for both classes (33 and 30 events). On the investigator-adjudicated labels, the human estimates were 1.05% (n = 29) and 0.48% (n = 16), and the escalation difference for model 1 was +0.31 (0.02, 0.65), p = .04.",
+"widths": null
+},
+"T4": {
+"title": "Table 4. Misclassification Decomposition of the Model-Label Estimates",
+"rows": [
+[
+"Label set",
+"Events",
+"Same class as humans",
+"Human de-escalation / escalation",
+"Human mixed",
+"Human other",
+"Mean, eq. (1)",
+"Human estimate",
+"Gap = within + contamination, eq. (2)"
+],
+[
+"Panel A. Escalation class",
+"",
+"",
+"",
+"",
+"",
+"",
+"",
+""
+],
+[
+"Model 1",
+"24",
+"8 (+0.52)",
+"6 (−0.51)",
+"7 (+0.52)",
+"3 (−0.21)",
+"+0.17",
+"+0.45",
+"−0.28 = +0.02 − 0.24 + 0.02 − 0.08"
+],
+[
+"v2 majority",
+"30",
+"9 (+0.44)",
+"4 (−0.75)",
+"12 (+0.68)",
+"5 (+0.09)",
+"+0.32",
+"+0.45",
+"−0.13 = 0.00 − 0.16 + 0.09 − 0.06"
+],
+[
+"Panel B. De-escalation class",
+"",
+"",
+"",
+"",
+"",
+"",
+"",
+""
+],
+[
+"Model 1",
+"34",
+"25 (+1.07)",
+"0",
+"5 (+0.38)",
+"4 (+0.51)",
+"+0.90",
+"+0.94",
+"−0.04 = +0.09 + 0.00 − 0.08 − 0.05"
+],
+[
+"v2 majority",
+"33",
+"26 (+0.99)",
+"0",
+"3 (+1.23)",
+"4 (+0.51)",
+"+0.95",
+"+0.94",
+"+0.01 = +0.03 + 0.00 + 0.03 − 0.05"
+]
+],
+"note": "Final human labels. Entries in the human-label columns are the number of model-labelled events with that human label and, in parentheses, their mean directional 30-minute return (percent) signed in the direction of the model’s class. In Panel A, the fourth column counts human de-escalation posts; in Panel B, human escalation posts. The gap column lists, in order, selection within the class, then contamination by the human class in the fourth column, by mixed posts, and by other posts. Components are rounded and need not sum exactly.",
+"widths": null
+},
+"T5": {
+"title": "Table 5. Sample Reconciliation (Final Human Labels)",
+"rows": [
+[
+"Step",
+"De-escalation",
+"Escalation"
+],
+[
+"Posts with a human signal label after the three-hour filter (141 of 191 pass)",
+"39",
+"20"
+],
+[
+"With a tick window at the post time and +30 minutes (primary sample)",
+"32",
+"10"
+],
+[
+"Signal posts dropped for lack of a window",
+"7",
+"10"
+]
+],
+"note": "Of the 17 dropped signal posts, 88% were made on weekends or while the market was closed, against 27% of all signal posts.",
+"widths": null
+},
+"T6": {
+"title": "Table 6. Human-Label 30-Minute Directional Return by Label Set and Resolution of Disagreements",
+"rows": [
+[
+"Labels",
+"De-escalation",
+"Escalation"
+],
+[
+"Panel A. Final labels (two coders and the third coder)",
+"",
+""
+],
+[
+"All final labels",
+"32; 0.94 (0.46); .0003; 0.38 to 1.73",
+"10; 0.45 (0.36); .084; 0.02 to 0.89"
+],
+[
+"Coder consensus only",
+"28; 1.03 (0.47); .001; 0.39 to 1.96",
+"7; 0.71 (0.54); .016; 0.30 to 1.16"
+],
+[
+"Decided with the third coder’s vote",
+"4; mean 0.36",
+"3; mean −0.17"
+],
+[
+"Third coder alone on contested posts (sensitivity)",
+"35; 0.85 (0.46); .0005; 0.33 to 1.62",
+"10; 0.45 (0.36); .084; 0.01 to 0.90"
+],
+[
+"Panel B. Investigator-adjudicated labels (earlier analysis)",
+"",
+""
+],
+[
+"All investigator-adjudicated labels",
+"29; 1.05 (0.47); .0003; 0.44 to 1.95",
+"16; 0.48 (0.40); .013; 0.17 to 0.80"
+],
+[
+"Adjudicated by the investigator only",
+"1",
+"9; 0.30 (—); .30; −0.11 to 0.71"
+]
+],
+"note": "Cells give n; mean (median); two-sided Wilcoxon p; day-clustered bootstrap 95% CI of the mean. Tests are not reported for cells with fewer than six events. Same 95-event frame as Table 3.",
+"widths": null
+},
+"T7": {
+"title": "Table 7. Robustness of the Tick-Level Result (Investigator-Adjudicated Labels)",
+"rows": [
+[
+"Variant",
+"De-escalation: n, post-30 mean (median), paired post − pre (p)",
+"Escalation: n, post-30 mean (median), paired post − pre (p)"
+],
+[
+"Baseline (3-hour filter)",
+"29, 1.05 (0.47), +0.48 (.059)",
+"16, 0.48 (0.40), +0.26 (.117)"
+],
+[
+"No cluster filter",
+"34, 0.91 (0.46), +0.44 (.053)",
+"19, 0.46 (0.35), +0.23 (.142)"
+],
+[
+"6-hour filter",
+"25, 1.08 (0.49), +0.42 (.127)",
+"14, 0.54 (0.50), +0.27 (.194)"
+],
+[
+"Both coders agreed before adjudication",
+"28, 1.03 (0.47), +0.44 (.090)",
+"7, 0.71 (0.54), +0.44 (.156)"
+],
+[
+"Window 5 minutes",
+"29, 0.67 (0.21), +0.72 (.006)",
+"16, 0.46 (0.19), +0.38 (.193)"
+],
+[
+"Window 15 minutes",
+"29, 0.76 (0.60), +0.76 (.011)",
+"16, 0.57 (0.42), +0.36 (.039)"
+],
+[
+"Window 60 minutes",
+"28, 1.18 (0.42), −0.15 (.731)",
+"16, 0.48 (0.40), +0.44 (.173)"
+],
+[
+"Drop 23 March and 7 April (three events)",
+"26, 0.80 (0.48), +0.49 (.049)",
+"16, 0.48 (0.40), +0.26 (.117)"
+]
+],
+"note": "Mean directional returns in percent; p-values are two-sided Wilcoxon tests of post minus pre. The variants are not independent, and p-values are unadjusted. [Authors: to be re-run on the final labels.]",
+"widths": null
+},
+"TA1": {
+"title": "Table A1. Status of the Results Reported in the Main Text",
+"rows": [
+[
+"Result",
+"Section",
+"Status"
+],
+[
+"Posting overdispersed; follows volatile hours",
+"Data and Design",
+"Pre-specified for dispersion; exploratory for the logit"
+],
+[
+"Model-labelled hourly co-movement; cross-asset responses",
+"Results, first stage",
+"Amended (headline arose from an amendment); Holm within assets; superseded by the human-label result"
+],
+[
+"Human validation κ",
+"Results, validation",
+"Descriptive; round-2 and round-3 plans written before the labels returned"
+],
+[
+"Model re-labelling under codebook v2; label-set comparison",
+"Results, codebook and label sets",
+"Planned before the labels were produced"
+],
+[
+"Misclassification decomposition",
+"Results, misclassification account",
+"Post hoc; accounting identity applied after the event-level split was known"
+],
+[
+"Correction simulation (naive, human-only, PPI, DSL)",
+"Results, how much validation",
+"Exploratory; designed after the main results were known"
+],
+[
+"Tick-level human-label direction, 5 and 30 minutes",
+"Results, human labels",
+"Amended (primary sample redefined after round 2)"
+],
+[
+"Post − pre excess at 30 minutes",
+"Results, human labels",
+"Amended; borderline in robustness"
+],
+[
+"Placebo and pre-post drift",
+"Results, human labels",
+"Planned before placebo data were analysed; applied to human labels after the sample was fixed"
+],
+[
+"Adjudication split; two-sided and day-clustered re-statement",
+"Results, human labels",
+"Planned after the round-3 review, before computation"
+],
+[
+"Independent third coder; final labels; all human-label results on the final labels",
+"Data and Design; Results",
+"Pre-specified (plan committed before the labels were seen); one deviation: a missing coder label casts no vote"
+],
+[
+"Robustness variants (Table 7)",
+"Results, human labels",
+"Planned after the baseline was known; unadjusted"
+],
+[
+"P1–P3; P4",
+"Appendix F",
+"Pre-specified; not supported; P4 marginal"
+],
+[
+"Bayesian restatement of the propositions",
+"Appendix F.1",
+"Written after the tests; changes no result; the placebo-scaled test of P2 is proposed, not run"
+],
+[
+"Appendices D and E",
+"Appendices",
+"Exploratory or model-labelled"
+]
+],
+"note": null,
+"widths": null
+},
+"TA2": {
+"title": "Table A2. Ledger of Analysis Plans",
+"rows": [
+[
+"Block",
+"Plan",
+"Outcome"
+],
+[
+"Arrivals",
+"poisson_posts/ANALYSIS_PLAN.md",
+"Overdispersed; conditionally Poisson"
+],
+[
+"Weekly market tests",
+"ANALYSIS_PLAN_MARKETS.md",
+"Null"
+],
+[
+"Intraday core",
+"hf/ANALYSIS_PLAN.md (Amendment 1)",
+"De-escalation co-movement; none for escalation (exploratory after amendment)"
+],
+[
+"Instrumental variables",
+"ANALYSIS_PLAN_IV.md",
+"Weak first stage (F = 2.8)"
+],
+[
+"Extension",
+"ANALYSIS_PLAN_EXT.md",
+"Coder-robust; partial pre-war replication; reversal for other oil posts"
+],
+[
+"Binding constraint",
+"THEORY_AND_PAPER_PLAN.md",
+"Partly supported"
+],
+[
+"Salience",
+"THEORY_V2_SALIENCE.md",
+"Rejected"
+],
+[
+"Habituation",
+"THEORY_V3_HABITUATION.md",
+"Underpowered"
+],
+[
+"Content analysis",
+"ANALYSIS_PLAN_QUAL.md (Amendments 1–2)",
+"Five themes; four propositions"
+],
+[
+"Held-out tests of propositions",
+"ANALYSIS_PLAN_QUAL_TESTS.md",
+"Not supported"
+],
+[
+"Pre-trend control",
+"ANALYSIS_PLAN_PRETREND.md",
+"Estimate unchanged; control uninformative"
+],
+[
+"First source",
+"ANALYSIS_PLAN_WIRE.md",
+"Not supported (p = 0.176)"
+],
+[
+"Tick-level timing",
+"ANALYSIS_PLAN_5MIN.md",
+"H5a, H5b supported for de-escalation posts"
+],
+[
+"Matched-hour placebo (H5c) and anticipatory drift (H8)",
+"ANALYSIS_PLAN_H5C_H8.md",
+"H5c supported on the 26 and 14 events of the drift sample (+0.62 and +0.53 against placebo 95th percentiles 0.22 and 0.26); re-run on the headline 29 and 16 events: +1.04 and +0.48 against 0.20 and 0.20; H8a: pre-post drift also exceeds placebo for de-escalation and partly for escalation; H8c: no difference by first source (p = 0.90); cause not identified"
+],
+[
+"Twitter-era oil/Iran sample",
+"twitter/ANALYSIS_PLAN_TWITTER.md (Amendment 1)",
+"HI1–HI3 not supported (Holm p ≥ 0.45); H10 supported for escalation (p = 0.001), not for de-escalation"
+],
+[
+"Twitter-era tariff/trade sample",
+"twitter/ANALYSIS_PLAN_TARIFF.md (Amendment 1: P6/H12 state-dependent sign)",
+"HI2 supported (Holm p < 0.001; volatility caveat); HI1, HI3 not supported; H10 supported (small); H12 not supported, opposite sign (β = −0.097)"
+],
+[
+"Human validation, H7 (human-labelled sample)",
+"ANALYSIS_PLAN_HUMAN.md (Amendments 1–2)",
+"H7a, H7b for de-escalation (one-sided p = 0.0002 and 0.030; two-sided p = 0.0003 and 0.059); escalation +0.48% (one-sided p = 0.007; two-sided p = 0.013)"
+],
+[
+"Human validation (round 2)",
+"ANALYSIS_PLAN_HUMAN.md (Amendment 1)",
+"Round 1 κ 0.43–0.56; round 2 (61 war-period posts, adjudicated) κ 0.29, H6a supported, H6c not supported"
+],
+[
+"Revision analyses",
+"ANALYSIS_PLAN_REVISION.md",
+"Revised primary not supported; robust inference supports; posting follows volatility"
+],
+[
+"Timing surprisal (P7)",
+"arrivals/ANALYSIS_PLAN_TIMING.md",
+"Not supported (pooled β = +0.04 SD, p = 0.27; n = 685)"
+],
+[
+"Arrival models and Musk account",
+"none (descriptive; arrivals/RESULTS_ARRIVALS_MODELS.md)",
+"Poisson rejected; NB ≈ Poisson–lognormal; dynamic NB-INGARCH best in multi-year series"
+],
+[
+"Event explanation of dispersion",
+"arrivals/ANALYSIS_PLAN_EVENTS.md (exploratory)",
+"Lagged GDELT conflict events significant in all six pairings but remove 9–25% of NB dispersion (never ≥ 50%); event series not Poisson; Calendar-week effects remove 66% (all Twitter)"
+],
+[
+"LLM release arrival",
+"arrivals/ANALYSIS_PLAN_LLM_RELEASES.md (exploratory)",
+"Over-dispersed after trend (LR p = 0.0001); weekend share 4% vs 29% expected; geometric gaps rejected"
+],
+[
+"LLM release stock reaction",
+"arrivals/ANALYSIS_PLAN_LLM_STOCK.md (exploratory)",
+"Direction not supported (+0.40 pp, p = 0.55); magnitude larger than random windows (p = 0.008; Holm 0.015); n = 31"
+],
+[
+"Matched-account comparison (HA1–HA2)",
+"arrivals/ANALYSIS_PLAN_ACCOUNTS.md",
+"Registered, not run; data availability not established"
+],
+[
+"Information-theoretic hypotheses",
+"ANALYSIS_PLAN_INFO.md",
+"P1–P3 not supported (p = 0.08, 0.07, 0.52); P4 marginal (p = 0.041; Holm over HI1–HI4 would give 0.16) and not counted as support"
+],
+[
+"Robustness of the human-label headline",
+"hf/ANALYSIS_PLAN_ROBUST_HEADLINE.md",
+"Direction robust in every variant; post − pre excess borderline and window-dependent (Table 6)"
+],
+[
+"Model re-labelling under codebook v2; label-set comparison; adjudication split; same-sample placebo; two-sided and day-clustered re-statement",
+"hf/ANALYSIS_PLAN_V2RELABEL.md",
+"κ 0.48–0.51 under v2 (no improvement); escalation attenuated under all model label sets (human minus original model +0.31, p = 0.038; minus v2 majority +0.16, p = 0.27); 66% of escalation labels adjudicated (Tables 2, 3, 5)"
+],
+[
+"Independent third coder",
+"hf/ANALYSIS_PLAN_THIRD_CODER.md",
+"Controls κ = 0.45 (reliable by the plan’s threshold of 0.40); 24 of 45 labels change; escalation class 41 → 28 posts; under v3, escalation +0.45% (n = 10; CI 0.01 to 0.90), de-escalation +0.94% (n = 32)"
+]
+],
+"note": "Paths are relative to the anonymized repository.",
+"widths": null
+},
+"TD1": {
+"title": "Table D1. Alternative Models for the Arrival of Posts",
+"rows": [
+[
+"Series",
+"Days",
+"Static NB (ΔAIC)",
+"Poisson–lognormal (ΔAIC)",
+"NB-INGARCH (ΔAIC)",
+"Best waiting-time model"
+],
+[
+"Trump, Truth Social 2026",
+"227",
+"0",
+"1",
+"0 (collapses to NB)",
+"Lognormal"
+],
+[
+"Trump, Twitter, all original",
+"1,448",
+"626",
+"639",
+"0",
+"Weibull"
+],
+[
+"Trump, Twitter, oil/Iran",
+"1,448",
+"57",
+"62",
+"0",
+"Gamma"
+],
+[
+"Trump, Twitter, tariff/trade",
+"1,448",
+"137",
+"129",
+"0",
+"Gamma"
+],
+[
+"Musk, Twitter 2012–17",
+"1,779",
+"238",
+"249",
+"0",
+"Lognormal"
+],
+[
+"Musk, Twitter 2016–17",
+"638",
+"59",
+"66",
+"0",
+"Lognormal"
+]
+],
+"note": "ΔAIC relative to the best model in each row; the Poisson model has ΔAIC between 150 and 3,700 in every row. Descriptive, not pre-specified.",
+"widths": null
+},
+"TF1": {
+"title": "Table F1. Pre-Specified Tests of the Propositions",
+"rows": [
+[
+"Proposition",
+"Estimate",
+"One-sided p",
+"Decision"
+],
+[
+"P1 novelty N_c, 2026 sample",
+"+0.77 (SE 0.56)",
+"0.084",
+"Not supported; same sign in all four topics"
+],
+[
+"P1, 2022–24 daily (n = 49)",
+"+0.26 (SE 0.37)",
+"0.24",
+"Same sign"
+],
+[
+"P1, 2017–21 oil/Iran tweets (n = 191)",
+"−0.27 (SE 0.74)",
+"0.64",
+"Not supported"
+],
+[
+"P1, 2017–21 tariff tweets (n = 410)",
+"−0.05 (SE 0.68)",
+"Holm 0.74",
+"Not supported"
+],
+[
+"P2 prior uncertainty U, 2026",
+"+0.29 (SE 0.20)",
+"0.072",
+"Not supported"
+],
+[
+"P2, 2017–21 oil/Iran",
+"+0.18 (SE 0.18)",
+"0.15",
+"Not supported"
+],
+[
+"P2, 2017–21 tariff",
+"+0.40 (SE 0.10)",
+"< 0.001",
+"Supported; confounded with volatility clustering"
+],
+[
+"P3 N_c × U, 2026",
+"−0.08 (SE 1.52)",
+"0.52",
+"Not supported"
+],
+[
+"P3, 2017–21 oil/Iran; tariff",
+"−0.37 (1.81); +0.32 (0.97)",
+"0.58; Holm 0.74",
+"Not supported"
+],
+[
+"P4 mutual information, war",
+"0.0014 bits (null 0.0004)",
+"0.041",
+"Marginal; Holm over HI1–HI4 would give 0.16"
+],
+[
+"P4 mutual information, pre-war",
+"0.0003 bits (null 0.0002)",
+"0.28",
+"Not different from null"
+]
+],
+"note": "Analysis plans are listed in Table A2.",
+"widths": null
+}
+}
