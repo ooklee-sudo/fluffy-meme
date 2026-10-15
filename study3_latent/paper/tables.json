@@ -278,5 +278,57 @@
 ],
 "note": null,
 "widths": null
+},
+"T5": {
+"title": "Table 5. Gold-Standard-Free Estimates Versus Human Labels (191 Political Posts)",
+"rows": [
+[
+"Outcome and classifier set",
+"LLM sensitivity: latent [95% CI] / human",
+"LLM specificity: latent [95% CI] / human",
+"Prevalence error (mean absolute)",
+"Block-invariance test, p",
+"Dependence test, p",
+"Consistent with human labels?"
+],
+[
+"Escalation, primary (LLM, keyword, zero-shot)",
+"0.65 [0.54, 0.87] / 0.79",
+"0.91 [0.73, 1.00] / 0.80",
+"0.22",
+".002",
+".68",
+"No"
+],
+[
+"De-escalation, primary",
+"0.95 [0.58, 1.00] / 0.65",
+"0.98 [0.92, 1.00] / 0.85",
+"0.13",
+".69",
+".06",
+"No"
+],
+[
+"Escalation, three LLM runs",
+"0.79 [0.71, 0.88] / 0.79",
+"0.95 [0.90, 0.99] / 0.80",
+"0.14",
+"<.001",
+".84",
+"No"
+],
+[
+"De-escalation, three LLM runs",
+"0.90 [0.82, 0.97] / 0.65",
+"0.93 [0.88, 0.97] / 0.85",
+"0.12",
+".024",
+".76",
+"No"
+]
+],
+"note": "Human values use the final human labels. Populations are four blocks of posts by time. The block-invariance test compares the primary model with one in which the LLM’s error rates vary by block (6 df); the dependence test allows a free joint distribution of the first and third classifiers given the latent class (2 df). The decision rule required the human-based sensitivity and specificity inside the latent-class intervals and a mean absolute prevalence error of at most 0.05.",
+"widths": null
 }
 }
