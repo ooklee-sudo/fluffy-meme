@@ -174,6 +174,8 @@ def main():
                 txt = mock(pr, SEGMENTS[p.segment]) if a.mock else call_llm(a.model, pr, a.temp, a.provider)
                 rows.append(dict(cond=cond, rep=rep, id=p.id, segment=p.segment,
                                  raw=txt, count=parse(cond, txt, rng, a.alpha)))
+                if not a.mock and (p.id + 1) % 10 == 0:
+                    print(f"  cond {cond} rep {rep}: {p.id + 1}/{a.n} done", flush=True)
     df = pd.DataFrame(rows)
     df.to_csv(os.path.join(a.out, "raw_counts.csv"), index=False)
     out = [dict(cond="real(ref)", **summarize(ref))]
