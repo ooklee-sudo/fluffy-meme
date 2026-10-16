@@ -22,7 +22,15 @@ def main():
     ap.add_argument("--temps", default=",".join(map(str, TEMPS)))
     a = ap.parse_args()
     parts = []
-    grid = list(itertools.product(a.models.split(","), [float(t) for t in a.temps.split(",")], [False, True]))
+    temps = [float(t) for t in a.temps.split(",")]
+    grid = []
+    for model in a.models.split(","):
+        if not a.mock and not rp.model_info(model)["temperature"]:
+            print(f"note: {model} does not accept temperature; running a single temperature setting", flush=True)
+            mt = temps[:1]
+        else:
+            mt = temps
+        grid += [(model, t, an) for t in mt for an in (False, True)]
     for i, (model, temp, anchor) in enumerate(grid, 1):
         tag = f"{model.replace('/', '_')}_t{temp}_{'anchor' if anchor else 'plain'}"
         out = os.path.join(a.runs, tag)

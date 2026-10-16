@@ -50,7 +50,39 @@ def reference(n, rng):
 
 
 # ---------------------------------------------------------------- LLM access
-def call_llm(model, prompt, temperature, provider=None, retries=5):
+_MODELS = {}
+
+
+def model_info(model):
+    """Ask OpenRouter's public model list whether the model takes `temperature` and can switch reasoning off."""
+    if not _MODELS:
+        try:
+            with urllib.request.urlopen("https://openrouter.ai/api/v1/models", timeout=30) as r:
+                for m in json.load(r)["data"]:
+                    _MODELS[m["id"]] = m
+        except Exception as e:
+            print(f"  could not fetch model list ({e}); assuming temperature is supported", file=sys.stderr)
+            _MODELS["_failed"] = {}
+    m = _MODELS.get(model)
+    if not m:
+        return dict(temperature=True, reasoning_off=False)
+    return dict(temperature="temperature" in m.get("supported_parameters", []),
+                reasoning_off="none" in (m.get("reasoning") or {}).get("supported_efforts", []))
+
+
+def build_body(model, prompt, temperature, max_tokens=300, provider=None):
+    info = model_info(model)
+    body = {"model": model, "max_tokens": max_tokens, "messages": [{"role": "user", "content": prompt}]}
+    if info["temperature"]:
+        body["temperature"] = temperature
+    if info["reasoning_off"]:
+        body["reasoning"] = {"effort": "none"}  # otherwise hidden reasoning can use up max_tokens
+    if provider:
+        body["provider"] = {"order": [provider], "allow_fallbacks": False}
+    return body
+
+
+def call_llm(model, prompt, temperature, provider=None, retries=5, max_tokens=300):
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         sys.exit("OPENROUTER_API_KEY is not set (or use --mock).")
@@ -58,17 +90,16 @@ def call_llm(model, prompt, temperature, provider=None, retries=5):
     if not key.isascii() or " " in key:
         sys.exit("OPENROUTER_API_KEY looks invalid (non-ASCII or contains spaces). "
                  "Set it to your real key, e.g. sk-or-v1-...")
-    body = {"model": model, "temperature": temperature, "max_tokens": 200,
-            "messages": [{"role": "user", "content": prompt}]}
-    if provider:
-        body["provider"] = {"order": [provider], "allow_fallbacks": False}
+    body = build_body(model, prompt, temperature, max_tokens, provider)
     for i in range(retries):
         req = urllib.request.Request(
             "https://openrouter.ai/api/v1/chat/completions", json.dumps(body).encode(),
             {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
-                return json.load(r)["choices"][0]["message"]["content"] or ""
+                ch = json.load(r)["choices"][0]
+                # keep the reason in the raw text so parse failures can be diagnosed from raw_counts.csv
+                return ch["message"].get("content") or f"[EMPTY finish={ch.get('finish_reason')}]"
         except Exception as e:
             if i == retries - 1:
                 print(f"  call failed: {e}", file=sys.stderr)
