@@ -92,7 +92,7 @@ def model_replay(arr, work, rng): return arr, work
 
 def model_poisson(arr, work, rng):
     n = len(arr); T = arr[-1] - arr[0]
-    return np.sort(arr[0] + rng.uniform(0, T, n)), work
+    return np.sort(arr[0] + rng.uniform(0, T, n)), rng.choice(work, n)
 
 
 def model_bootstrap(arr, work, rng, block=200):
@@ -141,9 +141,10 @@ def fit_mmpp2(arr, windows=(1, 5, 15, 30, 60, 120, 300)):
         r = r12 + r21; p1, p2 = r21 / r, r12 / r; lb = p1 * l1 + p2 * l2
         return 1 + 2 * (l1 - l2) ** 2 * p1 * p2 / (r * lb) * (1 - (1 - np.exp(-r * t)) / (r * t))
 
-    lo = np.log([0.02 * lam, 0.02 * lam, 1e-4, 1e-4]); hi = np.log([30 * lam, 30 * lam, 5.0, 5.0])   # keep parameters finite
+    T_obs = arr[-1] - arr[0]
+    lo = np.log([0.02 * lam, 0.02 * lam, 4.0 / T_obs, 4.0 / T_obs]); hi = np.log([30 * lam, 30 * lam, 5.0, 5.0])   # finite rates; both regimes visited
     best = None
-    for l1m, l2m, r0 in [(3, .3, .05), (2, .5, .5), (5, .1, .01), (1.5, .7, 2)]:
+    for l1m, l2m, r0 in [(3, .3, .05), (2, .5, .5), (5, .1, .01), (1.5, .7, 2), (1.3, .7, 4.0 / T_obs)]:
         x0 = np.clip(np.log([lam * l1m, lam * l2m, r0, r0]), lo, hi)
         def loss(x):
             x = np.clip(x, lo, hi)
@@ -187,6 +188,8 @@ def main():
     ap.add_argument('--routing', default='random', choices=['random', 'jsq'])
     ap.add_argument('--reps', type=int, default=5); ap.add_argument('--block', type=int, default=200)
     ap.add_argument('--models', default='replay,bootstrap,poisson,ratechain,mmpp')
+    ap.add_argument('--work-model', choices=['empirical', 'exp'], default='empirical',
+                    help="service requirements in the model-based rows (poisson, ratechain, mmpp): resampled from the trace or exponential with the same mean")
     ap.add_argument('--max-rows', type=int, default=None); ap.add_argument('--seed', type=int, default=1)
     a = ap.parse_args()
     b = 0.0 if a.dedicated else a.beta_ms / a.decode_ms
@@ -211,6 +214,8 @@ def main():
         reps = 1 if name == 'replay' else a.reps; vals = []
         for r in range(reps):
             t, w_ms = gens[name]()
+            if a.work_model == 'exp' and name in ('poisson', 'ratechain', 'mmpp'):
+                w_ms = rng.exponential(iso_ms.mean(), len(t))
             tt, ww = t / mean_s, w_ms / iso_ms.mean()
             vals.append(size_dedicated(tt, ww, tgt, seed=r) if a.dedicated else size_capacity(tt, ww, a.M, b, tgt, a.routing, seed=r))
         v = [x for x in vals if x]
