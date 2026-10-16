@@ -54,12 +54,36 @@ def simulate(arr, work, c, M, b, routing='random', seed=0):
     return start - arr, done - arr
 
 
+def tail_ok(ws, work, target):
+    """metric 'wait': P(wait > thresh); 'sojourn': P(sojourn > thresh); 'stretch': P(sojourn / own isolated time > thresh);
+    all times in mean isolated service times."""
+    metric, thresh, prob = target
+    w, s = ws
+    v = w if metric == 'wait' else (s / work if metric == 'stretch' else s)
+    return np.mean(v > thresh) <= prob
+
+
+def max_sustainable_scale(arr, work, M, b, target, routing='random', seed=0, iters=14):
+    """Scale-free capacity measure for ONE engine: the largest factor s by which the arrival process (time compressed by s)
+    can be sped up while the delay target still holds.  Required capacity is proportional to 1/s."""
+    mu_bar = M * (1 + b) / (1 + b * M)
+    load = len(arr) / (arr[-1] - arr[0]) * np.mean(work)            # offered load in isolated-service-time units
+    ok = lambda sc: tail_ok(simulate(arr[0] + (arr - arr[0]) / sc, work, 1, M, b, routing, seed), work, target)
+    lo, hi = 1e-3 * mu_bar / load, 1.2 * mu_bar / load               # hi: beyond the engine's own throughput
+    if not ok(lo): return None
+    for _ in range(iters):
+        mid = np.sqrt(lo * hi)
+        if ok(mid): lo = mid
+        else: hi = mid
+    return lo
+
+
 def size_capacity(arr, work, M, b, target, routing='random', c_max=512, seed=0):
     """Smallest #engines whose tail probability meets `target = (metric, thresh, prob)`.
     metric 'wait' -> P(wait > thresh) <= prob; 'sojourn' -> P(sojourn > thresh) <= prob."""
     metric, thresh, prob = target
     lo, hi = 1, 1
-    ok = lambda c: np.mean((lambda w, s: (w if metric == 'wait' else s))(*simulate(arr, work, c, M, b, routing, seed)) > thresh) <= prob
+    ok = lambda c: tail_ok(simulate(arr, work, c, M, b, routing, seed), work, target)
     while hi < c_max and not ok(hi): lo, hi = hi, hi * 2
     if not ok(hi): return None
     while hi - lo > 1:
@@ -74,8 +98,7 @@ def size_dedicated(arr, work, target, c_max=2048, seed=0):
     Smallest c meeting the target."""
     metric, thresh, prob = target
     def ok(c):
-        w, s = simulate(arr, work, 1, c, 0.0, 'random', seed)
-        return np.mean((w if metric == 'wait' else s) > thresh) <= prob
+        return tail_ok(simulate(arr, work, 1, c, 0.0, 'random', seed), work, target)
     lo, hi = 1, 1
     while hi < c_max and not ok(hi): lo, hi = hi, hi * 2
     if not ok(hi): return None
@@ -182,7 +205,8 @@ def main():
     ap.add_argument('--prefill-ms', type=float, required=True, help='ms per prompt token')
     ap.add_argument('--dedicated', action='store_true', help='pooled M/M/c dedicated servers (beta=0); capacity = #servers')
     ap.add_argument('--M', type=int, default=64, help='batch cap per engine (batched mode)')
-    ap.add_argument('--metric', choices=['wait', 'sojourn'], default='wait')
+    ap.add_argument('--metric', choices=['wait', 'sojourn', 'stretch'], default='wait')
+    ap.add_argument('--maxscale', action='store_true', help='report the scale-free maximum sustainable demand multiple of ONE engine instead of the number of engines')
     ap.add_argument('--thresh', type=float, default=1.0, help='in mean isolated service times')
     ap.add_argument('--prob', type=float, default=0.05)
     ap.add_argument('--routing', default='random', choices=['random', 'jsq'])
@@ -217,12 +241,21 @@ def main():
             if a.work_model == 'exp' and name in ('poisson', 'ratechain', 'mmpp'):
                 w_ms = rng.exponential(iso_ms.mean(), len(t))
             tt, ww = t / mean_s, w_ms / iso_ms.mean()
-            vals.append(size_dedicated(tt, ww, tgt, seed=r) if a.dedicated else size_capacity(tt, ww, a.M, b, tgt, a.routing, seed=r))
+            if a.maxscale:
+                vals.append(max_sustainable_scale(tt, ww, a.M, b, tgt, a.routing, seed=r))
+            else:
+                vals.append(size_dedicated(tt, ww, tgt, seed=r) if a.dedicated else size_capacity(tt, ww, a.M, b, tgt, a.routing, seed=r))
         v = [x for x in vals if x]
-        res[name] = (int(np.median(v)) if v else None, vals)
-        print(f'{name:10s} capacity ({"servers" if a.dedicated else "engines"}) = {res[name][0]}   reps={vals}')
+        med = (float(np.median(v)) if a.maxscale else int(np.median(v))) if v else None
+        res[name] = (med, vals)
+        unit = 'max demand multiple' if a.maxscale else ('servers' if a.dedicated else 'engines')
+        fmt = (lambda z: None if z is None else round(float(z), 2))
+        print(f'{name:10s} capacity ({unit}) = {fmt(res[name][0]) if a.maxscale else res[name][0]}   reps={[fmt(z) for z in vals] if a.maxscale else vals}')
     if res.get('bootstrap', (None,))[0] and res.get('poisson', (None,))[0]:
-        print(f"Poisson understates the bootstrap requirement by {1 - res['poisson'][0]/res['bootstrap'][0]:.1%}")
+        if a.maxscale:   # required capacity ~ 1/maxscale
+            print(f"Poisson-based planning understates the bootstrap requirement by {1 - res['bootstrap'][0]/res['poisson'][0]:.1%}")
+        else:
+            print(f"Poisson understates the bootstrap requirement by {1 - res['poisson'][0]/res['bootstrap'][0]:.1%}")
 
 
 if __name__ == '__main__':
