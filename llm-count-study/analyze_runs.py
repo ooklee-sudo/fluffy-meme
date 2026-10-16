@@ -5,14 +5,14 @@
 Reads runs/*/raw_counts.csv and config.json. Resamples customers within each (model, anchor, condition)
 cell, pooling temperatures for models that accept temperature (the grid showed no systematic temperature
 effect; pass --by-temp to keep them apart). A trailing * marks a CI that excludes the reference value
-(Retail II NB: mean 0.49, alpha 3.05).
+(retail: Retail II NB mean 0.49, alpha 3.05; grocery: Complete Journey histogram).
 """
 import argparse, glob, json, os
 import numpy as np, pandas as pd
 
-REF_MEAN, REF_ALPHA = 0.49, 3.05
-REF = dict(mean=REF_MEAN, var_mean=1 + REF_ALPHA * REF_MEAN,
-           zero=(1 + REF_ALPHA * REF_MEAN) ** (-1 / REF_ALPHA), alpha=REF_ALPHA)
+import run_pilot as rp
+
+REF = {}  # filled from the runs' scenario (retail: parametric NB; grocery: Complete Journey histogram)
 
 
 def stats_of(x):
@@ -51,6 +51,7 @@ def main():
         if not (os.path.exists(f) and os.path.exists(c)):
             continue
         cfg = json.load(open(c))
+        REF.update(rp.ref_stats(rp.get_scenario(cfg.get("scenario", "retail"))))
         df = pd.read_csv(f)
         df["model"], df["anchor"], df["temp"] = cfg["model"], bool(cfg["anchor"]), cfg["temp"]
         frames.append(df)
@@ -73,7 +74,7 @@ def main():
         rows.append(rec)
     out = pd.DataFrame(rows)
     out.to_csv(os.path.join(a.runs, "ci_summary.csv"), index=False)
-    print(f"reference: mean {REF['mean']}, var/mean {REF['var_mean']:.2f}, zero {REF['zero']:.2f}, alpha {REF['alpha']}")
+    print(f"reference: mean {REF['mean']:.2f}, var/mean {REF['var_mean']:.2f}, zero {REF['zero']:.2f}, alpha {REF['alpha']:.2f}")
     print("estimate [95% bootstrap CI]; * = CI excludes the reference\n")
     print(out.to_string(index=False))
     print(f"\nsaved {os.path.join(a.runs, 'ci_summary.csv')}")
