@@ -226,8 +226,9 @@ def implied_c0_for_ratio(profile, M, b, V, ratio, target=2.0, **kw):
         return float('nan')
 
 
-def constrained_ratio_loss(profile, M, b, V, ratio, c0, r=2.0, ngrid=300, norm='mean'):
-    """Best two-level schedule with peak = r * off-peak price (incl. c0) and DeepSeek-style fixed peak length."""
+def constrained_ratio_loss(profile, M, b, V, ratio, c0, r=2.0, ngrid=300, norm='mean', peak_hours=None):
+    """Best two-level schedule with peak = r * off-peak price (incl. c0).  The number of peak hours is optimised unless
+    `peak_hours` fixes it (DeepSeek posts seven peak hours a day)."""
     eng, ph = make_phases(profile, M, b, V, ratio, c0, norm=norm)
     K = len(ph); pis = np.array([p.pi for p in ph])
     Wfb = sum(pis[k] * ph[k].welfare_at_rate(ph[k].first_best()[0]) for k in range(K))
@@ -235,7 +236,7 @@ def constrained_ratio_loss(profile, M, b, V, ratio, c0, r=2.0, ngrid=300, norm='
     Wm = welfare_matrix(ph, grid)
     order = np.argsort([p.Lam for p in ph])
     best = -np.inf
-    for hpk in range(1, K):                       # number of peak hours
+    for hpk in ([peak_hours] if peak_hours else range(1, K)):   # number of peak hours
         peak = order[-hpk:]; off = order[:-hpk]
         for j, plo in enumerate(grid):            # off-peak tax (excl. c0): p_lo = grid
             phi = r * (plo + c0) - c0
