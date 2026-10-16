@@ -6,8 +6,10 @@ Single engine with batch cap M and speed rho(n) = (1+b)/(1+b*min(n,M)), b = beta
 Random routing over c engines is equivalent (percent losses are invariant), so one engine suffices;
 dedicated servers = b = 0 with M = number of servers.
 
-Assumption (state it in the paper): "unpriced demand = r x capacity" means Lambda_k = r * mubar * shape_k
-with shape_k = profile_k / max(profile). Change `make_phases` if your definition differs.
+Demand scale ("unpriced demand = r x capacity"): Lambda_k = r * mubar * shape_k.  norm='mean' (default, Sec. 6;
+reproduces the dedicated-server numbers 14.7% / 4.6% / 44.1% of the manuscript) uses shape_k = profile_k/mean(profile),
+so the peak phase has Lambda = r * peak/mean * mubar (= 3.0 mubar for r = 1.4).  norm='max' (Table B5: "peak unpriced
+demand 1.4 times capacity") uses shape_k = profile_k/max(profile).
 """
 import argparse, json
 import numpy as np
@@ -91,10 +93,10 @@ class Phase:
         return 1.0 / (self.V / self.Lam + dp)
 
 
-def make_phases(profile, M, b, V, ratio, c0=0.0, pi=None):
+def make_phases(profile, M, b, V, ratio, c0=0.0, pi=None, norm='mean'):
     eng = Engine(M, b)
     prof = np.asarray(profile, float)
-    shape = prof / prof.max()
+    shape = prof / (prof.mean() if norm == 'mean' else prof.max())
     K = len(prof)
     pi = np.full(K, 1.0 / K) if pi is None else np.asarray(pi, float)
     return eng, [Phase(eng, V - c0, ratio * eng.mubar * shape[k], pi[k]) for k in range(K)]
@@ -150,8 +152,8 @@ def dp_levels(Wm, pi, order, G):
     return best[G, K], [(list(order[i:j]), a) for i, j, a in groups]
 
 
-def analyse(profile, M, b, V=20.0, ratio=1.4, c0=0.0, pi=None, Gs=(2, 3, 4, 6), ngrid=600, verbose=False):
-    eng, ph = make_phases(profile, M, b, V, ratio, c0, pi)
+def analyse(profile, M, b, V=20.0, ratio=1.4, c0=0.0, pi=None, Gs=(2, 3, 4, 6), ngrid=600, verbose=False, norm='mean'):
+    eng, ph = make_phases(profile, M, b, V, ratio, c0, pi, norm)
     K = len(ph); pis = np.array([p.pi for p in ph])
     fb = [p.first_best() for p in ph]
     lam_s, p_s = np.array([f[0] for f in fb]), np.array([f[1] for f in fb])
@@ -217,9 +219,9 @@ def implied_c0_for_ratio(profile, M, b, V, ratio, target=2.0, **kw):
         return float('nan')
 
 
-def constrained_ratio_loss(profile, M, b, V, ratio, c0, r=2.0, ngrid=300):
+def constrained_ratio_loss(profile, M, b, V, ratio, c0, r=2.0, ngrid=300, norm='mean'):
     """Best two-level schedule with peak = r * off-peak price (incl. c0) and DeepSeek-style fixed peak length."""
-    eng, ph = make_phases(profile, M, b, V, ratio, c0)
+    eng, ph = make_phases(profile, M, b, V, ratio, c0, norm=norm)
     K = len(ph); pis = np.array([p.pi for p in ph])
     Wfb = sum(pis[k] * ph[k].welfare_at_rate(ph[k].first_best()[0]) for k in range(K))
     grid = np.linspace(0, V - c0 - 1, ngrid)
@@ -244,10 +246,11 @@ def main():
     ap.add_argument('--V', type=float, default=20.0); ap.add_argument('--ratio', type=float, default=1.4)
     ap.add_argument('--c0', type=float, default=0.0, help='serving cost per request (absolute, same units as V)')
     ap.add_argument('--profile', default='cosine', help="'cosine' or path to Azure trace CSV")
+    ap.add_argument('--norm', default='mean', choices=['mean', 'max'])
     ap.add_argument('--json', default=None)
     a = ap.parse_args()
     prof = cosine_profile() if a.profile == 'cosine' else load_hourly_profile(a.profile)
-    o = analyse(prof, a.M, a.b, a.V, a.ratio, a.c0)
+    o = analyse(prof, a.M, a.b, a.V, a.ratio, a.c0, norm=a.norm)
     print(f"mubar={o['mubar']:.2f}  flat loss={o['loss_flat']:.3%}  no-price loss={o['loss_noprice']:.3%}")
     print(f"tolls: lowest={o['toll_lowest']:.3f} lowerQ={o['toll_lower_quartile']:.3f} peak={o['toll_peak']:.3f}; "
           f"slowdown share lowerQ={o['slow_share_lowQ']:.0%} peak={o['slow_share_peak']:.0%}")

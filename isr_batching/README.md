@@ -18,6 +18,6 @@ Verified here: closed-form d, toll, waiting/slowdown split equal brute-force bir
 with load (Prop. 1); slowdown toll = 0 for b = 0; simulator matches Table B4. Table B5 beta=0 row reproduced
 (flat loss 3.0%, two-level recovery 80%).
 
-Assumptions to state in the paper: (i) "unpriced demand = r x capacity" is coded as Lambda_k = r*mubar*profile_k/max(profile);
+Assumptions to state in the paper: (i) "unpriced demand = r x capacity" is coded as Lambda_k = r*mubar*profile_k/mean(profile) (reproduces the manuscript's dedicated-server 14.7% / 4.6% / 44.1%); Table B5 uses profile/max (`norm="max"`);
 (ii) single engine == c engines with random routing (percent losses invariant); balanced (JSQ) routing needs the
 Assumption-S check of Sec. 5.4 -- test with `Engine`-level toll monotonicity or the simulator.

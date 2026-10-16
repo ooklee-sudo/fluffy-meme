@@ -45,7 +45,7 @@ with open(f'{a.outdir}/results.csv', 'w', newline='') as f:
 # --- Table B5-style sweep: toll compression as beta/alpha grows (single engine, M adjusted by hand via --M list)
 b5 = []
 for b, M in [(0, 10), (.01, 11), (.03, 14), (.06, 22), (.10, 100)]:
-    o = analyse(cosine_profile(), M, b, 20, 1.4, Gs=(2,))
+    o = analyse(cosine_profile(), M, b, 20, 1.4, Gs=(2,), norm='max')  # B5: peak unpriced demand = 1.4 x capacity
     b5.append(dict(b=b, M=M, toll_low=o['toll_lowest'], toll_lowerQ=o['toll_lower_quartile'], toll_peak=o['toll_peak'],
                    slow_share_lowerQ=o['slow_share_lowQ'], flat_loss=o['loss_flat'], rec2=o['levels'][2]['recovery_exact']))
 with open(f'{a.outdir}/tableB5_check.csv', 'w', newline='') as f:
