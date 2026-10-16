@@ -26,6 +26,7 @@ def main():
     ap.add_argument('--model', required=True); ap.add_argument('--prompt', type=int, default=512)
     ap.add_argument('--out', type=int, default=256); ap.add_argument('--tp', type=int, default=1)
     ap.add_argument('--dtype', default='auto'); ap.add_argument('--max-batch', type=int, default=256)
+    ap.add_argument('--m-len', type=int, default=None, help='tokens per request used for the KV-cache bound M (default prompt+out); use the trace median prompt+output')
     ap.add_argument('--reps', type=int, default=3); ap.add_argument('--json', default='tau.json')
     a = ap.parse_args()
     from vllm import LLM, SamplingParams
@@ -66,7 +67,7 @@ def main():
     # KV-cache bound on concurrent requests of median length
     try:
         cc = llm.llm_engine.cache_config
-        out['M_kv'] = int(cc.num_gpu_blocks * cc.block_size // (a.prompt + a.out))
+        out['M_kv'] = int(cc.num_gpu_blocks * cc.block_size // (a.m_len or (a.prompt + a.out)))
     except Exception as e:
         out['M_kv'] = f'set manually ({e})'
     json.dump(out, open(a.json, 'w'), indent=1); print(json.dumps(out, indent=1))
