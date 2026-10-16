@@ -45,8 +45,10 @@ SCENARIOS = {
 }
 
 
-def get_scenario(name):
+def get_scenario(name, hist=None):
     sc = dict(SCENARIOS[name], name=name)
+    if hist is not None:
+        sc["hist"] = hist
     if sc["hist"]:  # exact moments of the empirical reference
         k = np.array(sorted(sc["hist"])); w = np.array([sc["hist"][i] for i in k], float); w /= w.sum()
         m = (k * w).sum(); v = ((k - m) ** 2 * w).sum()
@@ -75,8 +77,57 @@ def make_personas(n, rng, sc, seed=0):
     return df
 
 
+def load_journey_households():
+    """Real Complete Journey households with demographics and their 13 four-week basket counts.
+
+    Reads the parquet files shipped with the `completejourney_py` package (pip install completejourney_py pyarrow),
+    or the folder in $JOURNEY_DATA_DIR. Household-level data is not stored in this repository.
+    """
+    d = os.environ.get("JOURNEY_DATA_DIR")
+    if not d:
+        import completejourney_py
+        d = os.path.join(os.path.dirname(completejourney_py.__file__), "data")
+    t = pd.read_parquet(os.path.join(d, "transactions.parquet"))
+    demo = pd.read_parquet(os.path.join(d, "demographics.parquet"))
+    day = (t.transaction_timestamp.dt.normalize() - pd.Timestamp("2017-01-01")).dt.days
+    b = t.assign(day=day).drop_duplicates(["household_id", "basket_id"])[["household_id", "day"]]
+    b = b[(b.day >= 0) & (b.day < 364)]
+    b["win"] = b.day // 28
+    cnt = (b.groupby(["household_id", "win"]).size().unstack(fill_value=0)
+           .reindex(index=demo.household_id.values, columns=range(13), fill_value=0))
+    return demo.reset_index(drop=True), cnt.values
+
+
+def demo_text(r):
+    """Persona sentence from a household's real demographics (missing fields are left out)."""
+    bits = []
+    if pd.notna(r.age): bits.append(f"head of household in the age group {r.age}")
+    if pd.notna(r.household_comp): bits.append(f"household type: {r.household_comp.lower()}")
+    if pd.notna(r.household_size): bits.append(f"{r.household_size} person(s) in the household")
+    if pd.notna(r.kids_count): bits.append(f"{r.kids_count} child(ren)")
+    if pd.notna(r.marital_status): bits.append(r.marital_status.lower())
+    if pd.notna(r.income): bits.append(f"annual household income {r.income}")
+    if pd.notna(r.home_ownership): bits.append(r.home_ownership.lower())
+    return "Profile: " + ", ".join(bits) + "."
+
+
+def make_demo_personas(n, demo, counts, seed):
+    """n (household, 4-week window) pairs drawn at random; the household's real count in that window is kept."""
+    r2 = np.random.default_rng(seed + 11)
+    hi, wi = r2.integers(0, len(demo), n), r2.integers(0, counts.shape[1], n)
+    rows = demo.iloc[hi].reset_index(drop=True)
+    df = pd.DataFrame({"id": range(n), "segment": rows.household_comp.fillna("unknown").values,
+                       "household_id": rows.household_id.values, "window": wi, "real_count": counts[hi, wi]})
+    df["demo_text"] = [demo_text(r) for r in rows.itertuples()]
+    df["mult"] = 0.6 + 0.15 * pd.to_numeric(rows.household_size.str.replace("+", "", regex=False), errors="coerce").fillna(2).values
+    return df
+
+
 def persona_text(sc, p, anchor=False):
-    if sc["name"] == "grocery":
+    if getattr(p, "demo_text", None):
+        base = ("You are a household with a loyalty card at a supermarket chain and you do part of your "
+                "grocery shopping there. " + p.demo_text)
+    elif sc["name"] == "grocery":
         base = (f"You are a household with a loyalty card at a supermarket chain and you do part of your "
                 f"grocery shopping there. Profile: {p.segment}, head of household aged {p.age}, "
                 f"{p.hh} person(s).")
@@ -249,11 +300,22 @@ def run(a):
     rng = np.random.default_rng(a.seed)
     os.makedirs(a.out, exist_ok=True)
     sc = get_scenario(a.scenario)
+    if a.personas == "demographic":
+        if sc["name"] != "grocery":
+            sys.exit("--personas demographic needs --scenario grocery")
+        demo, counts = load_journey_households()
+        hist = {int(k): int(v) for k, v in zip(*np.unique(counts.ravel(), return_counts=True))}
+        sc = get_scenario("grocery", hist)  # reference = real counts of the households that supply the personas
+        sc["anchor"] = (f" Context: households in this loyalty program make on average about {sc['mean']:.0f} "
+                        "shopping trips to the chain per 4 weeks, and some make none.")
+        pers = make_demo_personas(a.n, demo, counts, a.seed)
+        seg_mult = {p.id: p.mult for p in pers.itertuples()}
+    else:
+        pers = make_personas(a.n, rng, sc, a.seed)
+        seg_mult = {p.id: sc["segments"][p.segment] for p in pers.itertuples()}
     alpha_target = a.alpha if a.alpha is not None else sc["alpha"]
-    pers = make_personas(a.n, rng, sc, a.seed)
     ref = reference(max(a.n * 20, 5000), rng, sc)
     mock = MockLLM(a.seed, sc)
-    seg_mult = {p.id: sc["segments"][p.segment] for p in pers.itertuples()}
 
     tasks = []  # (cond, rep, id, key, prompt)
     for cond in a.conditions:
@@ -297,7 +359,8 @@ def run(a):
             cnt = int(b[1]) if b[1] == b[2] else int(rng.integers(b[1], b[2] + 1))
         elif cond == "D":
             lam = vals[0]
-        rows.append(dict(cond=cond, rep=rep, id=pid, segment=pers.segment[pid], raw=raw, lam=lam, count=cnt))
+        rows.append(dict(cond=cond, rep=rep, id=pid, segment=pers.segment[pid], raw=raw, lam=lam, count=cnt,
+                         real_count=pers.real_count[pid] if "real_count" in pers else np.nan))
     df = pd.DataFrame(rows)
 
     info = {}
@@ -321,6 +384,11 @@ def run(a):
             x = ok.astype(float).values
             row.update(summarize(x)); row.update(distances(x, ref))
             row["zero_expected_at_mean"] = zero_at_mean(x.mean(), sc["alpha"])
+        if g.real_count.notna().any():  # individual-level validity: rank correlation with the household's real count
+            for col, name in (("count", "rho_real"), ("lam", "rho_lambda_real")):
+                gg = g.dropna(subset=[col, "real_count"])
+                if len(gg) > 20 and gg[col].nunique() > 1:
+                    row[name] = float(stats.spearmanr(gg[col].astype(float), gg.real_count)[0])
         out.append(row)
     res = pd.DataFrame(out)
     res.to_csv(os.path.join(a.out, "summary.csv"), index=False)
@@ -343,6 +411,8 @@ def build_parser():
     ap.add_argument("--alpha", type=float, default=None, help="total heterogeneity target for D (default: scenario's)")
     ap.add_argument("--scenario", choices=["retail", "grocery"], default="retail",
                     help="retail = Retail II (mean ~0.5); grocery = Complete Journey (mean ~4.8)")
+    ap.add_argument("--personas", choices=["synthetic", "demographic"], default="synthetic",
+                    help="demographic = real Complete Journey households (needs: pip install completejourney_py pyarrow)")
     ap.add_argument("--anchor", action="store_true",
                     help="tell the persona the retailer's base purchase rate (prompt variant)")
     ap.add_argument("--workers", type=int, default=8, help="parallel API calls")

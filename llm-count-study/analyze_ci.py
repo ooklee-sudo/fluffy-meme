@@ -51,7 +51,7 @@ def main():
         if not (os.path.exists(f) and os.path.exists(c)):
             continue
         cfg = json.load(open(c))
-        REF.update(rp.ref_stats(rp.get_scenario(cfg.get("scenario", "retail"))))
+        REF.update(cfg["ref"] if "ref" in cfg else rp.ref_stats(rp.get_scenario(cfg.get("scenario", "retail"))))
         df = pd.read_csv(f)
         df["model"], df["anchor"], df["temp"] = cfg["model"], bool(cfg["anchor"]), cfg["temp"]
         frames.append(df)
@@ -77,6 +77,20 @@ def main():
     print(f"reference: mean {REF['mean']:.2f}, var/mean {REF['var_mean']:.2f}, zero {REF['zero']:.2f}, alpha {REF['alpha']:.2f}")
     print("estimate [95% bootstrap CI]; * = CI excludes the reference\n")
     print(out.to_string(index=False))
+    rho = []
+    for d in sorted(glob.glob(os.path.join(a.runs, "*"))):
+        f, c = os.path.join(d, "summary.csv"), os.path.join(d, "config.json")
+        if os.path.exists(f) and os.path.exists(c):
+            s, cfg = pd.read_csv(f), json.load(open(c))
+            if "rho_real" in s:
+                for r in s.itertuples():
+                    if r.cond in "ABCD" and len(str(r.cond)) == 1:
+                        rho.append(dict(model=cfg["model"], anchor=bool(cfg["anchor"]), cond=r.cond,
+                                        rho_count=getattr(r, "rho_real", np.nan),
+                                        rho_lambda=getattr(r, "rho_lambda_real", np.nan)))
+    if rho:
+        print("\nSpearman correlation between the simulated and the household's real count (persona-level validity):")
+        print(pd.DataFrame(rho).round(2).to_string(index=False))
     print(f"\nsaved {os.path.join(a.runs, 'ci_summary.csv')}")
 
 
