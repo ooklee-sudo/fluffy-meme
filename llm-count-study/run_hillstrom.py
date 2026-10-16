@@ -158,8 +158,10 @@ def run_config(a, data, model, anchor, out):
     return res
 
 
-def fmt_rr(e, lo, hi, real):
+def fmt_rr(e, lo, hi, real, ctrl=None, treat=None):
     if not np.isfinite(e):
+        if ctrl == 0 and treat and treat > 0:
+            return "inf (ctrl rate 0)"  # every simulated no-email customer said No/0
         return "n/a"
     star = "*" if np.isfinite(lo) and not (lo <= real <= hi) else ""
     return f"{e:.2f} [{lo:.2f},{hi:.2f}]{star}"
@@ -198,9 +200,9 @@ def main():
     show = []
     for r in res.itertuples():
         show.append(dict(model=r.model, anchor=r.anchor, method=r.method, outcome=r.outcome, fail=r.parse_fail,
-                         ctrl=f"{r.rate_ctrl:.3f}",
-                         RR_men=fmt_rr(r.RR_mens, r.RR_mens_lo, r.RR_mens_hi, REAL_RR[(r.outcome, "Mens E-Mail")][0]),
-                         RR_women=fmt_rr(r.RR_womens, r.RR_womens_lo, r.RR_womens_hi, REAL_RR[(r.outcome, "Womens E-Mail")][0]),
+                         ctrl=f"{r.rate_ctrl:.3f}", men=f"{r.rate_mens:.3f}", women=f"{r.rate_womens:.3f}",
+                         RR_men=fmt_rr(r.RR_mens, r.RR_mens_lo, r.RR_mens_hi, REAL_RR[(r.outcome, "Mens E-Mail")][0], r.rate_ctrl, r.rate_mens),
+                         RR_women=fmt_rr(r.RR_womens, r.RR_womens_lo, r.RR_womens_hi, REAL_RR[(r.outcome, "Womens E-Mail")][0], r.rate_ctrl, r.rate_womens),
                          men_gt_women=bool(r.RR_mens > r.RR_womens) if np.isfinite(r.RR_mens) and np.isfinite(r.RR_womens) else None))
     print(pd.DataFrame(show).to_string(index=False))
 
