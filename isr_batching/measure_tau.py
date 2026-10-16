@@ -27,12 +27,24 @@ def main():
     ap.add_argument('--out', type=int, default=256); ap.add_argument('--tp', type=int, default=1)
     ap.add_argument('--dtype', default='auto'); ap.add_argument('--max-batch', type=int, default=256)
     ap.add_argument('--m-len', type=int, default=None, help='tokens per request used for the KV-cache bound M (default prompt+out); use the trace median prompt+output')
+    ap.add_argument('--attention-backend', default=None, help='e.g. TRITON_ATTN or FLASH_ATTN (needed when the default FlashInfer JIT does not support the GPU)')
     ap.add_argument('--reps', type=int, default=3); ap.add_argument('--json', default='tau.json')
     a = ap.parse_args()
     from vllm import LLM, SamplingParams
     import vllm
-    llm = LLM(a.model, tensor_parallel_size=a.tp, dtype=a.dtype, enable_prefix_caching=False,
-              max_num_seqs=a.max_batch, max_model_len=a.prompt + a.out + 8)
+    base = dict(tensor_parallel_size=a.tp, dtype=a.dtype, enable_prefix_caching=False,
+                max_num_seqs=a.max_batch, max_model_len=a.prompt + a.out + 8)
+    llm = None
+    if a.attention_backend:
+        os.environ['VLLM_ATTENTION_BACKEND'] = a.attention_backend          # older vLLM versions
+        for extra in (dict(attention_backend=a.attention_backend),          # newer engine argument
+                      dict(attention_config=dict(backend=a.attention_backend))):
+            try:
+                llm = LLM(a.model, **base, **extra); break
+            except (TypeError, ValueError) as e:
+                print(f'engine argument {list(extra)[0]} not accepted ({e}); trying the next form')
+    if llm is None:
+        llm = LLM(a.model, **base)
     vocab = llm.get_tokenizer().vocab_size
     rng = np.random.default_rng(0)
 
@@ -60,7 +72,7 @@ def main():
         import torch; gpu = f'{torch.cuda.get_device_name(0)} x{torch.cuda.device_count()}'
     except Exception as e:
         gpu = f'unknown ({e})'
-    out = dict(model=a.model, gpu=gpu, vllm=vllm.__version__, attention_backend=os.environ.get('VLLM_ATTENTION_BACKEND', 'default'), tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
+    out = dict(model=a.model, gpu=gpu, vllm=vllm.__version__, attention_backend=a.attention_backend or os.environ.get('VLLM_ATTENTION_BACKEND', 'default'), tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
                alpha_ms=alpha, beta_ms=beta, beta_over_alpha=beta / alpha, r2=r2, prefill_ms_per_prompt_token=prefill_per_tok,
                tau_convex=second_diff_ok(bs_a, tau_a, +1),
                throughput_concave=second_diff_ok(bs_a, bs_a / tau_a, -1), batch_sizes=bs, tau_ms=taus)
