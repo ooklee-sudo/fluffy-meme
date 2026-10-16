@@ -17,12 +17,19 @@ from scipy.optimize import brentq, minimize_scalar
 
 
 class Engine:
-    def __init__(self, M, b):
+    def __init__(self, M, b, tau=None):
+        """Linear batching rho(n) = (1+b)/(1+b*min(n,M)); or, if tau=(batch_sizes, tau_ms) is given, the measured
+        step-time curve (piecewise-linear interpolation, forced nondecreasing): rho(n) = tau(1)/tau(min(n, M))."""
         self.M, self.b = int(M), float(b)
         n = np.arange(0, self.M + 2)
-        rho = (1 + self.b) / (1 + self.b * np.minimum(np.maximum(n, 1), self.M))
+        nn = np.minimum(np.maximum(n, 1), self.M)
+        if tau is None:
+            rho = (1 + self.b) / (1 + self.b * nn)
+        else:
+            bs, ts = np.asarray(tau[0], float), np.maximum.accumulate(np.asarray(tau[1], float))
+            rho = np.interp(1.0, bs, ts) / np.interp(nn.astype(float), bs, ts)
         self.mu = np.minimum(n, self.M) * rho            # mu[0] = 0
-        self.mubar = self.M * (1 + self.b) / (1 + self.b * self.M)
+        self.mubar = float(self.mu[self.M])
         self.logcum = np.concatenate([[0.0], np.cumsum(np.log(self.mu[1:self.M + 1]))])  # sum_{i<=n} log mu(i)
         n0 = np.arange(0, self.M + 1)
         self.r1 = (n0 + 1) / self.mu[n0 + 1]             # r_{n+1}, n = 0..M
@@ -93,8 +100,8 @@ class Phase:
         return 1.0 / (self.V / self.Lam + dp)
 
 
-def make_phases(profile, M, b, V, ratio, c0=0.0, pi=None, norm='mean'):
-    eng = Engine(M, b)
+def make_phases(profile, M, b, V, ratio, c0=0.0, pi=None, norm='mean', tau=None):
+    eng = Engine(M, b, tau)
     prof = np.asarray(profile, float)
     shape = prof / (prof.mean() if norm == 'mean' else prof.max())
     K = len(prof)
@@ -152,8 +159,8 @@ def dp_levels(Wm, pi, order, G):
     return best[G, K], [(list(order[i:j]), a) for i, j, a in groups]
 
 
-def analyse(profile, M, b, V=20.0, ratio=1.4, c0=0.0, pi=None, Gs=(2, 3, 4, 6), ngrid=600, verbose=False, norm='mean'):
-    eng, ph = make_phases(profile, M, b, V, ratio, c0, pi, norm)
+def analyse(profile, M, b, V=20.0, ratio=1.4, c0=0.0, pi=None, Gs=(2, 3, 4, 6), ngrid=600, verbose=False, norm='mean', tau=None):
+    eng, ph = make_phases(profile, M, b, V, ratio, c0, pi, norm, tau)
     K = len(ph); pis = np.array([p.pi for p in ph])
     fb = [p.first_best() for p in ph]
     lam_s, p_s = np.array([f[0] for f in fb]), np.array([f[1] for f in fb])
