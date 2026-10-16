@@ -1,6 +1,6 @@
 """Bootstrap confidence intervals for the pilot grid (no API calls).
 
-  python analyze_runs.py --runs runs --boot 2000
+  python analyze_ci.py --runs runs --boot 2000
 
 Reads runs/*/raw_counts.csv and config.json. Resamples customers within each (model, anchor, condition)
 cell, pooling temperatures for models that accept temperature (the grid showed no systematic temperature
