@@ -13,15 +13,20 @@ import count_metrics as cm
 from evaluate import evaluate_condition
 from synthetic_customers import CONDITIONS, MockLLM, make_real
 
+PRESETS = {  # "retail2" is calibrated to the UCI Online Retail II 4-week profile (real_profile.csv)
+    "default": dict(base=2.0, shape=1.2, zero_infl=0.10),
+    "retail2": dict(base=0.5, shape=0.8, zero_infl=0.05)}
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 
 
-def main(n, reps, overreact):
+def main(n, reps, overreact, preset):
+    P = PRESETS[preset]
+    tag = "" if preset == "default" else f"_{preset}"
     rows, pmfs = [], {}
     for r in range(reps):
         rng = np.random.default_rng(1000 + r)
-        real = make_real(n, rng)
-        llm = MockLLM(rng, promo_overreact=overreact)
+        real = make_real(n, rng, **P)
+        llm = MockLLM(rng, base=P["base"], promo_overreact=overreact)
         pi = rng.choice(n, 200, replace=False)
         pilot = (real.y[pi], real.segment[pi])
         for name, fn in CONDITIONS.items():
@@ -35,7 +40,7 @@ def main(n, reps, overreact):
             pmfs["Real"] = cm.pmf(real.y)
             real0 = real.y
     df = pd.DataFrame(rows)
-    df.to_csv(f"{OUT}/sim_rows.csv", index=False)
+    df.to_csv(f"{OUT}/sim_rows{tag}.csv", index=False)
 
     agg = df.groupby("cond").agg(
         disp_ratio=("syn_disp_ratio", "mean"), zero_frac=("syn_zero_frac", "mean"),
@@ -44,9 +49,9 @@ def main(n, reps, overreact):
         overdisp_rejected=("ct_p", lambda p: (p < 0.05).mean()),
         best_model=("best_model", lambda s: s.value_counts().idxmax())).round(3)
     real_ref = df[["real_disp_ratio", "real_zero_frac", "real_top10_share", "irr_real"]].mean().round(3)
-    agg.to_csv(f"{OUT}/sim_summary.csv")
-    json.dump({"real_reference": real_ref.to_dict(), "n": n, "reps": reps, "promo_overreact": overreact},
-              open(f"{OUT}/sim_meta.json", "w"), indent=2)
+    agg.to_csv(f"{OUT}/sim_summary{tag}.csv")
+    json.dump({"real_reference": real_ref.to_dict(), "n": n, "reps": reps, "promo_overreact": overreact, "preset": preset, **P},
+              open(f"{OUT}/sim_meta{tag}.json", "w"), indent=2)
     print("Real reference:", real_ref.to_dict())
     print(agg.to_string())
 
@@ -70,7 +75,7 @@ def main(n, reps, overreact):
     ax[1].tick_params(axis="x", labelrotation=15)
     ax[1].legend(frameon=False, loc="upper left")
     fig.tight_layout()
-    fig.savefig(f"{OUT}/fig_distribution_dispersion.png", dpi=140)
+    fig.savefig(f"{OUT}/fig_distribution_dispersion{tag}.png", dpi=140)
 
     # Sensitivity: promo over-reaction exponent vs IRR bias (condition D)
     fig2, ax2 = plt.subplots(figsize=(5.5, 4))
@@ -81,8 +86,8 @@ def main(n, reps, overreact):
             vals = []
             for r in range(5):
                 rng = np.random.default_rng(5000 + r)
-                real = make_real(n, rng)
-                llm = MockLLM(rng, promo_overreact=e)
+                real = make_real(n, rng, **P)
+                llm = MockLLM(rng, base=P["base"], promo_overreact=e)
                 ys = CONDITIONS[name](real, llm, rng, (real.y[(pi := rng.choice(n, 200, replace=False))], real.segment[pi])) \
                     if name.startswith("D") else CONDITIONS[name](real, llm, rng)
                 vals.append(cm.irr(ys, real.treat)[0])
@@ -92,7 +97,7 @@ def main(n, reps, overreact):
     ax2.set(xlabel="LLM promo over-reaction exponent", ylabel="estimated IRR", title="H4: promo effect bias")
     ax2.legend(frameon=False)
     fig2.tight_layout()
-    fig2.savefig(f"{OUT}/fig_irr_sensitivity.png", dpi=140)
+    fig2.savefig(f"{OUT}/fig_irr_sensitivity{tag}.png", dpi=140)
 
 
 if __name__ == "__main__":
@@ -100,5 +105,6 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=5000)
     ap.add_argument("--reps", type=int, default=20)
     ap.add_argument("--overreact", type=float, default=1.5, help="MockLLM promo effect exponent (1 = unbiased)")
+    ap.add_argument("--preset", choices=list(PRESETS), default="default")
     a = ap.parse_args()
-    main(a.n, a.reps, a.overreact)
+    main(a.n, a.reps, a.overreact, a.preset)
