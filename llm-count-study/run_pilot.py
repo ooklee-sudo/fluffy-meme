@@ -2,27 +2,31 @@
 
 Conditions (Section 3.1 of the proposal):
   A direct   - ask for the 4-week purchase count
-  B daily    - ask for a 28-day 0/1 purchase sequence, then sum
+  B daily    - ask for 7 daily 0/1 values per week, 4 calls per customer, then sum
   C describe - ask for P(0..5+) and sample with an external RNG
-  D hybrid   - LLM gives a contextual mean; external gamma injects heterogeneity
+  D hybrid   - LLM gives a contextual mean lambda_i; an external gamma multiplier
+               injects the REMAINING heterogeneity (alpha_within, see below)
 
-Usage:
+Usage (single configuration):
   python run_pilot.py --mock --n 200                     # no key needed
   set OPENROUTER_API_KEY=...                             # Windows cmd
-  python run_pilot.py --n 50 --model openai/gpt-4o-mini  # small trial first
+  python run_pilot.py --n 50 --model openai/gpt-4o-mini --anchor
+For the full grid (models x temperatures x anchor) use run_all.py.
 """
 import argparse, json, os, re, sys, time, urllib.request
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 # Retail II reference (proposal Section 4): mean 0.49, zero 0.73, alpha 3.05
 REF_MEAN, REF_ALPHA = 0.49, 3.05
-CONDS = ["A", "B", "C", "D"]
-SEGMENTS = {  # segment -> relative mean multiplier (between-segment variance)
+SEGMENTS = {  # segment -> relative mean multiplier (used only by MockLLM)
     "occasional gift buyer": 0.5, "regular small retailer": 1.6,
     "seasonal hobbyist": 0.8, "one-time bargain hunter": 0.3,
 }
+ANCHOR = (" Context: customers of this retailer make on average about 0.5 purchases "
+          "per 4 weeks, and most make none.")
 
 
 def make_personas(n, rng):
@@ -32,10 +36,6 @@ def make_personas(n, rng):
         "age": rng.integers(22, 70, n),
         "country": rng.choice(["UK", "Germany", "France", "EIRE"], n, p=[.85, .05, .05, .05]),
     })
-
-
-ANCHOR = (" Context: customers of this retailer make on average about 0.5 purchases "
-          "per 4 weeks, and most make none.")
 
 
 def persona_text(p, anchor=False):
@@ -50,7 +50,7 @@ def reference(n, rng):
 
 
 # ---------------------------------------------------------------- LLM access
-def call_llm(model, prompt, temperature, provider=None, retries=3):
+def call_llm(model, prompt, temperature, provider=None, retries=5):
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         sys.exit("OPENROUTER_API_KEY is not set (or use --mock).")
@@ -58,17 +58,17 @@ def call_llm(model, prompt, temperature, provider=None, retries=3):
     if not key.isascii() or " " in key:
         sys.exit("OPENROUTER_API_KEY looks invalid (non-ASCII or contains spaces). "
                  "Set it to your real key, e.g. sk-or-v1-...")
-    body = {"model": model, "temperature": temperature,
+    body = {"model": model, "temperature": temperature, "max_tokens": 200,
             "messages": [{"role": "user", "content": prompt}]}
     if provider:
         body["provider"] = {"order": [provider], "allow_fallbacks": False}
-    req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions", json.dumps(body).encode(),
-        {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     for i in range(retries):
+        req = urllib.request.Request(
+            "https://openrouter.ai/api/v1/chat/completions", json.dumps(body).encode(),
+            {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
-                return json.load(r)["choices"][0]["message"]["content"]
+                return json.load(r)["choices"][0]["message"]["content"] or ""
         except Exception as e:
             if i == retries - 1:
                 print(f"  call failed: {e}", file=sys.stderr)
@@ -78,14 +78,14 @@ def call_llm(model, prompt, temperature, provider=None, retries=3):
 
 class MockLLM:
     """Implements assumed failure patterns (round numbers, narrow variance). NOT a real LLM."""
-    def __init__(self, rng): self.rng = rng
+    def __init__(self, seed): self.rng = np.random.default_rng(seed + 1)
 
     def __call__(self, prompt, seg_mult):
         m = REF_MEAN * seg_mult
         if "ONLY an integer" in prompt:
             return str(int(np.clip(round(m + self.rng.normal(0, 0.8)), 0, 6)))
-        if "28" in prompt and "0/1" in prompt:
-            return ",".join(str(int(x)) for x in (self.rng.random(28) < m / 28))
+        if "7 comma-separated" in prompt:
+            return ",".join(str(int(x)) for x in (self.rng.random(7) < m / 28))
         if "probabilities" in prompt:
             p = np.exp(-np.arange(6) / max(m * 1.2, 0.3)); p /= p.sum()
             return json.dumps(dict(zip(["0", "1", "2", "3", "4", "5+"], p.round(3).tolist())))
@@ -95,31 +95,43 @@ class MockLLM:
 # ---------------------------------------------------------------- conditions
 def prompts(p, anchor=False):
     base = persona_text(p, anchor)
-    return {
+    out = {
         "A": base + " How many separate purchases will you make in the next 4 weeks? Answer with ONLY an integer.",
-        "B": base + " For each of the next 28 days decide whether you make a purchase. Reply with ONLY 28 comma-separated 0/1 values.",
         "C": base + " Give the probabilities of making 0,1,2,3,4,5+ purchases in the next 4 weeks. Reply with ONLY JSON like {\"0\":..,\"1\":..,\"2\":..,\"3\":..,\"4\":..,\"5+\":..} summing to 1.",
         "D": base + " What is your expected average number of purchases per 4 weeks (can be fractional, e.g. 0.4)? Reply with ONLY a number.",
     }
+    for w in range(1, 5):
+        out[f"B{w}"] = (base + f" Week {w} of the next 4 weeks: for each of its 7 days decide whether you make a "
+                        "purchase that day. Reply with ONLY 7 comma-separated 0/1 values.")
+    return out
 
 
-def parse(cond, text, rng, alpha):
+def parse_one(key, text):
+    """key: A, B1..B4, C (-> probability vector), D (-> lambda). Returns None on failure."""
     try:
-        if cond == "A":
+        if key == "A":
             return max(0, int(re.search(r"\d+", text).group()))
-        if cond == "B":
-            v = [int(x) for x in re.findall(r"[01]", text)][:28]
-            return sum(v) if len(v) == 28 else None
-        if cond == "C":
+        if key.startswith("B"):
+            v = [int(x) for x in re.findall(r"[01]", text)][:7]
+            return sum(v) if len(v) == 7 else None
+        if key == "C":
             d = json.loads(re.search(r"\{.*\}", text, re.S).group())
             pr = np.array([float(d[k]) for k in ["0", "1", "2", "3", "4", "5+"]])
-            return int(rng.choice([0, 1, 2, 3, 4, 5], p=pr / pr.sum()))
-        if cond == "D":
-            lam = max(float(re.search(r"\d*\.?\d+", text).group()), 1e-3)
-            g = rng.gamma(1 / alpha, alpha)  # mean 1, variance alpha
-            return int(rng.poisson(lam * g))
+            return pr / pr.sum()
+        if key == "D":
+            return max(float(re.search(r"\d*\.?\d+", text).group()), 1e-3)
     except Exception:
         return None
+
+
+def alpha_within(lams, alpha_total):
+    """Heterogeneity left for the gamma multiplier once the LLM's lambda_i already vary.
+
+    With lambda = lam_i * g, g ~ Gamma(mean 1, var a_w) independent of lam_i:
+    1 + alpha_total = (1 + CV^2(lam_i)) * (1 + a_w)   (avoids double counting).
+    """
+    c2 = np.var(lams) / np.mean(lams) ** 2
+    return max((1 + alpha_total) / (1 + c2) - 1, 0.01), c2
 
 
 # ---------------------------------------------------------------- metrics
@@ -146,38 +158,72 @@ def distances(x, ref):
                 ks=stats.ks_2samp(x, ref).statistic, js=jensenshannon(px, pr, base=2) ** 2)
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--n", type=int, default=50)
-    ap.add_argument("--model", default="openai/gpt-4o-mini")
-    ap.add_argument("--provider", default=None, help="pin an OpenRouter provider for reproducibility")
-    ap.add_argument("--temp", type=float, default=1.0)
-    ap.add_argument("--reps", type=int, default=1)
-    ap.add_argument("--conditions", default="ABCD")
-    ap.add_argument("--alpha", type=float, default=REF_ALPHA, help="gamma heterogeneity for D")
-    ap.add_argument("--anchor", action="store_true",
-                    help="tell the persona the retailer's base purchase rate (prompt variant)")
-    ap.add_argument("--mock", action="store_true")
-    ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--out", default="pilot_out")
-    a = ap.parse_args()
+# ---------------------------------------------------------------- one configuration
+def run(a):
     rng = np.random.default_rng(a.seed)
     os.makedirs(a.out, exist_ok=True)
     pers = make_personas(a.n, rng)
     ref = reference(max(a.n * 20, 5000), rng)
-    mock = MockLLM(rng)
-    rows = []
+    mock = MockLLM(a.seed)
+    seg_mult = {p.id: SEGMENTS[p.segment] for p in pers.itertuples()}
+
+    tasks = []  # (cond, rep, id, key, prompt)
     for cond in a.conditions:
+        keys = ["B1", "B2", "B3", "B4"] if cond == "B" else [cond]
         for rep in range(a.reps):
             for p in pers.itertuples():
-                pr = prompts(p, a.anchor)[cond]
-                txt = mock(pr, SEGMENTS[p.segment]) if a.mock else call_llm(a.model, pr, a.temp, a.provider)
-                rows.append(dict(cond=cond, rep=rep, id=p.id, segment=p.segment,
-                                 raw=txt, count=parse(cond, txt, rng, a.alpha)))
-                if not a.mock and (p.id + 1) % 10 == 0:
-                    print(f"  cond {cond} rep {rep}: {p.id + 1}/{a.n} done", flush=True)
+                pr = prompts(p, a.anchor)
+                for k in keys:
+                    tasks.append((cond, rep, p.id, k, pr[k]))
+
+    done = [0]
+
+    def work(t):
+        txt = mock(t[4], seg_mult[t[2]]) if a.mock else call_llm(a.model, t[4], a.temp, a.provider)
+        done[0] += 1
+        if not a.mock and done[0] % 200 == 0:
+            print(f"  {done[0]}/{len(tasks)} calls done", flush=True)
+        return txt
+
+    if a.mock:
+        texts = [work(t) for t in tasks]
+    else:
+        with ThreadPoolExecutor(max_workers=a.workers) as ex:
+            texts = list(ex.map(work, tasks))
+
+    # ---- assemble per-customer counts (sequential: uses the RNG)
+    cells = {}
+    for t, txt in zip(tasks, texts):
+        cells.setdefault((t[0], t[1], t[2]), []).append((t[3], txt))
+    rows = []
+    for (cond, rep, pid), items in cells.items():
+        vals = [parse_one(k, txt) for k, txt in items]
+        raw = " | ".join(txt.replace("\n", " ") for _, txt in items)
+        cnt = lam = None
+        if cond == "A":
+            cnt = vals[0]
+        elif cond == "B":
+            cnt = sum(vals) if all(v is not None for v in vals) else None
+        elif cond == "C" and vals[0] is not None:
+            cnt = int(rng.choice([0, 1, 2, 3, 4, 5], p=vals[0]))
+        elif cond == "D":
+            lam = vals[0]
+        rows.append(dict(cond=cond, rep=rep, id=pid, segment=pers.segment[pid], raw=raw, lam=lam, count=cnt))
     df = pd.DataFrame(rows)
+
+    info = {}
+    d = df.cond == "D"
+    if d.any():  # sample D counts per rep after seeing all lambdas -> within-segment alpha
+        for rep, g in df[d].groupby("rep"):
+            ok = g.lam.notna()
+            if ok.sum() > 5:
+                a_w, c2 = alpha_within(g.lam[ok].astype(float).values, a.alpha)
+                info[f"D_rep{rep}_alpha_within"] = round(float(a_w), 3)
+                info[f"D_rep{rep}_cv2_lambda"] = round(float(c2), 3)
+                mult = rng.gamma(1 / a_w, a_w, size=ok.sum())
+                df.loc[g.index[ok], "count"] = rng.poisson(g.lam[ok].astype(float).values * mult)
     df.to_csv(os.path.join(a.out, "raw_counts.csv"), index=False)
+
     out = [dict(cond="real(ref)", **summarize(ref))]
     for cond, g in df.groupby("cond"):
         ok = g["count"].dropna()
@@ -187,14 +233,38 @@ def main():
             row.update(summarize(x)); row.update(distances(x, ref))
             row["zero_expected_at_mean"] = zero_at_mean(x.mean())
         out.append(row)
-    seg = df.dropna(subset=["count"]).pivot_table(index="segment", columns="cond", values="count", aggfunc="mean")
-    seg.to_csv(os.path.join(a.out, "segment_means.csv"))
     res = pd.DataFrame(out)
     res.to_csv(os.path.join(a.out, "summary.csv"), index=False)
-    print(res.round(3).to_string(index=False))
-    print("\nmean count by segment (does the LLM differentiate personas?)")
-    print(seg.round(2).to_string())
+    seg = df.dropna(subset=["count"]).pivot_table(index="segment", columns="cond", values="count", aggfunc="mean")
+    if d.any():
+        seg["D_llm_lambda"] = df[d].groupby("segment").lam.mean()
+    seg.to_csv(os.path.join(a.out, "segment_means.csv"))
+    json.dump(dict(vars(a), **info), open(os.path.join(a.out, "config.json"), "w"), indent=1)
+    return res, seg, info
+
+
+def build_parser():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--n", type=int, default=50)
+    ap.add_argument("--model", default="openai/gpt-4o-mini")
+    ap.add_argument("--provider", default=None, help="pin an OpenRouter provider for reproducibility")
+    ap.add_argument("--temp", type=float, default=1.0)
+    ap.add_argument("--reps", type=int, default=1)
+    ap.add_argument("--conditions", default="ABCD")
+    ap.add_argument("--alpha", type=float, default=REF_ALPHA, help="total heterogeneity target for D")
+    ap.add_argument("--anchor", action="store_true",
+                    help="tell the persona the retailer's base purchase rate (prompt variant)")
+    ap.add_argument("--workers", type=int, default=8, help="parallel API calls")
+    ap.add_argument("--mock", action="store_true")
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--out", default="pilot_out")
+    return ap
 
 
 if __name__ == "__main__":
-    main()
+    res, seg, info = run(build_parser().parse_args())
+    print(res.round(3).to_string(index=False))
+    print("\nmean count by segment (does the LLM differentiate personas?)")
+    print(seg.round(2).to_string())
+    if info:
+        print("\nD heterogeneity split:", info)
