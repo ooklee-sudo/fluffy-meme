@@ -34,9 +34,14 @@ def make_personas(n, rng):
     })
 
 
-def persona_text(p):
+ANCHOR = (" Context: customers of this retailer make on average about 0.5 purchases "
+          "per 4 weeks, and most make none.")
+
+
+def persona_text(p, anchor=False):
     return (f"You are a customer of an online giftware retailer. Profile: {p.segment}, "
-            f"age {p.age}, based in {p.country}. You made your first purchase 4 weeks ago.")
+            f"age {p.age}, based in {p.country}. You made your first purchase 4 weeks ago."
+            + (ANCHOR if anchor else ""))
 
 
 def reference(n, rng):
@@ -88,8 +93,8 @@ class MockLLM:
 
 
 # ---------------------------------------------------------------- conditions
-def prompts(p):
-    base = persona_text(p)
+def prompts(p, anchor=False):
+    base = persona_text(p, anchor)
     return {
         "A": base + " How many separate purchases will you make in the next 4 weeks? Answer with ONLY an integer.",
         "B": base + " For each of the next 28 days decide whether you make a purchase. Reply with ONLY 28 comma-separated 0/1 values.",
@@ -127,6 +132,11 @@ def summarize(x):
                 poisson_reject=bool(t is not None and t.pvalue < .05 and t.statistic > 0))
 
 
+def zero_at_mean(m):
+    """P(0) of the reference NB (alpha=REF_ALPHA) rescaled to mean m: separates mean error from shape error."""
+    return (1 + REF_ALPHA * m) ** (-1 / REF_ALPHA)
+
+
 def distances(x, ref):
     k = int(max(x.max(), ref.max())) + 1
     px = np.bincount(x.astype(int), minlength=k) / len(x)
@@ -145,6 +155,8 @@ def main():
     ap.add_argument("--reps", type=int, default=1)
     ap.add_argument("--conditions", default="ABCD")
     ap.add_argument("--alpha", type=float, default=REF_ALPHA, help="gamma heterogeneity for D")
+    ap.add_argument("--anchor", action="store_true",
+                    help="tell the persona the retailer's base purchase rate (prompt variant)")
     ap.add_argument("--mock", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="pilot_out")
@@ -158,7 +170,7 @@ def main():
     for cond in a.conditions:
         for rep in range(a.reps):
             for p in pers.itertuples():
-                pr = prompts(p)[cond]
+                pr = prompts(p, a.anchor)[cond]
                 txt = mock(pr, SEGMENTS[p.segment]) if a.mock else call_llm(a.model, pr, a.temp, a.provider)
                 rows.append(dict(cond=cond, rep=rep, id=p.id, segment=p.segment,
                                  raw=txt, count=parse(cond, txt, rng, a.alpha)))
@@ -171,10 +183,15 @@ def main():
         if len(ok) > 5:
             x = ok.astype(float).values
             row.update(summarize(x)); row.update(distances(x, ref))
+            row["zero_expected_at_mean"] = zero_at_mean(x.mean())
         out.append(row)
+    seg = df.dropna(subset=["count"]).pivot_table(index="segment", columns="cond", values="count", aggfunc="mean")
+    seg.to_csv(os.path.join(a.out, "segment_means.csv"))
     res = pd.DataFrame(out)
     res.to_csv(os.path.join(a.out, "summary.csv"), index=False)
     print(res.round(3).to_string(index=False))
+    print("\nmean count by segment (does the LLM differentiate personas?)")
+    print(seg.round(2).to_string())
 
 
 if __name__ == "__main__":
