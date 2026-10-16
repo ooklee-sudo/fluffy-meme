@@ -49,6 +49,10 @@ def call_llm(model, prompt, temperature, provider=None, retries=3):
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         sys.exit("OPENROUTER_API_KEY is not set (or use --mock).")
+    key = key.strip().strip('"')
+    if not key.isascii() or " " in key:
+        sys.exit("OPENROUTER_API_KEY looks invalid (non-ASCII or contains spaces). "
+                 "Set it to your real key, e.g. sk-or-v1-...")
     body = {"model": model, "temperature": temperature,
             "messages": [{"role": "user", "content": prompt}]}
     if provider:
