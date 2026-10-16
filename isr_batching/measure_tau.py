@@ -41,7 +41,7 @@ def main():
         t0 = time.perf_counter(); llm.generate(prompts, sp, use_tqdm=False); return time.perf_counter() - t0
 
     run(2, 8)  # warm-up
-    bs = [b for b in [1, 2, 4, 8, 16, 32, 64, 128, 256] if b <= a.max_batch]
+    bs = [b for b in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024] if b <= a.max_batch]
     taus = []
     for b in bs:
         t1 = np.median([run(b, 1) for _ in range(a.reps)]); tO = np.median([run(b, a.out) for _ in range(a.reps)])
