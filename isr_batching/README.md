@@ -8,11 +8,11 @@
 | 6.5 robustness grid | `run_all.py` |
 | 6.7 implied c0/V, ratio-2 schedules | `run_all.py` (`sec67.json`) |
 | Table B5 | `run_all.py` (`tableB5_check.csv`) |
-| 6.1 Table 1 capacity under real/Poisson/bootstrap arrivals | `capacity_sim.py` |
+| 6.1 Table 1 capacity: replay / bootstrap / Poisson / 5-state chain / 2-state MMPP | `capacity_sim.py` (`--dedicated` for pooled M/M/c) |
 | 6.4 Table 3, 6.6 Table 4 (exact Markov chain, simulated equilibrium demand) | **not included** |
 
 Run order: `measure_tau.py` -> `run_all.py --M <M_kv> --b <beta/alpha> --profile <Azure 2024 csv>` -> `capacity_sim.py`.
-Tests: `PYTHONPATH=. python3 test_quasi_static.py && PYTHONPATH=. python3 test_sim.py`.
+Tests: `PYTHONPATH=. python3 test_quasi_static.py && PYTHONPATH=. python3 test_sim.py && PYTHONPATH=. python3 test_sim_erlang.py`.
 
 Verified here: closed-form d, toll, waiting/slowdown split equal brute-force birth-death; B.1 values (toll 132.0); tolls increase
 with load (Prop. 1); slowdown toll = 0 for b = 0; simulator matches Table B4. Table B5 beta=0 row reproduced
