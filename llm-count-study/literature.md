@@ -42,3 +42,13 @@ Ehrenberg (1959) NBD for purchase frequency; Schmittlein, Morrison & Colombo (19
 
 ## Gap check
 No paper found that evaluates LLM-generated per-customer purchase counts against Poisson/NB fits. Closest: 2510.03310 (dispersion mismatch), 2404.09043 (sampling), 2606.16183 (aggregate binomial demand), 2511.13233 (count metric, no fit). Claim holds only within this search.
+
+## Update 2026-10-16: re-search on "synthetic customers", BG/NBD, Pareto/NBD, LLM count data (4 extended searches)
+No study found that evaluates LLM-generated per-customer purchase counts against Poisson/NB benchmarks. New, adjacent work (abstracts read via arXiv API):
+| Work | Relevance | Status |
+|---|---|---|
+| Chen, *Simulated Customers Never Walk Away*, arXiv:2606.20708 | LLM simulators vs. real purchase outcomes (793 verified payments); simulators inflate eventual non-buyers toward purchase (binary, conversational, not counts) | verified (abstract) |
+| Fan, Huang, Peng, *SYN-DIGITS*, arXiv:2604.07513 | Model-agnostic calibration of LLM persona simulation, individual and distributional; relevant as a competing/complementary calibration to our hybrid D | verified (abstract) |
+| Xia et al., *RetailSynth*, arXiv:2312.14095 | Non-LLM synthetic retail transactions with heterogeneity, calibrated on public grocery data | verified (abstract) |
+| Yang et al., *BELA*, arXiv:2511.22130 | Synthetic customer personas for recommendation; not about purchase counts | verified (abstract); not relevant |
+Count-model background re-found: Fader, Hardie & Lee (2005) BG/NBD PDF at brucehardie.com; Hardie-style simulated panels (81 worlds) are a template for our MockLLM validation.
