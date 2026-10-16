@@ -160,9 +160,10 @@ def model_info(model):
             _MODELS["_failed"] = {}
     m = _MODELS.get(model)
     if not m:
-        return dict(temperature=True, reasoning_off=False)
+        return dict(temperature=True, reasoning_off=False, efforts=[])
+    eff = (m.get("reasoning") or {}).get("supported_efforts", [])
     return dict(temperature="temperature" in m.get("supported_parameters", []),
-                reasoning_off="none" in (m.get("reasoning") or {}).get("supported_efforts", []))
+                reasoning_off="none" in eff, efforts=eff)
 
 
 def build_body(model, prompt, temperature, max_tokens=300, provider=None):
@@ -172,6 +173,9 @@ def build_body(model, prompt, temperature, max_tokens=300, provider=None):
         body["temperature"] = temperature
     if info["reasoning_off"]:
         body["reasoning"] = {"effort": "none"}  # otherwise hidden reasoning can use up max_tokens
+    elif info["efforts"]:  # reasoning model that cannot be switched off: lowest effort and a larger budget
+        body["reasoning"] = {"effort": next((e for e in ("minimal", "low") if e in info["efforts"]), info["efforts"][-1])}
+        body["max_tokens"] = max(max_tokens, 2000)
     if provider:
         body["provider"] = {"order": [provider], "allow_fallbacks": False}
     return body

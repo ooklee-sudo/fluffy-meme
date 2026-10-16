@@ -174,7 +174,7 @@ def main():
     ap.add_argument("--temp", type=float, default=0.7)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--boot", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--seeds", default="0", help="comma-separated seeds, e.g. 0,1,2")
     ap.add_argument("--data", default="hillstrom.csv")
     ap.add_argument("--runs", default="runs_hillstrom")
     ap.add_argument("--mock", action="store_true")
@@ -182,16 +182,19 @@ def main():
     data = load_data(a.data)
     allres = []
     models = ["mock/x"] if a.mock else a.models.split(",")
-    for model in models:
-        for anchor in (False, True):
-            out = os.path.join(a.runs, f"{model.replace('/', '_')}_{'anchor' if anchor else 'plain'}")
-            if os.path.exists(os.path.join(out, "hillstrom_summary.csv")):
-                print(f"{out} (already done, skipped)", flush=True)
-                res = pd.read_csv(os.path.join(out, "hillstrom_summary.csv"))
-            else:
-                print(f"{out}", flush=True)
-                res = run_config(a, data, model, anchor, out)
-            allres.append(res)
+    for seed in [int(x) for x in a.seeds.split(",")]:
+        a.seed = seed
+        for model in models:
+            for anchor in (False, True):
+                out = os.path.join(a.runs, f"{model.replace('/', '_')}_{'anchor' if anchor else 'plain'}" + (f"_s{seed}" if seed else ""))
+                if os.path.exists(os.path.join(out, "hillstrom_summary.csv")):
+                    print(f"{out} (already done, skipped)", flush=True)
+                    res = pd.read_csv(os.path.join(out, "hillstrom_summary.csv"))
+                else:
+                    print(f"{out}", flush=True)
+                    res = run_config(a, data, model, anchor, out)
+                res["seed"] = seed
+                allres.append(res)
     res = pd.concat(allres)
     res.to_csv(os.path.join(a.runs, "all_hillstrom.csv"), index=False)
     print("\nREAL (Hillstrom): visit  RR men 1.72 [1.64,1.81], women 1.43 [1.36,1.50]; control rate 0.106")

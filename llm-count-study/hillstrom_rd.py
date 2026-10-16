@@ -56,18 +56,27 @@ def main():
         print(f"  {o:9s} men {real[o]['Mens E-Mail'][0]:+.4f}  women {real[o]['Womens E-Mail'][0]:+.4f}  "
               f"gap(men-women) {real[o]['gap'][0]:+.4f} [{real[o]['gap'][1]:+.4f},{real[o]['gap'][2]:+.4f}]")
     print("\n* = simulated CI and real CI do not overlap (the simulated interval excludes the real point and vice versa)\n")
-    rows = []
+    agg, order = {}, []
     for d in sorted(glob.glob(os.path.join(a.runs, "*"))):
         f, c = os.path.join(d, "hillstrom_raw.csv"), os.path.join(d, "config.json")
         if not (os.path.exists(f) and os.path.exists(c)):
             continue
         cfg = json.load(open(c)); raw = pd.read_csv(f)
-        rng = np.random.default_rng(cfg["seed"] + 100)
         n = int(raw.i.max()) + 1
         cols = {}
         for r in raw.itertuples():
             v = h.parse(r.method, str(r.raw))
             cols.setdefault((r.method, r.outcome, r.arm), np.full(n, np.nan))[r.i] = np.nan if v is None else v
+        key = (cfg["model"], bool(cfg["anchor"]))
+        if key not in agg:
+            agg[key] = {"cols": {}, "seeds": []}; order.append(key)
+        agg[key]["seeds"].append(cfg["seed"])
+        for k, v in cols.items():  # pool the customers of all seeds
+            agg[key]["cols"][k] = np.concatenate([agg[key]["cols"][k], v]) if k in agg[key]["cols"] else v
+    rows = []
+    rng = np.random.default_rng(100)
+    for (model, anchor) in order:
+        cols = agg[(model, anchor)]["cols"]
         for outcome in h.OUTCOMES:
             for label, method in (("A_yesno", "A"), ("C_prob", "C"), ("C_sampled", "C")):
                 def arr(arm):
@@ -76,7 +85,8 @@ def main():
                         ok = ~np.isnan(x); x[ok] = (rng.random(ok.sum()) < x[ok]).astype(float)
                     return x
                 m_, w_, g_ = boot_rd(arr("No E-Mail"), arr("Mens E-Mail"), arr("Womens E-Mail"), a.boot, rng)
-                rows.append(dict(model=cfg["model"], anchor=cfg["anchor"], method=label, outcome=outcome,
+                rows.append(dict(model=model, anchor=anchor, method=label, outcome=outcome,
+                                 seeds=len(agg[(model, anchor)]["seeds"]),
                                  RD_men=cell(m_, real[outcome]["Mens E-Mail"]),
                                  RD_women=cell(w_, real[outcome]["Womens E-Mail"]),
                                  gap=cell(g_, real[outcome]["gap"]),

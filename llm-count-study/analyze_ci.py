@@ -53,7 +53,7 @@ def main():
         cfg = json.load(open(c))
         REF.update(cfg["ref"] if "ref" in cfg else rp.ref_stats(rp.get_scenario(cfg.get("scenario", "retail"))))
         df = pd.read_csv(f)
-        df["model"], df["anchor"], df["temp"] = cfg["model"], bool(cfg["anchor"]), cfg["temp"]
+        df["model"], df["anchor"], df["temp"], df["seed"] = cfg["model"], bool(cfg["anchor"]), cfg["temp"], cfg.get("seed", 0)
         frames.append(df)
     if not frames:
         raise SystemExit(f"no finished runs in {a.runs}")
@@ -65,32 +65,41 @@ def main():
         x = g["count"].dropna().astype(float).values
         rec = dict(zip(keys, k))
         rec["n"] = len(x)
+        rec["seeds"] = g["seed"].nunique()
         rec["parse_fail"] = round(1 - len(x) / len(g), 3)
         if len(x) < 20:
             rows.append(rec); continue
         est, ci = stats_of(x), boot(x, a.boot, rng)
         for m in REF:
             rec[m] = fmt(m, est[m], ci[m])
+        if rec["seeds"] > 1:  # stability across seeds (separate persona draws and model calls)
+            per = [stats_of(gs["count"].dropna().astype(float).values)["var_mean"] for _, gs in g.groupby("seed")]
+            rec["var_mean_by_seed"] = f"{np.nanmin(per):.2f}-{np.nanmax(per):.2f}"
         rows.append(rec)
     out = pd.DataFrame(rows)
     out.to_csv(os.path.join(a.runs, "ci_summary.csv"), index=False)
     print(f"reference: mean {REF['mean']:.2f}, var/mean {REF['var_mean']:.2f}, zero {REF['zero']:.2f}, alpha {REF['alpha']:.2f}")
     print("estimate [95% bootstrap CI]; * = CI excludes the reference\n")
     print(out.to_string(index=False))
-    rho = []
-    for d in sorted(glob.glob(os.path.join(a.runs, "*"))):
-        f, c = os.path.join(d, "summary.csv"), os.path.join(d, "config.json")
-        if os.path.exists(f) and os.path.exists(c):
-            s, cfg = pd.read_csv(f), json.load(open(c))
-            if "rho_real" in s:
-                for r in s.itertuples():
-                    if r.cond in "ABCD" and len(str(r.cond)) == 1:
-                        rho.append(dict(model=cfg["model"], anchor=bool(cfg["anchor"]), cond=r.cond,
-                                        rho_count=getattr(r, "rho_real", np.nan),
-                                        rho_lambda=getattr(r, "rho_lambda_real", np.nan)))
-    if rho:
-        print("\nSpearman correlation between the simulated and the household's real count (persona-level validity):")
-        print(pd.DataFrame(rho).round(2).to_string(index=False))
+    if "real_count" in df and df["real_count"].notna().any():
+        rho = []
+        for (m_, an_, c_), g in df.groupby(["model", "anchor", "cond"]):
+            rec = dict(model=m_, anchor=an_, cond=c_)
+            for col, name in (("count", "rho_count"), ("lam", "rho_lambda")):
+                gg = g.dropna(subset=[col, "real_count"])
+                if len(gg) > 30 and gg[col].nunique() > 1:
+                    from scipy.stats import spearmanr
+                    r0 = spearmanr(gg[col].astype(float), gg.real_count)[0]
+                    bs = []
+                    for _ in range(300):
+                        i = rng.integers(0, len(gg), len(gg)); b_ = gg.iloc[i]
+                        if b_[col].nunique() > 1:
+                            bs.append(spearmanr(b_[col].astype(float), b_.real_count)[0])
+                    lo, hi = np.percentile(bs, [2.5, 97.5])
+                    rec[name] = f"{r0:+.2f} [{lo:+.2f},{hi:+.2f}]"
+            rho.append(rec)
+        print("\nSpearman correlation of the simulated count (or the model's lambda) with the household's real count:")
+        print(pd.DataFrame(rho).to_string(index=False))
     print(f"\nsaved {os.path.join(a.runs, 'ci_summary.csv')}")
 
 
