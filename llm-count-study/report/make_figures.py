@@ -44,7 +44,7 @@ def fig_dispersion():
 
 
 def fig_lift():
-    df = pd.read_csv("hillstrom_table.csv")
+    df = pd.read_csv("hillstrom_rd_parsed.csv")
     df = df[df.method == "C_prob"]
     real = {"visit": (0.0766, 0.0766 - 0.0066, 0.0766 + 0.0066), "purchase": (0.0068, 0.0068 - 0.0018, 0.0068 + 0.0018)}
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 3.5))
@@ -55,8 +55,9 @@ def fig_lift():
             r = df[(df.model == mid) & (df.anchor == an) & (df.outcome == outcome)].iloc[0]
             y = len(rows) - 1 - ri
             x = max(r.RD_men, 1e-4)
+            ax.plot([max(r.RD_men_lo, 1e-4), r.RD_men_hi], [y, y], color=col, lw=1.4, solid_capstyle="round", zorder=2)
             ax.plot(x, y, mk, ms=7, mfc=col if not an else "white", mec=col, mew=1.5, zorder=3)
-            ax.text(x * (1.10 if outcome == "purchase" else 1.0) + (0 if outcome == "purchase" else 0.006), y, f"{r.RD_men:+.3f}", va="center", fontsize=7.5, color=INK2)
+            ax.text(r.RD_men_hi * (1.12 if outcome == "purchase" else 1.0) + (0 if outcome == "purchase" else 0.006), y, f"{r.RD_men:+.3f}", va="center", fontsize=7.5, color=INK2, bbox=dict(fc="white", ec="none", pad=0.6, alpha=0.9), zorder=4)
         v, lo, hi = real[outcome]
         ax.axvspan(lo, hi, color="#cfcdc6", alpha=0.6, lw=0, zorder=0)
         ax.axvline(v, color=INK, lw=1.2, ls="--", zorder=1)

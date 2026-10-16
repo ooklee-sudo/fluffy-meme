@@ -22,19 +22,24 @@ def dist_table(csv, ref):
 
 
 def hill_table():
-    d = pd.read_csv("hillstrom_table.csv")
-    d = d[d.method == "C_prob"]
-    rows = ["| Model | Prompt | Outcome | No email | Men's | Women's | Lift men | Lift women | RR men | RR women |",
-            "|---|---|---|---|---|---|---|---|---|---|",
-            "| Real (randomized) | | visit | 0.106 | 0.183 | 0.151 | +0.077 | +0.045 | 1.72 | 1.43 |",
-            "| Real (randomized) | | purchase | 0.0057 | 0.0125 | 0.0088 | +0.0068 | +0.0031 | 2.19 | 1.54 |"]
+    d = pd.read_csv("hillstrom_table.csv"); d = d[d.method == "C_prob"]
+    q = pd.read_csv("hillstrom_rd_parsed.csv"); q = q[q.method == "C_prob"]
+    rows = ["| Model | Prompt | Outcome | No email | Lift, men's email [95% CI] | Lift, women's email [95% CI] | Gap men minus women [95% CI] | RR men | RR women |",
+            "|---|---|---|---|---|---|---|---|---|",
+            "| Real (randomized) | | visit | 0.106 | +0.077 [+0.070, +0.083] | +0.045 [+0.039, +0.052] | +0.031 [+0.024, +0.038] | 1.72 | 1.43 |",
+            "| Real (randomized) | | purchase | 0.0057 | +0.0068 [+0.0050, +0.0086] | +0.0031 [+0.0015, +0.0047] | +0.0037 [+0.0017, +0.0056] | 2.19 | 1.54 |"]
+    ci = lambda v, lo, hi, st: f"{v:+.3f} [{lo:+.3f}, {hi:+.3f}]" + ("\\*" if st else "")
     for o in ("visit", "purchase"):
         for m in SHORT:
             for an in (False, True):
                 r = d[(d.model == m) & (d.anchor == an) & (d.outcome == o)].iloc[0]
+                x = q[(q.model == m) & (q.anchor == an) & (q.outcome == o)].iloc[0]
                 rr = lambda v, e: f"{v:.2f}" + ("\\*" if e else "")
-                rows.append(f"| {SHORT[m]} | {'anchored' if an else 'plain'} | {o} | {r.ctrl:.3f} | {r.men:.3f} | {r.women:.3f} | "
-                            f"{r.RD_men:+.3f} | {r.RD_women:+.3f} | {rr(r.RR_men, r.RR_men_excl)} | {rr(r.RR_women, r.RR_women_excl)} |")
+                rows.append(f"| {SHORT[m]} | {'anchored' if an else 'plain'} | {o} | {r.ctrl:.3f} | "
+                            f"{ci(x.RD_men, x.RD_men_lo, x.RD_men_hi, x.RD_men_star)} | "
+                            f"{ci(x.RD_women, x.RD_women_lo, x.RD_women_hi, x.RD_women_star)} | "
+                            f"{ci(x.gap, x.gap_lo, x.gap_hi, x.gap_star)} | "
+                            f"{rr(r.RR_men, r.RR_men_excl)} | {rr(r.RR_women, r.RR_women_excl)} |")
     return "\n".join(rows)
 
 
