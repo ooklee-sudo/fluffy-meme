@@ -55,7 +55,11 @@ def main():
     # Assumption S checks on the grid: tau convex, b/tau(b) concave (using non-uniform second differences)
     def second_diff_ok(x, y, sign):
         s = np.diff(y) / np.diff(x); return bool(np.all(sign * np.diff(s) >= -1e-9 * abs(y).max()))
-    out = dict(model=a.model, vllm=vllm.__version__, tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
+    try:
+        import torch; gpu = f'{torch.cuda.get_device_name(0)} x{torch.cuda.device_count()}'
+    except Exception as e:
+        gpu = f'unknown ({e})'
+    out = dict(model=a.model, gpu=gpu, vllm=vllm.__version__, tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
                alpha_ms=alpha, beta_ms=beta, beta_over_alpha=beta / alpha, r2=r2, prefill_ms_per_prompt_token=prefill_per_tok,
                tau_convex=second_diff_ok(bs_a, tau_a, +1),
                throughput_concave=second_diff_ok(bs_a, bs_a / tau_a, -1), batch_sizes=bs, tau_ms=taus)
