@@ -8,7 +8,7 @@ Manuscript prepared for submission to *Information Systems Research* (author inf
 
 **Abstract**
 
-Large language models (LLMs) are increasingly used to create synthetic customers for pre-testing marketing decisions, but evaluations have concentrated on ratings, choices, and stated willingness to pay. We study an output that customer analytics depends on more directly: the number of purchases a customer makes in a period. Building on the Poisson–gamma account of purchase counts, we show analytically that overdispersion measures unobserved customer heterogeneity, derive how much of it a persona-conditioned simulator can carry, and show how a hybrid design avoids double counting. We evaluate four elicitation designs across three LLMs in two public transaction settings (mean counts of about 0.5 and 4.8) and in a randomized email experiment. Direct and day-by-day designs collapse toward a single value in both settings. Describing a distribution recovers part of the dispersion but under-produces zero counts. The hybrid matches dispersion only when the model's mean is accurate. Promotion effects have the right sign in most settings, yet their size varies by an order of magnitude with model and prompt, and the absolute lift in purchase probability is overstated four- to 26-fold. We offer a diagnostic protocol for practitioners who consider synthetic customers for decision support.
+Large language models (LLMs) are increasingly used to create synthetic customers for pre-testing marketing decisions, but evaluations have concentrated on ratings, choices, and stated willingness to pay. We study an output that customer analytics depends on more directly: the number of purchases a customer makes in a period. Building on the Poisson–gamma account of purchase counts, we show analytically that overdispersion measures unobserved customer heterogeneity, derive how much of it a persona-conditioned simulator can carry, and show how a hybrid design avoids double counting. We evaluate four elicitation designs across three LLMs in two public transaction settings (mean counts of about 0.5 and 4.8) and in a randomized email experiment. Direct and day-by-day designs collapse toward a single value in both settings. Describing a distribution recovers part of the dispersion but under-produces zero counts where zeros are common. Personas built from real household demographics change nothing, because those demographics explain about 1% of the heterogeneity in counts. The hybrid matches dispersion only when the model's mean is accurate. Promotion effects have the right sign in most settings, yet their size varies by an order of magnitude with model and prompt, and the absolute lift in purchase probability is overstated four- to 26-fold. We offer a diagnostic protocol for practitioners who consider synthetic customers for decision support.
 
 **Keywords:** synthetic customers, large language models, purchase counts, overdispersion, customer heterogeneity, decision support, digital twins
 
@@ -159,13 +159,27 @@ Describing a distribution behaves better here. With the anchor, the intervals of
 
 If direct answers were underdispersed only because small expected counts are rounded to 0, 1, or 2, the problem should shrink at a mean near 5. It does not. Variance-to-mean ratios of direct answers are at most 0.57 at a mean of 0.5 and at most 0.27 at a mean of 4.8, and in both settings models often return a single value for every customer. Collapse of direct answers is therefore not a rounding artifact of low means.
 
-## 5.5 Randomized email experiment
+## 5.5 Richer personas from real household demographics
 
-Table 3 reports the elicited-probability design (the most stable of the three formats we tried), and Figure 2 shows the absolute lift for the men's email. The real effect is a risk ratio of 1.72 for visits and 2.19 for purchases for the men's email, with absolute lifts of 7.7 and 0.7 percentage points.
+The personas used so far were deliberately simple. To test whether richer personas change the picture, we drew 200 household-windows at random from the 801 Complete Journey households with demographic records and described each household by its real age group, household type and size, number of children, marital status, income, and home ownership. This design also lets us compare each simulated count with that household's real count in the same window. The reference is now the real distribution of these households, who shop more often than the full panel: mean 7.83, variance-to-mean ratio 6.52, zero share 0.03, and $\alpha = 0.71$. The ceiling of design C for this reference is 5.01.
+
+How much can demographics explain? Out of sample (households held out), a Poisson regression of the household's count on all demographic fields reaches a Spearman correlation of only 0.04 with the real count, and the squared coefficient of variation of its predicted means is $c^2 = 0.006$, about 1% of $\alpha$. In terms of Proposition 1, the unexplained share $R$ is almost equal to $\alpha$: the persona describes almost none of the heterogeneity. A deterministic simulator that predicted these means perfectly would have $\alpha^* = c^2 - 1/\mu = -0.12$, against a real $\alpha$ of 0.71.
+
+The simulations behave as Proposition 1 predicts (Table 3, Table B3). Direct answers are collapsed again (variance-to-mean ratio 0.00 to 0.39, zero share 0.00) with $\alpha$ between -0.16 and -0.08. GPT-4o-mini answered "8" for every household when told the base rate (the number in the anchor text) and for practically every household without it, which gives $\alpha = -1/\mu = -0.125$, exactly the value of Proposition 1 with $c^2 = 0$. Daily simulation again overstates the mean (8.2 to 17.3 against 7.83). Describing a distribution reaches ratios of 3.70 to 5.05, and the intervals contain its ceiling of 5.01 in five of six cells; its zero share (0.03 to 0.09) is close to the small real share of 0.03. The hybrid matches the reference ratio in all six cells (5.21 to 7.26), but its mean is too low in five of six cells (4.73 to 6.42 against 7.83) and its zero share too high (0.07 to 0.12).
+
+{{TABLE_DEMO_SUMMARY}}
+
+*Table 3. Persona experiment with real household demographics: range of results across the six model-and-prompt cells of each design (200 households per cell). The last column is the range of the Spearman correlation between the simulated count and the household's real count in the same window.*
+
+Individual-level validity is essentially nil. The Spearman correlation between the simulated count and the household's real count lies between -0.11 and +0.10, and every interval except one includes zero; the exception is GPT-4o-mini without the anchor in the direct design, whose answers are nearly constant (-0.04, interval -0.09 to -0.03). The model's own $\lambda$ in design D correlates between -0.09 and +0.11 with the real count. Because the demographics themselves predict the real count with a Spearman correlation of only 0.04, this result does not show that the models ignore information; it shows that these personas contain almost no information for any simulator to use. It is the empirical counterpart of Proposition 1: richer observable personas cannot supply the heterogeneity that counts contain.
+
+## 5.6 Randomized email experiment
+
+Table 4 reports the elicited-probability design (the most stable of the three formats we tried), and Figure 2 shows the absolute lift for the men's email. The real effect is a risk ratio of 1.72 for visits and 2.19 for purchases for the men's email, with absolute lifts of 7.7 and 0.7 percentage points.
 
 {{TABLE_HILL}}
 
-*Table 3. Probability-elicitation design (mean elicited probability over 300 simulated customers, three independent calls per customer). Lift = probability with the email minus probability without it; gap = lift of the men's email minus lift of the women's email; intervals are 95% paired bootstrap intervals over customers (real values: normal approximation). RR = risk ratio. \* the simulated and the real intervals do not overlap (for RR: the simulated interval excludes the real risk ratio).*
+*Table 4. Probability-elicitation design (mean elicited probability over 300 simulated customers, three independent calls per customer). Lift = probability with the email minus probability without it; gap = lift of the men's email minus lift of the women's email; intervals are 95% paired bootstrap intervals over customers (real values: normal approximation). RR = risk ratio. \* the simulated and the real intervals do not overlap (for RR: the simulated interval excludes the real risk ratio).*
 
 ![Figure 2. Absolute lift in the probability of a visit and of a purchase after a men's email (elicited-probability design). Bars are 95% intervals; the dashed line and band are the real lift and its 95% interval. Note the logarithmic axis in panel b.](fig2_lift.png){width=6.4in}
 
@@ -173,19 +187,20 @@ Four patterns emerge. First, the direction is mostly reproduced: the risk ratio 
 
 Direct yes/no answers are not usable for rare events. Without an email GPT-4o-mini answered "No" for every customer, and with an email about half answered "Yes", so the risk ratio is undefined; the same happened with Llama and Haiku for purchases in several cells. In absolute terms the yes/no purchase lifts range from +0.14 to +0.55, 21 to 81 times the real lift.
 
-## 5.6 Summary of hypotheses
+## 5.7 Summary of hypotheses
 
 | Hypothesis | Evidence |
 |---|---|
-| H1. Designs A and B collapse. | Supported. 35 of 36 cells of designs A, B, and C across the two settings lie below the reference variance-to-mean ratio, and the zero share of designs A and B is below the real value in 23 of 24 cells (the exception: Llama with the anchor answered "0" for practically every customer). |
-| H2. Design C approaches but does not exceed its ceiling and under-produces zeros. | Supported. In the low-mean setting all six cells stay below the ceiling of 2.10; in the high-mean setting the anchored cells reach the ceiling of 6.61. Zero shares are too low in both. |
+| H1. Designs A and B collapse. | Supported. 35 of 36 cells of designs A, B, and C across the two main settings lie below the reference variance-to-mean ratio, and the zero share of designs A and B is below the real value in 23 of 24 cells (the exception: Llama with the anchor answered "0" for practically every customer). The same holds with real household demographics (ratios 0.00 to 0.39, $\alpha$ near $-1/\mu$). |
+| H2. Design C approaches but does not exceed its ceiling and under-produces zeros. | Supported. In the low-mean setting all six cells stay below the ceiling of 2.10; in the high-mean settings the anchored cells (and, with demographic personas, five of six cells) reach the ceiling. Zero shares are too low where the real zero share is large (0.74 and 0.19) but not where it is small (0.03). |
 | H3. Design D reproduces dispersion; fidelity depends on the model's mean. | Supported. It matches dispersion in 7 of 12 cells, but its accuracy follows the model's mean, which the anchor sometimes worsens. |
-| H4a. Direction is reproduced. | Mostly supported (see Section 5.5 for exceptions). |
+| H4a. Direction is reproduced. | Mostly supported (see Section 5.6 for exceptions). |
 | H4b. Absolute lift is overstated with an overstated base rate. | Supported for purchases: lifts are 4 to 26 times the real value. |
 | H4c. Similar treatments are not distinguished. | Supported. The simulated gap between emails is indistinguishable from zero in 10 of 12 cells and has the wrong sign in two. |
-| Exploratory: collapse is specific to low means. | Not supported. Direct answers collapse at a mean of 0.5 and of 4.8. |
+| Exploratory: collapse is specific to low means. | Not supported. Direct answers collapse at means of 0.5, 4.8, and 7.8. |
+| Exploratory: richer personas repair collapse. | Not supported. With real demographics the simulated counts have a rank correlation with real counts of -0.11 to +0.10; the demographics themselves explain about 1% of the heterogeneity. |
 
-*Table 4. Hypotheses and evidence.*
+*Table 5. Hypotheses and evidence.*
 
 # 6. Discussion
 
@@ -193,7 +208,7 @@ Direct yes/no answers are not usable for rare events. Without an email GPT-4o-mi
 
 Our results support a simple reading of synthetic purchase data: persona-conditioned LLM simulators compress customer heterogeneity, and the compression has a specific, measurable form. Proposition 1 shows why direct answers cannot be overdispersed in general (they lose Poisson noise and the share of heterogeneity that the persona does not describe), and the data are consistent with it: variance-to-mean ratios of direct answers sit between 0.00 and 0.57 in both settings, whatever the mean. Proposition 2 clarifies what an external heterogeneity term can and cannot do: it restores dispersion, but only the within-persona part, and its accuracy then rests on the model's mean. This reframes the usual advice to "add noise" to synthetic respondents. The amount of noise is not a free parameter; it is determined by how much heterogeneity the persona already carries.
 
-Two further results extend what is known about LLM-based simulation. First, describing a distribution (Jang et al. 2026, Zhang et al. 2025a) helps more at a high mean than at a low mean, and in both settings it under-produces zeros. The zero share is the part of a count distribution that decides how many customers a campaign is not reaching, and this is where description fails. Second, evaluating a promotion simulator on relative effects alone is hazardous. The relation $RR = 1 + d/p_0$ shows that errors in the simulated base rate and errors in the simulated lift are confounded in the risk ratio, and our data contain cases in which the two readings of the same output disagree.
+Two further results extend what is known about LLM-based simulation. First, describing a distribution (Jang et al. 2026, Zhang et al. 2025a) helps more at a high mean than at a low mean, and in the settings where zeros are common it under-produces them. The zero share is the part of a count distribution that decides how many customers a campaign is not reaching, and this is where description fails. Second, evaluating a promotion simulator on relative effects alone is hazardous. The relation $RR = 1 + d/p_0$ shows that errors in the simulated base rate and errors in the simulated lift are confounded in the risk ratio, and our data contain cases in which the two readings of the same output disagree.
 
 ## 6.2 Implications for practice
 
@@ -207,7 +222,7 @@ For managers who consider synthetic customers for decision support, the evidence
 
 ## 6.3 Limitations and future research
 
-The evidence is preliminary. We used one random seed, 200 to 600 simulated customers per cell, one prompt wording per design, and three small models, so our intervals capture sampling of customers but not variation across prompts, personas, or seeds. Larger and more recent models may collapse less, and the persistence of overstated purchase lifts there is an open question. The low-mean reference is a calibrated parametric distribution rather than the raw data, and the Complete Journey households are loyalty-card shoppers with relatively high purchase frequency. Personas are simple, and their attributes were drawn independently; richer personas built from real demographic tables would test whether persona detail raises $\text{Var}(m(X))$ enough to matter (Proposition 1). In the Complete Journey data campaigns were targeted rather than randomized, so only the email experiment supports a causal comparison. Design C truncates its top bin, which lowers the dispersion it can reach; we quantified this ceiling but did not remove it. Public data may also be part of the models' training data. Future work should evaluate the hybrid design with a calibrated mean, test prompts that elicit several candidate answers with probabilities, and use a randomized promotion data set with purchase counts, for example from a partner firm, so that the count-distribution and treatment-effect questions can be studied on the same customers.
+The evidence is preliminary. We used one random seed, 200 to 600 simulated customers per cell, one prompt wording per design, and three small models, so our intervals capture sampling of customers but not variation across prompts, personas, or seeds. Larger and more recent models may collapse less, and the persistence of overstated purchase lifts there is an open question. The low-mean reference is a calibrated parametric distribution rather than the raw data, and the Complete Journey households are loyalty-card shoppers with relatively high purchase frequency. Richer personas built from real household demographics did not change the picture, but the demographics in these data explain almost none of the heterogeneity ($c^2/\alpha = 0.01$), so that test marks the limit of observable personas rather than a limit of particular models; settings in which observable attributes, such as purchase histories, are more predictive of purchase frequency would be a stronger test of Proposition 1. In the Complete Journey data campaigns were targeted rather than randomized, so only the email experiment supports a causal comparison. Design C truncates its top bin, which lowers the dispersion it can reach; we quantified this ceiling but did not remove it. Public data may also be part of the models' training data. Future work should evaluate the hybrid design with a calibrated mean, test prompts that elicit several candidate answers with probabilities, and use a randomized promotion data set with purchase counts, for example from a partner firm, so that the count-distribution and treatment-effect questions can be studied on the same customers.
 
 # 7. Conclusion
 
@@ -235,6 +250,10 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 
 *Table B2. High-mean setting, 200 customers per cell. Reference row: empirical Complete Journey distribution. \* the 95% bootstrap interval excludes the reference value.*
 
+{{TABLE_DEMO}}
+
+*Table B3. Persona experiment with real household demographics, 200 households per cell. Reference row: real distribution of the 801 households (10,413 household-windows). \* the 95% bootstrap interval excludes the reference value.*
+
 # Appendix C. Reproducibility {-}
 
-All code, the pilot grid runner, the analysis scripts, and the tables and figures used here are in the project repository (`ooklee-sudo/fluffy-meme`, folder `llm-count-study`). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.
+All code, the pilot grid runner, the demographic-ceiling script, the analysis scripts, and the tables and figures used here are in the project repository (`ooklee-sudo/fluffy-meme`, folder `llm-count-study`). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.

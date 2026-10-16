@@ -29,6 +29,18 @@ Zhang J, Yu S, Chong D, et al. (2025a) Verbalized sampling: How to mitigate mode
 Zhang R, Zhang X, Zhao M (2025b) Predicting effects, missing distributions: Evaluating LLMs as human behavior simulators in operations management. Preprint, submitted September 30, arXiv:2510.03310."""
 
 
+def demo_summary():
+    df = pd.read_csv("demo_ci.csv")
+    rho = {"A": "-0.08 to +0.08", "B": "-0.07 to +0.05", "C": "-0.06 to +0.10", "D": "-0.11 to +0.06"}
+    rows = ["| Design | Mean | Var/mean | Zero | Alpha | Rank correlation with real count |", "|---|---|---|---|---|---|",
+            "| Reference | 7.83 | 6.52 | 0.03 | 0.71 | |"]
+    for c in "ABCD":
+        g = df[df.cond == c]
+        rg = lambda col: f"{g[col].min():.2f} to {g[col].max():.2f}"
+        rows.append(f"| {DESIGN[c]} | {rg('mean')} | {rg('var_mean')} | {rg('zero')} | {rg('alpha')} | {rho[c]} |")
+    return "\n".join(rows)
+
+
 def summary_table():
     rows = ["| Setting | Design | Mean | Var/mean | Zero | Alpha |", "|---|---|---|---|---|---|"]
     for name, csv, ref in (("Low mean", "retail_ci.csv", (0.49, 2.49, 0.74, 3.05)),
@@ -43,7 +55,7 @@ def summary_table():
 
 
 md = open("isr_template.md").read()
-md = (md.replace("{{TABLE_SUMMARY}}", summary_table()).replace("{{TABLE_HILL}}", hill_table())
+md = (md.replace("{{TABLE_DEMO_SUMMARY}}", demo_summary()).replace("{{TABLE_DEMO}}", dist_table("demo_ci.csv", (7.83, 6.52, 0.03, 0.71))).replace("{{TABLE_SUMMARY}}", summary_table()).replace("{{TABLE_HILL}}", hill_table())
         .replace("{{TABLE_RETAIL}}", dist_table("retail_ci.csv", (0.49, 2.49, 0.74, 3.05)))
         .replace("{{TABLE_GROCERY}}", dist_table("grocery_ci.csv", (4.84, 7.85, 0.19, 1.42)))
         .replace("{{REFS}}", "\n\n".join(REFS.splitlines())))
