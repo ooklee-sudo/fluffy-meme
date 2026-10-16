@@ -9,7 +9,7 @@ Requires a GPU with vLLM installed.  Example:
   python measure_tau.py --model meta-llama/Llama-3.1-8B-Instruct --prompt 512 --out 256 --tp 1 --json tau.json
 Then feed alpha, beta, M into quasi_static.py (--b beta/alpha --M M).
 """
-import argparse, json, time
+import argparse, json, os, time
 import numpy as np
 
 
@@ -60,7 +60,7 @@ def main():
         import torch; gpu = f'{torch.cuda.get_device_name(0)} x{torch.cuda.device_count()}'
     except Exception as e:
         gpu = f'unknown ({e})'
-    out = dict(model=a.model, gpu=gpu, vllm=vllm.__version__, tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
+    out = dict(model=a.model, gpu=gpu, vllm=vllm.__version__, attention_backend=os.environ.get('VLLM_ATTENTION_BACKEND', 'default'), tp=a.tp, dtype=a.dtype, prompt=a.prompt, out=a.out,
                alpha_ms=alpha, beta_ms=beta, beta_over_alpha=beta / alpha, r2=r2, prefill_ms_per_prompt_token=prefill_per_tok,
                tau_convex=second_diff_ok(bs_a, tau_a, +1),
                throughput_concave=second_diff_ok(bs_a, bs_a / tau_a, -1), batch_sizes=bs, tau_ms=taus)
