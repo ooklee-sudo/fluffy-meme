@@ -37,6 +37,7 @@ def main():
         if not (os.path.exists(f) and os.path.exists(c)):
             continue
         cfg = json.load(open(c))
+        cfg["ref"] = cfg["ref"] if "ref" in cfg else rp.ref_stats(rp.get_scenario(cfg.get("scenario", "retail")))  # older runs lack "ref"
         ac.REF.update(cfg["ref"])
         df = pd.read_csv(f); df = df[df.cond == "D"].dropna(subset=["lam"])
         df["model"], df["anchor"] = cfg["model"], bool(cfg["anchor"])
