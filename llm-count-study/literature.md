@@ -54,8 +54,6 @@ No study found that evaluates LLM-generated per-customer purchase counts against
 Count-model background re-found: Fader, Hardie & Lee (2005) BG/NBD PDF at brucehardie.com; Hardie-style simulated panels (81 worlds) are a template for our MockLLM validation.
 
 ## Added for the information-systems framing (cited from memory; verify volume/pages before submission)
-- Hevner, March, Park, Ram (2004), Design science in information systems research, MIS Quarterly 28(1):75-105.
-- Gregor, Hevner (2013), Positioning and presenting design science research for maximum impact, MIS Quarterly 37(2):337-355.
 - Goodhue, Thompson (1995), Task-technology fit and individual performance, MIS Quarterly 19(2):213-236.
 - Orlikowski, Iacono (2001), Desperately seeking the "IT" in IT research, Information Systems Research 12(2):121-134.
 - Wedel, Kannan (2016), Marketing analytics for data-rich environments, Journal of Marketing 80(6):97-121.
