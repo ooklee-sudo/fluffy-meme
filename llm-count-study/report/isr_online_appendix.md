@@ -370,3 +370,29 @@ The backtest uses the parsed result tables (no new model calls); the script is `
 *Table E3. Transaction backtest: held-out top-decile share error above 0.10, by setting and design. Cells with an undefined variance-to-mean ratio are excluded (187 of 192).*
 
 The gate passes only designs that obtain the dispersion from outside the model (D) or from the described distribution (C). Because the hybrid design sets its dispersion from the reference, its low error rate under the gate is partly built in. The two-campaign structure of the email backtest implies that the 64 cases come from 32 configurations, so cases from the same configuration are not independent.
+
+# Appendix F. Robustness to Prompt Wording {-}
+
+Two rewordings of the prompt were run for four models (GPT-4o-mini, Llama-3.3-70B-Instruct, Claude Haiku 5.5, Claude Sonnet 5) with the plain and anchored variants, one seed, 200 customers per cell in the transaction settings (Online Retail II and Complete Journey) and 300 customers in the email experiment: a third-person wording that describes the customer in the third person, and a survey wording that asks the question as in a market-research questionnaire. Counts below are cells of the 16 per setting and wording (8 for design D, design C zero share, and the email statistics). Intervals are wider than in the main analysis because of the smaller samples.
+
+| Statistic | Retail, third person | Retail, survey | Grocery, third person | Grocery, survey |
+|---|---|---|---|---|
+| Designs A and B: variance-to-mean ratio below reference (defined cells) | 14 of 14 | 13 of 14 | 16 of 16 | 15 of 16 |
+| Design D: variance-to-mean ratio interval contains reference | 5 of 8 | 3 of 8 | 7 of 8 | 5 of 8 |
+| Design D: mean interval contains reference | 4 of 8 | 4 of 8 | 6 of 8 | 5 of 8 |
+| Design C: zero share below reference | 6 of 8 | 7 of 8 | 7 of 8 | 8 of 8 |
+
+*Table F1. Transaction settings under two rewordings.*
+
+| Statistic (probability design) | Third person | Survey |
+|---|---|---|
+| Both emails with positive visit lift | 6 of 8 | 8 of 8 |
+| Both emails with positive purchase lift | 7 of 8 | 8 of 8 |
+| Simulated visit lift within 0.5 to 2 times the real lift (men's email) | 6 of 8 | 4 of 8 |
+| Simulated purchase lift above twice the real lift | 7 of 8 | 8 of 8 |
+| Median ratio of simulated to real purchase lift | 6.1 | 17.6 |
+| Men's email beating women's email (visits and purchases, 16 pairs) | 4 of 16 | 5 of 16 |
+
+*Table F2. Email experiment under two rewordings (design C, elicited probabilities).*
+
+Wording changes some outputs strongly. For Llama-3.3-70B with the anchored prompt, the simulated purchase lift in the probability design was 15.6 times the real lift in the third-person wording and 58.6 times in the survey wording, against 22.0 times in the original wording; for Haiku with the plain prompt, the visit lift was negative under the third-person wording and 0.2 times the real lift under the survey wording, against 0.9 times originally. GPT-4o-mini with the anchored prompt returned a lift of exactly zero for visits under the third-person wording because it returned the same probability under every arm. The conclusions of the main analysis are not specific to one wording, but the size of the errors is.
