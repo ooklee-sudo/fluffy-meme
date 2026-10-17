@@ -110,6 +110,13 @@ def main():
                 bs.append(stats.spearmanr(dd[cue], dd[err])[0])
             obs, p, n = perm_test(d.model.values, d[cue].values, d[err].values, rng=rng)
             print(f"  {cue:>10s} vs {err:>9s}: rho={r:+.2f} cluster-bootstrap [{np.nanpercentile(bs,2.5):+.2f},{np.nanpercentile(bs,97.5):+.2f}]; model means rho={obs:+.2f} (p={p:.3f}, {n} models)")
+    print("\nWithin-design Spearman between cues and decision errors (removes differences between designs)")
+    for dsg, g in T.groupby("design"):
+        for cue in ("mean_err", "ci_rel"):
+            for err in ("alpha_err", "top10_err"):
+                d = g.dropna(subset=[cue, err])
+                if len(d) > 10 and d[cue].nunique() > 1 and d[err].nunique() > 1:
+                    print(f"  design {dsg}: {cue:>8s} vs {err:>9s}: rho={stats.spearmanr(d[cue], d[err])[0]:+.2f} (n={len(d)})")
     E = email_cells(a.hillstrom)
     if len(E):
         E["face_pass"] = E.sign_ok & (E.parse_fail < 0.05); E["large_err"] = (E.lift_ratio < 0.5) | (E.lift_ratio > 2)
