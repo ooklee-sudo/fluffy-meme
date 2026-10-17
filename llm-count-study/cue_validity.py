@@ -12,9 +12,10 @@ failures below 5%, and (email) correct sign. "Large" decision error: alpha error
 Inference: Spearman correlations are computed over cells and re-computed over model means with an exact permutation test
 (models are the unit of dependence); a bootstrap over models gives an interval for the cell-level correlation.
 """
-import argparse, glob, itertools, json, os
+import argparse, glob, itertools, json, os, warnings
 import numpy as np, pandas as pd
 from scipy import stats
+warnings.filterwarnings('ignore')
 import run_pilot as rp
 import concentration as cc
 
@@ -91,7 +92,6 @@ def main():
     a = ap.parse_args()
     rng = np.random.default_rng(0)
     T = pd.concat([transaction_cells(f, rng) for f in a.runs.split(",")], ignore_index=True)
-    T = T[T.design != "A"].copy() if False else T
     print(f"transaction cells: {len(T)}")
     T["face_pass"] = (T.mean_err <= 0.5) & (T.parse_fail < 0.05)
     T["large_err"] = (T.alpha_err > 0.5) | (T.top10_err > 0.15)
