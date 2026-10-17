@@ -158,7 +158,7 @@ Each design is run in two prompt variants. In the *plain* variant the persona re
 
 ## 4.3 Models, runs, and measures
 
-We used eight LLMs through the OpenRouter interface: GPT-4o-mini, Llama-3.3-70B-Instruct, and Claude Haiku 5.5 in the first runs, and Claude Sonnet 5, GPT-5.6-terra, DeepSeek-V4-Pro, Gemini 3.1 Flash-Lite, and Mistral Large 4, which were added to test whether larger and more recent models behave differently. The first three models (GPT-4o-mini, Llama-3.3-70B, and Haiku 5.5) were run on three random seeds, that is, on three independent samples of customers; the five newer models were run on one seed. In the low-mean setting GPT-4o-mini and Llama were run at temperatures 0.3, 0.7, and 1.0 in the first seed and at 0.7 in the two further seeds, giving 1,000 customers per cell; Haiku 5.5 contributes 600 (three seeds of 200), and the other five models 200. In the two high-mean settings the temperature was fixed at 0.7, with 600 customers per cell for the three models run on three seeds and 200 for the others. In the email experiment each seed uses 300 customers (900 for the three models run on three seeds). Three models (Haiku 5.5, Sonnet 5, and GPT-5.6-terra) do not accept a temperature setting and contribute one run per prompt variant and seed. For every model that allows it, hidden reasoning was switched off so that short answers are not truncated. For each cell we report the mean, the variance-to-mean ratio, the zero share, and $\alpha$, with 95% bootstrap intervals over customers. An asterisk marks an interval that excludes the reference value. Parsing failed for 5% or less of the responses in all cells but two: DeepSeek-V4-Pro returned unusable answers for about 10% of the daily-simulation prompts in the high-mean setting, and those cells are computed from the parsed responses only.
+We used eight LLMs through the OpenRouter interface: GPT-4o-mini, Llama-3.3-70B-Instruct, and Claude Haiku 5.5 in the first runs, and Claude Sonnet 5, GPT-5.6-terra, DeepSeek-V4-Pro, Gemini 3.1 Flash-Lite, and Mistral Large 4, which were added to test whether larger and more recent models behave differently. All eight models were run on three random seeds, that is, on three independent samples of customers (or household-windows) with new model calls, in the three transaction settings; in the email experiment the first three models were run on three seeds and the five newer models on one. In the low-mean setting GPT-4o-mini and Llama were run at temperatures 0.3, 0.7, and 1.0 in the first seed and at 0.7 in the two further seeds, giving 1,000 customers per cell; the other six models contribute 600 (three seeds of 200). In the two high-mean settings the temperature was fixed at 0.7, with 600 customers or household-windows per cell. In the email experiment each seed uses 300 customers (900 for the three models run on three seeds). Three models (Haiku 5.5, Sonnet 5, and GPT-5.6-terra) do not accept a temperature setting and contribute one run per prompt variant and seed. For every model that allows it, hidden reasoning was switched off so that short answers are not truncated. For each cell we report the mean, the variance-to-mean ratio, the zero share, and $\alpha$, with 95% bootstrap intervals over customers. An asterisk marks an interval that excludes the reference value. Parsing failed for 5% or less of the responses in all cells but two: DeepSeek-V4-Pro returned unusable answers for about 10% of the daily-simulation prompts in the high-mean setting, and those cells are computed from the parsed responses only.
 
 ## 4.4 Email experiment
 
@@ -173,15 +173,15 @@ Table 2 summarizes the low-mean and the high-mean setting by design, and Appendi
 | Setting | Design | Mean | Var/mean | Zero | Alpha |
 |---|---|---|---|---|---|
 | Low mean | Reference | 0.49 | 2.49 | 0.74 | 3.05 |
-| Low mean | A Direct | 0.00 to 2.15 | 0.00 to 18.37 | 0.00 to 1.00 | -1.00 to 8.06 |
-| Low mean | B Daily | 0.00 to 13.56 | 0.24 to 2.96 | 0.00 to 1.00 | -0.67 to 0.63 |
-| Low mean | C Describe | 0.37 to 1.30 | 0.95 to 1.61 | 0.32 to 0.71 | -0.10 to 0.80 |
-| Low mean | D Hybrid | 0.28 to 0.93 | 1.46 to 3.38 | 0.63 to 0.80 | 1.67 to 4.06 |
+| Low mean | A Direct | 0.00 to 2.10 | 0.00 to 14.72 | 0.00 to 1.00 | -1.00 to 6.54 |
+| Low mean | B Daily | 0.00 to 13.56 | 0.24 to 2.95 | 0.00 to 1.00 | -0.86 to 0.62 |
+| Low mean | C Describe | 0.37 to 1.30 | 0.97 to 1.61 | 0.32 to 0.71 | -0.06 to 0.80 |
+| Low mean | D Hybrid | 0.26 to 0.93 | 1.47 to 3.38 | 0.63 to 0.81 | 1.81 to 3.77 |
 | High mean | Reference | 4.84 | 7.85 | 0.19 | 1.42 |
-| High mean | A Direct | 3.73 to 11.82 | 0.00 to 2.38 | 0.00 to 0.02 | -0.20 to 0.16 |
-| High mean | B Daily | 4.45 to 16.65 | 0.04 to 0.40 | 0.00 to 0.01 | -0.19 to -0.06 |
-| High mean | C Describe | 4.13 to 7.79 | 3.18 to 6.44 | 0.01 to 0.14 | 0.40 to 1.00 |
-| High mean | D Hybrid | 3.09 to 7.87 | 5.84 to 13.01 | 0.09 to 0.28 | 0.95 to 2.11 |
+| High mean | A Direct | 3.73 to 11.74 | 0.00 to 2.45 | 0.00 to 0.02 | -0.20 to 0.17 |
+| High mean | B Daily | 4.35 to 16.65 | 0.04 to 0.38 | 0.00 to 0.00 | -0.20 to -0.06 |
+| High mean | C Describe | 4.23 to 7.95 | 3.65 to 6.44 | 0.01 to 0.15 | 0.41 to 1.00 |
+| High mean | D Hybrid | 3.63 to 8.69 | 5.84 to 12.15 | 0.13 to 0.27 | 1.03 to 1.52 |
 
 *Table 2. Range of results across the model-and-prompt cells of each design (sixteen cells in each setting). Reference rows are the real values. For design A in the low-mean setting the variance-to-mean ratio of 1.00 comes from a cell in which practically every simulated customer answered "0" and is uninformative.*
 
@@ -189,39 +189,39 @@ Table 2 summarizes the low-mean and the high-mean setting by design, and Appendi
 
 ## 5.2 Low-mean setting
 
-Direct and daily designs rarely reproduce the real dispersion. In 45 of the 47 cells of designs A, B, and C with a defined ratio, the upper bound of the variance-to-mean interval is below the reference of 2.49 (Table B1, Figure 1a). Two cells go the other way. DeepSeek-V4-Pro without the anchor gives direct answers with a ratio of 18.4 (interval 3.0 to 30.6), because a few customers receive very large counts alongside many zeros (mean 2.15, zero share 0.55); and Sonnet 5 without the anchor gives daily simulations with a ratio of 2.96 (2.58 to 3.34). Elsewhere direct answers are the most compressed, with ratios of at most 0.86 in 12 of 16 cells; in three further cells nearly every answer was "0" (Llama, Sonnet 5, and Mistral Large 4 with the anchor), which gives a ratio near one and no information. With the anchor, five cells in all (those three, and Sonnet 5 and GPT-5.6-terra for daily simulation) return "0" for 97% to 100% of customers, which follows the anchor text ("most make none") but carries no persona information. Without the anchor, daily simulation overstates the mean in every model (1.6 to 13.6 purchases in 28 days against 0.49) and stays close to Poisson or below it in most. Describing a distribution reaches ratios of 0.95 to 1.61, below its own ceiling of 2.10 in all 16 cells, and its zero share is too low (0.32 to 0.71, against 0.74) in every cell.
+Direct and daily designs rarely reproduce the real dispersion. In 45 of the 47 cells of designs A, B, and C with a defined ratio, the upper bound of the variance-to-mean interval is below the reference of 2.49 (Table B1, Figure 1a). Two cells go the other way. DeepSeek-V4-Pro without the anchor gives direct answers with a ratio of 14.7 (interval 5.6 to 22.3), because a few customers receive very large counts alongside many zeros (mean 2.10, zero share 0.52), and its seeds range from 9.0 to 18.4; and Sonnet 5 without the anchor gives daily simulations with a ratio of 2.95 (2.73 to 3.17). Elsewhere direct answers are the most compressed, with ratios of at most 0.87 in 11 of 16 cells; in three further cells nearly every answer was "0" (Llama, Sonnet 5, and Mistral Large 4 with the anchor), which gives a ratio near one and no information, and one cell (DeepSeek-V4-Pro with the anchor) has a ratio close to the Poisson value of one (0.95, interval 0.76 to 1.15). With the anchor, five cells in all (those three, and Sonnet 5 and GPT-5.6-terra for daily simulation) return "0" for 98% to 100% of customers, which follows the anchor text ("most make none") but carries no persona information. Without the anchor, daily simulation overstates the mean in every model (1.6 to 13.6 purchases in 28 days against 0.49) and stays close to Poisson or below it in most. Describing a distribution reaches ratios of 0.97 to 1.61, below its own ceiling of 2.10 in all 16 cells, and its zero share is too low (0.32 to 0.71, against 0.74) in every cell.
 
-The hybrid matches the reference ratio in 7 of 16 cells, the mean in 8, the zero share in 13, and $\alpha$ in 14; all four in 5 cells (DeepSeek-V4-Pro in both prompt variants, and Gemini 3.1 Flash-Lite, Mistral Large 4, and GPT-5.6-terra with the anchor). Its variance-to-mean ratio misses mainly when the model's mean is low, because the ratio equals $1 + \alpha\mu$ and so inherits the error of the mean even when $\alpha$ is right. Agreement on dispersion is partly by construction, because the gamma multiplier injects it; what the model contributes is the mean, which is almost twice the reference for Llama with the anchor (0.93 against 0.49).
+The hybrid matches the reference ratio in 10 of 16 cells, the mean in 6, the zero share in 10, and $\alpha$ in 13; all four in 5 cells (Sonnet 5, DeepSeek-V4-Pro, and GPT-5.6-terra without the anchor, and Mistral Large 4 and GPT-5.6-terra with it). Its variance-to-mean ratio misses mainly when the model's mean is low, because the ratio equals $1 + \alpha\mu$ and so inherits the error of the mean even when $\alpha$ is right. Agreement on dispersion is partly by construction, because the gamma multiplier injects it; what the model contributes is the mean, which is almost twice the reference for Llama with the anchor (0.93 against 0.49).
 
 ## 5.3 High-mean setting
 
-A higher mean does not relieve the collapse of direct answers (Table B2, Figure 1b). In 15 of 16 cells the variance-to-mean ratio of design A lies between 0.00 and 0.76, against a reference of 7.85. The exception is Mistral Large 4 without the anchor, whose direct answers have real spread (ratio 2.38, interval 1.82 to 3.02, $\alpha = +0.16$) but still carry only a third of the real dispersion. Without the anchor GPT-4o-mini and Llama answered "8" for practically every customer; with the anchor all eight models returned numbers close to the stated base rate of 5 (means of 3.73 to 5.20), so that the answer carries little persona information. Daily simulation again misses the mean (4.45 to 16.65 trips against 4.84) and has almost no dispersion (ratios of 0.04 to 0.40, zero share of at most 0.01). In all 48 cells of designs A, B, and C the variance-to-mean interval lies entirely below the reference.
+A higher mean does not relieve the collapse of direct answers (Table B2, Figure 1b). In 13 of 16 cells the variance-to-mean ratio of design A lies between 0.00 and 0.36, against a reference of 7.85. Three cells have more spread: DeepSeek-V4-Pro (1.10 without the anchor and 1.57 with it, both with wide intervals) and Mistral Large 4 without the anchor (2.45, interval 1.98 to 2.98, $\alpha = +0.17$), which carries about a third of the real dispersion. Without the anchor GPT-4o-mini and Llama answered "8" for practically every customer; with the anchor all eight models returned numbers close to the stated base rate of 5 (means of 3.73 to 5.22), so that the answer carries little persona information. Daily simulation again misses the mean (4.35 to 16.65 trips against 4.84) and has almost no dispersion (ratios of 0.04 to 0.38, zero share of at most 0.01). In all 48 cells of designs A, B, and C the variance-to-mean interval lies entirely below the reference.
 
-Describing a distribution reaches ratios of 3.18 to 6.44. Its intervals contain the ceiling of 6.61 in only 4 of 16 cells (4 of the 8 anchored cells), so the impression from the first three models that the anchor lets design C reach the ceiling does not generalize. Its weak point is the zero share: 0.01 to 0.14 against the real 0.19, below the reference in every cell. The hybrid matches the reference ratio in 15 of 16 cells, the mean in 7, the zero share in 8, and all four of mean, ratio, zero share, and $\alpha$ in 5: Haiku 5.5 without the anchor, GPT-4o-mini with it, Sonnet 5 in both variants, and Gemini 3.1 Flash-Lite with it. The remaining cells fail because the model's mean is wrong, for example 3.09 for Mistral Large 4 with the anchor and 7.87 for DeepSeek-V4-Pro without it.
+Describing a distribution reaches ratios of 3.65 to 6.44. Its intervals contain the ceiling of 6.61 in only 3 of 16 cells (3 of the 8 anchored cells), so the impression from the first three models that the anchor lets design C reach the ceiling does not generalize. Its weak point is the zero share: 0.01 to 0.15 against the real 0.19, below the reference in every cell. The hybrid matches the reference ratio in 12 of 16 cells, the mean in 4, the zero share in 8, and all four of mean, ratio, zero share, and $\alpha$ in 2: Haiku 5.5 without the anchor and GPT-4o-mini with it. The remaining cells fail because the model's mean is wrong, for example 3.63 for Mistral Large 4 with the anchor and 7.65 for DeepSeek-V4-Pro without it.
 
 ## 5.4 Is collapse specific to low means?
 
-If direct answers were underdispersed only because small expected counts are rounded to 0, 1, or 2, the problem should shrink at higher means. It does not. At a mean of 0.5, 12 of 16 direct-answer cells have variance-to-mean ratios of at most 0.86, three more are cells in which nearly every answer was "0", and one (DeepSeek-V4-Pro without the anchor) is overdispersed; at a mean of 4.8 the ratio is at most 0.76 in 15 of 16 cells, and at a mean of 7.8 it is at most 1.32. In every setting several models return one value for practically every customer. Collapse of direct answers is therefore not a rounding artifact of low means. Nor do larger or more recent models escape it: the ratios of Sonnet 5 and GPT-5.6-terra in the two high-mean settings lie between 0.02 and 0.31 for direct and daily designs.
+If direct answers were underdispersed only because small expected counts are rounded to 0, 1, or 2, the problem should shrink at higher means. It does not. At a mean of 0.5, 11 of 16 direct-answer cells have variance-to-mean ratios of at most 0.87, three more are cells in which nearly every answer was "0", one is close to Poisson (0.95), and one (DeepSeek-V4-Pro without the anchor) is overdispersed; at a mean of 4.8 the ratio is at most 0.36 in 13 of 16 cells and at most 2.45 in all of them, and at a mean of 7.8 it is at most 0.53 in 14 of 16 cells and at most 1.73 in all. In every setting several models return one value for practically every customer. Collapse of direct answers is therefore not a rounding artifact of low means. Nor do larger or more recent models escape it: the ratios of Sonnet 5 and GPT-5.6-terra in the two high-mean settings lie between 0.02 and 0.36 for direct and daily designs.
 
 ## 5.5 Richer personas from real household demographics
 
-The personas used so far were deliberately simple. To test whether richer personas change the picture, we drew 200 household-windows at random from the 801 Complete Journey households with demographic records and described each household by its real age group, household type and size, number of children, marital status, income, and home ownership. This design also lets us compare each simulated count with that household's real count in the same window. The reference is now the real distribution of these households, who shop more often than the full panel: mean 7.83, variance-to-mean ratio 6.52, zero share 0.03, and $\alpha = 0.71$. The ceiling of design C for this reference is 5.01.
+The personas used so far were deliberately simple. To test whether richer personas change the picture, we drew 200 household-windows at random in each of three seeds from the 801 Complete Journey households with demographic records and described each household by its real age group, household type and size, number of children, marital status, income, and home ownership. This design also lets us compare each simulated count with that household's real count in the same window. The reference is now the real distribution of these households, who shop more often than the full panel: mean 7.83, variance-to-mean ratio 6.52, zero share 0.03, and $\alpha = 0.71$. The ceiling of design C for this reference is 5.01.
 
 How much can demographics explain? Out of sample (households held out), a Poisson regression of the household's count on all demographic fields reaches a Spearman correlation of only 0.04 with the real count, and the squared coefficient of variation of its predicted means is $c^2 = 0.006$, about 1% of $\alpha$. In terms of Proposition 1, the unexplained share $R$ is almost equal to $\alpha$: the persona describes almost none of the heterogeneity. A deterministic simulator that predicted these means perfectly would have $\alpha^* = c^2 - 1/\mu = -0.12$, against a real $\alpha$ of 0.71.
 
-The simulations behave as Proposition 1 predicts (Table 3, Table B3). Direct answers are collapsed again (variance-to-mean ratio 0.00 to 1.32, zero share at most 0.01) with $\alpha$ between -0.16 and +0.03. GPT-4o-mini answered "8" for every household when told the base rate (the number in the anchor text) and for practically every household without it, which gives $\alpha = -1/\mu = -0.125$, exactly the value of Proposition 1 with $c^2 = 0$. Daily simulation again misses the mean (6.0 to 17.2 against 7.83) and has ratios of 0.07 to 0.31. Describing a distribution reaches ratios of 2.78 to 6.11, and its intervals contain the ceiling of 5.01 in 9 of 16 cells (6 of the 8 anchored cells); its zero share (0.01 to 0.13) matches the small real share of 0.03 in 11 of 16 cells. The hybrid matches the reference ratio in 13 of 16 cells, but its mean in only 5 of 16: the model's $\lambda$ is usually too low (3.95 to 6.57 in the cells that miss, against 7.83). It also matches the zero share in only 2 of 16 cells (0.06 to 0.14 against 0.03), and all four of mean, ratio, zero share, and $\alpha$ in 2 of 16 cells (DeepSeek-V4-Pro with the anchor and Gemini 3.1 Flash-Lite without it).
+The simulations behave as Proposition 1 predicts (Table 3, Table B3). Direct answers are collapsed again (variance-to-mean ratio 0.00 to 1.73, zero share at most 0.01) with $\alpha$ between -0.16 and +0.08. GPT-4o-mini answered "8" for every household when told the base rate (the number in the anchor text) and for practically every household without it, which gives $\alpha = -1/\mu = -0.125$, exactly the value of Proposition 1 with $c^2 = 0$. Daily simulation again misses the mean (5.9 to 17.2 against 7.83) and has ratios of 0.06 to 0.30. Describing a distribution reaches ratios of 3.44 to 6.11, and its intervals contain the ceiling of 5.01 in 10 of 16 cells (5 of the 8 anchored cells); its zero share (0.03 to 0.15) matches the small real share of 0.03 in 8 of 16 cells. The hybrid matches the reference ratio in 10 of 16 cells, but its mean in only 3 of 16: the model's $\lambda$ is usually too low (4.28 to 7.17 in the cells that miss, against 7.83). It matches the zero share in none of the 16 cells (0.07 to 0.15 against 0.03), because Poisson counts with a gamma multiplier produce more zeros than these households, and so it matches all four of mean, ratio, zero share, and $\alpha$ in none.
 
 | Design | Mean | Var/mean | Zero | Alpha | Rank correlation with real count |
 |---|---|---|---|---|---|
 | Reference | 7.83 | 6.52 | 0.03 | 0.71 | |
-| A Direct | 5.62 to 10.24 | 0.00 to 1.32 | 0.00 to 0.01 | -0.16 to 0.03 | -0.17 to +0.07 |
-| B Daily | 6.01 to 17.21 | 0.07 to 0.31 | 0.00 to 0.00 | -0.12 to -0.05 | -0.08 to +0.04 |
-| C Describe | 5.56 to 8.79 | 2.78 to 6.11 | 0.01 to 0.13 | 0.32 to 0.79 | -0.01 to +0.16 |
-| D Hybrid | 3.95 to 7.53 | 3.97 to 8.58 | 0.06 to 0.14 | 0.71 to 1.11 | -0.10 to +0.06 |
+| A Direct | 5.60 to 10.25 | 0.00 to 1.73 | 0.00 to 0.00 | -0.16 to 0.08 | -0.11 to +0.04 |
+| B Daily | 5.92 to 17.21 | 0.06 to 0.30 | 0.00 to 0.00 | -0.12 to -0.05 | -0.08 to +0.04 |
+| C Describe | 5.78 to 9.46 | 3.44 to 6.11 | 0.03 to 0.15 | 0.37 to 0.79 | -0.01 to +0.08 |
+| D Hybrid | 4.28 to 7.53 | 4.48 to 6.70 | 0.07 to 0.15 | 0.71 to 0.84 | -0.06 to +0.05 |
 
-*Table 3. Persona experiment with real household demographics: range of results across the 16 model-and-prompt cells of each design (200 households per cell). The last column is the range of the Spearman correlation between the simulated count and the household's real count in the same window.*
+*Table 3. Persona experiment with real household demographics: range of results across the 16 model-and-prompt cells of each design (600 household-windows per cell). The last column is the range of the Spearman correlation between the simulated count and the household's real count in the same window.*
 
-Individual-level validity is essentially nil. Across the 63 cells in which the answers vary, the Spearman correlation between the simulated count and the household's real count lies between -0.17 and +0.16, and the interval excludes zero in only three cells (two positive, one negative). The model's own $\lambda$ in design D correlates between -0.05 and +0.05 with the real count, and none of its 16 intervals excludes zero. With 79 intervals, about four exclusions are expected by chance at the 5% level. Design C is the only design whose correlations are mostly positive (14 of 16 cells, median +0.06), but the models were run on overlapping samples of household-windows, so the cells are not independent evidence. On the first sample the demographic regression itself has a rank correlation of -0.03 (interval -0.17 to +0.10); on the two further samples of 200 household-windows it reaches +0.19 and -0.02, which shows how much a single sample can move these correlations. Because the demographics predict the real count with a rank correlation of only 0.04 across all households, this result does not show that the models ignore information; it shows that these personas contain almost no information for any simulator to use. It is the empirical counterpart of Proposition 1: richer observable personas cannot supply the heterogeneity that counts contain.
+Individual-level validity is essentially nil. Across the 63 cells in which the answers vary, the Spearman correlation between the simulated count and the household's real count lies between -0.11 and +0.08, and the interval excludes zero in only two cells (one negative, for DeepSeek-V4-Pro without the anchor, and one positive, for GPT-5.6-terra with it). The model's own $\lambda$ in design D correlates between -0.06 and +0.05 with the real count, and none of its 16 intervals excludes zero. With 79 intervals, about four exclusions are expected by chance at the 5% level. Design C has positive correlations somewhat more often than the others (11 of 16 cells), but the median is +0.01, and the models were run on the same samples of household-windows, so the cells are not independent evidence. On the first sample the demographic regression itself has a rank correlation of -0.03 (interval -0.17 to +0.10); on the two further samples of 200 household-windows it reaches +0.19 and -0.02, which shows how much a single sample can move these correlations. Because the demographics predict the real count with a rank correlation of only 0.04 across all households, this result does not show that the models ignore information; it shows that these personas contain almost no information for any simulator to use. It is the empirical counterpart of Proposition 1: richer observable personas cannot supply the heterogeneity that counts contain.
 
 ## 5.6 Randomized email experiment
 
@@ -280,15 +280,15 @@ Direct yes/no answers are not usable for rare events. In 15 of 32 yes/no cells o
 
 | Hypothesis | Evidence |
 |---|---|
-| H1. Designs A and B collapse. | Supported. The variance-to-mean ratio of designs A, B, and C lies below the reference in 45 of 47 cells (low mean; the exceptions are two DeepSeek-V4-Pro and Sonnet 5 cells without the anchor), 48 of 48 (high mean), and 43 of 48 (demographic personas, where design C often reaches the reference). The zero share of designs A and B is at most 0.02 in the two high-mean settings and below the real value in 26 of 32 low-mean cells (in the others, anchored prompts led the model to answer "0" for most customers). |
-| H2. Design C approaches but does not exceed its ceiling and under-produces zeros. | Partly supported. Design C stays below its ceiling in all 16 low-mean cells, reaches it in 4 of 16 high-mean cells, and reaches it in 9 of 16 cells with demographic personas. Zero shares are too low where the real share is large (0.74 and 0.19) but close to the real value where it is small (0.03; 11 of 16 cells). |
-| H3. Design D reproduces dispersion; fidelity depends on the model's mean. | Supported with a qualification. It matches the reference ratio in 35 of 48 cells (7 of 16, 15 of 16, 13 of 16), but matches mean, ratio, zero share, and $\alpha$ jointly in only 12 of 48 (5, 5, 2) because the model's mean is often wrong. Sonnet 5 reproduces all four in both prompt variants in the high-mean setting. |
+| H1. Designs A and B collapse. | Supported. The variance-to-mean ratio of designs A, B, and C lies below the reference in 45 of 47 cells (low mean; the exceptions are a DeepSeek-V4-Pro cell for direct answers and a Sonnet 5 cell for daily simulation, both without the anchor), 48 of 48 (high mean), and 45 of 48 (demographic personas, where design C sometimes reaches the reference). The zero share of designs A and B is at most 0.02 in the two high-mean settings and below the real value in 26 of 32 low-mean cells (in the others, anchored prompts led the model to answer "0" for most customers). |
+| H2. Design C approaches but does not exceed its ceiling and under-produces zeros. | Partly supported. Design C stays below its ceiling in all 16 low-mean cells, reaches it in 3 of 16 high-mean cells, and reaches it in 10 of 16 cells with demographic personas. Zero shares are too low where the real share is large (0.74 and 0.19) but close to the real value where it is small (0.03; 8 of 16 cells). |
+| H3. Design D reproduces dispersion; fidelity depends on the model's mean. | Partly supported. It matches the reference ratio in 32 of 48 cells (10 of 16, 12 of 16, 10 of 16), but matches mean, ratio, zero share, and $\alpha$ jointly in only 7 of 48 (5, 2, 0) because the model's mean is often wrong and, in the demographic setting, the zero share is too high in every cell. No model matches in more than two of the three settings. |
 | H4a. Direction is reproduced. | Mostly supported: the risk ratio exceeds one in all 32 probability cells, with two intervals touching one (see Section 5.6). |
 | H4b. Absolute lift is overstated when the simulated base rate is overstated. | Supported for purchases: the lift exceeds the real value in 15 of 16 configurations (median about tenfold). Not for visits: 4 of 16 are consistent with the real value, 5 are too small, and 4 are too large. |
 | H4c. Similar treatments are not distinguished. | Supported. The simulated gap between the two emails excludes zero in only 3 of 32 cells, and in all three the sign is the opposite of the real one. |
 | Exploratory: collapse is specific to low means. | Not supported. Direct answers collapse at means of 0.5, 4.8, and 7.8. |
 | Exploratory: richer personas repair collapse. | Not supported. With real demographics the simulated counts have a rank correlation with real counts of -0.17 to +0.16 (3 of 63 intervals exclude zero); the demographics themselves explain about 1% of the heterogeneity. |
-| Exploratory: larger and more recent models escape collapse. | Not for direct answers (ratios of at most 1.00 in 44 of 48 cells; the four exceptions are DeepSeek-V4-Pro or Mistral Large 4 without the anchor). Partly for the hybrid design, whose accuracy follows the model's mean (best for Sonnet 5 in the high-mean setting). |
+| Exploratory: larger and more recent models escape collapse. | Not for direct answers (ratios of at most 1.00 in 42 of 48 cells; the six exceptions are all DeepSeek-V4-Pro or Mistral Large 4). Not for the hybrid design either: its accuracy follows the model's mean, which matched the reference in 13 of 48 cells with no model better than the others across settings. |
 
 *Table 5. Hypotheses and evidence.*
 
@@ -296,7 +296,7 @@ Direct yes/no answers are not usable for rare events. In 15 of 32 yes/no cells o
 
 ## 6.1 Theoretical contributions
 
-Our results support a simple reading of synthetic purchase data: persona-conditioned LLM simulators compress customer heterogeneity, and the compression has a specific, measurable form. Proposition 1 shows why direct answers cannot be overdispersed in general (they lose Poisson noise and the share of heterogeneity that the persona does not describe), and the data are consistent with it: variance-to-mean ratios of direct answers are at most 1.00 in 44 of 48 cells, whatever the mean or the model, and the demographic-persona experiment reproduces the predicted $\alpha$ of about -0.12. Proposition 2 clarifies what an external heterogeneity term can and cannot do: it restores dispersion, but only the within-persona part, and its accuracy then rests on the model's mean. A further result concerns model scale. Larger and more recent models (Sonnet 5, GPT-5.6-terra, DeepSeek-V4-Pro, Mistral Large 4) do not escape the collapse of direct answers, but the better ones supply a more accurate mean, and the hybrid design then works well (Sonnet 5 in the high-mean setting). This reframes the usual advice to "add noise" to synthetic respondents. The amount of noise is not a free parameter; it is determined by how much heterogeneity the persona already carries.
+Our results support a simple reading of synthetic purchase data: persona-conditioned LLM simulators compress customer heterogeneity, and the compression has a specific, measurable form. Proposition 1 shows why direct answers cannot be overdispersed in general (they lose Poisson noise and the share of heterogeneity that the persona does not describe), and the data are consistent with it: variance-to-mean ratios of direct answers are at most 1.00 in 42 of 48 cells, whatever the mean or the model, and the demographic-persona experiment reproduces the predicted $\alpha$ of about -0.12. Proposition 2 clarifies what an external heterogeneity term can and cannot do: it restores dispersion, but only the within-persona part, and its accuracy then rests on the model's mean. A further result concerns model scale. Larger and more recent models (Sonnet 5, GPT-5.6-terra, DeepSeek-V4-Pro, Gemini 3.1 Flash-Lite, Mistral Large 4) do not escape the collapse of direct answers, and none of them supplies a reliably accurate mean for the hybrid design: the mean matched in 13 of 48 cells, and the cells in which all four statistics matched were scattered across models and prompts. This reframes the usual advice to "add noise" to synthetic respondents. The amount of noise is not a free parameter; it is determined by how much heterogeneity the persona already carries.
 
 Two further results extend what is known about LLM-based simulation. First, describing a distribution (Jang et al. 2026, Zhang et al. 2025a) helps more at a high mean than at a low mean, and in the settings where zeros are common it under-produces them. The zero share is the part of a count distribution that decides how many customers a campaign is not reaching, and this is where description fails. Second, evaluating a promotion simulator on relative effects alone is hazardous. The relation $RR = 1 + d/p_0$ shows that errors in the simulated base rate and errors in the simulated lift are confounded in the risk ratio, and our data contain cases in which the two readings of the same output disagree.
 
@@ -306,11 +306,11 @@ A further implication concerns the limits of AI-based decision support and of th
 
 Design science asks that an evaluation lead to prescriptive knowledge about how the artifact should be built (Gregor and Hevner 2013). The evidence supports five design principles. They are derived from our experiments and analytical results and have not been tested as an intervention, so they should be read as hypotheses for design rather than as established prescriptions.
 
-*Principle 1: Separate the level from the spread.* Take the expected rate of a customer from the model and take the dispersion across customers from an external, calibrated source (Proposition 2). In system terms this places a statistical calibration layer behind the language model, with the variance budget of Section 3.7 as its rule. Designs that let the model produce the spread itself collapsed, while the hybrid design matched the reference dispersion in 35 of 48 cells.
+*Principle 1: Separate the level from the spread.* Take the expected rate of a customer from the model and take the dispersion across customers from an external, calibrated source (Proposition 2). In system terms this places a statistical calibration layer behind the language model, with the variance budget of Section 3.7 as its rule. Designs that let the model produce the spread itself collapsed, while the hybrid design matched the reference dispersion in 32 of 48 cells.
 
 *Principle 2: Do not let the model produce the final integer or the daily draw.* Direct integer answers and day-by-day simulation returned nearly constant values in almost every cell, and their errors were not random but systematic (Section 5).
 
-*Principle 3: Calibrate the level before use, and invest in customer data before model capability.* Because the persona bounds what the model can carry (Section 3.8), the data assets that feed the persona matter more than the choice of model. The mean from the model was the bottleneck of the hybrid design (matching the reference in only 20 of 48 cells). A rescaling of the model's rate against a historical customer file is a natural step that we did not test.
+*Principle 3: Calibrate the level before use, and invest in customer data before model capability.* Because the persona bounds what the model can carry (Section 3.8), the data assets that feed the persona matter more than the choice of model. The mean from the model was the bottleneck of the hybrid design (matching the reference in only 13 of 48 cells). A rescaling of the model's rate against a historical customer file is a natural step that we did not test.
 
 *Principle 4: Treat context and wording as design parameters that must be validated.* A stated base rate changed some outputs by an order of magnitude, and in several cells it made the model repeat the stated number for every customer. Wording of the prompt is a design parameter in the same sense.
 
@@ -324,7 +324,7 @@ For managers who consider synthetic customers for decision support, the evidence
 
 1. *Compare shapes, not only means.* Before using synthetic counts, compute the variance-to-mean ratio, $\alpha$, and the zero share against a historical customer file, and check them with an interval, as we do here. A ratio near or below one signals collapse.
 2. *Do not use direct integer answers.* In our data they returned a single value for practically every customer in several cells.
-3. *If the model is used, use it for the mean only,* and inject the remaining heterogeneity externally, calibrated according to Proposition 2 on a historical or pilot sample. Verify that the model's mean is accurate; the hybrid inherits its errors, and in our data the mean matched the reference in only 20 of 48 hybrid cells.
+3. *If the model is used, use it for the mean only,* and inject the remaining heterogeneity externally, calibrated according to Proposition 2 on a historical or pilot sample. Verify that the model's mean is accurate; the hybrid inherits its errors, and in our data the mean matched the reference in only 13 of 48 hybrid cells.
 4. *Treat a stated base rate as a prompt choice that must be tested.* It corrected the mean in some designs, collapsed all answers to one value in others, and changed the size of the simulated promotion effect by an order of magnitude.
 5. *Validate on absolute effects and base rates.* Report the simulated base rate and the absolute lift next to the risk ratio, and compare both with a past randomized test before any revenue calculation.
 
@@ -364,7 +364,7 @@ The findings have implications for how organizations that run marketing analytic
 
 ## 6.6 Limitations and future research
 
-The evidence is preliminary. The five newer models were run on a single random seed, and every design has one prompt wording, so our intervals capture the sampling of customers but not variation across prompts. For the three models that we repeated on three seeds, the qualitative conclusions did not change, and the per-seed variance-to-mean ratios of the direct and daily designs differ by at most 0.11 and 0.20; the ratio of the describe design varies by up to 2.1 and that of the hybrid by up to 4.2 across seeds in the high-mean settings, which is why the counts of cells in which these designs match the reference should be read as approximate. We tested eight models in all four settings, five of them larger or more recent than the first three. Whether still larger or reasoning-enabled models collapse less, and whether the overstated purchase lifts persist there, remains open. The low-mean reference is a calibrated parametric distribution rather than the raw data, and the Complete Journey households are loyalty-card shoppers with relatively high purchase frequency. Richer personas built from real household demographics did not change the picture, but the demographics in these data explain almost none of the heterogeneity ($c^2/\alpha = 0.01$), so that test marks the limit of observable personas rather than a limit of particular models; settings in which observable attributes, such as purchase histories, are more predictive of purchase frequency would be a stronger test of Proposition 1. In the Complete Journey data campaigns were targeted rather than randomized, so only the email experiment supports a causal comparison. Design C truncates its top bin, which lowers the dispersion it can reach; we quantified this ceiling but did not remove it. Public data may also be part of the models' training data. Future work should evaluate the hybrid design with a calibrated mean, test prompts that elicit several candidate answers with probabilities, and use a randomized promotion data set with purchase counts, for example from a partner firm, so that the count-distribution and treatment-effect questions can be studied on the same customers.
+The evidence is preliminary. Every design has one prompt wording, so our intervals capture the sampling of customers but not variation across prompts, and the email experiment for the five newer models rests on one seed. The three transaction settings were run on three seeds for all eight models, and the per-seed variance-to-mean ratios were stable for the direct and daily designs (median range 0.04 and 0.03 across seeds, at most 0.30), except in a few DeepSeek-V4-Pro cells where direct answers are overdispersed (ranges of up to 9.4). They varied more for the describe design (median range 0.9, at most 2.1) and the hybrid design (median 1.2, at most 4.2), so the counts of cells in which these designs match the reference should be read as approximate. We tested eight models in all four settings, five of them larger or more recent than the first three. Whether still larger or reasoning-enabled models collapse less, and whether the overstated purchase lifts persist there, remains open. The low-mean reference is a calibrated parametric distribution rather than the raw data, and the Complete Journey households are loyalty-card shoppers with relatively high purchase frequency. Richer personas built from real household demographics did not change the picture, but the demographics in these data explain almost none of the heterogeneity ($c^2/\alpha = 0.01$), so that test marks the limit of observable personas rather than a limit of particular models; settings in which observable attributes, such as purchase histories, are more predictive of purchase frequency would be a stronger test of Proposition 1. In the Complete Journey data campaigns were targeted rather than randomized, so only the email experiment supports a causal comparison. Design C truncates its top bin, which lowers the dispersion it can reach; we quantified this ceiling but did not remove it. Public data may also be part of the models' training data. Future work should evaluate the hybrid design with a calibrated mean, test prompts that elicit several candidate answers with probabilities, and use a randomized promotion data set with purchase counts, for example from a partner firm, so that the count-distribution and treatment-effect questions can be studied on the same customers.
 
 # 7. Conclusion
 
@@ -471,46 +471,46 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 | Haiku 5.5 | anchored | B Daily | 2.10\* | 1.14\* | 0.27\* | 0.07\* |
 | Haiku 5.5 | anchored | C Describe | 0.43 | 1.34\* | 0.69\* | 0.80\* |
 | Haiku 5.5 | anchored | D Hybrid | 0.49 | 2.04\* | 0.72 | 2.09\* |
-| Sonnet 5 | plain | A Direct | 1.33\* | 0.86\* | 0.30\* | -0.10\* |
-| Sonnet 5 | plain | B Daily | 3.12\* | 2.96\* | 0.39\* | 0.63\* |
-| Sonnet 5 | plain | C Describe | 0.71\* | 1.49\* | 0.59\* | 0.70\* |
-| Sonnet 5 | plain | D Hybrid | 0.36\* | 1.70\* | 0.75 | 1.96 |
-| Sonnet 5 | anchored | A Direct | 0.02\* | 0.98\* | 0.98\* | -0.75\* |
+| Sonnet 5 | plain | A Direct | 1.37\* | 0.87\* | 0.29\* | -0.10\* |
+| Sonnet 5 | plain | B Daily | 3.13\* | 2.95\* | 0.38\* | 0.62\* |
+| Sonnet 5 | plain | C Describe | 0.72\* | 1.57\* | 0.59\* | 0.79\* |
+| Sonnet 5 | plain | D Hybrid | 0.47 | 2.37 | 0.72 | 2.93 |
+| Sonnet 5 | anchored | A Direct | 0.01\* | 0.99\* | 0.99\* | -0.88\* |
 | Sonnet 5 | anchored | B Daily | 0.00\* | n/a | 1.00\* | n/a |
-| Sonnet 5 | anchored | C Describe | 0.48 | 1.19\* | 0.65\* | 0.40\* |
-| Sonnet 5 | anchored | D Hybrid | 0.41 | 2.02\* | 0.76 | 2.45 |
-| GPT-5.6-terra | plain | A Direct | 0.67\* | 0.48\* | 0.38\* | -0.77\* |
-| GPT-5.6-terra | plain | B Daily | 1.56\* | 1.16\* | 0.32\* | 0.10\* |
-| GPT-5.6-terra | plain | C Describe | 0.53 | 1.25\* | 0.62\* | 0.47\* |
-| GPT-5.6-terra | plain | D Hybrid | 0.52 | 2.05\* | 0.72 | 2.04 |
-| GPT-5.6-terra | anchored | A Direct | 0.26\* | 0.74\* | 0.74 | -0.99\* |
-| GPT-5.6-terra | anchored | B Daily | 0.01\* | 0.99\* | 0.98\* | -0.67\* |
-| GPT-5.6-terra | anchored | C Describe | 0.47 | 0.97\* | 0.61\* | -0.06\* |
-| GPT-5.6-terra | anchored | D Hybrid | 0.64 | 2.40 | 0.71 | 2.19 |
-| DeepSeek-V4-Pro | plain | A Direct | 2.15\* | 18.37\* | 0.55\* | 8.06 |
-| DeepSeek-V4-Pro | plain | B Daily | 4.80\* | 1.03\* | 0.02\* | 0.01\* |
-| DeepSeek-V4-Pro | plain | C Describe | 0.61\* | 1.19\* | 0.58\* | 0.30\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 0.41 | 2.66 | 0.77 | 4.06 |
-| DeepSeek-V4-Pro | anchored | A Direct | 0.35\* | 0.83\* | 0.67\* | -0.48\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 0.49 | 0.89\* | 0.58\* | -0.23\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 0.54 | 0.98\* | 0.58\* | -0.04\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 0.59 | 2.92 | 0.72 | 3.26 |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 1.03\* | 0.62\* | 0.30\* | -0.37\* |
-| Gemini 3.1 Flash-Lite | plain | B Daily | 3.50\* | 0.41\* | 0.04\* | -0.17\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 0.51 | 1.19\* | 0.64\* | 0.38\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 0.33\* | 1.64\* | 0.79 | 1.96 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 0.27\* | 0.73\* | 0.73 | -0.99\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 1.42\* | 1.24\* | 0.38\* | 0.17\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 0.53 | 0.95\* | 0.58\* | -0.10\* |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 0.61 | 2.56 | 0.72 | 2.54 |
-| Mistral Large 4 | plain | A Direct | 1.00\* | 0.68\* | 0.29\* | -0.31\* |
-| Mistral Large 4 | plain | B Daily | 5.07\* | 0.97\* | 0.01\* | -0.01\* |
-| Mistral Large 4 | plain | C Describe | 1.01\* | 1.31\* | 0.45\* | 0.31\* |
-| Mistral Large 4 | plain | D Hybrid | 0.28\* | 1.46\* | 0.80 | 1.67 |
-| Mistral Large 4 | anchored | A Direct | 0.03\* | 0.97\* | 0.97\* | -0.84\* |
-| Mistral Large 4 | anchored | B Daily | 0.50 | 1.03\* | 0.62\* | 0.05\* |
-| Mistral Large 4 | anchored | C Describe | 0.57 | 1.07\* | 0.56\* | 0.12\* |
-| Mistral Large 4 | anchored | D Hybrid | 0.46 | 2.67 | 0.77 | 3.67 |
+| Sonnet 5 | anchored | C Describe | 0.47 | 1.30\* | 0.67\* | 0.63\* |
+| Sonnet 5 | anchored | D Hybrid | 0.39\* | 2.46 | 0.77 | 3.74 |
+| GPT-5.6-terra | plain | A Direct | 0.69\* | 0.51\* | 0.38\* | -0.71\* |
+| GPT-5.6-terra | plain | B Daily | 1.60\* | 1.15\* | 0.32\* | 0.09\* |
+| GPT-5.6-terra | plain | C Describe | 0.51 | 1.25\* | 0.64\* | 0.50\* |
+| GPT-5.6-terra | plain | D Hybrid | 0.56 | 3.09 | 0.72 | 3.77 |
+| GPT-5.6-terra | anchored | A Direct | 0.26\* | 0.74\* | 0.74 | -1.00\* |
+| GPT-5.6-terra | anchored | B Daily | 0.01\* | 0.99\* | 0.99\* | -0.86\* |
+| GPT-5.6-terra | anchored | C Describe | 0.48 | 1.03\* | 0.62\* | 0.07\* |
+| GPT-5.6-terra | anchored | D Hybrid | 0.56 | 2.37 | 0.71 | 2.42 |
+| DeepSeek-V4-Pro | plain | A Direct | 2.10\* | 14.72\* | 0.52\* | 6.54 |
+| DeepSeek-V4-Pro | plain | B Daily | 4.73\* | 1.00\* | 0.02\* | 0.00\* |
+| DeepSeek-V4-Pro | plain | C Describe | 0.59\* | 1.34\* | 0.60\* | 0.57\* |
+| DeepSeek-V4-Pro | plain | D Hybrid | 0.43 | 2.40 | 0.76 | 3.22 |
+| DeepSeek-V4-Pro | anchored | A Direct | 0.36\* | 0.95\* | 0.67\* | -0.13\* |
+| DeepSeek-V4-Pro | anchored | B Daily | 0.50 | 0.81\* | 0.57\* | -0.37\* |
+| DeepSeek-V4-Pro | anchored | C Describe | 0.54 | 1.04\* | 0.59\* | 0.07\* |
+| DeepSeek-V4-Pro | anchored | D Hybrid | 0.61\* | 2.52 | 0.69\* | 2.49 |
+| Gemini 3.1 Flash-Lite | plain | A Direct | 1.05\* | 0.59\* | 0.29\* | -0.39\* |
+| Gemini 3.1 Flash-Lite | plain | B Daily | 3.51\* | 0.35\* | 0.03\* | -0.18\* |
+| Gemini 3.1 Flash-Lite | plain | C Describe | 0.49 | 1.26\* | 0.65\* | 0.53\* |
+| Gemini 3.1 Flash-Lite | plain | D Hybrid | 0.28\* | 1.62\* | 0.81\* | 2.27 |
+| Gemini 3.1 Flash-Lite | anchored | A Direct | 0.30\* | 0.70\* | 0.69\* | -1.00\* |
+| Gemini 3.1 Flash-Lite | anchored | B Daily | 1.45\* | 1.15\* | 0.35\* | 0.10\* |
+| Gemini 3.1 Flash-Lite | anchored | C Describe | 0.52 | 0.97\* | 0.59\* | -0.06\* |
+| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 0.59\* | 2.61 | 0.71 | 2.74 |
+| Mistral Large 4 | plain | A Direct | 1.04\* | 0.64\* | 0.27\* | -0.35\* |
+| Mistral Large 4 | plain | B Daily | 5.06\* | 0.95\* | 0.00\* | -0.01\* |
+| Mistral Large 4 | plain | C Describe | 0.96\* | 1.37\* | 0.45\* | 0.39\* |
+| Mistral Large 4 | plain | D Hybrid | 0.26\* | 1.47\* | 0.81\* | 1.81\* |
+| Mistral Large 4 | anchored | A Direct | 0.01\* | 0.99\* | 0.98\* | -0.89\* |
+| Mistral Large 4 | anchored | B Daily | 0.48 | 0.99\* | 0.63\* | -0.03\* |
+| Mistral Large 4 | anchored | C Describe | 0.56\* | 1.13\* | 0.59\* | 0.23\* |
+| Mistral Large 4 | anchored | D Hybrid | 0.47 | 2.05 | 0.71 | 2.25 |
 
 *Table B1. Low-mean setting, per cell. Reference row: negative binomial with mean 0.49 and alpha 3.05. \* the 95% bootstrap interval excludes the reference value. Temperatures are pooled for GPT-4o-mini and Llama.*
 
@@ -541,48 +541,48 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 | Haiku 5.5 | anchored | B Daily | 9.47\* | 0.19\* | 0.00\* | -0.09\* |
 | Haiku 5.5 | anchored | C Describe | 5.66\* | 5.82\* | 0.12\* | 0.85\* |
 | Haiku 5.5 | anchored | D Hybrid | 3.66\* | 5.84\* | 0.26\* | 1.32 |
-| Sonnet 5 | plain | A Direct | 8.04\* | 0.28\* | 0.00\* | -0.09\* |
-| Sonnet 5 | plain | B Daily | 10.22\* | 0.14\* | 0.00\* | -0.08\* |
-| Sonnet 5 | plain | C Describe | 7.21\* | 4.08\* | 0.04\* | 0.43\* |
-| Sonnet 5 | plain | D Hybrid | 4.86 | 9.99 | 0.23 | 1.85 |
-| Sonnet 5 | anchored | A Direct | 5.00\* | 0.03\* | 0.00\* | -0.19\* |
-| Sonnet 5 | anchored | B Daily | 8.19\* | 0.04\* | 0.00\* | -0.12\* |
-| Sonnet 5 | anchored | C Describe | 4.88 | 4.41\* | 0.10\* | 0.70\* |
-| Sonnet 5 | anchored | D Hybrid | 4.94 | 8.87 | 0.23 | 1.59 |
-| GPT-5.6-terra | plain | A Direct | 7.56\* | 0.21\* | 0.00\* | -0.10\* |
-| GPT-5.6-terra | plain | B Daily | 8.36\* | 0.08\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | C Describe | 6.67\* | 5.07\* | 0.07\* | 0.61\* |
-| GPT-5.6-terra | plain | D Hybrid | 5.13 | 10.65 | 0.25\* | 1.88 |
-| GPT-5.6-terra | anchored | A Direct | 4.88 | 0.02\* | 0.00\* | -0.20\* |
-| GPT-5.6-terra | anchored | B Daily | 4.45\* | 0.14\* | 0.00\* | -0.19\* |
-| GPT-5.6-terra | anchored | C Describe | 5.50\* | 3.70\* | 0.09\* | 0.49\* |
-| GPT-5.6-terra | anchored | D Hybrid | 4.67 | 10.85 | 0.28\* | 2.11 |
-| DeepSeek-V4-Pro | plain | A Direct | 7.71\* | 0.76\* | 0.00\* | -0.03\* |
-| DeepSeek-V4-Pro | plain | B Daily | 9.04\* | 0.18\* | 0.00\* | -0.09\* |
-| DeepSeek-V4-Pro | plain | C Describe | 5.58\* | 3.85\* | 0.04\* | 0.51\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 7.87\* | 11.54 | 0.09\* | 1.34 |
-| DeepSeek-V4-Pro | anchored | A Direct | 5.20\* | 0.65\* | 0.02\* | -0.07\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 6.84\* | 0.40\* | 0.01\* | -0.09\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 5.24 | 4.80\* | 0.06\* | 0.72\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 6.69\* | 7.34 | 0.12\* | 0.95\* |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 11.82\* | 0.30\* | 0.00\* | -0.06\* |
+| Sonnet 5 | plain | A Direct | 8.02\* | 0.36\* | 0.00\* | -0.08\* |
+| Sonnet 5 | plain | B Daily | 10.30\* | 0.16\* | 0.00\* | -0.08\* |
+| Sonnet 5 | plain | C Describe | 7.15\* | 4.57\* | 0.04\* | 0.50\* |
+| Sonnet 5 | plain | D Hybrid | 5.58\* | 8.99 | 0.21 | 1.43 |
+| Sonnet 5 | anchored | A Direct | 4.99\* | 0.03\* | 0.00\* | -0.19\* |
+| Sonnet 5 | anchored | B Daily | 8.21\* | 0.04\* | 0.00\* | -0.12\* |
+| Sonnet 5 | anchored | C Describe | 5.04 | 4.42\* | 0.10\* | 0.68\* |
+| Sonnet 5 | anchored | D Hybrid | 5.47\* | 8.99 | 0.22 | 1.46 |
+| GPT-5.6-terra | plain | A Direct | 7.68\* | 0.15\* | 0.00\* | -0.11\* |
+| GPT-5.6-terra | plain | B Daily | 8.37\* | 0.10\* | 0.00\* | -0.11\* |
+| GPT-5.6-terra | plain | C Describe | 6.76\* | 4.86\* | 0.05\* | 0.57\* |
+| GPT-5.6-terra | plain | D Hybrid | 5.51\* | 8.72 | 0.22 | 1.40 |
+| GPT-5.6-terra | anchored | A Direct | 4.88\* | 0.02\* | 0.00\* | -0.20\* |
+| GPT-5.6-terra | anchored | B Daily | 4.35\* | 0.12\* | 0.00\* | -0.20\* |
+| GPT-5.6-terra | anchored | C Describe | 5.78\* | 4.12\* | 0.08\* | 0.54\* |
+| GPT-5.6-terra | anchored | D Hybrid | 5.02 | 8.62 | 0.23\* | 1.52 |
+| DeepSeek-V4-Pro | plain | A Direct | 7.77\* | 1.10\* | 0.00\* | 0.01\* |
+| DeepSeek-V4-Pro | plain | B Daily | 8.94\* | 0.19\* | 0.00\* | -0.09\* |
+| DeepSeek-V4-Pro | plain | C Describe | 5.81\* | 4.28\* | 0.03\* | 0.57\* |
+| DeepSeek-V4-Pro | plain | D Hybrid | 7.65\* | 9.43 | 0.13\* | 1.10\* |
+| DeepSeek-V4-Pro | anchored | A Direct | 5.22\* | 1.57\* | 0.01\* | 0.11\* |
+| DeepSeek-V4-Pro | anchored | B Daily | 6.83\* | 0.38\* | 0.00\* | -0.09\* |
+| DeepSeek-V4-Pro | anchored | C Describe | 5.33\* | 4.77\* | 0.06\* | 0.71\* |
+| DeepSeek-V4-Pro | anchored | D Hybrid | 6.42\* | 7.61 | 0.16\* | 1.03\* |
+| Gemini 3.1 Flash-Lite | plain | A Direct | 11.74\* | 0.35\* | 0.00\* | -0.06\* |
 | Gemini 3.1 Flash-Lite | plain | B Daily | 8.21\* | 0.04\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 6.24\* | 3.52\* | 0.03\* | 0.40\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 7.57\* | 13.01 | 0.17 | 1.59 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 5.16\* | 0.08\* | 0.00\* | -0.18\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.53\* | 0.09\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 4.13\* | 3.18\* | 0.14\* | 0.53\* |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 4.12 | 7.02 | 0.24 | 1.46 |
-| Mistral Large 4 | plain | A Direct | 8.59\* | 2.38\* | 0.00\* | 0.16\* |
-| Mistral Large 4 | plain | B Daily | 8.33\* | 0.06\* | 0.00\* | -0.11\* |
-| Mistral Large 4 | plain | C Describe | 7.79\* | 4.39\* | 0.03\* | 0.43\* |
-| Mistral Large 4 | plain | D Hybrid | 3.73\* | 6.22 | 0.25\* | 1.40 |
+| Gemini 3.1 Flash-Lite | plain | C Describe | 6.50\* | 3.65\* | 0.02\* | 0.41\* |
+| Gemini 3.1 Flash-Lite | plain | D Hybrid | 8.69\* | 12.15\* | 0.14\* | 1.28 |
+| Gemini 3.1 Flash-Lite | anchored | A Direct | 5.13\* | 0.06\* | 0.00\* | -0.18\* |
+| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.48\* | 0.09\* | 0.00\* | -0.12\* |
+| Gemini 3.1 Flash-Lite | anchored | C Describe | 4.23\* | 3.75\* | 0.14\* | 0.65\* |
+| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 4.81 | 6.95 | 0.23\* | 1.24 |
+| Mistral Large 4 | plain | A Direct | 8.56\* | 2.45\* | 0.00\* | 0.17\* |
+| Mistral Large 4 | plain | B Daily | 8.28\* | 0.05\* | 0.00\* | -0.12\* |
+| Mistral Large 4 | plain | C Describe | 7.95\* | 4.75\* | 0.03\* | 0.47\* |
+| Mistral Large 4 | plain | D Hybrid | 4.36\* | 6.42\* | 0.22 | 1.24 |
 | Mistral Large 4 | anchored | A Direct | 4.90\* | 0.02\* | 0.00\* | -0.20\* |
-| Mistral Large 4 | anchored | B Daily | 8.22\* | 0.05\* | 0.00\* | -0.12\* |
-| Mistral Large 4 | anchored | C Describe | 4.82 | 4.11\* | 0.13\* | 0.65\* |
-| Mistral Large 4 | anchored | D Hybrid | 3.09\* | 6.06 | 0.27\* | 1.64 |
+| Mistral Large 4 | anchored | B Daily | 8.26\* | 0.04\* | 0.00\* | -0.12\* |
+| Mistral Large 4 | anchored | C Describe | 4.98 | 4.83\* | 0.15\* | 0.77\* |
+| Mistral Large 4 | anchored | D Hybrid | 3.63\* | 6.09\* | 0.27\* | 1.40 |
 
-*Table B2. High-mean setting, 200 customers per cell. Reference row: empirical Complete Journey distribution. \* the 95% bootstrap interval excludes the reference value.*
+*Table B2. High-mean setting, 600 customers per cell. Reference row: empirical Complete Journey distribution. \* the 95% bootstrap interval excludes the reference value.*
 
 | Model | Prompt | Design | Mean | Var/mean | Zero | Alpha |
 |---|---|---|---|---|---|---|
@@ -611,48 +611,48 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 | Haiku 5.5 | anchored | B Daily | 11.06\* | 0.15\* | 0.00\* | -0.08\* |
 | Haiku 5.5 | anchored | C Describe | 7.49 | 6.11 | 0.10\* | 0.68 |
 | Haiku 5.5 | anchored | D Hybrid | 5.71\* | 5.79 | 0.11\* | 0.84 |
-| Sonnet 5 | plain | A Direct | 5.62\* | 0.18\* | 0.00\* | -0.15\* |
-| Sonnet 5 | plain | B Daily | 10.51\* | 0.20\* | 0.00\* | -0.08\* |
-| Sonnet 5 | plain | C Describe | 6.33\* | 3.87\* | 0.03 | 0.45\* |
-| Sonnet 5 | plain | D Hybrid | 4.72\* | 5.43 | 0.12\* | 0.94 |
-| Sonnet 5 | anchored | A Direct | 6.78\* | 0.18\* | 0.00\* | -0.12\* |
-| Sonnet 5 | anchored | B Daily | 10.27\* | 0.22\* | 0.00\* | -0.08\* |
-| Sonnet 5 | anchored | C Describe | 6.89\* | 4.16\* | 0.04 | 0.46\* |
-| Sonnet 5 | anchored | D Hybrid | 6.84 | 8.58 | 0.07\* | 1.11\* |
-| GPT-5.6-terra | plain | A Direct | 7.90 | 0.16\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | B Daily | 8.46\* | 0.13\* | 0.00\* | -0.10\* |
-| GPT-5.6-terra | plain | C Describe | 6.66\* | 3.80\* | 0.03 | 0.42\* |
-| GPT-5.6-terra | plain | D Hybrid | 5.14\* | 5.29 | 0.09\* | 0.83 |
-| GPT-5.6-terra | anchored | A Direct | 7.67\* | 0.13\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | anchored | B Daily | 6.01\* | 0.31\* | 0.00\* | -0.12\* |
-| GPT-5.6-terra | anchored | C Describe | 8.79\* | 4.95\* | 0.04 | 0.45\* |
-| GPT-5.6-terra | anchored | D Hybrid | 7.03 | 8.24 | 0.07\* | 1.03 |
-| DeepSeek-V4-Pro | plain | A Direct | 7.15\* | 1.07\* | 0.00\* | 0.01\* |
-| DeepSeek-V4-Pro | plain | B Daily | 8.68\* | 0.14\* | 0.00\* | -0.10\* |
-| DeepSeek-V4-Pro | plain | C Describe | 5.56\* | 2.78\* | 0.01 | 0.32\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 6.37\* | 6.04 | 0.08\* | 0.79 |
-| DeepSeek-V4-Pro | anchored | A Direct | 6.51\* | 0.55\* | 0.01\* | -0.07\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 7.09\* | 0.21\* | 0.00\* | -0.11\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 6.91\* | 4.06\* | 0.03 | 0.44\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 6.99 | 6.08 | 0.06 | 0.73 |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 10.24\* | 0.40\* | 0.00\* | -0.06\* |
-| Gemini 3.1 Flash-Lite | plain | B Daily | 8.04\* | 0.07\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 6.25\* | 3.11\* | 0.03 | 0.34\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 7.16 | 7.58 | 0.06 | 0.92 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 6.91\* | 0.30\* | 0.00\* | -0.10\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.21\* | 0.12\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 5.75\* | 5.18 | 0.10\* | 0.73 |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 6.57\* | 6.30 | 0.08\* | 0.81 |
-| Mistral Large 4 | plain | A Direct | 9.68\* | 1.32\* | 0.00\* | 0.03\* |
+| Sonnet 5 | plain | A Direct | 5.60\* | 0.17\* | 0.00\* | -0.15\* |
+| Sonnet 5 | plain | B Daily | 10.40\* | 0.20\* | 0.00\* | -0.08\* |
+| Sonnet 5 | plain | C Describe | 6.64\* | 4.66\* | 0.03 | 0.55\* |
+| Sonnet 5 | plain | D Hybrid | 4.80\* | 4.53\* | 0.11\* | 0.74 |
+| Sonnet 5 | anchored | A Direct | 6.70\* | 0.16\* | 0.00\* | -0.12\* |
+| Sonnet 5 | anchored | B Daily | 10.16\* | 0.22\* | 0.00\* | -0.08\* |
+| Sonnet 5 | anchored | C Describe | 7.31\* | 5.04\* | 0.06\* | 0.55\* |
+| Sonnet 5 | anchored | D Hybrid | 6.87\* | 6.65 | 0.09\* | 0.82 |
+| GPT-5.6-terra | plain | A Direct | 7.89 | 0.14\* | 0.00\* | -0.11\* |
+| GPT-5.6-terra | plain | B Daily | 8.37\* | 0.10\* | 0.00\* | -0.11\* |
+| GPT-5.6-terra | plain | C Describe | 7.00\* | 4.79\* | 0.05\* | 0.54\* |
+| GPT-5.6-terra | plain | D Hybrid | 5.09\* | 4.69\* | 0.11\* | 0.73 |
+| GPT-5.6-terra | anchored | A Direct | 7.60\* | 0.16\* | 0.00\* | -0.11\* |
+| GPT-5.6-terra | anchored | B Daily | 5.92\* | 0.30\* | 0.00\* | -0.12\* |
+| GPT-5.6-terra | anchored | C Describe | 9.46\* | 5.71\* | 0.07\* | 0.50\* |
+| GPT-5.6-terra | anchored | D Hybrid | 7.17\* | 6.70 | 0.07\* | 0.79 |
+| DeepSeek-V4-Pro | plain | A Direct | 6.98\* | 1.15\* | 0.00\* | 0.02\* |
+| DeepSeek-V4-Pro | plain | B Daily | 8.57\* | 0.13\* | 0.00\* | -0.10\* |
+| DeepSeek-V4-Pro | plain | C Describe | 5.78\* | 3.53\* | 0.04 | 0.44\* |
+| DeepSeek-V4-Pro | plain | D Hybrid | 6.57\* | 5.83 | 0.09\* | 0.73 |
+| DeepSeek-V4-Pro | anchored | A Direct | 6.57\* | 0.53\* | 0.00\* | -0.07\* |
+| DeepSeek-V4-Pro | anchored | B Daily | 7.06\* | 0.21\* | 0.00\* | -0.11\* |
+| DeepSeek-V4-Pro | anchored | C Describe | 7.09\* | 4.77\* | 0.04 | 0.53\* |
+| DeepSeek-V4-Pro | anchored | D Hybrid | 7.50 | 6.31 | 0.07\* | 0.71 |
+| Gemini 3.1 Flash-Lite | plain | A Direct | 10.25\* | 0.41\* | 0.00\* | -0.06\* |
+| Gemini 3.1 Flash-Lite | plain | B Daily | 7.96\* | 0.06\* | 0.00\* | -0.12\* |
+| Gemini 3.1 Flash-Lite | plain | C Describe | 6.62\* | 3.44\* | 0.03 | 0.37\* |
+| Gemini 3.1 Flash-Lite | plain | D Hybrid | 7.41 | 6.53 | 0.07\* | 0.75 |
+| Gemini 3.1 Flash-Lite | anchored | A Direct | 6.88\* | 0.26\* | 0.00\* | -0.11\* |
+| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.18\* | 0.13\* | 0.00\* | -0.12\* |
+| Gemini 3.1 Flash-Lite | anchored | C Describe | 6.07\* | 5.56\* | 0.12\* | 0.75 |
+| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 6.67\* | 5.80 | 0.09\* | 0.72 |
+| Mistral Large 4 | plain | A Direct | 9.24\* | 1.73\* | 0.00\* | 0.08\* |
 | Mistral Large 4 | plain | B Daily | 8.39\* | 0.07\* | 0.00\* | -0.11\* |
-| Mistral Large 4 | plain | C Describe | 6.79\* | 4.08\* | 0.03 | 0.45\* |
-| Mistral Large 4 | plain | D Hybrid | 3.95\* | 3.97\* | 0.14\* | 0.75 |
-| Mistral Large 4 | anchored | A Direct | 7.38\* | 0.25\* | 0.01\* | -0.10\* |
-| Mistral Large 4 | anchored | B Daily | 8.84\* | 0.12\* | 0.00\* | -0.10\* |
-| Mistral Large 4 | anchored | C Describe | 6.23\* | 5.39 | 0.13\* | 0.70 |
-| Mistral Large 4 | anchored | D Hybrid | 5.19\* | 5.67 | 0.14\* | 0.90 |
+| Mistral Large 4 | plain | C Describe | 7.04\* | 4.93\* | 0.04 | 0.56\* |
+| Mistral Large 4 | plain | D Hybrid | 4.28\* | 4.48\* | 0.15\* | 0.81 |
+| Mistral Large 4 | anchored | A Direct | 7.30\* | 0.26\* | 0.00\* | -0.10\* |
+| Mistral Large 4 | anchored | B Daily | 8.74\* | 0.11\* | 0.00\* | -0.10\* |
+| Mistral Large 4 | anchored | C Describe | 6.18\* | 5.43\* | 0.15\* | 0.72 |
+| Mistral Large 4 | anchored | D Hybrid | 5.41\* | 5.11\* | 0.11\* | 0.76 |
 
-*Table B3. Persona experiment with real household demographics, 200 households per cell. Reference row: real distribution of the 801 households (10,413 household-windows). \* the 95% bootstrap interval excludes the reference value.*
+*Table B3. Persona experiment with real household demographics, 600 household-windows per cell. Reference row: real distribution of the 801 households (10,413 household-windows). \* the 95% bootstrap interval excludes the reference value.*
 
 # Appendix C. Reproducibility {-}
 
