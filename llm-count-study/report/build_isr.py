@@ -17,6 +17,7 @@ Goodhue DL, Thompson RL (1995) Task-technology fit and individual performance. *
 Goli A, Singh A (2023) Can LLMs capture human preferences? Preprint, submitted May 4, arXiv:2305.02531.
 Gu J, Pang L, Shen H, Cheng X (2024) Do LLMs play dice? Exploring probability distribution sampling in large language models for behavioral simulation. Preprint, submitted April 13, arXiv:2404.09043.
 Gregor S, Hevner AR (2013) Positioning and presenting design science research for maximum impact. *MIS Quart.* 37(2):337–355.
+Dellermann D, Ebel P, Söllner M, Leimeister JM (2019) Hybrid intelligence. *Bus. Inform. Systems Engrg.* 61(5):637–643.
 Hevner AR, March ST, Park J, Ram S (2004) Design science in information systems research. *MIS Quart.* 28(1):75–105.
 Hewitt L, Ashokkumar A, Ghezae I, Willer R (2024) Predicting results of social science experiments using large language models. Working paper, Stanford University, Stanford, CA.
 Hillstrom K (2008) The MineThatData e-mail analytics and data mining challenge. Blog post, March 20, http://blog.minethatdata.com.
@@ -28,7 +29,9 @@ Maier BF, Aslak U, Fiaschi L, et al. (2025) LLMs reproduce human purchase intent
 Orlikowski WJ, Iacono CS (2001) Research commentary: Desperately seeking the "IT" in IT research—A call to theorizing the IT artifact. *Inform. Systems Res.* 12(2):121–134.
 Sashihara J, Fujita Y, Nakamura K, et al. (2025) LLM-based multi-agent system for simulating strategic and goal-oriented data marketplaces. Preprint, submitted November 17, arXiv:2511.13233.
 Schmittlein DC, Morrison DG, Colombo R (1987) Counting your customers: Who are they and what will they do next? *Management Sci.* 33(1):1–24.
+Lee JD, See KA (2004) Trust in automation: Designing for appropriate reliance. *Human Factors* 46(1):50–80.
 Tigre R, Souto HG (2026) When can you trust your synthetic users? Diagnostics and corrections for LLM consumer panels. Preprint, submitted June 3, arXiv:2609.13148.
+Wedel M, Kannan PK (2016) Marketing analytics for data-rich environments. *J. Marketing* 80(6):97–121.
 Zhang J, Yu S, Chong D, et al. (2025a) Verbalized sampling: How to mitigate mode collapse and unlock LLM diversity. Preprint, submitted October 1, arXiv:2510.01171.
 Zhang R, Zhang X, Zhao M (2025b) Predicting effects, missing distributions: Evaluating LLMs as human behavior simulators in operations management. Preprint, submitted September 30, arXiv:2510.03310."""
 
