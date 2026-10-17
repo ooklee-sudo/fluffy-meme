@@ -1,6 +1,6 @@
 """Parse the pasted analysis outputs (*.txt) into CSV tables used by the manuscript builder."""
 import re, pandas as pd
-CI = re.compile(r'(-?[\d.]+) \[(-?[\d.]+),(-?[\d.]+)\](\*?)')
+CI = re.compile(r'(-?[\d.]+|nan) \[(-?[\d.]+|nan),(-?[\d.]+|nan)\](\*?)')
 
 
 def dist(fn, out):
@@ -12,7 +12,7 @@ def dist(fn, out):
         model, anchor, cond, n = t[:4]
         rest = t[4:]
         fail = float(rest[1] if "." not in rest[0] else rest[0])  # optional "seeds" column
-        cs = CI.findall(line); assert len(cs) == 4, line
+        cs = CI.findall(line.replace('n/a', 'nan [nan,nan]')); assert len(cs) == 4, line
         r = dict(model=model, anchor=anchor == "True", cond=cond, n=int(n), parse_fail=fail)
         for k, c in zip(["mean", "var_mean", "zero", "alpha"], cs):
             r[k] = float(c[0]); r[k + "_lo"] = float(c[1]); r[k + "_hi"] = float(c[2]); r[k + "_excl"] = c[3] == "*"

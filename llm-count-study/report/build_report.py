@@ -20,7 +20,7 @@ def dist_table(csv, ref):
                 if sel.empty:
                     continue
                 r = sel.iloc[0]
-                f = lambda v, e, nd=2: f"{v:.{nd}f}" + ("\\*" if e else "")
+                f = lambda v, e, nd=2: "n/a" if pd.isna(v) else f"{v:.{nd}f}" + ("\\*" if e else "")
                 rows.append(f"| {SHORT[m]} | {'anchored' if an else 'plain'} | {DESIGN[c]} | {f(r['mean'], r.mean_excl)} | "
                             f"{f(r.var_mean, r.var_mean_excl)} | {f(r.zero, r.zero_excl)} | {f(r.alpha, r.alpha_excl)} |")
     return "\n".join(rows)
