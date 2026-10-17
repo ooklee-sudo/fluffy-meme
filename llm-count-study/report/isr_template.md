@@ -168,7 +168,7 @@ For each of 300 customers sampled from the real data (a new sample for each seed
 
 ## 5.1 Overview
 
-Table 2 summarizes the low-mean and the high-mean setting by design, and Appendix B gives all cells. The main pattern is that variance collapse is severe in designs A and B in every setting, that design C moves toward the real dispersion but loses zeros where they are common, and that design D matches dispersion in most cells while its mean depends on the model.
+Table 2 summarizes the low-mean and the high-mean setting by design, and Appendix B gives all cells. The main pattern is that variance collapse is severe in designs A and B in every setting, that design C moves toward the real dispersion but loses zeros where they are common, and that design D matches dispersion in most cells while its mean depends on the model. The loss of dispersion has a direct consequence for the concentration of purchases among heavy buyers (Section 5.7).
 
 {{TABLE_SUMMARY}}
 
@@ -224,7 +224,13 @@ Fourth, the models do not tell the two emails apart. In reality the men's email 
 
 Direct yes/no answers are not usable for rare events. In 15 of 32 yes/no cells of the first seed (and in 13 of 24 cells of the two further seeds) the model answered "No" for every customer in the no-email condition, so the risk ratio is undefined (for example, GPT-4o-mini answered "No" for every customer without an email and "Yes" for about half with one). The yes/no visit lifts range from -0.31 to +0.55, and the purchase lifts from +0.007 to +0.55, up to 80 times the real lift.
 
-## 5.7 Summary of hypotheses
+## 5.7 Customer concentration
+
+Proposition 3 predicts that a simulator without heterogeneity cannot represent the concentration of purchases among heavy buyers, and that the hybrid design, which supplies the spread externally, can. We measured the share of all simulated purchases made by the top tenth of customers (ranked by count) in every cell and compared it with the same share in the reference. In the reference the top tenth account for 65% of purchases in the low-mean setting, 39% in the high-mean setting, and 30% for the demographic households. For a population without heterogeneity the share is 10% or, in the low-mean setting, slightly above because most counts are zero and the counts of the rest are discrete.
+
+The prediction is borne out. Direct answers and daily simulation cannot represent concentration. In the 91 cells of these two designs in which a meaningful share can be computed, the top-decile share is below the reference in every one and the interval excludes the reference. It lies between 0.10 and 0.49 in the low-mean setting (the highest value is the overdispersed DeepSeek-V4-Pro cell for direct answers), between 0.10 and 0.18 in the high-mean setting, and between 0.10 and 0.16 for the demographic households, that is, practically at the 10% that a population without heterogeneity would give. We excluded five low-mean cells in which almost every simulated customer made no purchase, where the share is 1.00 or undefined only because there is almost nothing to distribute. Describing a distribution recovers part of the concentration (0.30 to 0.52 in the low-mean setting against 0.65, and 0.27 to 0.36 in the high-mean setting against 0.39), and its interval excludes the reference in 16 of 16 and 15 of 16 cells. For the demographic households, whose reference concentration is low, it lies within the interval of the reference in 11 of 16 cells. The hybrid design reproduces concentration in 39 of 48 cells (11 of 16, 13 of 16, and 15 of 16 in the three settings), including cells in which the model's mean is wrong, because the share depends on the dispersion and not on the level. This is the clearest case in which the hybrid design repairs a decision-relevant property that direct elicitation loses entirely.
+
+## 5.8 Summary of hypotheses
 
 | Hypothesis | Evidence |
 |---|---|
@@ -235,6 +241,7 @@ Direct yes/no answers are not usable for rare events. In 15 of 32 yes/no cells o
 | H4b. Absolute lift is overstated when the simulated base rate is overstated. | Supported for purchases: the lift exceeds the real value in 15 of 16 configurations (median about tenfold). Not for visits: 4 of 16 are consistent with the real value, 5 are too small, and 4 are too large. |
 | H4c. Similar treatments are not distinguished. | Supported. The simulated gap between the two emails excludes zero in only 3 of 32 cells, and in all three the sign is the opposite of the real one. |
 | Exploratory: collapse is specific to low means. | Not supported. Direct answers collapse at means of 0.5, 4.8, and 7.8. |
+| Exploratory: concentration of purchases among heavy buyers (Proposition 3). | Supported. The top-decile share of purchases is practically at the 10% of a homogeneous population for direct and daily designs (below the reference in all 91 interpretable cells), is partly recovered by describing a distribution, and is matched by the hybrid design in 39 of 48 cells. |
 | Exploratory: richer personas repair collapse. | Not supported. With real demographics the simulated counts have a rank correlation with real counts of -0.17 to +0.16 (3 of 63 intervals exclude zero); the demographics themselves explain about 1% of the heterogeneity. |
 | Exploratory: larger and more recent models escape collapse. | Not for direct answers (ratios of at most 1.00 in 42 of 48 cells; the six exceptions are all DeepSeek-V4-Pro or Mistral Large 4). Not for the hybrid design either: its accuracy follows the model's mean, which matched the reference in 13 of 48 cells with no model better than the others across settings. |
 
