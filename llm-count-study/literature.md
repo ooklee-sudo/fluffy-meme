@@ -61,3 +61,4 @@ Count-model background re-found: Fader, Hardie & Lee (2005) BG/NBD PDF at bruceh
 - Wedel, Kannan (2016), Marketing analytics for data-rich environments, Journal of Marketing 80(6):97-121.
 - Lee, See (2004), Trust in automation: designing for appropriate reliance, Human Factors 46(1):50-80.
 - Dellermann, Ebel, Soellner, Leimeister (2019), Hybrid intelligence, Business & Information Systems Engineering 61(5):637-643.
+- Melville, Kraemer, Gurbaxani (2004), Information technology and organizational performance, MIS Quarterly 28(2):283-322 (verify).
