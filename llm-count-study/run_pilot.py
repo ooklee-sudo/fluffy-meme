@@ -123,17 +123,29 @@ def make_demo_personas(n, demo, counts, seed):
     return df
 
 
+WORDING = {"name": "base"}  # prompt wording: base | third (third-person forecast) | survey ("Imagine you are ...", survey-style questions)
+
+
 def persona_text(sc, p, anchor=False):
+    w = WORDING["name"]
     if getattr(p, "demo_text", None):
-        base = ("You are a household with a loyalty card at a supermarket chain and you do part of your "
-                "grocery shopping there. " + p.demo_text)
+        base = {"base": "You are a household with a loyalty card at a supermarket chain and you do part of your grocery shopping there. ",
+                "third": "A household with a loyalty card at a supermarket chain does part of its grocery shopping there. ",
+                "survey": "Imagine you are a household with a supermarket loyalty card; you do part of your grocery shopping at this chain. "}[w] + p.demo_text
     elif sc["name"] == "grocery":
-        base = (f"You are a household with a loyalty card at a supermarket chain and you do part of your "
-                f"grocery shopping there. Profile: {p.segment}, head of household aged {p.age}, "
-                f"{p.hh} person(s).")
+        base = {"base": f"You are a household with a loyalty card at a supermarket chain and you do part of your "
+                        f"grocery shopping there. Profile: {p.segment}, head of household aged {p.age}, {p.hh} person(s).",
+                "third": f"A household with a loyalty card at a supermarket chain does part of its grocery shopping there. "
+                         f"Profile: {p.segment}, head of household aged {p.age}, {p.hh} person(s).",
+                "survey": f"Imagine you are a household with a supermarket loyalty card ({p.segment}; head of household aged "
+                          f"{p.age}; {p.hh} person(s)) and you do part of your grocery shopping at this chain."}[w]
     else:
-        base = (f"You are a customer of an online giftware retailer. Profile: {p.segment}, "
-                f"age {p.age}, based in {p.country}. You made your first purchase 4 weeks ago.")
+        base = {"base": f"You are a customer of an online giftware retailer. Profile: {p.segment}, "
+                        f"age {p.age}, based in {p.country}. You made your first purchase 4 weeks ago.",
+                "third": f"A customer of an online giftware retailer. Profile: {p.segment}, age {p.age}, "
+                         f"based in {p.country}. The customer made a first purchase 4 weeks ago.",
+                "survey": f"Imagine you are a customer of an online giftware retailer ({p.segment}, aged {p.age}, "
+                          f"living in {p.country}) who made a first purchase 4 weeks ago."}[w]
     return base + (sc["anchor"] if anchor else "")
 
 
@@ -231,19 +243,38 @@ class MockLLM:
 # ---------------------------------------------------------------- conditions
 def prompts(sc, p, anchor=False):
     base = persona_text(sc, p, anchor)
+    w = WORDING["name"]
     u = sc["unit"]; one = "purchase" if sc["name"] == "retail" else "shopping trip"
+    subj = "customer" if sc["name"] == "retail" else "household"
     labels = [b[0] for b in sc["bins"]]
     tmpl = "{" + ",".join(f'\"{l}\":..' for l in labels) + "}"
     ex = "e.g. 0.4" if sc["name"] == "retail" else "e.g. 4.5"
-    out = {
-        "A": base + f" How many separate {u} will you make in the next 4 weeks? Answer with ONLY an integer.",
-        "C": base + (f" Give the probabilities of making {', '.join(labels)} {u} in the next 4 weeks. "
-                     f"Reply with ONLY JSON like {tmpl} summing to 1."),
-        "D": base + f" What is your expected average number of {u} per 4 weeks (can be fractional, {ex})? Reply with ONLY a number.",
-    }
-    for w in range(1, 5):
-        out[f"B{w}"] = (base + f" Week {w} of the next 4 weeks: for each of its 7 days decide whether you make a "
-                        f"{one} that day. Reply with ONLY 7 comma-separated 0/1 values.")
+    if w == "base":
+        out = {
+            "A": base + f" How many separate {u} will you make in the next 4 weeks? Answer with ONLY an integer.",
+            "C": base + (f" Give the probabilities of making {', '.join(labels)} {u} in the next 4 weeks. "
+                         f"Reply with ONLY JSON like {tmpl} summing to 1."),
+            "D": base + f" What is your expected average number of {u} per 4 weeks (can be fractional, {ex})? Reply with ONLY a number.",
+        }
+        day = lambda k: f" Week {k} of the next 4 weeks: for each of its 7 days decide whether you make a {one} that day. Reply with ONLY 7 comma-separated 0/1 values."
+    elif w == "third":
+        out = {
+            "A": base + f" How many separate {u} will this {subj} make in the next 4 weeks? Answer with ONLY an integer.",
+            "C": base + (f" Give the probabilities that this {subj} makes {', '.join(labels)} {u} in the next 4 weeks. "
+                         f"Reply with ONLY JSON like {tmpl} summing to 1."),
+            "D": base + f" What is the expected average number of {u} per 4 weeks for this {subj} (can be fractional, {ex})? Reply with ONLY a number.",
+        }
+        day = lambda k: f" Week {k} of the next 4 weeks: for each of its 7 days decide whether this {subj} makes a {one} that day. Reply with ONLY 7 comma-separated 0/1 values."
+    else:  # survey
+        out = {
+            "A": base + f" Survey question: over the next four weeks, how many separate {u} do you expect to make? Please reply with a whole number and nothing else.",
+            "C": base + (f" Survey question: for the next four weeks, how likely is each of these numbers of {u}: {', '.join(labels)}? "
+                         f"Reply with ONLY JSON like {tmpl} that sums to 1."),
+            "D": base + f" Survey question: on average, how many {u} do you expect to make per 4 weeks (decimals allowed, {ex})? Reply with ONLY a number.",
+        }
+        day = lambda k: f" Survey question, week {k} of the next four weeks: on each of the 7 days, do you make a {one}? Reply with ONLY 7 comma-separated 0/1 values (1 = yes)."
+    for k in range(1, 5):
+        out[f"B{k}"] = base + day(k)
     return out
 
 
@@ -301,6 +332,7 @@ def distances(x, ref):
 
 # ---------------------------------------------------------------- one configuration
 def run(a):
+    WORDING["name"] = getattr(a, "wording", "base")
     rng = np.random.default_rng(a.seed)
     os.makedirs(a.out, exist_ok=True)
     sc = get_scenario(a.scenario)
@@ -419,6 +451,8 @@ def build_parser():
                     help="demographic = real Complete Journey households (needs: pip install completejourney_py pyarrow)")
     ap.add_argument("--anchor", action="store_true",
                     help="tell the persona the retailer's base purchase rate (prompt variant)")
+    ap.add_argument("--wording", choices=["base", "third", "survey"], default="base",
+                    help="prompt wording: base (second person), third (third-person forecast), survey (survey-style questions)")
     ap.add_argument("--workers", type=int, default=8, help="parallel API calls")
     ap.add_argument("--mock", action="store_true")
     ap.add_argument("--seed", type=int, default=0)

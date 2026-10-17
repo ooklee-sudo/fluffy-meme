@@ -41,14 +41,35 @@ def persona(r, anchor):
     kind = {(1, 0): "men's merchandise only", (0, 1): "women's merchandise only", (1, 1): "both men's and women's merchandise"}.get((int(r.mens), int(r.womens)), "no specific merchandise")
     spend = re.sub(r"^\d\)\s*", "", str(r.history_segment))
     area = str(r.zip_code).replace("Surburban", "suburban").lower()
-    t = (f"You are a customer of an online retailer that sells men's and women's apparel. Profile: your last purchase "
-         f"was {int(r.recency)} month(s) ago; you spent {spend} with the retailer over the past 12 months, buying {kind}; "
-         f"you live in a {area} area; you are {'a new customer (first purchase within the past 12 months)' if r.newbie else 'an existing customer'}; "
-         f"you usually shop by {str(r.channel).lower()}.")
+    new_c = 'a new customer (first purchase within the past 12 months)' if r.newbie else 'an existing customer'
+    ch = str(r.channel).lower()
+    w = rp.WORDING["name"]
+    if w == "third":
+        t = (f"A customer of an online retailer that sells men's and women's apparel. Profile: the customer's last purchase "
+             f"was {int(r.recency)} month(s) ago; the customer spent {spend} with the retailer over the past 12 months, buying {kind}; "
+             f"lives in a {area} area; is {new_c}; and usually shops by {ch}.")
+    elif w == "survey":
+        t = (f"Imagine you are a customer of an online retailer that sells men's and women's apparel. About you: you last "
+             f"bought {int(r.recency)} month(s) ago; over the past 12 months you spent {spend} with the retailer, buying {kind}; "
+             f"you live in a {area} area; you are {new_c}; you usually shop by {ch}.")
+    else:
+        t = (f"You are a customer of an online retailer that sells men's and women's apparel. Profile: your last purchase "
+             f"was {int(r.recency)} month(s) ago; you spent {spend} with the retailer over the past 12 months, buying {kind}; "
+             f"you live in a {area} area; you are {new_c}; "
+             f"you usually shop by {ch}.")
     return t + (ANCHOR if anchor else "")
 
 
 def arm_text(arm):
+    w = rp.WORDING["name"]
+    if w == "third":
+        return {"No E-Mail": " In the next two weeks the customer receives no promotional email from the retailer.",
+                "Mens E-Mail": " In the next two weeks the customer receives a promotional email from the retailer featuring men's merchandise.",
+                "Womens E-Mail": " In the next two weeks the customer receives a promotional email from the retailer featuring women's merchandise."}[arm]
+    if w == "survey":
+        return {"No E-Mail": " Over the next two weeks the retailer sends you no promotional email.",
+                "Mens E-Mail": " Over the next two weeks the retailer sends you a promotional email featuring men's merchandise.",
+                "Womens E-Mail": " Over the next two weeks the retailer sends you a promotional email featuring women's merchandise."}[arm]
     return {"No E-Mail": " In the next two weeks you receive no promotional email from the retailer.",
             "Mens E-Mail": " In the next two weeks you receive a promotional email from the retailer featuring men's merchandise.",
             "Womens E-Mail": " In the next two weeks you receive a promotional email from the retailer featuring women's merchandise."}[arm]
@@ -56,6 +77,15 @@ def arm_text(arm):
 
 def question(method, outcome):
     a = OUTCOMES[outcome]
+    w = rp.WORDING["name"]
+    if w == "third":
+        if method == "A":
+            return f" During the next two weeks, will this customer {a}? Answer with ONLY Yes or No."
+        return f" What is the probability, from 0 to 100 percent, that this customer will {a} during the next two weeks? Reply with ONLY a number."
+    if w == "survey":
+        if method == "A":
+            return f" Survey question: during the next two weeks, will you {a}? Please answer with ONLY Yes or No."
+        return f" Survey question: how likely are you, from 0 to 100 percent, to {a} during the next two weeks? Reply with ONLY a number."
     if method == "A":
         return f" During the next two weeks, will you {a}? Answer with ONLY Yes or No."
     return f" What is the probability, from 0 to 100 percent, that you will {a} during the next two weeks? Reply with ONLY a number."
@@ -177,8 +207,10 @@ def main():
     ap.add_argument("--seeds", default="0", help="comma-separated seeds, e.g. 0,1,2")
     ap.add_argument("--data", default="hillstrom.csv")
     ap.add_argument("--runs", default="runs_hillstrom")
+    ap.add_argument("--wording", choices=["base", "third", "survey"], default="base")
     ap.add_argument("--mock", action="store_true")
     a = ap.parse_args()
+    rp.WORDING["name"] = a.wording
     data = load_data(a.data)
     allres = []
     models = ["mock/x"] if a.mock else a.models.split(",")

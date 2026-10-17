@@ -35,6 +35,7 @@ def main():
             grid += [(model, t, an, seed) for t in mt for an in (False, True)]
     parts = []
     for i, (model, temp, anchor, seed) in enumerate(grid, 1):
+        a.wording = a.wording  # prompt wording is set per run directory (use a separate --runs folder per wording)
         tag = f"{model.replace('/', '_')}_t{temp}_{'anchor' if anchor else 'plain'}" + (f"_s{seed}" if seed else "")
         out = os.path.join(a.runs, tag)
         a.model, a.temp, a.anchor, a.out, a.seed = model, temp, anchor, out, seed
