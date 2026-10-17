@@ -240,7 +240,7 @@ A user who inspects a synthetic population sees its mean, the sign of a promotio
 
 ## 5.10 Backtest of the acceptance test
 
-Section 6.2 proposes that a system be accepted only if it reproduces the organization's own history. We tested this rule on the existing results, without new model calls. In the email experiment one email served as the past randomized test and the other as the new campaign (and the reverse), and the simulator was accepted only if its lift for the past campaign was within a factor of 2 of the measured one. A firm launches when the lift exceeds a break-even value, which we varied from one tenth to ten times the measured lift of the new campaign; a decision is wrong when simulated and measured lifts fall on different sides of it. Trusting the simulator gave wrong decisions at 29% of break-even values across the 64 cases, with a lift off by more than a factor of 2 in 69%, although the sign check passed in all of them. The gate admitted 20 cases, all for visits and none for purchases. Among the 32 visit cases, trusting the simulator gave 14% wrong decisions and a lift off by more than a factor of 2 in 12; among the 20 admitted cases the shares were 9% and 4. Rescaling the new lift by the past ratio lowered wrong decisions to 17% overall, but the lift stayed off by more than a factor of 2 in 59% of cases. Errors for the two campaigns are strongly correlated (Spearman 0.84), so a past test can reveal them, but for purchases they are too large to correct by one factor.
+Details are in Online Appendix E. Section 6.2 proposes that a system be accepted only if it reproduces the organization's own history. We tested this rule on the existing results, without new model calls. In the email experiment one email served as the past randomized test and the other as the new campaign (and the reverse), and the simulator was accepted only if its lift for the past campaign was within a factor of 2 of the measured one. A firm launches when the lift exceeds a break-even value, which we varied from one tenth to ten times the measured lift of the new campaign; a decision is wrong when simulated and measured lifts fall on different sides of it. Trusting the simulator gave wrong decisions at 29% of break-even values across the 64 cases, with a lift off by more than a factor of 2 in 69%, although the sign check passed in all of them. The gate admitted 20 cases, all for visits and none for purchases. Among the 32 visit cases, trusting the simulator gave 14% wrong decisions and a lift off by more than a factor of 2 in 12; among the 20 admitted cases the shares were 9% and 4. Rescaling the new lift by the past ratio lowered wrong decisions to 17% overall, but the lift stayed off by more than a factor of 2 in 59% of cases. Errors for the two campaigns are strongly correlated (Spearman 0.84), so a past test can reveal them, but for purchases they are too large to correct by one factor.
 
 In the transaction settings we gated on the reference mean and zero share and checked the top-decile share implied by the simulated $\alpha$ (Proposition 3(b)). Of 187 cells, 133 passed the face-validity check, and 50% of them had a top-decile share off by more than 0.10. The gate admitted 18 cells (14 hybrid, 4 describe-then-sample, none of direct or daily simulation), of which one was wrong. Because the hybrid design takes its dispersion from the reference, this shows that the gate removes failing designs, not that the hybrid is validated independently.
 
@@ -375,3 +375,68 @@ All code, the pilot grid runner, the demographic-ceiling script, the analysis sc
 (d) The argument of (a) uses only the mean and the variance of the nonnegative variable and holds for any event of probability $q$, including events defined by ranking customers on their counts (ties are broken arbitrarily). For a deterministic simulator $\text{Var}(N^*) = \text{Var}(m(X))$, so the squared coefficient of variation of $N^*$ is $c^2$.
 
  $\square$
+
+# Appendix E. Backtest of the Acceptance Test {-}
+
+The backtest uses the parsed result tables (no new model calls); the script is `backtest.py`. *Email experiment.* For each of the 32 configurations of the probability design (8 models, 2 prompt variants, 2 outcomes), the men's email serves as the past randomized test and the women's email as the new campaign, and the reverse, giving 64 cases. The simulator is accepted for the new campaign if its lift for the past campaign is within a factor of 2 of the measured lift (0.0766 and 0.0452 for visits, 0.0068 and 0.0031 for purchases). The break-even lift is varied on a log scale from one tenth to ten times the measured lift of the new campaign (201 values); a decision is wrong at a break-even value if the simulated and measured lifts fall on different sides of it, and a case is summarized by the share of wrong values. Recalibration multiplies the simulated new lift by the measured-to-simulated ratio of the past campaign. *Transaction settings.* A cell passes the history gate if the reference mean and the reference zero share lie within the simulated 95% intervals (widened by 2% of the reference mean and by 0.02 for the zero share). The held-out statistic is the share of expected purchases made by the top decile implied by the simulated $\alpha$ through Proposition 3(b) (the share is 0.10 when $\alpha \le 0$), and a cell is wrong if this differs from the share implied by the reference $\alpha$ by more than 0.10.
+
+| Outcome | Rule | Cases | Wrong decisions (share of break-even values) | Lift off by more than 2x |
+|---|---|---|---|---|
+| visit | Trust the simulator | 32 | 0.14 | 0.38 |
+| visit | Sign check | 32 | 0.14 | 0.38 |
+| visit | Acceptance gate | 20 | 0.09 | 0.20 |
+| visit | Recalibrated by past ratio | 32 | 0.13 | 0.19 |
+| purchase | Trust the simulator | 32 | 0.43 | 1.00 |
+| purchase | Sign check | 32 | 0.43 | 1.00 |
+| purchase | Acceptance gate | 0 | n/a | n/a |
+| purchase | Recalibrated by past ratio | 32 | 0.21 | 1.00 |
+| all | Trust the simulator | 64 | 0.29 | 0.69 |
+| all | Sign check | 64 | 0.29 | 0.69 |
+| all | Acceptance gate | 20 | 0.09 | 0.20 |
+| all | Recalibrated by past ratio | 64 | 0.17 | 0.59 |
+
+*Table E1. Email backtest, by decision rule and outcome.*
+
+| Model | Anchored prompt | Past campaign | Past ratio | New ratio | New lift within 2x |
+|---|---|---|---|---|---|
+| claude-haiku-5.5 | no | men | 0.95 | 2.01 | no |
+| claude-sonnet-5 | no | men | 1.81 | 3.36 | no |
+| claude-sonnet-5 | yes | women | 0.80 | 0.35 | no |
+| deepseek-v4-pro-0813 | no | men | 0.67 | 0.97 | yes |
+| deepseek-v4-pro-0813 | no | women | 0.97 | 0.67 | yes |
+| gemini-3.1-flash-lite | no | men | 0.59 | 1.08 | yes |
+| gemini-3.1-flash-lite | no | women | 1.08 | 0.59 | yes |
+| gemini-3.1-flash-lite | yes | men | 0.77 | 1.28 | yes |
+| gemini-3.1-flash-lite | yes | women | 1.28 | 0.77 | yes |
+| llama-3.3-70b-instruct | no | men | 0.93 | 1.42 | yes |
+| llama-3.3-70b-instruct | no | women | 1.42 | 0.93 | yes |
+| llama-3.3-70b-instruct | yes | women | 0.80 | 0.46 | no |
+| mistral-large-4-0 | no | men | 1.02 | 1.97 | yes |
+| mistral-large-4-0 | no | women | 1.97 | 1.02 | yes |
+| mistral-large-4-0 | yes | men | 0.54 | 0.82 | yes |
+| mistral-large-4-0 | yes | women | 0.82 | 0.54 | yes |
+| gpt-5.6-terra | no | men | 0.64 | 1.22 | yes |
+| gpt-5.6-terra | no | women | 1.22 | 0.64 | yes |
+| gpt-5.6-terra | yes | men | 0.98 | 1.95 | yes |
+| gpt-5.6-terra | yes | women | 1.95 | 0.98 | yes |
+
+*Table E2. Cases admitted by the acceptance gate (all visits). Ratio is simulated lift divided by measured lift.*
+
+| Setting | Design | Cells | Pass sign/mean check | Pass history gate | Wrong (all cells) | Wrong among gate passes |
+|---|---|---|---|---|---|---|
+| Retail (mean 0.49) | A | 12 | 2 | 0 | 1.00 | n/a |
+| Retail (mean 0.49) | B | 15 | 3 | 0 | 1.00 | n/a |
+| Retail (mean 0.49) | C | 16 | 12 | 1 | 1.00 | 1.00 |
+| Retail (mean 0.49) | D | 16 | 15 | 8 | 0.06 | 0.00 |
+| Grocery (4.84) | A | 16 | 8 | 0 | 1.00 | n/a |
+| Grocery (4.84) | B | 16 | 3 | 0 | 1.00 | n/a |
+| Grocery (4.84) | C | 16 | 14 | 1 | 0.56 | 0.00 |
+| Grocery (4.84) | D | 16 | 14 | 6 | 0.00 | 0.00 |
+| Demographic households (7.83) | A | 16 | 16 | 0 | 1.00 | n/a |
+| Demographic households (7.83) | B | 16 | 14 | 0 | 1.00 | n/a |
+| Demographic households (7.83) | C | 16 | 16 | 2 | 0.00 | 0.00 |
+| Demographic households (7.83) | D | 16 | 16 | 0 | 0.00 | n/a |
+
+*Table E3. Transaction backtest: held-out top-decile share error above 0.10, by setting and design. Cells with an undefined variance-to-mean ratio are excluded (187 of 192).*
+
+The gate passes only designs that obtain the dispersion from outside the model (D) or from the described distribution (C). Because the hybrid design sets its dispersion from the reference, its low error rate under the gate is partly built in. The two-campaign structure of the email backtest implies that the 64 cases come from 32 configurations, so cases from the same configuration are not independent.
