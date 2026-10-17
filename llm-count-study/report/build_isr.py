@@ -66,9 +66,19 @@ md = (md.replace("{{TABLE_DEMO_SUMMARY}}", demo_summary()).replace("{{TABLE_DEMO
         .replace("{{TABLE_RETAIL}}", dist_table("retail_ci.csv", (0.49, 2.49, 0.74, 3.05)))
         .replace("{{TABLE_GROCERY}}", dist_table("grocery_ci.csv", (4.84, 7.85, 0.19, 1.42)))
         .replace("{{REFS}}", "\n\n".join(REFS.splitlines())))
-open("isr_manuscript.md", "w").write(md)
+import re as _re
+cut = md.index("# Appendix A.")
+main, appx = md[:cut].rstrip() + "\n", md[cut:]
+main = _re.sub(r"(?<!Online Appendix )Table B(\d)", r"Online Appendix Table B\1", main)
+main = main.replace("and Appendix B gives all cells", "and the Online Appendix gives all cells")
+main += "\n\n*An Online Appendix (Appendix A, prompt templates; Appendix B, full results by model and prompt; Appendix C, reproducibility; Appendix D, proof of Proposition 3) is provided as a separate file.*\n"
+open("isr_manuscript.md", "w").write(main)
+appx = "::: {custom-style=\"Title\"}\nOnline Appendix to \"" + _re.search(r'Title"\}\n(.+)\n:::', md).group(1) + "\"\n:::\n\n" + appx
+open("isr_online_appendix.md", "w").write(appx)
 OUT = "../ISR_manuscript_draft.docx"
+OUT2 = "../ISR_online_appendix.docx"
 subprocess.run(["pandoc", "isr_manuscript.md", "-o", OUT, "--resource-path=."], check=True)
+subprocess.run(["pandoc", "isr_online_appendix.md", "-o", OUT2, "--resource-path=."], check=True)
 
 
 def polish(path):
@@ -112,5 +122,5 @@ def polish(path):
     d.save(path)
 
 
-polish(OUT)
-print("built", OUT)
+polish(OUT); polish(OUT2)
+print("built", OUT, OUT2)

@@ -18,7 +18,7 @@ Organizations are beginning to place generative-AI "digital twins" of customers 
 
 We treat the synthetic-customer simulator as an IT artifact, that is, a system that organizations design, deploy, and use to support decisions (Orlikowski and Iacono 2001, Hevner et al. 2004). Design science asks that such an artifact be evaluated against the decisions it serves and that the evaluation yield prescriptive knowledge about how to build it (Gregor and Hevner 2013). Its value does not lie in the language model alone but in the fit between what the system delivers and what the task demands (Goodhue and Thompson 1995). For promotion planning the task demands a plausible share of customers who do not buy, a plausible weight of heavy buyers, and a plausible absolute size of an effect. The elicitation design, meaning how the model is asked, how its answers become numbers, and where the variation among customers comes from, is therefore the artifact's central design variable. We ask which designs preserve what the decision needs, why, and what organizations must do to know.
 
-The question sits at the interface of information systems and marketing. Marketing analytics has become a systems problem: data are collected, transformed, and fed into models and dashboards that shape budgets and campaigns (Wedel and Kannan 2016), and the design, validation, and governance of those systems fall to information systems functions as much as to marketing. Generative AI adds a new component to this pipeline, the synthetic customer. A twin is only as useful as the properties it preserves, and fluent, plausible output invites reliance beyond what a system warrants (Lee and See 2004). The limits of AI-based decision support are therefore not a technical footnote but a question of how organizations should validate and use such outputs.
+The question sits at the interface of information systems and marketing. Marketing analytics has become a systems problem: data are collected, transformed, and fed into models and dashboards that shape budgets and campaigns (Wedel and Kannan 2016), and the design, validation, and governance of those systems fall to information systems functions as much as to marketing. Generative AI adds a new component to this pipeline, the synthetic customer. A twin is only as useful as the properties it preserves, and fluent output invites reliance beyond what a system warrants (Lee and See 2004).
 
 To make the question tractable we examine one property on which analytics systems depend, the heterogeneity of customers, as it appears in purchase counts. Marketing science has long modeled counts as a Poisson process whose rate differs across customers, so that the overdispersion of counts measures how much customers differ (Ehrenberg 1959, Schmittlein et al. 1987, Fader et al. 2005). Heterogeneity is a demanding test for a generative system for three reasons. It is invisible in the averages that users inspect. It drives the decisions that matter, those that depend on heavy buyers, on non-buyers, and on uncertainty. And it is the property that studies of silicon samples find compressed, with answers clustering on the modal response (Li et al. 2025, Tigre and Souto 2026) and instruction-tuned models unable to sample from distributions they can describe (Jang et al. 2026). Purchase counts, concentration, and promotion lifts are thus the supporting evidence in this paper, not its subject. They let us observe, against real data, whether the artifact preserves the property that the decision needs.
 
@@ -135,13 +135,7 @@ The consequence of a lost spread is not limited to a statistical summary. It aff
 
 (d) The simulated count $N^*$ of a deterministic persona-conditioned simulator (Proposition 1) has squared coefficient of variation $c^2$. The share of simulated purchases made by the fraction $q$ of customers with the highest counts is therefore at most $q + \sqrt{c^2 q(1-q)}$.
 
-*Proof.* (a) Let $A$ be any event with $P(A) = q$. Then $E[\Lambda \mathbf{1}_A] = \mu q + \text{Cov}(\Lambda, \mathbf{1}_A)$, and the Cauchy–Schwarz inequality gives $\text{Cov}(\Lambda, \mathbf{1}_A) \le \sqrt{\text{Var}(\Lambda)}\sqrt{q(1-q)} = \mu\sqrt{\alpha q(1-q)}$. This bounds $S_q$ from above. For the lower bound take an event that is independent of $\Lambda$ and has probability $q$ (on a sufficiently rich probability space, or by assigning ties fractionally); it yields $E[\Lambda \mathbf{1}_A] = \mu q$.
-
-(b) Let $\Lambda$ have density $f_{k,\theta}$ with $\mu = k\theta$. Since $\lambda f_{k,\theta}(\lambda) = k\theta\, f_{k+1,\theta}(\lambda)$, we have $E[\Lambda \mathbf{1}\{\Lambda > x\}] = \mu\, P(G_{k+1,\theta} > x)$ for a gamma variable $G_{k+1,\theta}$ with shape $k+1$ and scale $\theta$. The maximum in the definition of $S_q$ is attained by the event $\{\Lambda > x_q\}$ with $P(\Lambda > x_q) = q$, because $E[\Lambda \mathbf{1}_A]$ is largest when $A$ collects the largest values of $\Lambda$. Hence $S_q = P(G_{k+1,\theta} > x_q)$ with $x_q = \theta F_k^{-1}(1-q)$, which is the stated expression.
-
-(c) The limit follows from (a), because the upper bound tends to $q$ as $\alpha \to 0$. For monotonicity let $k_1 < k_2$, so that $\alpha_1 > \alpha_2$, and let $Y_j$ be gamma variables with shape $k_j$ and mean one. By the beta–gamma algebra, if $G \sim \text{Gamma}(k_2, 1)$ and $B \sim \text{Beta}(k_1, k_2 - k_1)$ are independent, then $BG \sim \text{Gamma}(k_1, 1)$. Hence $Y_1$ has the distribution of $M Y_2$ with $Y_2 = G/k_2$ and $M = B k_2/k_1$, where $M$ is independent of $Y_2$, non-degenerate, and has $E[M] = 1$. Let $A^* = \{Y_2 > x^*\}$ be the event with probability $q$ that attains $S_q$ for $Y_2$. Then $S_q(\alpha_1) \ge E[M Y_2 \mathbf{1}_{A^*}] = E[M]\,E[Y_2 \mathbf{1}_{A^*}] = S_q(\alpha_2)$. The inequality is strict, because the maximizing event for $M Y_2$ is $\{M Y_2 > y^*\}$, which differs from $A^*$ with positive probability when $M$ is non-degenerate, and the maximizing event is unique up to null sets.
-
-(d) The argument of (a) uses only the mean and the variance of the nonnegative variable and holds for any event of probability $q$, including events defined by ranking customers on their counts (ties are broken arbitrarily). For a deterministic simulator $\text{Var}(N^*) = \text{Var}(m(X))$, so the squared coefficient of variation of $N^*$ is $c^2$. $\square$
+*Proof sketch.* Part (a) follows from the Cauchy–Schwarz inequality applied to $\text{Cov}(\Lambda, \mathbf{1}_A)$, with an independent event of probability $q$ for the lower bound. Part (b) follows from the identity $\lambda f_{k,\theta}(\lambda) = k\theta\, f_{k+1,\theta}(\lambda)$, which makes the size-biased gamma a gamma with shape $k+1$. Part (c) uses the beta–gamma algebra to write a gamma variable with smaller shape as an independent mean-one multiple of one with larger shape. Part (d) applies (a) to the simulated counts. The full proof is in Online Appendix D. $\square$
 
 For the three reference settings with $q = 0.1$, part (b) gives shares of expected purchases of 52% for the top tenth of customers when $\alpha = 3.05$ (low-mean setting), 38% when $\alpha = 1.42$ (high-mean setting), and 29% when $\alpha = 0.71$ (demographic households), against 10% for a population without heterogeneity. The shares of observed counts are somewhat higher in the low-mean setting (65%, 39%, and 30%) because counts are discrete and zeros are common. A simulator that carries only the persona-described heterogeneity of the demographic experiment ($c^2 = 0.006$) can represent a share of at most 12% by part (d), and 11% if its rates were gamma distributed. Decisions that depend on concentration, such as how deeply to target a promotion, how to set loyalty tiers, or how to size a budget ceiling for heavy buyers, are therefore biased in a known direction when the spread is lost. The direction of the bias, and an upper bound on what a given simulator can represent, are known in advance, which is what makes the problem manageable by design.
 
@@ -186,7 +180,7 @@ For each of 300 customers sampled from the real data (a new sample for each seed
 
 ## 5.1 Overview
 
-Table 2 summarizes the low-mean and the high-mean setting by design, and Appendix B gives all cells. The main pattern is that variance collapse is severe in designs A and B in every setting, that design C moves toward the real dispersion but loses zeros where they are common, and that design D matches dispersion in most cells while its mean depends on the model. The loss of dispersion has a direct consequence for the concentration of purchases among heavy buyers (Section 5.7).
+Table 2 summarizes the low-mean and the high-mean setting by design, and the Online Appendix gives all cells. The main pattern is that variance collapse is severe in designs A and B in every setting, that design C moves toward the real dispersion but loses zeros where they are common, and that design D matches dispersion in most cells while its mean depends on the model. The loss of dispersion has a direct consequence for the concentration of purchases among heavy buyers (Section 5.7).
 
 | Setting | Design | Mean | Var/mean | Zero | Alpha |
 |---|---|---|---|---|---|
@@ -207,13 +201,13 @@ Table 2 summarizes the low-mean and the high-mean setting by design, and Appendi
 
 ## 5.2 Low-mean setting
 
-Direct and daily designs rarely reproduce the real dispersion. In 45 of the 47 cells of designs A, B, and C with a defined ratio, the upper bound of the variance-to-mean interval is below the reference of 2.49 (Table B1, Figure 1a). Two cells go the other way. DeepSeek-V4-Pro without the anchor gives direct answers with a ratio of 14.7 (interval 5.6 to 22.3), because a few customers receive very large counts alongside many zeros (mean 2.10, zero share 0.52), and its seeds range from 9.0 to 18.4; and Sonnet 5 without the anchor gives daily simulations with a ratio of 2.95 (2.73 to 3.17). Elsewhere direct answers are the most compressed, with ratios of at most 0.87 in 11 of 16 cells; in three further cells nearly every answer was "0" (Llama, Sonnet 5, and Mistral Large 4 with the anchor), which gives a ratio near one and no information, and one cell (DeepSeek-V4-Pro with the anchor) has a ratio close to the Poisson value of one (0.95, interval 0.76 to 1.15). With the anchor, five cells in all (those three, and Sonnet 5 and GPT-5.6-terra for daily simulation) return "0" for 98% to 100% of customers, which follows the anchor text ("most make none") but carries no persona information. Without the anchor, daily simulation overstates the mean in every model (1.6 to 13.6 purchases in 28 days against 0.49) and stays close to Poisson or below it in most. Describing a distribution reaches ratios of 0.97 to 1.61, below its own ceiling of 2.10 in all 16 cells, and its zero share is too low (0.32 to 0.71, against 0.74) in every cell.
+Direct and daily designs rarely reproduce the real dispersion. In 45 of the 47 cells of designs A, B, and C with a defined ratio, the upper bound of the variance-to-mean interval is below the reference of 2.49 (Online Appendix Table B1, Figure 1a). Two cells go the other way. DeepSeek-V4-Pro without the anchor gives direct answers with a ratio of 14.7 (interval 5.6 to 22.3), because a few customers receive very large counts alongside many zeros (mean 2.10, zero share 0.52), and its seeds range from 9.0 to 18.4; and Sonnet 5 without the anchor gives daily simulations with a ratio of 2.95 (2.73 to 3.17). Elsewhere direct answers are the most compressed, with ratios of at most 0.87 in 11 of 16 cells; in three further cells nearly every answer was "0" (Llama, Sonnet 5, and Mistral Large 4 with the anchor), which gives a ratio near one and no information, and one cell (DeepSeek-V4-Pro with the anchor) has a ratio close to the Poisson value of one (0.95, interval 0.76 to 1.15). With the anchor, five cells in all (those three, and Sonnet 5 and GPT-5.6-terra for daily simulation) return "0" for 98% to 100% of customers, which follows the anchor text ("most make none") but carries no persona information. Without the anchor, daily simulation overstates the mean in every model (1.6 to 13.6 purchases in 28 days against 0.49) and stays close to Poisson or below it in most. Describing a distribution reaches ratios of 0.97 to 1.61, below its own ceiling of 2.10 in all 16 cells, and its zero share is too low (0.32 to 0.71, against 0.74) in every cell.
 
 The hybrid matches the reference ratio in 10 of 16 cells, the mean in 6, the zero share in 10, and $\alpha$ in 13; all four in 5 cells (Sonnet 5, DeepSeek-V4-Pro, and GPT-5.6-terra without the anchor, and Mistral Large 4 and GPT-5.6-terra with it). Its variance-to-mean ratio misses mainly when the model's mean is low, because the ratio equals $1 + \alpha\mu$ and so inherits the error of the mean even when $\alpha$ is right. Agreement on dispersion is partly by construction, because the gamma multiplier injects it; what the model contributes is the mean, which is almost twice the reference for Llama with the anchor (0.93 against 0.49).
 
 ## 5.3 High-mean setting
 
-A higher mean does not relieve the collapse of direct answers (Table B2, Figure 1b). In 13 of 16 cells the variance-to-mean ratio of design A lies between 0.00 and 0.36, against a reference of 7.85. Three cells have more spread: DeepSeek-V4-Pro (1.10 without the anchor and 1.57 with it, both with wide intervals) and Mistral Large 4 without the anchor (2.45, interval 1.98 to 2.98, $\alpha = +0.17$), which carries about a third of the real dispersion. Without the anchor GPT-4o-mini and Llama answered "8" for practically every customer; with the anchor all eight models returned numbers close to the stated base rate of 5 (means of 3.73 to 5.22), so that the answer carries little persona information. Daily simulation again misses the mean (4.35 to 16.65 trips against 4.84) and has almost no dispersion (ratios of 0.04 to 0.38, zero share of at most 0.01). In all 48 cells of designs A, B, and C the variance-to-mean interval lies entirely below the reference.
+A higher mean does not relieve the collapse of direct answers (Online Appendix Table B2, Figure 1b). In 13 of 16 cells the variance-to-mean ratio of design A lies between 0.00 and 0.36, against a reference of 7.85. Three cells have more spread: DeepSeek-V4-Pro (1.10 without the anchor and 1.57 with it, both with wide intervals) and Mistral Large 4 without the anchor (2.45, interval 1.98 to 2.98, $\alpha = +0.17$), which carries about a third of the real dispersion. Without the anchor GPT-4o-mini and Llama answered "8" for practically every customer; with the anchor all eight models returned numbers close to the stated base rate of 5 (means of 3.73 to 5.22), so that the answer carries little persona information. Daily simulation again misses the mean (4.35 to 16.65 trips against 4.84) and has almost no dispersion (ratios of 0.04 to 0.38, zero share of at most 0.01). In all 48 cells of designs A, B, and C the variance-to-mean interval lies entirely below the reference.
 
 Describing a distribution reaches ratios of 3.65 to 6.44. Its intervals contain the ceiling of 6.61 in only 3 of 16 cells (3 of the 8 anchored cells), so the impression from the first three models that the anchor lets design C reach the ceiling does not generalize. Its weak point is the zero share: 0.01 to 0.15 against the real 0.19, below the reference in every cell. The hybrid matches the reference ratio in 12 of 16 cells, the mean in 4, the zero share in 8, and all four of mean, ratio, zero share, and $\alpha$ in 2: Haiku 5.5 without the anchor and GPT-4o-mini with it. The remaining cells fail because the model's mean is wrong, for example 3.63 for Mistral Large 4 with the anchor and 7.65 for DeepSeek-V4-Pro without it.
 
@@ -227,7 +221,7 @@ The personas used so far were deliberately simple. To test whether richer person
 
 How much can demographics explain? Out of sample (households held out), a Poisson regression of the household's count on all demographic fields reaches a Spearman correlation of only 0.04 with the real count, and the squared coefficient of variation of its predicted means is $c^2 = 0.006$, about 1% of $\alpha$. In terms of Proposition 1, the unexplained share $R$ is almost equal to $\alpha$: the persona describes almost none of the heterogeneity. A deterministic simulator that predicted these means perfectly would have $\alpha^* = c^2 - 1/\mu = -0.12$, against a real $\alpha$ of 0.71.
 
-The simulations behave as Proposition 1 predicts (Table 3, Table B3). Direct answers are collapsed again (variance-to-mean ratio 0.00 to 1.73, zero share at most 0.01) with $\alpha$ between -0.16 and +0.08. GPT-4o-mini answered "8" for every household when told the base rate (the number in the anchor text) and for practically every household without it, which gives $\alpha = -1/\mu = -0.125$, exactly the value of Proposition 1 with $c^2 = 0$. Daily simulation again misses the mean (5.9 to 17.2 against 7.83) and has ratios of 0.06 to 0.30. Describing a distribution reaches ratios of 3.44 to 6.11, and its intervals contain the ceiling of 5.01 in 10 of 16 cells (5 of the 8 anchored cells); its zero share (0.03 to 0.15) matches the small real share of 0.03 in 8 of 16 cells. The hybrid matches the reference ratio in 10 of 16 cells, but its mean in only 3 of 16: the model's $\lambda$ is usually too low (4.28 to 7.17 in the cells that miss, against 7.83). It matches the zero share in none of the 16 cells (0.07 to 0.15 against 0.03), because Poisson counts with a gamma multiplier produce more zeros than these households, and so it matches all four of mean, ratio, zero share, and $\alpha$ in none.
+The simulations behave as Proposition 1 predicts (Table 3, Online Appendix Table B3). Direct answers are collapsed again (variance-to-mean ratio 0.00 to 1.73, zero share at most 0.01) with $\alpha$ between -0.16 and +0.08. GPT-4o-mini answered "8" for every household when told the base rate (the number in the anchor text) and for practically every household without it, which gives $\alpha = -1/\mu = -0.125$, exactly the value of Proposition 1 with $c^2 = 0$. Daily simulation again misses the mean (5.9 to 17.2 against 7.83) and has ratios of 0.06 to 0.30. Describing a distribution reaches ratios of 3.44 to 6.11, and its intervals contain the ceiling of 5.01 in 10 of 16 cells (5 of the 8 anchored cells); its zero share (0.03 to 0.15) matches the small real share of 0.03 in 8 of 16 cells. The hybrid matches the reference ratio in 10 of 16 cells, but its mean in only 3 of 16: the model's $\lambda$ is usually too low (4.28 to 7.17 in the cells that miss, against 7.83). It matches the zero share in none of the 16 cells (0.07 to 0.15 against 0.03), because Poisson counts with a gamma multiplier produce more zeros than these households, and so it matches all four of mean, ratio, zero share, and $\alpha$ in none.
 
 | Design | Mean | Var/mean | Zero | Alpha | Rank correlation with real count |
 |---|---|---|---|---|---|
@@ -334,7 +328,7 @@ We lead with the contributions to information systems research (Section 6.1) and
 
 *Design knowledge for a class of artifacts that organizations are adopting without one.* Propositions 1 and 2 define a design constraint and a calibration mechanism for persona-conditioned generative systems, and the evidence is consistent with both. Variance-to-mean ratios of direct answers are at most 1.00 in 42 of 48 cells, whatever the mean or the model. When a model returns the same number for every household, the dispersion parameter takes the value $-1/\mu$ that Proposition 1 predicts (about -0.12 in the demographic experiment). Persona enrichment cannot repair this, because the demographics explain about 1% of the heterogeneity. And the design that follows Proposition 2, in which the model supplies a level and an external layer supplies the spread, restores the concentration of purchases among heavy buyers in 39 of 48 cells where direct and daily designs lose it entirely (Section 5.7). Larger and more recent models (Sonnet 5, GPT-5.6-terra, DeepSeek-V4-Pro, Gemini 3.1 Flash-Lite, Mistral Large 4) do not escape the constraint. This reframes the usual advice to "add noise" to synthetic respondents: the amount of noise is not a free parameter, and it is determined by how much heterogeneity the persona already carries.
 
-*Why the problem is managerial.* The constraint has organizational consequences that a purely statistical reading would miss (Section 3.8). The system's quality is bounded by the firm's data assets and not by the capability of the model, and in our data the model contributed little heterogeneity of its own (squared coefficients of variation of its rates of 0.00 to 0.75 against dispersion parameters of 0.71 to 3.05) and nothing that identified which customers buy more (rank correlations with real counts between -0.11 and +0.08). Calibrating the model's level to the historical mean repaired the mean in 44 of 48 cells, but a baseline that gave every customer the historical mean did as well or better on the joint fit (Section 5.8). The value of the generative component therefore has to be demonstrated against the firm's own data, and the means to demonstrate it, real data on the same properties, are what the system was meant to economize. This is the validation paradox. The failure is also silent, since fluent output and the right sign of a promotion effect give the user no signal, and it is exposed to change in components that the firm does not control.
+*Why the problem is managerial.* The constraint has organizational consequences that a purely statistical reading would miss (Section 3.8). The system's quality is bounded by the firm's data assets and not by the capability of the model: the model contributed little heterogeneity of its own (squared coefficients of variation of its rates of 0.00 to 0.75 against dispersion parameters of 0.71 to 3.05) and nothing that identified which customers buy more (rank correlations with real counts between -0.11 and +0.08). Calibrating the model's level to the historical mean repaired the mean in 44 of 48 cells, but a baseline that gave every customer the historical mean did as well or better on the joint fit (Section 5.8). The value of the generative component therefore has to be demonstrated against the firm's own data, which is the data the system was meant to economize (the validation paradox), and the failure is silent and exposed to changes in components that the firm does not control.
 
 *The limits of AI-based decision support and of the "digital twin" idea.* A twin is usually understood as a replica that can stand in for the original in a decision. Our evidence supports a narrower reading. At the level of the individual customer, the demographic personas carried almost no information about real counts, so a customer-level replica is not supported by these data. At the level of the population, the distribution of counts and the size of effects are reproduced only by designs in which the dispersion is supplied from outside the model and the level is checked against data. The claim that a simulated population is a twin of a real one is therefore a claim about specific properties, and it has to be tested property by property: the share of zeros, the spread, the concentration among heavy buyers, and the absolute size of an effect. Evaluation should be stated in terms of the decision-relevant properties of the artifact's output, because fluency and aggregate plausibility, which are what users see, do not indicate them.
 
@@ -370,35 +364,31 @@ The consequence for a decision can be shown in a stylized example. A firm launch
 
 ## 6.4 The cost of uncritical trust
 
-The central managerial risk is not that synthetic customers are useless but that they are trusted without being tested. Our evidence points to five specific ways in which that trust becomes costly.
+The central managerial risk is not that synthetic customers are useless but that they are trusted without being tested. Our evidence points to four ways in which that trust becomes costly.
 
-*Confident, wrong sizing.* The simulated purchase lift for the men's email was overstated in 15 of 16 configurations, with a median of about nine times the randomized value. In the stylized example of Section 6.3, with a cost of 1 and a margin of 50 per purchase, a campaign to 100,000 customers has a real expected result of $0.0068 \times 50 - 1 = -0.66$ per customer, a loss of about 66,000. The median simulated lift of 0.063 predicts about $+2.1$ per customer, a profit of about 213,000. The gap between forecast and outcome is therefore about 280,000 for a single campaign, and it has a sign that favors launching. The error is systematic, not noisy, so it does not average out over campaigns.
+*Confident, wrong sizing.* The simulated purchase lift for the men's email was overstated in 15 of 16 configurations, with a median of about nine times the randomized value. In the stylized example of Section 6.3, a campaign to 100,000 customers has a real expected result of $0.0068 \times 50 - 1 = -0.66$ per customer, a loss of about 66,000, while the median simulated lift of 0.063 predicts about $+2.1$ per customer, a profit of about 213,000. The gap of about 280,000 for a single campaign has a sign that favors launching, and the error is systematic, so it does not average out over campaigns.
 
-*False precision.* The simulated lifts often came with narrow intervals, and the intervals excluded the real value in most configurations. A system that reports a tight interval around a wrong number invites more confidence than one that reports a wide one. Statistical precision, which a synthetic population gives cheaply because the sample size is limited only by the budget for calls, must not be mistaken for validity.
+*False precision.* The simulated lifts often came with narrow intervals that excluded the real value in most configurations. Statistical precision, which a synthetic population gives cheaply because the sample size is limited only by the budget for calls, must not be mistaken for validity.
 
-*Erosion of the evidence base.* If synthetic results replace randomized tests because they are faster and cheaper, the organization loses the data that would reveal the error and that its calibration step needs (Section 3.8). The failure is then self-concealing. We did not observe this process, but it follows from the validation paradox, and it is the reason why we recommend that synthetic pre-tests be paired with a continuing stream of real tests and not substitute for it.
+*Erosion of the evidence base.* If synthetic results replace randomized tests because they are faster and cheaper, the organization loses the data that would reveal the error and that its calibration step needs (Section 3.8), and the failure becomes self-concealing. We did not observe this process; it follows from the validation paradox.
 
-*Propagation.* Synthetic customers that are used as inputs to forecasts, budget models, or other learned systems carry their compressed spread with them. Concentration is lost (Proposition 3), the share of non-buyers is distorted, and the result enters downstream decisions as if it were observed data. The cost is then not one wrong decision but a bias built into the planning system, whose source is hard to trace afterward.
+*Propagation.* Synthetic customers used as inputs to forecasts, budget models, or other learned systems carry their compressed spread with them. Concentration is lost (Proposition 3) and the share of non-buyers is distorted, and the result enters downstream decisions as if it were observed data. The cost is then a bias built into the planning system, whose source is hard to trace afterward.
 
-*Unassigned accountability.* When a decision rests on a vendor's model, a prompt written by an analyst, and a calibration step maintained by another team, no one owns the error. The organization should assign responsibility for the acceptance test of Section 6.5 before the system is used, not after the first costly outcome. A digital twin that no one is accountable for validating is a liability presented as an asset.
-
-These risks do not argue against the technology. They argue against using it as a replacement for evidence rather than as a complement to it, and against purchasing decisions that are based on demonstrations of fluency and plausible averages, which are the properties our experiments show to be least informative about decision quality.
+These risks do not argue against the technology. They argue against using it as a replacement for evidence rather than as a complement to it, and against purchasing decisions based on demonstrations of fluency and plausible averages, which our experiments show to be the properties least informative about decision quality.
 
 ## 6.5 Organizational accountability: validating and governing synthetic data in analytics systems
 
-The findings have implications for how organizations that run marketing analytics systems should treat synthetic customers. We state them as recommendations that follow from our evidence and from the artifact view; we did not test them in an organization.
+The following arrangements follow from our evidence and from the artifact view; we did not test them in an organization.
 
-*Treat validation as an acceptance gate, not an afterthought.* Before synthetic customers enter a planning process, the system should pass a standing acceptance test against the organization's own history: level, variance-to-mean ratio, zero share, and, where a past randomized test exists, the absolute lift. The reference values come from the customer file and the experiment archive that the marketing analytics team already holds. This puts a concrete interface between two functions. The marketing team owns the reference data and the decision requirements, and the information systems team owns the pipeline, the model versions, and the calibration step.
+*Treat validation as an acceptance gate with named owners.* Before synthetic customers enter a planning process, the system should pass the acceptance test of Section 6.3 against the organization's own history. The reference values come from the customer file and the experiment archive that the marketing analytics team already holds, so the test puts a concrete interface between two functions: the marketing team owns the reference data and the decision requirements, and the information systems team owns the pipeline, the model versions, and the calibration step. A decision that rests on a vendor's model, a prompt written by an analyst, and a calibration step maintained by another team has no owner for its errors unless accountability is assigned before the system is used. A digital twin that no one is accountable for validating is a liability presented as an asset.
 
-*Re-validate when the model changes.* The eight models we tested differed widely in the same design, for example in the mean they implied and in how they reacted to a stated base rate, and the same model reacted differently to different prompt context. A vendor update or a switch of model or provider should therefore trigger the acceptance test again, in the same way that a schema change triggers regression tests in other systems. The same applies to changes in the prompt template.
+*Re-validate when a component changes.* The eight models we tested differed widely in the same design, and the same model reacted differently to different prompt context. A vendor update, a switch of model or provider, or a change in the prompt template should therefore trigger the acceptance test again, in the same way that a schema change triggers regression tests in other systems.
 
-*Use synthetic data where its errors do the least harm.* The designs we studied reproduced the sign of a promotion effect in nearly all cases, but not its size. Synthetic customers are therefore better suited to screening and ranking options, or to generating hypotheses, than to sizing a campaign or computing revenue. A randomized holdout test remains the standard for the latter, and the stylized example in Section 6.3 shows what is at risk if that standard is skipped.
+*Use synthetic data where its errors do the least harm.* The designs reproduced the sign of a promotion effect in nearly all cases, but not its size. Synthetic customers are therefore better suited to screening and ranking options, or to generating hypotheses, than to sizing a campaign or computing revenue, for which a randomized holdout test remains the standard.
 
-*Keep synthetic data separate from real data.* Synthetic records that share a schema with customer records can end up in dashboards, forecasts, or training sets for other models, where their compressed spread is no longer visible. Provenance labels, separate storage, and a rule against pooling synthetic and real records in estimation are inexpensive safeguards. We did not study this risk empirically; it follows from the finding that the spread is the property that is lost.
+*Keep synthetic data separate from real data.* Synthetic records that share a schema with customer records can end up in dashboards, forecasts, or training sets for other models, where their compressed spread is no longer visible. Provenance labels, separate storage, and a rule against pooling synthetic and real records in estimation are inexpensive safeguards.
 
-*Weigh the savings against the cost of a wrong decision.* The runs themselves are cheap: about 25,600 calls cost under one US dollar with the least expensive models and about eleven US dollars with the most expensive of the four we priced, at list prices at the time of our runs. The relevant cost is therefore not the simulation but the decision made on its output, and the governance effort should be proportional to the value of that decision.
-
-*Build the loop that corrects the system.* Each randomized test that the organization runs is also a calibration data point for its simulator. A system that stores the simulated and the realized lift for each past campaign can track its own bias over time and adjust the calibration step, which turns an occasional validation into a continuing feedback process.
+*Weigh the savings against the cost of a wrong decision, and build the correcting loop.* The runs themselves are cheap: about 25,600 calls cost under one US dollar with the least expensive models and about eleven US dollars with the most expensive of the four we priced, at list prices at the time of our runs. The relevant cost is the decision made on the output, so governance effort should be proportional to its value. Each randomized test that the organization runs is also a calibration data point for its simulator; a system that stores the simulated and the realized lift of each past campaign can track its own bias and adjust the calibration step, which turns an occasional validation into a continuing feedback process.
 
 ## 6.6 Limitations and future research
 
@@ -472,226 +462,5 @@ Zhang J, Yu S, Chong D, et al. (2025a) Verbalized sampling: How to mitigate mode
 
 Zhang R, Zhang X, Zhao M (2025b) Predicting effects, missing distributions: Evaluating LLMs as human behavior simulators in operations management. Preprint, submitted September 30, arXiv:2510.03310.
 
-# Appendix A. Prompt Templates {-}
 
-Persona text, low-mean setting: "You are a customer of an online giftware retailer. Profile: {segment}, age {age}, based in {country}. You made your first purchase 4 weeks ago." Anchored variant adds: "Context: customers of this retailer make on average about 0.5 purchases per 4 weeks, and most make none."
-
-Persona text, high-mean setting: "You are a household with a loyalty card at a supermarket chain and you do part of your grocery shopping there. Profile: {segment}, head of household aged {age}, {household size} person(s)." Anchored variant adds: "Context: households in this loyalty program make on average about 5 shopping trips to the chain per 4 weeks, and some make none."
-
-Questions. Design A: "How many separate purchases will you make in the next 4 weeks? Answer with ONLY an integer." Design B: "Week {w} of the next 4 weeks: for each of its 7 days decide whether you make a purchase that day. Reply with ONLY 7 comma-separated 0/1 values." Design C: "Give the probabilities of making {bins} purchases in the next 4 weeks. Reply with ONLY JSON like {...} summing to 1." Design D: "What is your expected average number of purchases per 4 weeks (can be fractional, e.g. 0.4)? Reply with ONLY a number." Email experiment: persona from the customer's recency, 12-month spend, merchandise bought, area, new or existing status, and channel, followed by one of three sentences describing the email received, and "What is the probability, from 0 to 100 percent, that you will {visit the retailer's website / make a purchase from the retailer} during the next two weeks? Reply with ONLY a number."
-
-# Appendix B. Full Results {-}
-
-| Model | Prompt | Design | Mean | Var/mean | Zero | Alpha |
-|---|---|---|---|---|---|---|
-| Reference | | | 0.49 | 2.49 | 0.74 | 3.05 |
-| GPT-4o-mini | plain | A Direct | 1.92\* | 0.25\* | 0.00\* | -0.39\* |
-| GPT-4o-mini | plain | B Daily | 13.56\* | 0.24\* | 0.00\* | -0.06\* |
-| GPT-4o-mini | plain | C Describe | 1.30\* | 1.21\* | 0.32\* | 0.16\* |
-| GPT-4o-mini | plain | D Hybrid | 0.43\* | 2.19 | 0.73 | 2.79 |
-| GPT-4o-mini | anchored | A Direct | 1.00\* | 0.00\* | 0.00\* | -1.00\* |
-| GPT-4o-mini | anchored | B Daily | 5.07\* | 0.33\* | 0.00\* | -0.13\* |
-| GPT-4o-mini | anchored | C Describe | 0.37\* | 1.17\* | 0.71\* | 0.46\* |
-| GPT-4o-mini | anchored | D Hybrid | 0.59\* | 2.19\* | 0.70\* | 2.01\* |
-| Llama-3.3-70B | plain | A Direct | 0.96\* | 0.56\* | 0.29\* | -0.46\* |
-| Llama-3.3-70B | plain | B Daily | 3.13\* | 0.38\* | 0.03\* | -0.20\* |
-| Llama-3.3-70B | plain | C Describe | 0.98\* | 1.61\* | 0.47\* | 0.62\* |
-| Llama-3.3-70B | plain | D Hybrid | 0.42\* | 2.03\* | 0.75 | 2.43 |
-| Llama-3.3-70B | anchored | A Direct | 0.00\* | 1.00\* | 1.00\* | 0.00\* |
-| Llama-3.3-70B | anchored | B Daily | 0.59\* | 1.24\* | 0.62\* | 0.41\* |
-| Llama-3.3-70B | anchored | C Describe | 0.40\* | 1.08\* | 0.67\* | 0.19\* |
-| Llama-3.3-70B | anchored | D Hybrid | 0.93\* | 3.38\* | 0.63\* | 2.57 |
-| Haiku 5.5 | plain | A Direct | 1.64\* | 0.19\* | 0.00\* | -0.49\* |
-| Haiku 5.5 | plain | B Daily | 5.90\* | 0.89\* | 0.01\* | -0.02\* |
-| Haiku 5.5 | plain | C Describe | 0.85\* | 1.60\* | 0.52\* | 0.70\* |
-| Haiku 5.5 | plain | D Hybrid | 0.65\* | 2.90 | 0.69\* | 2.95 |
-| Haiku 5.5 | anchored | A Direct | 0.74\* | 0.26\* | 0.26\* | -1.00\* |
-| Haiku 5.5 | anchored | B Daily | 2.10\* | 1.14\* | 0.27\* | 0.07\* |
-| Haiku 5.5 | anchored | C Describe | 0.43 | 1.34\* | 0.69\* | 0.80\* |
-| Haiku 5.5 | anchored | D Hybrid | 0.49 | 2.04\* | 0.72 | 2.09\* |
-| Sonnet 5 | plain | A Direct | 1.37\* | 0.87\* | 0.29\* | -0.10\* |
-| Sonnet 5 | plain | B Daily | 3.13\* | 2.95\* | 0.38\* | 0.62\* |
-| Sonnet 5 | plain | C Describe | 0.72\* | 1.57\* | 0.59\* | 0.79\* |
-| Sonnet 5 | plain | D Hybrid | 0.47 | 2.37 | 0.72 | 2.93 |
-| Sonnet 5 | anchored | A Direct | 0.01\* | 0.99\* | 0.99\* | -0.88\* |
-| Sonnet 5 | anchored | B Daily | 0.00\* | n/a | 1.00\* | n/a |
-| Sonnet 5 | anchored | C Describe | 0.47 | 1.30\* | 0.67\* | 0.63\* |
-| Sonnet 5 | anchored | D Hybrid | 0.39\* | 2.46 | 0.77 | 3.74 |
-| GPT-5.6-terra | plain | A Direct | 0.69\* | 0.51\* | 0.38\* | -0.71\* |
-| GPT-5.6-terra | plain | B Daily | 1.60\* | 1.15\* | 0.32\* | 0.09\* |
-| GPT-5.6-terra | plain | C Describe | 0.51 | 1.25\* | 0.64\* | 0.50\* |
-| GPT-5.6-terra | plain | D Hybrid | 0.56 | 3.09 | 0.72 | 3.77 |
-| GPT-5.6-terra | anchored | A Direct | 0.26\* | 0.74\* | 0.74 | -1.00\* |
-| GPT-5.6-terra | anchored | B Daily | 0.01\* | 0.99\* | 0.99\* | -0.86\* |
-| GPT-5.6-terra | anchored | C Describe | 0.48 | 1.03\* | 0.62\* | 0.07\* |
-| GPT-5.6-terra | anchored | D Hybrid | 0.56 | 2.37 | 0.71 | 2.42 |
-| DeepSeek-V4-Pro | plain | A Direct | 2.10\* | 14.72\* | 0.52\* | 6.54 |
-| DeepSeek-V4-Pro | plain | B Daily | 4.73\* | 1.00\* | 0.02\* | 0.00\* |
-| DeepSeek-V4-Pro | plain | C Describe | 0.59\* | 1.34\* | 0.60\* | 0.57\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 0.43 | 2.40 | 0.76 | 3.22 |
-| DeepSeek-V4-Pro | anchored | A Direct | 0.36\* | 0.95\* | 0.67\* | -0.13\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 0.50 | 0.81\* | 0.57\* | -0.37\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 0.54 | 1.04\* | 0.59\* | 0.07\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 0.61\* | 2.52 | 0.69\* | 2.49 |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 1.05\* | 0.59\* | 0.29\* | -0.39\* |
-| Gemini 3.1 Flash-Lite | plain | B Daily | 3.51\* | 0.35\* | 0.03\* | -0.18\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 0.49 | 1.26\* | 0.65\* | 0.53\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 0.28\* | 1.62\* | 0.81\* | 2.27 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 0.30\* | 0.70\* | 0.69\* | -1.00\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 1.45\* | 1.15\* | 0.35\* | 0.10\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 0.52 | 0.97\* | 0.59\* | -0.06\* |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 0.59\* | 2.61 | 0.71 | 2.74 |
-| Mistral Large 4 | plain | A Direct | 1.04\* | 0.64\* | 0.27\* | -0.35\* |
-| Mistral Large 4 | plain | B Daily | 5.06\* | 0.95\* | 0.00\* | -0.01\* |
-| Mistral Large 4 | plain | C Describe | 0.96\* | 1.37\* | 0.45\* | 0.39\* |
-| Mistral Large 4 | plain | D Hybrid | 0.26\* | 1.47\* | 0.81\* | 1.81\* |
-| Mistral Large 4 | anchored | A Direct | 0.01\* | 0.99\* | 0.98\* | -0.89\* |
-| Mistral Large 4 | anchored | B Daily | 0.48 | 0.99\* | 0.63\* | -0.03\* |
-| Mistral Large 4 | anchored | C Describe | 0.56\* | 1.13\* | 0.59\* | 0.23\* |
-| Mistral Large 4 | anchored | D Hybrid | 0.47 | 2.05 | 0.71 | 2.25 |
-
-*Table B1. Low-mean setting, per cell. Reference row: negative binomial with mean 0.49 and alpha 3.05. \* the 95% bootstrap interval excludes the reference value. Temperatures are pooled for GPT-4o-mini and Llama.*
-
-| Model | Prompt | Design | Mean | Var/mean | Zero | Alpha |
-|---|---|---|---|---|---|---|
-| Reference | | | 4.84 | 7.85 | 0.19 | 1.42 |
-| GPT-4o-mini | plain | A Direct | 8.00\* | 0.01\* | 0.00\* | -0.12\* |
-| GPT-4o-mini | plain | B Daily | 16.45\* | 0.05\* | 0.00\* | -0.06\* |
-| GPT-4o-mini | plain | C Describe | 5.68\* | 5.37\* | 0.10\* | 0.77\* |
-| GPT-4o-mini | plain | D Hybrid | 6.56\* | 9.02 | 0.18 | 1.22 |
-| GPT-4o-mini | anchored | A Direct | 5.00\* | 0.00\* | 0.00\* | -0.20\* |
-| GPT-4o-mini | anchored | B Daily | 16.65\* | 0.08\* | 0.00\* | -0.06\* |
-| GPT-4o-mini | anchored | C Describe | 5.46\* | 6.44\* | 0.13\* | 1.00\* |
-| GPT-4o-mini | anchored | D Hybrid | 5.33 | 8.73 | 0.21 | 1.45 |
-| Llama-3.3-70B | plain | A Direct | 8.00\* | 0.00\* | 0.00\* | -0.12\* |
-| Llama-3.3-70B | plain | B Daily | 9.86\* | 0.23\* | 0.00\* | -0.08\* |
-| Llama-3.3-70B | plain | C Describe | 7.32\* | 4.85\* | 0.03\* | 0.53\* |
-| Llama-3.3-70B | plain | D Hybrid | 6.06\* | 9.06 | 0.22 | 1.33 |
-| Llama-3.3-70B | anchored | A Direct | 3.73\* | 0.27\* | 0.02\* | -0.20\* |
-| Llama-3.3-70B | anchored | B Daily | 7.03\* | 0.19\* | 0.00\* | -0.12\* |
-| Llama-3.3-70B | anchored | C Describe | 6.49\* | 5.76\* | 0.05\* | 0.73\* |
-| Llama-3.3-70B | anchored | D Hybrid | 4.26\* | 5.90 | 0.14\* | 1.15 |
-| Haiku 5.5 | plain | A Direct | 7.71\* | 0.24\* | 0.00\* | -0.10\* |
-| Haiku 5.5 | plain | B Daily | 9.93\* | 0.25\* | 0.00\* | -0.08\* |
-| Haiku 5.5 | plain | C Describe | 6.16\* | 4.13\* | 0.01\* | 0.51\* |
-| Haiku 5.5 | plain | D Hybrid | 4.81 | 7.48 | 0.20 | 1.35 |
-| Haiku 5.5 | anchored | A Direct | 4.48\* | 0.11\* | 0.00\* | -0.20\* |
-| Haiku 5.5 | anchored | B Daily | 9.47\* | 0.19\* | 0.00\* | -0.09\* |
-| Haiku 5.5 | anchored | C Describe | 5.66\* | 5.82\* | 0.12\* | 0.85\* |
-| Haiku 5.5 | anchored | D Hybrid | 3.66\* | 5.84\* | 0.26\* | 1.32 |
-| Sonnet 5 | plain | A Direct | 8.02\* | 0.36\* | 0.00\* | -0.08\* |
-| Sonnet 5 | plain | B Daily | 10.30\* | 0.16\* | 0.00\* | -0.08\* |
-| Sonnet 5 | plain | C Describe | 7.15\* | 4.57\* | 0.04\* | 0.50\* |
-| Sonnet 5 | plain | D Hybrid | 5.58\* | 8.99 | 0.21 | 1.43 |
-| Sonnet 5 | anchored | A Direct | 4.99\* | 0.03\* | 0.00\* | -0.19\* |
-| Sonnet 5 | anchored | B Daily | 8.21\* | 0.04\* | 0.00\* | -0.12\* |
-| Sonnet 5 | anchored | C Describe | 5.04 | 4.42\* | 0.10\* | 0.68\* |
-| Sonnet 5 | anchored | D Hybrid | 5.47\* | 8.99 | 0.22 | 1.46 |
-| GPT-5.6-terra | plain | A Direct | 7.68\* | 0.15\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | B Daily | 8.37\* | 0.10\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | C Describe | 6.76\* | 4.86\* | 0.05\* | 0.57\* |
-| GPT-5.6-terra | plain | D Hybrid | 5.51\* | 8.72 | 0.22 | 1.40 |
-| GPT-5.6-terra | anchored | A Direct | 4.88\* | 0.02\* | 0.00\* | -0.20\* |
-| GPT-5.6-terra | anchored | B Daily | 4.35\* | 0.12\* | 0.00\* | -0.20\* |
-| GPT-5.6-terra | anchored | C Describe | 5.78\* | 4.12\* | 0.08\* | 0.54\* |
-| GPT-5.6-terra | anchored | D Hybrid | 5.02 | 8.62 | 0.23\* | 1.52 |
-| DeepSeek-V4-Pro | plain | A Direct | 7.77\* | 1.10\* | 0.00\* | 0.01\* |
-| DeepSeek-V4-Pro | plain | B Daily | 8.94\* | 0.19\* | 0.00\* | -0.09\* |
-| DeepSeek-V4-Pro | plain | C Describe | 5.81\* | 4.28\* | 0.03\* | 0.57\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 7.65\* | 9.43 | 0.13\* | 1.10\* |
-| DeepSeek-V4-Pro | anchored | A Direct | 5.22\* | 1.57\* | 0.01\* | 0.11\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 6.83\* | 0.38\* | 0.00\* | -0.09\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 5.33\* | 4.77\* | 0.06\* | 0.71\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 6.42\* | 7.61 | 0.16\* | 1.03\* |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 11.74\* | 0.35\* | 0.00\* | -0.06\* |
-| Gemini 3.1 Flash-Lite | plain | B Daily | 8.21\* | 0.04\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 6.50\* | 3.65\* | 0.02\* | 0.41\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 8.69\* | 12.15\* | 0.14\* | 1.28 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 5.13\* | 0.06\* | 0.00\* | -0.18\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.48\* | 0.09\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 4.23\* | 3.75\* | 0.14\* | 0.65\* |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 4.81 | 6.95 | 0.23\* | 1.24 |
-| Mistral Large 4 | plain | A Direct | 8.56\* | 2.45\* | 0.00\* | 0.17\* |
-| Mistral Large 4 | plain | B Daily | 8.28\* | 0.05\* | 0.00\* | -0.12\* |
-| Mistral Large 4 | plain | C Describe | 7.95\* | 4.75\* | 0.03\* | 0.47\* |
-| Mistral Large 4 | plain | D Hybrid | 4.36\* | 6.42\* | 0.22 | 1.24 |
-| Mistral Large 4 | anchored | A Direct | 4.90\* | 0.02\* | 0.00\* | -0.20\* |
-| Mistral Large 4 | anchored | B Daily | 8.26\* | 0.04\* | 0.00\* | -0.12\* |
-| Mistral Large 4 | anchored | C Describe | 4.98 | 4.83\* | 0.15\* | 0.77\* |
-| Mistral Large 4 | anchored | D Hybrid | 3.63\* | 6.09\* | 0.27\* | 1.40 |
-
-*Table B2. High-mean setting, 600 customers per cell. Reference row: empirical Complete Journey distribution. \* the 95% bootstrap interval excludes the reference value.*
-
-| Model | Prompt | Design | Mean | Var/mean | Zero | Alpha |
-|---|---|---|---|---|---|---|
-| Reference | | | 7.83 | 6.52 | 0.03 | 0.71 |
-| GPT-4o-mini | plain | A Direct | 7.96\* | 0.02\* | 0.00\* | -0.12\* |
-| GPT-4o-mini | plain | B Daily | 16.58\* | 0.07\* | 0.00\* | -0.06\* |
-| GPT-4o-mini | plain | C Describe | 6.02\* | 5.78 | 0.09\* | 0.79 |
-| GPT-4o-mini | plain | D Hybrid | 6.46\* | 5.68 | 0.08\* | 0.72 |
-| GPT-4o-mini | anchored | A Direct | 8.00\* | 0.00\* | 0.00\* | -0.12\* |
-| GPT-4o-mini | anchored | B Daily | 17.21\* | 0.13\* | 0.00\* | -0.05\* |
-| GPT-4o-mini | anchored | C Describe | 6.56\* | 5.22\* | 0.10\* | 0.64 |
-| GPT-4o-mini | anchored | D Hybrid | 7.53 | 6.35 | 0.07\* | 0.71 |
-| Llama-3.3-70B | plain | A Direct | 7.98\* | 0.00\* | 0.00\* | -0.12\* |
-| Llama-3.3-70B | plain | B Daily | 9.04\* | 0.18\* | 0.00\* | -0.09\* |
-| Llama-3.3-70B | plain | C Describe | 6.80\* | 5.01\* | 0.03 | 0.59\* |
-| Llama-3.3-70B | plain | D Hybrid | 4.91\* | 4.60\* | 0.12\* | 0.73 |
-| Llama-3.3-70B | anchored | A Direct | 6.05\* | 0.03\* | 0.00\* | -0.16\* |
-| Llama-3.3-70B | anchored | B Daily | 8.12\* | 0.13\* | 0.00\* | -0.11\* |
-| Llama-3.3-70B | anchored | C Describe | 7.54 | 6.04 | 0.05 | 0.67 |
-| Llama-3.3-70B | anchored | D Hybrid | 6.15\* | 5.55 | 0.10\* | 0.74 |
-| Haiku 5.5 | plain | A Direct | 8.02\* | 0.37\* | 0.00\* | -0.08\* |
-| Haiku 5.5 | plain | B Daily | 11.72\* | 0.16\* | 0.00\* | -0.07\* |
-| Haiku 5.5 | plain | C Describe | 6.42\* | 4.11\* | 0.03 | 0.48\* |
-| Haiku 5.5 | plain | D Hybrid | 5.14\* | 5.07\* | 0.12\* | 0.79 |
-| Haiku 5.5 | anchored | A Direct | 7.13\* | 0.11\* | 0.00\* | -0.12\* |
-| Haiku 5.5 | anchored | B Daily | 11.06\* | 0.15\* | 0.00\* | -0.08\* |
-| Haiku 5.5 | anchored | C Describe | 7.49 | 6.11 | 0.10\* | 0.68 |
-| Haiku 5.5 | anchored | D Hybrid | 5.71\* | 5.79 | 0.11\* | 0.84 |
-| Sonnet 5 | plain | A Direct | 5.60\* | 0.17\* | 0.00\* | -0.15\* |
-| Sonnet 5 | plain | B Daily | 10.40\* | 0.20\* | 0.00\* | -0.08\* |
-| Sonnet 5 | plain | C Describe | 6.64\* | 4.66\* | 0.03 | 0.55\* |
-| Sonnet 5 | plain | D Hybrid | 4.80\* | 4.53\* | 0.11\* | 0.74 |
-| Sonnet 5 | anchored | A Direct | 6.70\* | 0.16\* | 0.00\* | -0.12\* |
-| Sonnet 5 | anchored | B Daily | 10.16\* | 0.22\* | 0.00\* | -0.08\* |
-| Sonnet 5 | anchored | C Describe | 7.31\* | 5.04\* | 0.06\* | 0.55\* |
-| Sonnet 5 | anchored | D Hybrid | 6.87\* | 6.65 | 0.09\* | 0.82 |
-| GPT-5.6-terra | plain | A Direct | 7.89 | 0.14\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | B Daily | 8.37\* | 0.10\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | plain | C Describe | 7.00\* | 4.79\* | 0.05\* | 0.54\* |
-| GPT-5.6-terra | plain | D Hybrid | 5.09\* | 4.69\* | 0.11\* | 0.73 |
-| GPT-5.6-terra | anchored | A Direct | 7.60\* | 0.16\* | 0.00\* | -0.11\* |
-| GPT-5.6-terra | anchored | B Daily | 5.92\* | 0.30\* | 0.00\* | -0.12\* |
-| GPT-5.6-terra | anchored | C Describe | 9.46\* | 5.71\* | 0.07\* | 0.50\* |
-| GPT-5.6-terra | anchored | D Hybrid | 7.17\* | 6.70 | 0.07\* | 0.79 |
-| DeepSeek-V4-Pro | plain | A Direct | 6.98\* | 1.15\* | 0.00\* | 0.02\* |
-| DeepSeek-V4-Pro | plain | B Daily | 8.57\* | 0.13\* | 0.00\* | -0.10\* |
-| DeepSeek-V4-Pro | plain | C Describe | 5.78\* | 3.53\* | 0.04 | 0.44\* |
-| DeepSeek-V4-Pro | plain | D Hybrid | 6.57\* | 5.83 | 0.09\* | 0.73 |
-| DeepSeek-V4-Pro | anchored | A Direct | 6.57\* | 0.53\* | 0.00\* | -0.07\* |
-| DeepSeek-V4-Pro | anchored | B Daily | 7.06\* | 0.21\* | 0.00\* | -0.11\* |
-| DeepSeek-V4-Pro | anchored | C Describe | 7.09\* | 4.77\* | 0.04 | 0.53\* |
-| DeepSeek-V4-Pro | anchored | D Hybrid | 7.50 | 6.31 | 0.07\* | 0.71 |
-| Gemini 3.1 Flash-Lite | plain | A Direct | 10.25\* | 0.41\* | 0.00\* | -0.06\* |
-| Gemini 3.1 Flash-Lite | plain | B Daily | 7.96\* | 0.06\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | plain | C Describe | 6.62\* | 3.44\* | 0.03 | 0.37\* |
-| Gemini 3.1 Flash-Lite | plain | D Hybrid | 7.41 | 6.53 | 0.07\* | 0.75 |
-| Gemini 3.1 Flash-Lite | anchored | A Direct | 6.88\* | 0.26\* | 0.00\* | -0.11\* |
-| Gemini 3.1 Flash-Lite | anchored | B Daily | 7.18\* | 0.13\* | 0.00\* | -0.12\* |
-| Gemini 3.1 Flash-Lite | anchored | C Describe | 6.07\* | 5.56\* | 0.12\* | 0.75 |
-| Gemini 3.1 Flash-Lite | anchored | D Hybrid | 6.67\* | 5.80 | 0.09\* | 0.72 |
-| Mistral Large 4 | plain | A Direct | 9.24\* | 1.73\* | 0.00\* | 0.08\* |
-| Mistral Large 4 | plain | B Daily | 8.39\* | 0.07\* | 0.00\* | -0.11\* |
-| Mistral Large 4 | plain | C Describe | 7.04\* | 4.93\* | 0.04 | 0.56\* |
-| Mistral Large 4 | plain | D Hybrid | 4.28\* | 4.48\* | 0.15\* | 0.81 |
-| Mistral Large 4 | anchored | A Direct | 7.30\* | 0.26\* | 0.00\* | -0.10\* |
-| Mistral Large 4 | anchored | B Daily | 8.74\* | 0.11\* | 0.00\* | -0.10\* |
-| Mistral Large 4 | anchored | C Describe | 6.18\* | 5.43\* | 0.15\* | 0.72 |
-| Mistral Large 4 | anchored | D Hybrid | 5.41\* | 5.11\* | 0.11\* | 0.76 |
-
-*Table B3. Persona experiment with real household demographics, 600 household-windows per cell. Reference row: real distribution of the 801 households (10,413 household-windows). \* the 95% bootstrap interval excludes the reference value.*
-
-# Appendix C. Reproducibility {-}
-
-All code, the pilot grid runner, the demographic-ceiling script, the analysis scripts, and the tables and figures used here are in the project repository (`ooklee-sudo/fluffy-meme`, folder `llm-count-study`). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.
+*An Online Appendix (Appendix A, prompt templates; Appendix B, full results by model and prompt; Appendix C, reproducibility; Appendix D, proof of Proposition 3) is provided as a separate file.*
