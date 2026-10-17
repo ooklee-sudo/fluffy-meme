@@ -224,7 +224,7 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 
 # Appendix C. Reproducibility {-}
 
-All code, the pilot grid runner, the demographic-ceiling script, the analysis scripts, and the tables and figures used here are in the project repository (`ooklee-sudo/fluffy-meme`, folder `llm-count-study`). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.
+All code, the pilot grid runner, the demographic-ceiling script, the analysis scripts, and the tables and figures used here are in an anonymized project repository (the link will be provided after the review process to preserve double-blind review). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.
 
 # Appendix D. Proof of Proposition 3 {-}
 

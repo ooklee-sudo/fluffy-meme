@@ -81,9 +81,25 @@ subprocess.run(["pandoc", "isr_manuscript.md", "-o", OUT, "--resource-path=."], 
 subprocess.run(["pandoc", "isr_online_appendix.md", "-o", OUT2, "--resource-path=."], check=True)
 
 
+def add_page_numbers(d):
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    for sec in d.sections:
+        p = sec.footer.paragraphs[0] if sec.footer.paragraphs else sec.footer.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run()
+        for typ, txt in (("begin", None), (None, " PAGE "), ("end", None)):
+            if typ:
+                e = OxmlElement("w:fldChar"); e.set(qn("w:fldCharType"), typ)
+            else:
+                e = OxmlElement("w:instrText"); e.set(qn("xml:space"), "preserve"); e.text = txt
+            r._r.append(e)
+
+
 def polish(path):
     from docx import Document
-    from docx.shared import Pt, RGBColor
+    from docx.shared import Pt, RGBColor, Inches
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml import OxmlElement
     from docx.oxml.ns import qn
@@ -119,6 +135,9 @@ def polish(path):
                     p.paragraph_format.line_spacing = 1.0; p.paragraph_format.first_line_indent = Pt(0)
                     for r in p.runs:
                         r.font.size = Pt(8.5); r.font.name = "Times New Roman"; r.bold = True if ri == 0 else r.bold
+    add_page_numbers(d)
+    for sec in d.sections:
+        sec.left_margin = sec.right_margin = sec.top_margin = sec.bottom_margin = Inches(1)
     d.save(path)
 
 
