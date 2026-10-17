@@ -30,14 +30,13 @@ Zhang R, Zhang X, Zhao M (2025b) Predicting effects, missing distributions: Eval
 
 
 def demo_summary():
-    df = pd.read_csv("demo_ci.csv")
-    rho = {"A": "-0.08 to +0.08", "B": "-0.07 to +0.05", "C": "-0.06 to +0.10", "D": "-0.11 to +0.06"}
+    df = pd.read_csv("demo_ci.csv"); rh = pd.read_csv("demo_rho.csv")
     rows = ["| Design | Mean | Var/mean | Zero | Alpha | Rank correlation with real count |", "|---|---|---|---|---|---|",
             "| Reference | 7.83 | 6.52 | 0.03 | 0.71 | |"]
     for c in "ABCD":
-        g = df[df.cond == c]
+        g = df[df.cond == c]; x = rh[(rh.cond == c)].rho.dropna()
         rg = lambda col: f"{g[col].min():.2f} to {g[col].max():.2f}"
-        rows.append(f"| {DESIGN[c]} | {rg('mean')} | {rg('var_mean')} | {rg('zero')} | {rg('alpha')} | {rho[c]} |")
+        rows.append(f"| {DESIGN[c]} | {rg('mean')} | {rg('var_mean')} | {rg('zero')} | {rg('alpha')} | {x.min():+.2f} to {x.max():+.2f} |")
     return "\n".join(rows)
 
 

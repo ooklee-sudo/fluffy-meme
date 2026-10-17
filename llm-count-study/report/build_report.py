@@ -3,7 +3,9 @@ import re, subprocess
 import pandas as pd
 
 SHORT = {"openai/gpt-4o-mini": "GPT-4o-mini", "meta-llama/llama-3.3-70b-instruct": "Llama-3.3-70B",
-         "anthropic/claude-haiku-5.5": "Haiku 5.5"}
+         "anthropic/claude-haiku-5.5": "Haiku 5.5", "anthropic/claude-sonnet-5": "Sonnet 5", "openai/gpt-5.6-terra": "GPT-5.6-terra",
+         "deepseek/deepseek-v4-pro-0813": "DeepSeek-V4-Pro", "google/gemini-3.1-flash-lite": "Gemini 3.1 Flash-Lite",
+         "mistralai/mistral-large-4-0": "Mistral Large 4"}
 DESIGN = {"A": "A Direct", "B": "B Daily", "C": "C Describe", "D": "D Hybrid"}
 
 
@@ -14,7 +16,10 @@ def dist_table(csv, ref):
     for m in SHORT:
         for an in (False, True):
             for c in "ABCD":
-                r = df[(df.model == m) & (df.anchor == an) & (df.cond == c)].iloc[0]
+                sel = df[(df.model == m) & (df.anchor == an) & (df.cond == c)]
+                if sel.empty:
+                    continue
+                r = sel.iloc[0]
                 f = lambda v, e, nd=2: f"{v:.{nd}f}" + ("\\*" if e else "")
                 rows.append(f"| {SHORT[m]} | {'anchored' if an else 'plain'} | {DESIGN[c]} | {f(r['mean'], r.mean_excl)} | "
                             f"{f(r.var_mean, r.var_mean_excl)} | {f(r.zero, r.zero_excl)} | {f(r.alpha, r.alpha_excl)} |")
@@ -32,7 +37,10 @@ def hill_table():
     for o in ("visit", "purchase"):
         for m in SHORT:
             for an in (False, True):
-                r = d[(d.model == m) & (d.anchor == an) & (d.outcome == o)].iloc[0]
+                sel = d[(d.model == m) & (d.anchor == an) & (d.outcome == o)]
+                if sel.empty:
+                    continue
+                r = sel.iloc[0]
                 x = q[(q.model == m) & (q.anchor == an) & (q.outcome == o)].iloc[0]
                 rr = lambda v, e: f"{v:.2f}" + ("\\*" if e else "")
                 rows.append(f"| {SHORT[m]} | {'anchored' if an else 'plain'} | {o} | {r.ctrl:.3f} | "
