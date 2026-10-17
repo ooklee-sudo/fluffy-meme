@@ -222,13 +222,81 @@ Questions. Design A: "How many separate purchases will you make in the next 4 we
 
 *Table B3. Persona experiment with real household demographics, 600 household-windows per cell. Reference row: real distribution of the 801 households (10,413 household-windows). \* the 95% bootstrap interval excludes the reference value.*
 
+| Model | Prompt | Outcome | No email | Lift, men's email [95% CI] | Lift, women's email [95% CI] | Gap men minus women [95% CI] | RR men | RR women |
+|---|---|---|---|---|---|---|---|---|
+| Real (randomized) | | visit | 0.106 | +0.077 [+0.070, +0.083] | +0.045 [+0.039, +0.052] | +0.031 [+0.024, +0.038] | 1.72 | 1.43 |
+| Real (randomized) | | purchase | 0.0057 | +0.0068 [+0.0050, +0.0086] | +0.0031 [+0.0015, +0.0047] | +0.0037 [+0.0017, +0.0056] | 2.19 | 1.54 |
+| GPT-4o-mini | plain | visit | 0.260 | +0.190 [+0.175, +0.206]\* | +0.215 [+0.199, +0.229]\* | -0.025 [-0.051, +0.003]\* | 1.73 | 1.83\* |
+| GPT-4o-mini | anchored | visit | 0.100 | +0.003 [+0.002, +0.004]\* | +0.004 [+0.002, +0.006]\* | -0.001 [-0.003, +0.001]\* | 1.03\* | 1.04\* |
+| Llama-3.3-70B | plain | visit | 0.296 | +0.071 [+0.057, +0.084] | +0.064 [+0.050, +0.079]\* | +0.007 [-0.018, +0.030]\* | 1.24\* | 1.22\* |
+| Llama-3.3-70B | anchored | visit | 0.100 | +0.035 [+0.032, +0.039]\* | +0.036 [+0.033, +0.039]\* | -0.000 [-0.006, +0.005]\* | 1.36\* | 1.36 |
+| Haiku 5.5 | plain | visit | 0.154 | +0.073 [+0.065, +0.081] | +0.091 [+0.082, +0.099]\* | -0.018 [-0.032, -0.004]\* | 1.47\* | 1.59 |
+| Haiku 5.5 | anchored | visit | 0.093 | +0.159 [+0.154, +0.164]\* | +0.163 [+0.158, +0.167]\* | -0.004 [-0.011, +0.003]\* | 2.71\* | 2.75\* |
+| Sonnet 5 | plain | visit | 0.212 | +0.139 [+0.129, +0.150]\* | +0.152 [+0.143, +0.162]\* | -0.013 [-0.028, +0.003]\* | 1.65 | 1.72\* |
+| Sonnet 5 | anchored | visit | 0.195 | +0.027 [+0.019, +0.036]\* | +0.036 [+0.027, +0.045]\* | -0.009 [-0.022, +0.004]\* | 1.14\* | 1.19\* |
+| GPT-5.6-terra | plain | visit | 0.277 | +0.049 [+0.038, +0.060]\* | +0.055 [+0.044, +0.066] | -0.006 [-0.021, +0.010]\* | 1.18\* | 1.20\* |
+| GPT-5.6-terra | anchored | visit | 0.103 | +0.075 [+0.068, +0.083] | +0.088 [+0.080, +0.096]\* | -0.013 [-0.025, -0.001]\* | 1.73 | 1.86\* |
+| DeepSeek-V4-Pro | plain | visit | 0.191 | +0.051 [+0.037, +0.065]\* | +0.044 [+0.030, +0.057] | +0.007 [-0.008, +0.021]\* | 1.27\* | 1.23\* |
+| DeepSeek-V4-Pro | anchored | visit | 0.068 | +0.198 [+0.187, +0.208]\* | +0.183 [+0.173, +0.192]\* | +0.015 [+0.002, +0.029]\* | 3.90\* | 3.68\* |
+| Gemini 3.1 Flash-Lite | plain | visit | 0.123 | +0.045 [+0.037, +0.052]\* | +0.049 [+0.041, +0.057] | -0.005 [-0.019, +0.008]\* | 1.36\* | 1.40 |
+| Gemini 3.1 Flash-Lite | anchored | visit | 0.100 | +0.059 [+0.055, +0.064]\* | +0.058 [+0.053, +0.063]\* | +0.001 [-0.007, +0.009]\* | 1.59\* | 1.58\* |
+| Mistral Large 4 | plain | visit | 0.230 | +0.078 [+0.066, +0.089] | +0.089 [+0.078, +0.101]\* | -0.012 [-0.033, +0.008]\* | 1.34\* | 1.39 |
+| Mistral Large 4 | anchored | visit | 0.100 | +0.041 [+0.035, +0.047]\* | +0.037 [+0.032, +0.043]\* | +0.004 [-0.007, +0.014]\* | 1.40\* | 1.37 |
+| GPT-4o-mini | plain | purchase | 0.155 | +0.169 [+0.155, +0.184]\* | +0.201 [+0.187, +0.214]\* | -0.032 [-0.056, -0.005]\* | 2.09 | 2.30\* |
+| GPT-4o-mini | anchored | purchase | 0.064 | +0.026 [+0.021, +0.030]\* | +0.048 [+0.044, +0.053]\* | -0.023 [-0.029, -0.018]\* | 1.40\* | 1.75\* |
+| Llama-3.3-70B | plain | purchase | 0.087 | +0.154 [+0.141, +0.168]\* | +0.167 [+0.153, +0.182]\* | -0.013 [-0.039, +0.011] | 2.78\* | 2.93\* |
+| Llama-3.3-70B | anchored | purchase | 0.004 | +0.149 [+0.137, +0.162]\* | +0.161 [+0.148, +0.175]\* | -0.012 [-0.034, +0.011] | 43.83\* | 47.87\* |
+| Haiku 5.5 | plain | purchase | 0.096 | +0.047 [+0.041, +0.053]\* | +0.054 [+0.049, +0.060]\* | -0.008 [-0.017, +0.002]\* | 1.49\* | 1.57 |
+| Haiku 5.5 | anchored | purchase | 0.008 | +0.110 [+0.104, +0.116]\* | +0.120 [+0.113, +0.126]\* | -0.010 [-0.019, -0.000]\* | 15.80\* | 17.02\* |
+| Sonnet 5 | plain | purchase | 0.093 | +0.044 [+0.039, +0.050]\* | +0.058 [+0.053, +0.063]\* | -0.013 [-0.022, -0.004]\* | 1.48\* | 1.62 |
+| Sonnet 5 | anchored | purchase | 0.045 | +0.002 [-0.001, +0.006]\* | +0.009 [+0.006, +0.012]\* | -0.007 [-0.012, -0.002]\* | 1.05\* | 1.21\* |
+| GPT-5.6-terra | plain | purchase | 0.069 | +0.111 [+0.104, +0.118]\* | +0.110 [+0.103, +0.117]\* | +0.001 [-0.010, +0.011] | 2.61\* | 2.60\* |
+| GPT-5.6-terra | anchored | purchase | 0.008 | +0.016 [+0.014, +0.018]\* | +0.018 [+0.016, +0.020]\* | -0.002 [-0.005, +0.001]\* | 3.00\* | 3.26\* |
+| DeepSeek-V4-Pro | plain | purchase | 0.100 | +0.025 [+0.016, +0.035]\* | +0.025 [+0.016, +0.035]\* | -0.000 [-0.010, +0.010] | 1.25\* | 1.26\* |
+| DeepSeek-V4-Pro | anchored | purchase | 0.073 | +0.110 [+0.099, +0.121]\* | +0.107 [+0.096, +0.118]\* | +0.003 [-0.010, +0.015] | 2.52 | 2.47\* |
+| Gemini 3.1 Flash-Lite | plain | purchase | 0.072 | +0.029 [+0.025, +0.033]\* | +0.031 [+0.027, +0.035]\* | -0.002 [-0.009, +0.005] | 1.40\* | 1.43 |
+| Gemini 3.1 Flash-Lite | anchored | purchase | 0.010 | +0.014 [+0.012, +0.015]\* | +0.014 [+0.012, +0.015]\* | +0.000 [-0.002, +0.003]\* | 2.41 | 2.39\* |
+| Mistral Large 4 | plain | purchase | 0.119 | +0.098 [+0.091, +0.105]\* | +0.097 [+0.088, +0.106]\* | +0.001 [-0.012, +0.015] | 1.82\* | 1.81\* |
+| Mistral Large 4 | anchored | purchase | 0.009 | +0.078 [+0.074, +0.082]\* | +0.077 [+0.072, +0.081]\* | +0.001 [-0.007, +0.009] | 10.12\* | 10.01\* |
+
+*Table B4. Email experiment, probability-elicitation design (mean elicited probability over 300 simulated customers per seed, three independent calls per customer, pooled over three seeds, 900 customers per model). Lift = probability with the email minus probability without it; gap = lift of the men's email minus lift of the women's email; intervals are 95% paired bootstrap intervals over customers (real values: normal approximation). RR = risk ratio, the mean of the three per-seed ratios; its asterisk is set only if the interval excludes the real ratio in all three seeds. \* the simulated and the real intervals do not overlap.*
+
+| Setting | Design | Mean | Var/mean | Zero | Alpha |
+|---|---|---|---|---|---|
+| Low mean | Reference | 0.49 | 2.49 | 0.74 | 3.05 |
+| Low mean | A Direct | 0.00 to 2.10 | 0.00 to 14.72 | 0.00 to 1.00 | -1.00 to 6.54 |
+| Low mean | B Daily | 0.00 to 13.56 | 0.24 to 2.95 | 0.00 to 1.00 | -0.86 to 0.62 |
+| Low mean | C Describe | 0.37 to 1.30 | 0.97 to 1.61 | 0.32 to 0.71 | -0.06 to 0.80 |
+| Low mean | D Hybrid | 0.26 to 0.93 | 1.47 to 3.38 | 0.63 to 0.81 | 1.81 to 3.77 |
+| High mean | Reference | 4.84 | 7.85 | 0.19 | 1.42 |
+| High mean | A Direct | 3.73 to 11.74 | 0.00 to 2.45 | 0.00 to 0.02 | -0.20 to 0.17 |
+| High mean | B Daily | 4.35 to 16.65 | 0.04 to 0.38 | 0.00 to 0.00 | -0.20 to -0.06 |
+| High mean | C Describe | 4.23 to 7.95 | 3.65 to 6.44 | 0.01 to 0.15 | 0.41 to 1.00 |
+| High mean | D Hybrid | 3.63 to 8.69 | 5.84 to 12.15 | 0.13 to 0.27 | 1.03 to 1.52 |
+
+*Table B5. Low-mean and high-mean settings: range of results across the model-and-prompt cells of each design (sixteen cells in each setting). Reference rows are the real values. For design A in the low-mean setting the variance-to-mean ratio of 1.00 comes from a cell in which practically every simulated customer answered "0" and is uninformative.*
+
+| Design | Mean | Var/mean | Zero | Alpha | Rank correlation with real count |
+|---|---|---|---|---|---|
+| Reference | 7.83 | 6.52 | 0.03 | 0.71 | |
+| A Direct | 5.60 to 10.25 | 0.00 to 1.73 | 0.00 to 0.00 | -0.16 to 0.08 | -0.11 to +0.04 |
+| B Daily | 5.92 to 17.21 | 0.06 to 0.30 | 0.00 to 0.00 | -0.12 to -0.05 | -0.08 to +0.04 |
+| C Describe | 5.78 to 9.46 | 3.44 to 6.11 | 0.03 to 0.15 | 0.37 to 0.79 | -0.01 to +0.08 |
+| D Hybrid | 4.28 to 7.53 | 4.48 to 6.70 | 0.07 to 0.15 | 0.71 to 0.84 | -0.06 to +0.05 |
+
+*Table B6. Persona experiment with real household demographics: range of results across the 16 model-and-prompt cells of each design (600 household-windows per cell). The last column is the range of the Spearman correlation between the simulated count and the household's real count in the same window.*
+
 # Appendix C. Reproducibility {-}
 
 All code, the pilot grid runner, the demographic-ceiling script, the analysis scripts, and the tables and figures used here are in an anonymized project repository (the link will be provided after the review process to preserve double-blind review). Raw model responses are saved with each run. Household-level Complete Journey data are not redistributed; the code reads them from the public package files.
 
-# Appendix D. Proof of Proposition 3 {-}
+# Appendix D. Proofs of Propositions 1 to 3 {-}
 
-*Proof.* (a) Let $A$ be any event with $P(A) = q$. Then $E[\Lambda \mathbf{1}_A] = \mu q + \text{Cov}(\Lambda, \mathbf{1}_A)$, and the Cauchy–Schwarz inequality gives $\text{Cov}(\Lambda, \mathbf{1}_A) \le \sqrt{\text{Var}(\Lambda)}\sqrt{q(1-q)} = \mu\sqrt{\alpha q(1-q)}$. This bounds $S_q$ from above. For the lower bound take an event that is independent of $\Lambda$ and has probability $q$ (on a sufficiently rich probability space, or by assigning ties fractionally); it yields $E[\Lambda \mathbf{1}_A] = \mu q$.
+**Proposition 1.**  The first statement is the law of total variance. With $v(X) = 0$, $\text{Var}(N^*) = \text{Var}(m(X))$, and substituting into the definition of $\alpha$ gives $\alpha^* = c^2 - 1/\mu^*$. If $m(X) = E[\Lambda \mid X]$, then $\mu^* = \mu$ and $\text{Var}(m(X)) = \text{Var}(\Lambda) - E[\text{Var}(\Lambda \mid X)]$, which yields the last expression. $\square$
+
+**Proposition 2.**  By independence, $E[\Lambda^2] = E[\lambda(X)^2]\,E[G^2] = \mu^2(1 + c^2)(1 + \alpha_w)$, and $\alpha = E[\Lambda^2]/\mu^2 - 1$. $\square$
+
+**Proposition 3.***Proof.* (a) Let $A$ be any event with $P(A) = q$. Then $E[\Lambda \mathbf{1}_A] = \mu q + \text{Cov}(\Lambda, \mathbf{1}_A)$, and the Cauchy–Schwarz inequality gives $\text{Cov}(\Lambda, \mathbf{1}_A) \le \sqrt{\text{Var}(\Lambda)}\sqrt{q(1-q)} = \mu\sqrt{\alpha q(1-q)}$. This bounds $S_q$ from above. For the lower bound take an event that is independent of $\Lambda$ and has probability $q$ (on a sufficiently rich probability space, or by assigning ties fractionally); it yields $E[\Lambda \mathbf{1}_A] = \mu q$.
 
 (b) Let $\Lambda$ have density $f_{k,\theta}$ with $\mu = k\theta$. Since $\lambda f_{k,\theta}(\lambda) = k\theta\, f_{k+1,\theta}(\lambda)$, we have $E[\Lambda \mathbf{1}\{\Lambda > x\}] = \mu\, P(G_{k+1,\theta} > x)$ for a gamma variable $G_{k+1,\theta}$ with shape $k+1$ and scale $\theta$. The maximum in the definition of $S_q$ is attained by the event $\{\Lambda > x_q\}$ with $P(\Lambda > x_q) = q$, because $E[\Lambda \mathbf{1}_A]$ is largest when $A$ collects the largest values of $\Lambda$. Hence $S_q = P(G_{k+1,\theta} > x_q)$ with $x_q = \theta F_k^{-1}(1-q)$, which is the stated expression.
 

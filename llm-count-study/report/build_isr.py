@@ -71,7 +71,7 @@ cut = md.index("# Appendix A.")
 main, appx = md[:cut].rstrip() + "\n", md[cut:]
 main = _re.sub(r"(?<!Online Appendix )Table B(\d)", r"Online Appendix Table B\1", main)
 main = main.replace("and Appendix B gives all cells", "and the Online Appendix gives all cells")
-main += "\n\n*An Online Appendix (Appendix A, prompt templates; Appendix B, full results by model and prompt; Appendix C, reproducibility; Appendix D, proof of Proposition 3) is provided as a separate file.*\n"
+main += "\n\n*An Online Appendix (Appendix A, prompt templates; Appendix B, full results by model and prompt; Appendix C, reproducibility; Appendix D, proofs of Propositions 1 to 3) is provided as a separate file.*\n"
 open("isr_manuscript.md", "w").write(main)
 appx = "::: {custom-style=\"Title\"}\nOnline Appendix to \"" + _re.search(r'Title"\}\n(.+)\n:::', md).group(1) + "\"\n:::\n\n" + appx
 open("isr_online_appendix.md", "w").write(appx)
