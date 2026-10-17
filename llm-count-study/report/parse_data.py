@@ -20,10 +20,11 @@ def dist(fn, out):
     df = pd.DataFrame(rows); df.to_csv(out, index=False); return df
 
 
-def hill_table():
+def hill_table(files=("hillstrom_table.txt", "hillstrom_table_s12.txt")):
     cell = re.compile(r'(inf \(ctrl rate 0\)|-?[\d.]+ \[-?[\d.]+,-?[\d.]+\]\*?)')
     rows = []
-    for line in open("hillstrom_table.txt"):
+    lines = [(fi, l) for fi, fn in enumerate(files) for l in open(fn)]
+    for fi, line in lines:
         p = line.split()
         model, anchor, method, outcome, fail, ctrl, men, women = p[:8]
         cs = cell.findall(" ".join(p[8:])); assert len(cs) == 2, line
@@ -33,11 +34,22 @@ def hill_table():
             m = re.match(r'(-?[\d.]+) \[(-?[\d.]+),(-?[\d.]+)\](\*?)', c)
             return (float(m[1]), float(m[2]), float(m[3]), m[4] == "*")
         a, b = rr(cs[0]), rr(cs[1])
-        rows.append(dict(model=model, anchor=anchor == "True", method=method, outcome=outcome, fail=float(fail), ctrl=float(ctrl),
+        rows.append(dict(seedfile=fi, model=model, anchor=anchor == "True", method=method, outcome=outcome, fail=float(fail), ctrl=float(ctrl),
                          men=float(men), women=float(women), RR_men=a[0], RR_men_lo=a[1], RR_men_hi=a[2], RR_men_excl=a[3],
                          RR_women=b[0], RR_women_lo=b[1], RR_women_hi=b[2], RR_women_excl=b[3]))
-    d = pd.DataFrame(rows); d["RD_men"] = d.men - d.ctrl; d["RD_women"] = d.women - d.ctrl
-    d.to_csv("hillstrom_table.csv", index=False); return d
+    d = pd.DataFrame(rows)
+    d.to_csv("hillstrom_table_perseed.csv", index=False)
+    # models run on three seeds: average the per-seed rates and risk ratios; star only if all three intervals exclude the real RR
+    keys = ["model", "anchor", "method", "outcome"]
+    fin = lambda x: x.replace(float("inf"), float("nan"))
+    g = d.groupby(keys, sort=False)
+    agg = g.agg(fail=("fail", "mean"), ctrl=("ctrl", "mean"), men=("men", "mean"), women=("women", "mean"),
+                RR_men=("RR_men", lambda x: fin(x).mean() if fin(x).notna().all() else float("inf")),
+                RR_women=("RR_women", lambda x: fin(x).mean() if fin(x).notna().all() else float("inf")),
+                RR_men_excl=("RR_men_excl", "all"), RR_women_excl=("RR_women_excl", "all"), nseeds=("seedfile", "size")).reset_index()
+    agg["nseeds"] = agg.nseeds.map(lambda n: 1 if n == 1 else 3)
+    agg["RD_men"] = agg.men - agg.ctrl; agg["RD_women"] = agg.women - agg.ctrl
+    agg.to_csv("hillstrom_table.csv", index=False); return agg
 
 
 def hill_rd():
