@@ -15,6 +15,9 @@ Branch: `ccr-b3faa909-a8e15y` of `ooklee-sudo/fluffy-meme`. Start a new session 
 ## Latest result (prevalence by year)
 Detectable LLM-drafted share: 2021 baseline alpha-hat 0.02; 2024 ≈ 0%; 2025 ≈ 0.8% (CI 0.1–1.5%), with a suggestive uptick in the last quarter of 2025 (≈2–3%). Details in `prevalence_results.md`. Gate (a) is not met on data through 2025; the project needs later data (2026 publications) or a reframing.
 
+## Raw XML plan (in progress)
+Download weekly files from https://data.uspto.gov/bulkdata/datasets/appxml (see PILOT_PLAN.md for the list of weeks), run `peek_xml.py` on one to verify the structure, then `xml_to_tsv.py` per week.
+
 ## Next steps
 0. (Done) 2024 and 2025 samples analyzed. The 2025 long-text file is listed on page 1 of the portal (newest files first).
 1. Download and sample `pg_detail_desc_text_{2019,2023,2024,2025}` from the USPTO Open Data Portal (`pvpgpubtxt`; login + API key), shrink with `pilot/sample_tsv.py --n 3000`, upload the four `desc_*_sample.tsv.gz` files.
