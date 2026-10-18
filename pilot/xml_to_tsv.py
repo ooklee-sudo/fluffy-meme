@@ -3,10 +3,11 @@
     python xml_to_tsv.py ipa261008.zip desc_ipa261008.tsv.gz --n 1000
 
 Output columns (compatible with build_chunks.py / estimate_prevalence.py):
-  pgpub_id (publication number, same form as PatentsView), pub_date, filing_date, appl_type,
-  applicant_orgs, applicant_countries, agent_orgs, agent_names, cpc_main, description_length, description_text
-Element names follow the USPTO application DTD (v4.x) as recalled; CHECK against a real file with
-peek_xml.py first. Documents that fail to parse are counted and skipped. DOCTYPE lines are removed
+  pgpub_id (publication number, same form as PatentsView), pub_date, filing_date, appl_type, title,
+  applicant_orgs/types/countries, assignee_orgs, n_inventors, agent_orgs, agent_names, cpc_main,
+  description_length, description_text
+Structure confirmed on ipa261008 (DTD v4.6): applicants sit under us-parties/us-applicants; the first
+application had no agents element, so the printed statistics show whether agents exist at all. Documents that fail to parse are counted and skipped. DOCTYPE lines are removed
 before parsing (the file is untrusted input). Tables, math and chemistry are left out of the text.
 """
 import argparse, csv, gzip, io, random, re, sys, zipfile
@@ -68,7 +69,8 @@ def parse_doc(xml):
     applicants = bib.findall(".//applicants/applicant") or bib.findall(".//us-applicants/us-applicant")
     app_orgs = [party_names(a)[0] or party_names(a)[1] for a in applicants]
     app_ctry = [first(a, ".//address/country") for a in applicants]
-    agents = bib.findall(".//agents/agent")
+    agents = bib.findall(".//agents/agent") or bib.findall(".//us-parties//agent")
+    assignees = bib.findall(".//assignees/assignee")
     ag_orgs = [party_names(a)[0] for a in agents]
     ag_names = [party_names(a)[1] for a in agents]
     cpc = bib.find(".//classifications-cpc/main-cpc/classification-cpc")
@@ -81,7 +83,11 @@ def parse_doc(xml):
         "pub_date": first(pub, "date") if pub is not None else "",
         "filing_date": first(app, "date") if app is not None else "",
         "appl_type": appl_type,
+        "title": first(bib, "invention-title"),
         "applicant_orgs": ";".join(x for x in app_orgs if x),
+        "applicant_types": ";".join("org" if party_names(a)[0] else "person" for a in applicants),
+        "assignee_orgs": ";".join(x for x in (party_names(a)[0] for a in assignees) if x),
+        "n_inventors": len(bib.findall(".//inventors/inventor")),
         "applicant_countries": ";".join(x for x in app_ctry if x),
         "agent_orgs": ";".join(x for x in ag_orgs if x),
         "agent_names": ";".join(x for x in ag_names if x),
@@ -148,8 +154,9 @@ def main(argv=None):
             j = rng.randrange(seen)
             if j < a.n:
                 res[j] = rec
-    cols = ["pgpub_id", "pub_date", "filing_date", "appl_type", "applicant_orgs", "applicant_countries",
-            "agent_orgs", "agent_names", "cpc_main", "description_length", "description_text"]
+    cols = ["pgpub_id", "pub_date", "filing_date", "appl_type", "title", "applicant_orgs", "applicant_types",
+            "applicant_countries", "assignee_orgs", "n_inventors", "agent_orgs", "agent_names", "cpc_main",
+            "description_length", "description_text"]
     opener = gzip.open(a.dst, "wt", encoding="utf-8", newline="") if a.dst.endswith(".gz") else open(a.dst, "w", encoding="utf-8", newline="")
     with opener as f:
         w = csv.DictWriter(f, cols, delimiter="\t")
@@ -158,6 +165,14 @@ def main(argv=None):
             r = dict(r); r["description_text"] = window(r["description_text"], a.window, rng)
             w.writerow(r)
     print(f"parsed {seen} usable applications ({bad} unparsable); wrote {len(res)} rows to {a.dst}")
+    if res:
+        share = lambda f: 100 * sum(bool(f(r)) for r in res) / len(res)
+        print(f"  with agent/law firm : {share(lambda r: r['agent_orgs'] or r['agent_names']):5.1f}%")
+        print(f"  with assignee org   : {share(lambda r: r['assignee_orgs']):5.1f}%")
+        print(f"  applicant is an org : {share(lambda r: 'org' in r['applicant_types'].split(';')):5.1f}%")
+        print(f"  any non-US applicant: {share(lambda r: any(c and c != 'US' for c in r['applicant_countries'].split(';'))):5.1f}%")
+        print(f"  with CPC            : {share(lambda r: r['cpc_main']):5.1f}%")
+        print(f"  with filing date    : {share(lambda r: r['filing_date']):5.1f}%")
 
 
 if __name__ == "__main__":
