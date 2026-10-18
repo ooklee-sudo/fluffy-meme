@@ -11,7 +11,7 @@ Output : JSONL of rewrites, one record per call, resumable.
 The API key is read from OPENROUTER_API_KEY and never written to disk.
 A hard budget cap stops the run before any call that could exceed it.
 """
-import argparse, json, os, random, sys, threading, time, urllib.request, urllib.error
+import argparse, collections, json, os, random, sys, threading, time, urllib.request, urllib.error
 from concurrent.futures import ThreadPoolExecutor
 
 API = "https://openrouter.ai/api/v1"
@@ -44,7 +44,8 @@ PROMPTS = {
     ),
 }
 
-SETTINGS = {"temperature": 0.7, "max_tokens_factor": 1.6, "reasoning": {"enabled": False}}
+MIN_WORDS = 50  # shorter outputs (empty, refusals, reasoning-only) are treated as failures
+SETTINGS = {"temperature": 0.7, "max_tokens_factor": 1.6, "reasoning_headroom": 2000, "reasoning": {"enabled": False}}
 
 
 def http_json(url, payload=None, key=None, timeout=120):
@@ -95,7 +96,7 @@ def est_cost(job, prices):
     model, kind, c = job
     p_in, p_out = prices[model]
     n_in = tok(build_prompt(kind, c))
-    n_out = int(tok(c["text"]) * SETTINGS["max_tokens_factor"])
+    n_out = int(tok(c["text"]) * SETTINGS["max_tokens_factor"]) + SETTINGS["reasoning_headroom"]
     return n_in * p_in + n_out * p_out, n_out
 
 
@@ -168,6 +169,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 "n_cheap": a.n_cheap, "n_top": a.n_top}
     json.dump(manifest, open(a.out + ".manifest.json", "w"), indent=2)
 
+    failures = collections.Counter()
     budget, wlock, stop = Budget(a.budget), threading.Lock(), threading.Event()
     fout = open(a.out, "a")
 
@@ -176,7 +178,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
             return
         model, kind, c = job
         reserve, max_tokens = est_cost(job, prices)
-        reserve *= 1.5  # headroom for token-estimate error
+        reserve *= 3  # up to three attempts per call, plus headroom for token-estimate error
         if not budget.reserve(reserve):
             stop.set()
             return
@@ -186,10 +188,17 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 try:
                     r = call(model, build_prompt(kind, c), max_tokens, key)
                     u = r.get("usage", {})
-                    actual = float(u.get("cost") or (u.get("prompt_tokens", 0) * prices[model][0]
-                                                     + u.get("completion_tokens", 0) * prices[model][1]))
+                    text = r["choices"][0]["message"].get("content")
+                    finish = r["choices"][0].get("finish_reason")
+                    actual += float(u.get("cost") or (u.get("prompt_tokens", 0) * prices[model][0]
+                                                      + u.get("completion_tokens", 0) * prices[model][1]))
+                    if not text or len(text.split()) < MIN_WORDS:   # empty, refusal, or reasoning-only
+                        with wlock:
+                            failures[(model, finish or "empty")] += 1
+                        time.sleep(1)
+                        continue                                    # retry; never saved as a result
                     rec = {"model": model, "served_model": r.get("model"), "prompt_type": kind,
-                           "chunk_id": c["id"], "output": r["choices"][0]["message"]["content"],
+                           "chunk_id": c["id"], "output": text, "finish_reason": finish,
                            "usage": u, "cost_usd": actual,
                            "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
                     break
@@ -205,6 +214,10 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
     with ThreadPoolExecutor(a.workers) as ex:
         list(ex.map(work, jobs))
     print(f"spent ${budget.spent:.2f}; stopped on budget: {stop.is_set()}")
+    if failures:
+        print("failed calls (not saved; re-run to retry):")
+        for (m, why), n in sorted(failures.items()):
+            print(f"  {m:36s} {why:12s} {n}")
 
 
 if __name__ == "__main__":

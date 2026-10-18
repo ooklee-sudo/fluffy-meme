@@ -10,7 +10,7 @@ with open(src, "w") as f:
         f.write(json.dumps({"id": f"c{i}", "text": "word " * 400}) + "\n")
 
 def fake(model, prompt, max_tokens, key):
-    return {"model": model + "-served", "choices": [{"message": {"content": "rewritten"}}],
+    return {"model": model + "-served", "choices": [{"message": {"content": "rewritten " * 60}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 500, "completion_tokens": 500, "cost": 0.0025}}
 
 os.environ["OPENROUTER_API_KEY"] = "test"
@@ -33,4 +33,15 @@ rc.main(["--input", src, "--out", out2, "--n-cheap", "4", "--n-top", "2", "--bud
          "--workers", "1"], call=fake, price_fn=prices)
 spent = sum(json.loads(l)["cost_usd"] for l in open(out2))
 assert spent <= 0.05, spent
+# empty (reasoning-only) responses are not saved and are reported
+def flaky(model, prompt, max_tokens, key):
+    r = fake(model, prompt, max_tokens, key)
+    if model.startswith("deepseek"):
+        r["choices"][0]["message"]["content"] = None
+        r["choices"][0]["finish_reason"] = "length"
+    return r
+out3 = os.path.join(d, "out3.jsonl")
+rc.main(["--input", src, "--out", out3, "--n-cheap", "4", "--n-top", "2", "--workers", "2"], call=flaky, price_fn=prices)
+models3 = {json.loads(l)["model"] for l in open(out3)}
+assert not any(m.startswith("deepseek") for m in models3) and len(models3) == 6, models3
 print("OK; records:", n_expected, "| capped run spent:", round(spent, 4))
