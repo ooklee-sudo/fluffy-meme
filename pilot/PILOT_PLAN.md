@@ -30,3 +30,17 @@ If (a) or (b) fails, reframe as a study of the limits of detection. Record the r
 - Minimum documents per drafting-unit quarter for stable estimates (set from the pilot's bootstrap widths).
 - Whether the word-occurrence model needs a richer feature set (e.g., n-grams) if independence assumptions fit poorly on real text.
 - Which LLMs and drafting tools enter the machine corpus (budget-dependent).
+
+## Machine-corpus generation (`rewrite_corpus.py`)
+Seven OpenRouter models: llama-4-maverick, qwen3.8-flash, deepseek-v4.1-flash, mistral-small-2603, gemini-3.8-flash (cheap tier); gpt-6.1-sol, claude-opus-5.5 (top tier). Three prompt types per model. Defaults: 1,000 chunks per prompt per cheap model, 500 per prompt per top model.
+
+```
+export OPENROUTER_API_KEY=...            # environment only; never commit
+python3 pilot/rewrite_corpus.py --input chunks.jsonl --out rewrites.jsonl --dry-run   # cost estimate
+python3 pilot/rewrite_corpus.py --input chunks.jsonl --out rewrites.jsonl --budget 500
+```
+- Hard budget cap: each call reserves 1.5× its estimated cost and the run stops before the cap is exceeded.
+- Resumable: finished (model, prompt, chunk) triples are skipped on re-run.
+- `<out>.manifest.json` records models, prompts, settings, seed, and budget; each output record stores the served model name and token usage (needed for the AI-use disclosure).
+- Tested offline with a fake API (`test_rewrite.py`); not yet run against the live API.
+- Reasoning is requested off, but some models may ignore it; reasoning tokens would then raise cost above the estimate, which the cap still covers.
