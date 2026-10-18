@@ -1,11 +1,11 @@
-"""Pilot: authority x election rule x population (Claude / DeepSeek / mixed), 6 agents, 50 days.
+"""Main design: authority x election rule x population x office bonus (0 / 2), 6 agents, 50 days, 2 tasks/day.
 
   python run_pilot.py --estimate          # cost estimate only, no API calls
-  python run_pilot.py --seeds 2           # run (needs OPENROUTER_API_KEY; stops at the budget cap)
+  python run_pilot.py --seeds 3           # needs OPENROUTER_API_KEY; stops at the budget cap
+Seeds are the outer loop, so an interrupted run still leaves a balanced design.
 """
 import argparse, itertools, os
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import replace
 
 import llm
 from run_world import run_one, RES
@@ -13,34 +13,28 @@ from world import Config
 
 CLAUDE = "anthropic/claude-haiku-5.5"      # $0.10 / $0.50 per M tokens in/out
 DEEPSEEK = "deepseek/deepseek-v4-pro"      # $0.21 / $0.42 per M tokens in/out
-PRICE = {CLAUDE: (0.10, 0.50), DEEPSEEK: (0.21, 0.42)}
 POPS = {"claude": [CLAUDE] * 6, "deepseek": [DEEPSEEK] * 6, "mixed": [CLAUDE, DEEPSEEK] * 3}
+COST = {"claude": 0.09, "deepseek": 0.50, "mixed": 0.30}   # observed USD per 50-day world in the pilots
 
 
-def design(seeds):
-    for auth, rule, pop, s in itertools.product([True, False], ["plurality", "ranked"], POPS, range(seeds)):
-        tag = f"pilot2_{'auth' if auth else 'noauth'}_{rule}_{pop}_s{s}"
-        yield tag, Config(authority=auth, rule=rule, models=tuple(POPS[pop]), seed=s, tasks_per_day=2)
+def design(seeds, prefix="main"):
+    for s, auth, rule, pop, bonus in itertools.product(range(seeds), [True, False], ["plurality", "ranked"], POPS, [0, 2]):
+        tag = f"{prefix}_{'auth' if auth else 'noauth'}_{rule}_{pop}_b{bonus}_s{s}"
+        yield tag, Config(authority=auth, rule=rule, models=tuple(POPS[pop]), seed=100 + s, tasks_per_day=2,
+                          office_bonus=bonus)
 
 
-def estimate(cfgs, tin=1800, tout=350):
-    calls = 6 * 50 + 6 * 10 + 50
-    tot = 0.0
-    for _, c in cfgs:
-        for m in c.models:
-            p = PRICE[m]
-            tot += (calls / 6) * (tin * p[0] + tout * p[1]) / 1e6
-    return calls, tot
+def estimate(cfgs):
+    return sum(COST[t.split("_")[3]] for t, _ in cfgs)
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seeds", type=int, default=2); ap.add_argument("--estimate", action="store_true")
-    ap.add_argument("--workers", type=int, default=3)
+    ap.add_argument("--seeds", type=int, default=3); ap.add_argument("--estimate", action="store_true")
+    ap.add_argument("--workers", type=int, default=3); ap.add_argument("--prefix", default="main")
     a = ap.parse_args()
-    cfgs = list(design(a.seeds))
-    calls, usd = estimate(cfgs)
-    print(f"{len(cfgs)} worlds, ~{calls} calls/world, assumed 1800 in / 350 out tokens per call -> est. ${usd:.2f} "
+    cfgs = list(design(a.seeds, a.prefix))
+    print(f"{len(cfgs)} worlds, est. ${estimate(cfgs):.2f} from observed pilot costs "
           f"(cap ${llm.CAP_USD:.0f}, already spent ${llm.spent():.2f})")
     if a.estimate:
         raise SystemExit

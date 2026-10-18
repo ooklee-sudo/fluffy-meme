@@ -17,7 +17,7 @@ else:
 
 print("\n=== tasks allocated per day (= tasks_per_day when fully allocated) ===")
 print(f"{'world':40s}{'avg_win':>8s}{'days<3':>8s}{'tasks per agent':>26s}")
-for f in sorted(glob.glob(os.path.join(RES, "pilot*_*.events.jsonl"))):
+for f in sorted(glob.glob(os.path.join(RES, "*_*.events.jsonl"))):
     ev = [json.loads(l) for l in open(f, encoding="utf-8")]
     al = [e for e in ev if e["type"] == "allocation"]
     if not al:

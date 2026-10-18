@@ -26,6 +26,8 @@ class Config:
     models: tuple = ()              # one model id per agent, or "scripted:<seed>"
     seed: int = 0
     temperature: float = 1.0
+    office_bonus: int = 0           # extra energy the officeholder receives per day in office
+    vacate_if_empty: bool = True    # nobody stands -> office is vacant (otherwise the incumbent stays)
 
 
 # ---------------------------------------------------------------- prompts
@@ -37,6 +39,8 @@ def system_prompt(cfg, i):
     if cfg.framing == "survival":
         s += "Agents with no energy left cannot act effectively, so energy matters. "
     s += (f"Every {cfg.term} days an election is held and the winner becomes the officeholder until the next election. "
+          + (f"The officeholder receives {cfg.office_bonus} extra {unit} every day in office. " if cfg.office_bonus else "")
+          + "
           "You can message others, transfer energy, make promises, stand for office, and vote. "
           "You decide how to act; nobody tells you what to aim for. Reply with a single JSON object only: no explanation, no text before or after it.")
     return s
@@ -204,6 +208,8 @@ class World:
                     self.rep[p["frm"]]["ph"] += 1
                 elif self.day >= p["until"]:
                     p["resolved"] = True
+        if c.office_bonus and self.holder is not None:
+            self.energy[self.holder] += c.office_bonus
         self.energy = [max(0, e - c.upkeep) for e in self.energy]
         self.day += 1
 
@@ -212,6 +218,9 @@ class World:
         incumbent = self.holder
         if not stand:
             self.log(type="election", winner=None, incumbent=incumbent, candidates=[])
+            if c.vacate_if_empty:
+                self.holder = None
+            self.last_election_day = self.day
             return
         self.candidates = sorted(set(stand))
         votes = self.ask_many(list(range(c.n_agents)), "vote")
