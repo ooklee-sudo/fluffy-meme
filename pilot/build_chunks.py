@@ -23,6 +23,9 @@ DATE_CANDIDATES = ["filing_date", "application_date", "date_filed"]
 
 
 def open_tsv(path):
+    if path.endswith(".gz"):
+        import gzip
+        return gzip.open(path, "rt", encoding="utf-8", errors="replace", newline="")
     if path.endswith(".zip"):
         z = zipfile.ZipFile(path)
         name = [n for n in z.namelist() if n.endswith((".tsv", ".txt"))][0]
