@@ -3,7 +3,7 @@
 Every economic relation is identified from logged, state-changing events (world.events),
 never from message text.
 """
-import json, random, re
+import json, os, random, re
 from dataclasses import dataclass, asdict, field
 from concurrent.futures import ThreadPoolExecutor
 
@@ -134,12 +134,16 @@ class World:
         model = self.cfg.models[i]
         if model.startswith("scripted"):
             return scripted(self, i, stage, self._srng[i])
-        text, cost = llm.chat(model, system_prompt(self.cfg, i), fmt_state(self, i, stage),
-                              temperature=self.cfg.temperature)
+        text, cost, fin, ntok = llm.chat(model, system_prompt(self.cfg, i), fmt_state(self, i, stage),
+                                         temperature=self.cfg.temperature)
         self.cost += cost
         out = parse(text)
         if out is None:
             self.parse_failures += 1
+            os.makedirs(os.path.join(os.path.dirname(__file__), "results"), exist_ok=True)
+            with open(os.path.join(os.path.dirname(__file__), "results", "parse_failures.jsonl"), "a") as f:
+                f.write(json.dumps({"model": model, "day": self.day, "stage": stage, "finish": fin,
+                                    "completion_tokens": ntok, "text": (text or "")[:600]}) + "\n")
         return out or {}
 
     def ask_many(self, ids, stage):

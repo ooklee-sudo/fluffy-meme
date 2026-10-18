@@ -36,8 +36,8 @@ def _add(model, cost, tin, tout):
         json.dump(d, open(LEDGER, "w"), indent=1)
 
 
-def chat(model, system, user, max_tokens=700, temperature=1.0, retries=4):
-    """Return (text, cost_usd). Raises BudgetExceeded before a call if the cap is already reached."""
+def chat(model, system, user, max_tokens=1500, temperature=1.0, retries=4):
+    """Return (text, cost_usd, finish_reason, completion_tokens). Raises BudgetExceeded before a call if the cap is already reached."""
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         raise RuntimeError("OPENROUTER_API_KEY is not set")
@@ -45,6 +45,7 @@ def chat(model, system, user, max_tokens=700, temperature=1.0, retries=4):
         raise BudgetExceeded(f"spend {spent():.2f} USD >= cap {CAP_USD:.2f} USD")
     body = {"model": model, "max_tokens": max_tokens, "temperature": temperature,
             "usage": {"include": True},
+            "reasoning": {"enabled": False},   # agents answer directly; hidden reasoning would eat max_tokens and cost
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
     err = None
     for i in range(retries):
@@ -55,8 +56,12 @@ def chat(model, system, user, max_tokens=700, temperature=1.0, retries=4):
                 u = j.get("usage", {})
                 cost = float(u.get("cost") or 0.0)
                 _add(model, cost, u.get("prompt_tokens", 0), u.get("completion_tokens", 0))
-                return (j["choices"][0]["message"].get("content") or ""), cost
+                ch = j["choices"][0]
+                return (ch["message"].get("content") or ""), cost, ch.get("finish_reason"), u.get("completion_tokens", 0)
             err = f"HTTP {r.status_code}: {r.text[:200]}"
+            if r.status_code == 400 and "reasoning" in body:   # model cannot disable reasoning: retry without
+                del body["reasoning"]
+                continue
             if r.status_code in (401, 402, 403):
                 break
         except requests.RequestException as e:
