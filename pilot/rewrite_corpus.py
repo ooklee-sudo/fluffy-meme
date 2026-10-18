@@ -100,12 +100,17 @@ def est_cost(job, prices):
     return n_in * p_in + n_out * p_out, n_out
 
 
-def call_model(model, prompt, max_tokens, key, minimal=False):
+def call_model(model, prompt, max_tokens, key, mode="off"):
+    """mode: 'off' = temperature + reasoning disabled; 'low' = reasoning kept at low effort
+    (for models that cannot disable it); 'minimal' = no optional parameters at all."""
     payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
                "max_tokens": max_tokens, "usage": {"include": True}}
-    if not minimal:   # some models reject these options; minimal=True drops them
+    if mode == "off":
         payload["temperature"] = SETTINGS["temperature"]
         payload["reasoning"] = SETTINGS["reasoning"]
+    elif mode == "low":
+        payload["temperature"] = SETTINGS["temperature"]
+        payload["reasoning"] = {"effort": "low"}
     return http_json(f"{API}/chat/completions", payload, key=key)
 
 
@@ -170,7 +175,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 "n_cheap": a.n_cheap, "n_top": a.n_top}
     json.dump(manifest, open(a.out + ".manifest.json", "w"), indent=2)
 
-    failures, first_seen, minimal = collections.Counter(), {}, set()
+    failures, first_seen, modes = collections.Counter(), {}, {}
 
     def note(model, why):
         with wlock:
@@ -194,7 +199,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
         try:
             for attempt in range(4):
                 try:
-                    r = call(model, build_prompt(kind, c), max_tokens, key, minimal=model in minimal)
+                    r = call(model, build_prompt(kind, c), max_tokens, key, mode=modes.get(model, "off"))
                     u = r.get("usage", {})
                     text = r["choices"][0]["message"].get("content")
                     finish = r["choices"][0].get("finish_reason")
@@ -212,8 +217,11 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 except urllib.error.HTTPError as e:
                     body = e.read().decode("utf-8", "replace")[:200].replace("\n", " ")
                     note(model, f"HTTP {e.code}: {body}")
-                    if e.code == 400 and model not in minimal:
-                        minimal.add(model)                  # retry without temperature/reasoning options
+                    if e.code == 400 and modes.get(model, "off") == "off":
+                        # reasoning cannot be disabled -> keep it at low effort; otherwise drop options
+                        modes[model] = "low" if "mandatory" in body.lower() else "minimal"
+                    elif e.code == 400 and modes.get(model) == "low":
+                        modes[model] = "minimal"
                     elif e.code in (401, 402, 403):
                         stop.set(); break                   # key, credit, or permission problem: stop everything
                     else:
