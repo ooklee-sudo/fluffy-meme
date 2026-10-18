@@ -12,7 +12,11 @@ Branch: `ccr-b3faa909-a8e15y` of `ooklee-sudo/fluffy-meme`. Start a new session 
 ## Files that are NOT in the repo (kept on the user's computer, Downloads\...\pilot)
 `rewrites.jsonl` (full raw outputs and manifest), `rewrites_slim.jsonl.gz` (15.9 MB, normalized text), `chunks.jsonl`, `desc_2021_sample.tsv.gz`, `brf_2021_sample.tsv.gz`. A new session must have these re-uploaded; session upload folders do not persist.
 
+## Latest result (prevalence by year)
+Detectable LLM-drafted share: 2021 baseline alpha-hat 0.02; 2024 ≈ 0%; 2025 ≈ 0.8% (CI 0.1–1.5%), with a suggestive uptick in the last quarter of 2025 (≈2–3%). Details in `prevalence_results.md`. Gate (a) is not met on data through 2025; the project needs later data (2026 publications) or a reframing.
+
 ## Next steps
+0. (Done) 2024 and 2025 samples analyzed. The 2025 long-text file is listed on page 1 of the portal (newest files first).
 1. Download and sample `pg_detail_desc_text_{2019,2023,2024,2025}` from the USPTO Open Data Portal (`pvpgpubtxt`; login + API key), shrink with `pilot/sample_tsv.py --n 3000`, upload the four `desc_*_sample.tsv.gz` files.
 2. Estimate the LLM-drafted share by year/quarter (RQ1 prevalence) and check the 2019/2021 placebo. This is gate criterion (a). Interpret by publication year (18-month lag; data end 2025-09-30).
 3. Calibrate alpha-hat to true share (attenuation seen at high shares) and enlarge the null sample (FPR was 3.3% at n=400).
