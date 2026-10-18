@@ -135,6 +135,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     rng = random.Random(a.seed)
     res, seen, bad = [], 0, 0
+    org_count = {}
     for xml in iter_docs(open_xml(a.src)):
         xml = re.sub(r"<!DOCTYPE[^>]*(\[[^\]]*\])?[^>]*>", "", xml, count=1)
         xml = re.sub(r"^<\?xml[^>]*\?>", "", xml.lstrip())
@@ -148,6 +149,9 @@ def main(argv=None):
         if a.utility_only and rec["appl_type"] not in ("utility", ""):
             continue
         seen += 1
+        first_org = (rec["applicant_orgs"].split(";")[0] or "(individual)").upper()
+        rec["_org_key"] = first_org
+        org_count[first_org] = org_count.get(first_org, 0) + 1
         if len(res) < a.n:
             res.append(rec)
         else:
@@ -156,13 +160,15 @@ def main(argv=None):
                 res[j] = rec
     cols = ["pgpub_id", "pub_date", "filing_date", "appl_type", "title", "applicant_orgs", "applicant_types",
             "applicant_countries", "assignee_orgs", "n_inventors", "agent_orgs", "agent_names", "cpc_main",
-            "description_length", "description_text"]
+            "description_length", "cpc_section", "org_week_count", "description_text"]
     opener = gzip.open(a.dst, "wt", encoding="utf-8", newline="") if a.dst.endswith(".gz") else open(a.dst, "w", encoding="utf-8", newline="")
     with opener as f:
         w = csv.DictWriter(f, cols, delimiter="\t")
         w.writeheader()
         for r in res:
             r = dict(r); r["description_text"] = window(r["description_text"], a.window, rng)
+            r["cpc_section"] = r["cpc_main"][:1]
+            r["org_week_count"] = 0 if r.pop("_org_key") == "(INDIVIDUAL)" else org_count[r["applicant_orgs"].split(";")[0].upper()]
             w.writerow(r)
     print(f"parsed {seen} usable applications ({bad} unparsable); wrote {len(res)} rows to {a.dst}")
     if res:

@@ -28,6 +28,9 @@ Within-group, 2026 weeks exceed the 2021 baseline (all nine differences positive
 ## Firm-level feasibility (applicant_counts on ipa261008)
 ~110 organizations have ≥10 applications per week (31% of applications), ~262 have ≥5; many are non-US. Firm-level DID would cover only a few hundred large firms with noisy quarterly treatment. Decision pending between: (A) measurement + prevalence paper first, (B) field-level DID, (C) firm-level DID for the largest firms. See PILOT_PLAN.md.
 
+## Decision: option A
+Measurement and prevalence paper first (curve over time by group, firm size, CPC section), then field-level DID. Run order on the user's computer: download the missing weekly zips (list in PILOT_PLAN.md), `make_samples.py <Downloads folder> --n 2000`, then `prevalence_curve.py --baseline <pre-Nov-2022 weeks> --weeks <later weeks> --rewrites rewrites_slim.jsonl.gz --out curve.md [--strata group_cpc]`. Afterwards: rewrite the proposal and manuscript around RQ1 (prevalence/measurement), add figures.
+
 ## Next steps
 0. (Done) 2024 and 2025 samples analyzed. The 2025 long-text file is listed on page 1 of the portal (newest files first).
 1. Download and sample `pg_detail_desc_text_{2019,2023,2024,2025}` from the USPTO Open Data Portal (`pvpgpubtxt`; login + API key), shrink with `pilot/sample_tsv.py --n 3000`, upload the four `desc_*_sample.tsv.gz` files.
