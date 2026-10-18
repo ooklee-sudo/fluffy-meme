@@ -61,3 +61,12 @@ def broke(model, prompt, max_tokens, key, mode="off"):
 out5 = os.path.join(d, "out5.jsonl")
 rc.main(["--input", src, "--out", out5, "--n-cheap", "4", "--n-top", "2", "--workers", "1"], call=broke, price_fn=prices)
 print("OK; records:", n_expected, "| capped run spent:", round(spent, 4))
+
+# --budget is cumulative: a second run into the same file starts from what is already recorded
+out6 = os.path.join(d, "out6.jsonl")
+rc.main(["--input", src, "--out", out6, "--n-cheap", "4", "--n-top", "2", "--budget", "0.1", "--workers", "1"], call=fake, price_fn=prices)
+first = sum(json.loads(l)["cost_usd"] for l in open(out6))
+rc.main(["--input", src, "--out", out6, "--n-cheap", "4", "--n-top", "2", "--budget", "0.1", "--workers", "1"], call=fake, price_fn=prices)
+total = sum(json.loads(l)["cost_usd"] for l in open(out6))
+assert total <= 0.1 + 1e-9, (first, total)
+print("cumulative budget OK", round(first, 4), round(total, 4))

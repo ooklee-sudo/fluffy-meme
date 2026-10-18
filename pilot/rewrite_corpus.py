@@ -135,7 +135,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--budget", type=float, default=500.0, help="hard cap in USD")
+    ap.add_argument("--budget", type=float, default=500.0, help="hard cap in USD, cumulative over all runs into the same --out file")
     ap.add_argument("--n-cheap", type=int, default=1000, help="chunks per prompt per cheap model")
     ap.add_argument("--n-top", type=int, default=500, help="chunks per prompt per top model")
     ap.add_argument("--seed", type=int, default=0)
@@ -149,11 +149,12 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
         sys.exit(f"Models not listed on OpenRouter right now: {missing}")
 
     chunks = [json.loads(l) for l in open(a.input)]
-    done = set()
+    done, spent_before = set(), 0.0
     if os.path.exists(a.out):
         for l in open(a.out):
             r = json.loads(l)
             done.add((r["model"], r["prompt_type"], r["chunk_id"]))
+            spent_before += r.get("cost_usd", 0.0)
     jobs = plan_jobs(chunks, a.n_cheap, a.n_top, a.seed, done)
 
     per_model = {m: 0.0 for m in MODELS}
@@ -184,6 +185,9 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 first_seen[model] = why
                 print(f"  ! {model}: {why}", flush=True)
     budget, wlock, stop = Budget(a.budget), threading.Lock(), threading.Event()
+    budget.spent = spent_before        # --budget caps the cumulative cost recorded in the output file
+    if spent_before:
+        print(f"already spent in {a.out}: ${spent_before:.2f}")
     fout = open(a.out, "a")
 
     def work(job):
@@ -238,7 +242,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
 
     with ThreadPoolExecutor(a.workers) as ex:
         list(ex.map(work, jobs))
-    print(f"spent ${budget.spent:.2f}; stopped on budget: {stop.is_set()}")
+    print(f"spent ${budget.spent - spent_before:.2f} this run, ${budget.spent:.2f} in total; stopped early: {stop.is_set()}")
     if failures:
         print("failed calls (not saved; re-run to retry):")
         for (m, why), n in sorted(failures.items()):
