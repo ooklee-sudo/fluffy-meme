@@ -16,6 +16,10 @@ This question matters because agentic systems inherit their governance from thei
 
 Recent evidence suggests it cannot be taken for granted. Zhang and Shang (2026) report that LLM agents placed in a minimal executable world, with scarce tasks and basic mechanisms for transfer, election, and allocation, spontaneously form economic relations, including exchanges of votes for future access. Their setting is short and small, and it was built to demonstrate emergence rather than persistence. We take their finding as a point of departure and ask the follow-on question that matters for governance: under what design conditions do such exchanges harden into durable concentration of control?
 
+Our work is closest to a small but growing body of LLM-based agent simulations of economic and political life. The LLM Economist framework (Karten et al. 2025), for instance, places LLM worker agents under a planner agent and shows that periodic persona-level voting can improve welfare under decentralized governance. Its objective, however, is policy design: the question is whether a governance procedure converges toward a socially desirable outcome. Ours is the complementary question of whether, and under what rules, governance positions become captured. In that setting the planner is a mechanism-design device with a well-defined objective, whereas in ours office is held by agents with private interests, and the object of study is how those agents use it.
+
+Two further differences set our design apart. First, prior simulations tend to run over short horizons and to examine aggregate outcomes (Zhang and Shang 2026; see also recent critiques of the short horizons and thin aggregate measurement in generative-agent economies). We instead study persistence directly, using spell lengths, exclusion duration, and the half-life of control, which short runs cannot reveal. Second, existing work treats the voting rule as a given feature of the environment. We treat it, together with allocation authority and accountability records, as a manipulated design variable, which is what allows us to attribute differences in entrenchment to governance and not to the particular scenario.
+
 We make three contributions. First, we introduce *rights convertibility* as a design-level construct that links political (decision) rights to economic (access) rights. Second, we integrate IT governance, agency, and cumulative-advantage perspectives into a model of entrenchment in agentic systems. Third, we derive testable propositions and a research design that identifies governance effects from behavioral traces, which avoids the interpretive problems of relying on what agents say.
 
 # 2. Theoretical Background
@@ -101,5 +105,7 @@ Sambamurthy, V., and Zmud, R. W. 1999. "Arrangements for Information Technology 
 Tiwana, A., Konsynski, B., and Bush, A. A. 2010. "Platform Evolution: Coevolution of Platform Architecture, Governance, and Environmental Dynamics," *Information Systems Research* (21:4), pp. 675-687.
 
 Weill, P., and Ross, J. W. 2004. *IT Governance: How Top Performers Manage IT Decision Rights for Superior Results*. Boston: Harvard Business School Press.
+
+Karten, S., Li, W., Ding, Z., Kleiner, S., Bai, Y., and Jin, C. 2025. "LLM Economist: Large Population Models and Mechanism Design in Multi-Agent Generative Simulacra," arXiv:2507.15815.
 
 Zhang, L., and Shang, S. 2026. "AI Agent Economics: Can Autonomous Economic Behavior Emerge among AI Agents under Minimal External Conditions?" arXiv:2608.03076.
