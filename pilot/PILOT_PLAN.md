@@ -99,3 +99,9 @@ Confirmed: publication number/date, filing date, appl-type, CPC, title, applican
 - Applicant is an organization: 94.0%; assignee element present: 36.8% (use applicant organization as the unit name).
 - Any non-US applicant: **55.2%** → enough volume to test false positives by applicant country (gate criterion (b)), once a pre-2022 XML baseline week (ipa210408) is available.
 - CPC 100%; filing date 100%.
+
+## First weekly-XML analysis (1,000 docs per week; first version of analyze_weeks.py)
+- Baseline false positives differ strongly by applicant group: with one pooled null threshold (0.030 for 100-doc groups) the false-positive rate was 75.7% for US-only groups versus 2.0% for non-US groups (baseline alpha-hat 0.046 vs 0.007). A single pooled human model is not valid across groups; **always compare within group**. This fails gate criterion (b) for pooled use and motivates stratification (or group-specific human models).
+- Within-group comparison, alpha-hat 2021 baseline -> 2026 weeks: US 0.046 -> 0.073 / 0.100 / 0.097 (Jan/Apr/Oct); non-US 0.007 -> 0.031 / 0.038 / 0.035. Pooled calibrated shares 3.6% / 6.2% / 5.4%. Baseline groups had only ~150 documents, so these differences were not yet tested.
+- By filing quarter (mixed groups, 75–450 docs each) alpha-hat fluctuates between 0.02 and 0.12 with no clean monotone trend.
+- analyze_weeks.py now scores the baseline by 5-fold cross-fitting (all 990 documents), reports within-group differences with bootstrap intervals, and writes UTF-8.
