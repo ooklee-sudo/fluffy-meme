@@ -100,12 +100,13 @@ def est_cost(job, prices):
     return n_in * p_in + n_out * p_out, n_out
 
 
-def call_model(model, prompt, max_tokens, key):
-    return http_json(f"{API}/chat/completions", {
-        "model": model, "messages": [{"role": "user", "content": prompt}],
-        "temperature": SETTINGS["temperature"], "max_tokens": max_tokens,
-        "reasoning": SETTINGS["reasoning"], "usage": {"include": True},
-    }, key=key)
+def call_model(model, prompt, max_tokens, key, minimal=False):
+    payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
+               "max_tokens": max_tokens, "usage": {"include": True}}
+    if not minimal:   # some models reject these options; minimal=True drops them
+        payload["temperature"] = SETTINGS["temperature"]
+        payload["reasoning"] = SETTINGS["reasoning"]
+    return http_json(f"{API}/chat/completions", payload, key=key)
 
 
 class Budget:
@@ -169,7 +170,14 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 "n_cheap": a.n_cheap, "n_top": a.n_top}
     json.dump(manifest, open(a.out + ".manifest.json", "w"), indent=2)
 
-    failures = collections.Counter()
+    failures, first_seen, minimal = collections.Counter(), {}, set()
+
+    def note(model, why):
+        with wlock:
+            failures[(model, why[:90])] += 1
+            if model not in first_seen:                     # show the first problem per model immediately
+                first_seen[model] = why
+                print(f"  ! {model}: {why}", flush=True)
     budget, wlock, stop = Budget(a.budget), threading.Lock(), threading.Event()
     fout = open(a.out, "a")
 
@@ -184,26 +192,35 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
             return
         actual, rec = 0.0, None
         try:
-            for attempt in range(3):
+            for attempt in range(4):
                 try:
-                    r = call(model, build_prompt(kind, c), max_tokens, key)
+                    r = call(model, build_prompt(kind, c), max_tokens, key, minimal=model in minimal)
                     u = r.get("usage", {})
                     text = r["choices"][0]["message"].get("content")
                     finish = r["choices"][0].get("finish_reason")
                     actual += float(u.get("cost") or (u.get("prompt_tokens", 0) * prices[model][0]
                                                       + u.get("completion_tokens", 0) * prices[model][1]))
                     if not text or len(text.split()) < MIN_WORDS:   # empty, refusal, or reasoning-only
-                        with wlock:
-                            failures[(model, finish or "empty")] += 1
+                        note(model, f"empty/short output (finish={finish})")
                         time.sleep(1)
-                        continue                                    # retry; never saved as a result
+                        continue
                     rec = {"model": model, "served_model": r.get("model"), "prompt_type": kind,
                            "chunk_id": c["id"], "output": text, "finish_reason": finish,
                            "usage": u, "cost_usd": actual,
                            "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
                     break
-                except (urllib.error.URLError, KeyError, TimeoutError):
-                    time.sleep(2 ** attempt)
+                except urllib.error.HTTPError as e:
+                    body = e.read().decode("utf-8", "replace")[:200].replace("\n", " ")
+                    note(model, f"HTTP {e.code}: {body}")
+                    if e.code == 400 and model not in minimal:
+                        minimal.add(model)                  # retry without temperature/reasoning options
+                    elif e.code in (401, 402, 403):
+                        stop.set(); break                   # key, credit, or permission problem: stop everything
+                    else:
+                        time.sleep(2 ** (attempt + 1))      # 429/5xx: back off
+                except (urllib.error.URLError, KeyError, TimeoutError) as e:
+                    note(model, f"{type(e).__name__}: {e}")
+                    time.sleep(2 ** (attempt + 1))
         finally:
             budget.settle(reserve, actual)
         if rec:
