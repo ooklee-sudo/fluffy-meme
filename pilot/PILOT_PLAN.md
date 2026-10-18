@@ -93,3 +93,9 @@ Plan: download one weekly file each for 2025-04-10, 2025-10-09, 2026-01-08, 2026
 
 ### Weekly XML structure check (ipa261008, DTD v4.6)
 Confirmed: publication number/date, filing date, appl-type, CPC, title, applicants (us-parties/us-applicants/us-applicant; individuals have no orgname), inventors, description paragraphs. The first application had **no agents element**: law-firm information is probably absent from application publications (as with PatentsView). `xml_to_tsv.py` now prints the share of applications with agents; if it is near zero, the assignee × law-firm drafting unit is not buildable from publications alone and the design needs an alternative (assignee-level units, or law firms from granted-patent XML).
+
+### Weekly XML statistics (ipa261008, 8,898 usable utility applications; 1,000 sampled)
+- Agents / law firm: **0.0%** → gate criterion (c) fails for application publications; the assignee × law-firm drafting unit cannot be built from them. Options: applicant-level (company) units; or law firms from granted-patent XML via the publication-to-grant crosswalk (only for applications already granted, with selection).
+- Applicant is an organization: 94.0%; assignee element present: 36.8% (use applicant organization as the unit name).
+- Any non-US applicant: **55.2%** → enough volume to test false positives by applicant country (gate criterion (b)), once a pre-2022 XML baseline week (ipa210408) is available.
+- CPC 100%; filing date 100%.

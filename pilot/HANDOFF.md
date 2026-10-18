@@ -18,6 +18,9 @@ Detectable LLM-drafted share: 2021 baseline alpha-hat 0.02; 2024 â‰ˆ 0%; 2025 â‰
 ## Raw XML plan (in progress)
 Download weekly files from https://data.uspto.gov/bulkdata/datasets/appxml (see PILOT_PLAN.md for the list of weeks), run `peek_xml.py` on one to verify the structure, then `xml_to_tsv.py` per week.
 
+## Weekly XML result (ipa261008)
+No agent/law-firm element in application publications (0%); 94% organizational applicants; 55% non-US applicants; filing date and CPC always present. See PILOT_PLAN.md.
+
 ## Next steps
 0. (Done) 2024 and 2025 samples analyzed. The 2025 long-text file is listed on page 1 of the portal (newest files first).
 1. Download and sample `pg_detail_desc_text_{2019,2023,2024,2025}` from the USPTO Open Data Portal (`pvpgpubtxt`; login + API key), shrink with `pilot/sample_tsv.py --n 3000`, upload the four `desc_*_sample.tsv.gz` files.
