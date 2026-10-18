@@ -40,8 +40,7 @@ def system_prompt(cfg, i):
         s += "Agents with no energy left cannot act effectively, so energy matters. "
     s += (f"Every {cfg.term} days an election is held and the winner becomes the officeholder until the next election. "
           + (f"The officeholder receives {cfg.office_bonus} extra {unit} every day in office. " if cfg.office_bonus else "")
-          + "
-          "You can message others, transfer energy, make promises, stand for office, and vote. "
+          + "You can message others, transfer energy, make promises, stand for office, and vote. "
           "You decide how to act; nobody tells you what to aim for. Reply with a single JSON object only: no explanation, no text before or after it.")
     return s
 
