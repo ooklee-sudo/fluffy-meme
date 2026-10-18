@@ -58,3 +58,9 @@ python3 pilot/build_chunks.py --desc <detail_desc_text.tsv[.zip]> --meta <applic
 
 ## Cost check for the small run (live OpenRouter prices, synthetic 1,100-word chunks)
 `--n-cheap 500 --n-top 200`: 8,700 calls, estimated maximum $89 (output priced at 1.6× chunk length, so the expected actual is lower, roughly $60–70). The 1,000/500 run would be about $184 at maximum. Real figures will be recomputed by `--dry-run` on the actual chunk file.
+
+## Data dictionary check (PVPGPUBTXT, release of 2025-12-10)
+- Confirmed columns: `pg_detail_desc_text_{year}`: `pgpub_id`, `description_length`, `description_text`; `pg_brf_sum_text_{year}`: `pgpub_id`, `summary_text`; `pg_claims_{year}`: `pgpub_id`, `claim_sequence`, `claim_number`, `claim_text`, `dependent`. `build_chunks.py` defaults now match these names.
+- The long-text tables carry no filing date. `build_chunks.py` therefore works without `--meta`: `pgpub_id` begins with the publication year, and anything published in or before 2022 was filed before ChatGPT, so the human corpus is safe. Filing dates (needed later for cohorts) come from the application metadata table in the same portal, whose column names still need to be checked.
+- Data are current through 2025-09-30. With an 18-month publication lag, filings are complete only through roughly early 2024, so the clean post-ChatGPT window is about 16 months. Check whether a 2026 release is available before the main analysis.
+- Line breaks are kept in text from 2020 on; `clean()` collapses whitespace.

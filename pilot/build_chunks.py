@@ -2,12 +2,14 @@
 
 Inputs (TSV, optionally .zip with one file inside; tab-separated, double-quote quoted):
   --desc   detailed-description table (one row per application)
-  --meta   table with application id and filing date (and optionally an assignee/country column)
+  --meta   (optional) table with application id and filing date. Without it, the publication
+           year embedded in pgpub_id (first four digits) is used: any application published
+           in or before 2022 was necessarily filed before ChatGPT, so the human corpus is safe.
   --brief  (optional) brief-summary table, used as the 'disclosure' for the draft/expand prompts
 
-Column names differ between releases, so they are passed explicitly or auto-detected
-from common names. CONFIRM THEM against the data dictionary of the release you download;
-this script has only been tested on synthetic files so far.
+Column names follow the PatentsView data dictionary for pg_detail_desc_text_{year}
+(pgpub_id, description_text, description_length) and pg_brf_sum_text_{year}
+(pgpub_id, summary_text); they can be overridden. Tested on synthetic files only.
 
 Only applications filed before --cutoff (default 2022-11-30) are used, one random chunk
 per application, so the human corpus pre-dates ChatGPT.
@@ -16,7 +18,7 @@ import argparse, csv, io, json, random, re, sys, zipfile
 
 csv.field_size_limit(sys.maxsize)
 ID_CANDIDATES = ["pgpub_id", "document_number", "publication_number", "application_id"]
-TEXT_CANDIDATES = ["description_text", "detail_desc_text", "text", "summary_text", "brief_summary_text"]
+TEXT_CANDIDATES = ["description_text", "detail_desc_text"]
 DATE_CANDIDATES = ["filing_date", "application_date", "date_filed"]
 
 
@@ -40,6 +42,8 @@ def pick(cols, given, candidates, what):
 
 
 def read_meta(path, id_col, date_col):
+    if not path:
+        return None
     f = open_tsv(path)
     r = csv.DictReader(f, delimiter="\t")
     idc = pick(r.fieldnames, id_col, ID_CANDIDATES, "meta id")
@@ -70,7 +74,7 @@ def chunks_of(text, target_words, min_words):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--desc", required=True)
-    ap.add_argument("--meta", required=True)
+    ap.add_argument("--meta")
     ap.add_argument("--brief")
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=3000, help="number of chunks (one per application)")
@@ -84,16 +88,23 @@ def main(argv=None):
     rng = random.Random(a.seed)
 
     filed = read_meta(a.meta, a.id_col, a.date_col)
-    eligible = {i for i, d in filed.items() if a.min_year <= d[:4] and d < a.cutoff}
-    print(f"{len(eligible)} applications filed {a.min_year}..{a.cutoff}")
+    if filed is not None:
+        eligible = {i for i, d in filed.items() if a.min_year <= d[:4] and d < a.cutoff}
+        print(f"{len(eligible)} applications filed {a.min_year}..{a.cutoff}")
+    else:  # publication year from the id: published <= cutoff year implies filed before the cutoff
+        eligible = None
+        print(f"no --meta: using publication year {a.min_year}..{a.cutoff[:4]} from pgpub_id")
+
+    def ok(i):
+        return i in eligible if eligible is not None else a.min_year <= i[:4] <= a.cutoff[:4]
 
     briefs = {}
     if a.brief:
         r = csv.DictReader(open_tsv(a.brief), delimiter="\t")
         bi = pick(r.fieldnames, a.id_col, ID_CANDIDATES, "brief id")
-        bt = pick(r.fieldnames, None, ["brief_summary_text", "summary_text", "text"], "brief text")
+        bt = pick(r.fieldnames, None, ["summary_text", "brief_summary_text"], "brief text")
         for row in r:
-            if row[bi] in eligible:
+            if ok(row[bi]):
                 briefs[row[bi]] = clean(row[bt])[:600]
 
     r = csv.DictReader(open_tsv(a.desc), delimiter="\t")
@@ -101,12 +112,12 @@ def main(argv=None):
     tc = pick(r.fieldnames, a.text_col, TEXT_CANDIDATES, "desc text")
     res, seen = [], 0
     for row in r:                                         # reservoir sample, one chunk per application
-        if row[idc] not in eligible:
+        if not ok(row[idc]):
             continue
         cs = chunks_of(clean(row[tc]), a.target_words, a.min_words)
         if not cs:
             continue
-        item = {"id": row[idc], "filing_date": filed[row[idc]], "text": rng.choice(cs)}
+        item = {"id": row[idc], "filing_date": filed[row[idc]] if filed else None, "pub_year": row[idc][:4], "text": rng.choice(cs)}
         if row[idc] in briefs:
             item["disclosure"] = briefs[row[idc]]
         seen += 1
