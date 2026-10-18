@@ -176,7 +176,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
                 "n_cheap": a.n_cheap, "n_top": a.n_top}
     json.dump(manifest, open(a.out + ".manifest.json", "w"), indent=2)
 
-    failures, first_seen, modes = collections.Counter(), {}, {}
+    failures, first_seen, modes, progress = collections.Counter(), {}, {}, {"saved": 0}
 
     def note(model, why):
         with wlock:
@@ -184,6 +184,8 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
             if model not in first_seen:                     # show the first problem per model immediately
                 first_seen[model] = why
                 print(f"  ! {model}: {why}", flush=True)
+            elif sum(failures.values()) % 25 == 0:          # then echo every 25th failure so silent stalls are visible
+                print(f"  ! [{sum(failures.values())} failures so far] latest {model}: {why[:120]}", flush=True)
     budget, wlock, stop = Budget(a.budget), threading.Lock(), threading.Event()
     budget.spent = spent_before        # --budget caps the cumulative cost recorded in the output file
     if spent_before:
@@ -239,6 +241,10 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
             with wlock:
                 fout.write(json.dumps(rec) + "\n")
                 fout.flush()
+                progress["saved"] += 1
+                if progress["saved"] % 100 == 0 or progress["saved"] == 1:
+                    print(f"  saved {progress['saved']} / {len(jobs)}   spent ${budget.spent:.2f}   "
+                          f"{time.strftime('%H:%M:%S')}", flush=True)
 
     with ThreadPoolExecutor(a.workers) as ex:
         list(ex.map(work, jobs))
