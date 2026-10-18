@@ -22,6 +22,7 @@ Download weekly files from https://data.uspto.gov/bulkdata/datasets/appxml (see 
 No agent/law-firm element in application publications (0%); 94% organizational applicants; 55% non-US applicants; filing date and CPC always present. See PILOT_PLAN.md.
 
 ## Latest result
+Placebo week (2022-04) shows no difference from the 2021-04 baseline; 2026 weeks remain significantly higher (weeks_results_v2.md).
 Within-group, 2026 weeks exceed the 2021 baseline (all nine differences positive, CIs exclude 0): pooled calibrated share ≈3–6%, US ≈6–9.5%, non-US ≈1–2%. See weeks_results_v1.md and PILOT_PLAN.md for cautions (single baseline week, no CPC control, group-level noise).
 
 ## Next steps
