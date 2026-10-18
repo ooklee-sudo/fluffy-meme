@@ -50,6 +50,10 @@ These accounts share a premise: holding office is worth something. We call the v
 
 **P5 (Capability and selection).** More capable agents are more likely to hold office, whether through greater willingness to stand or through greater success when standing.
 
+Figure 1 summarizes the model. The design features on the left are the manipulated factors: office rents, authority binding, the election rule, and the capability or family of the model that drives each agent. The central construct is candidacy and electoral competition, which we expect office rents to raise (P1) and which we expect in turn to lengthen the persistence of control over the office. Authority binding is expected to raise inequality of access to tasks (P2), and the dotted arrow indicates that office rents are expected to strengthen that relationship (P3), because rents give holders a reason to use authority to their own advantage. The election rule is expected to shorten the persistence of control (P4). Agent capability and model family are expected to affect which agents hold office (P5). The model is deliberately parsimonious: it contains no mediating variables beyond candidacy, and it treats the three outcomes (persistence, inequality, and identity of the holder) as separate.
+
+![**Figure 1. Conceptual model and propositions.** Solid arrows are main-effect propositions; the dotted arrow is the moderation of the authority effect by office rents (P3). Signs show the predicted direction.](figure1.png)
+
 We also examine *rights convertibility*, the extent to which a vote can be exchanged for access, as a within-world phenomenon and not a manipulated factor. Section 4.5 reports a placebo test of whether voters favor candidates who have given them promises or transfers.
 
 # 3. Method
@@ -123,6 +127,10 @@ Office rents raised the count of voters who backed a winner after receiving a gi
 The data do not support the expectation that scarce resources and allocation authority lead LLM agents to capture access. Where authority was binding, the distribution of tasks was more equal than chance. The pattern of competition was driven by the rewards attached to office: when office was worth nothing, most agents did not stand, and when it paid, competition and the volume of exchange rose, but inequality of access did not. For designers, the result locates the lever. The rents attached to a position, and not the authority attached to it, determine whether it becomes contested. Whether contest turns into capture is a separate question that, in this environment, the agents answered mostly in the negative.
 
 The observation that agents often held office for stretches of ten days or more is easily over-read. A considerable part of that persistence in the pilot reflected incumbents continuing by default when nobody stood. After correcting for this, the longest holder spells (8.1 to 12.4 days, against terms of five days) correspond to two or three consecutive terms, which is moderate.
+
+Figure 2 maps the results onto the same structure. Of the five propositions, P1 is supported, P5 is supported with respect to who stands and only weakly with respect to who wins, and P4 is not supported. P2 is contradicted: binding authority reduced inequality of access measured by the Gini coefficient and did not affect the persistence of control. P3 receives only suggestive support, in the form of a loss of the exclusion benefit under rents. We did not test mediation through candidacy, so the path from rents through competition to persistence is inferred from the main effects and not estimated.
+
+![**Figure 2. Empirical support for the model (168 worlds).** Solid arrows indicate supported effects, dashed grey arrows no detectable effect, and the dotted arrow a weak or suggestive moderation. Authority binding had no detectable effect on persistence of control. Mediation by candidacy was not tested.](figure2.png)
 
 ## 5.2 Implications for governance design
 
