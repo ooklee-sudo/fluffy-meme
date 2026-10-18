@@ -50,3 +50,11 @@ def null_threshold(X_human_holdout, p, q, n_docs, n_perm=500, quantile=0.99, see
     m = X_human_holdout.shape[0]
     null = [estimate_alpha(X_human_holdout[rng.integers(0, m, n_docs)], p, q) for _ in range(n_perm)]
     return float(np.quantile(null, quantile))
+
+
+def alpha_from_ll(lp, lq):
+    """Same MLE as estimate_alpha, from precomputed per-document log-likelihoods
+    under the human (lp) and LLM (lq) word-occurrence models."""
+    def nll(a):
+        return -np.logaddexp(np.log1p(-a + EPS) + lp, np.log(a + EPS) + lq).sum()
+    return float(minimize_scalar(nll, bounds=(0.0, 1.0), method="bounded", options={"xatol": 1e-4}).x)

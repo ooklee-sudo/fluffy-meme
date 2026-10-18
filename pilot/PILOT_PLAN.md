@@ -70,3 +70,12 @@ python3 pilot/build_chunks.py --desc <detail_desc_text.tsv[.zip]> --meta <applic
 - Parsing artifact found: PatentsView text glues reference numerals to neighbors ("FIG. 1shows", "device100installed"). `clean()` now splits at letter/digit boundaries so human text carries no artifact that machine rewrites would lack. The feature extractor for the mixture model should also use alphabetic tokens only.
 - Run-on blocks (tables, sequence lists) are dropped (chunks over 1.5× the target length).
 - `--dry-run` for the small run (500 chunks per prompt per cheap model, 200 per top model; 8,700 calls) on the real chunks: estimated maximum $72.10. The expected actual cost is lower because the estimate prices output at 1.6× chunk length.
+
+## Detector validation on real text (validate_detector.py, seed 0)
+Full tables: `validation_results.md`. Setup: 2,366 human 2021 chunks (not sources of any rewrite) split into reference/null/test; 7,423 normalized rewrites from six complete generators plus 235 from mistral; source chunks split into train/test so q never sees the chunks it is tested on.
+- Human-only groups get alpha-hat ≈ 0.05 (the independence model is misspecified, so the baseline is not 0); the document-count-conditional 99th-percentile threshold keeps the false-positive rate at 1–3.3%.
+- Known mixtures are recovered with attenuation: true 25% → 0.20, true 50% → 0.34. Use a calibration curve (alpha-hat → true share) before reporting levels. With 100 documents per group, a 10% share is detected 67% of the time, 5% only 18%, 25% always.
+- Unseen generators: pure-AI alpha-hat 0.54–0.70 and 25% mixtures 0.17–0.22, close to the in-training reference (0.18–0.21), so the detector generalizes across generators in this test.
+- **Key finding by prompt type:** text drafted or expanded by an LLM is detected almost perfectly (alpha-hat 0.93), but **LLM-polished human text is not** (0.07, indistinguishable from the human baseline). The measure identifies LLM-drafted text, not light editing. This limits what "adoption" means in the paper and should be stated in Section 5 and the limitations.
+- Gate status: (b) false positives near zero holds for U.S.-style 2021 text but has not been tested on non-U.S. or machine-translated filings (no applicant-country data loaded yet); (a) prevalence above baseline in 2023–2025 is untested (needs 2023–2025 files); (c) agent/law-firm availability is still unverified.
+- Caveat: this is a laboratory check on pre-2022 human text and synthetic mixtures; real post-2022 filings may differ from any of the generators.
