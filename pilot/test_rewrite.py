@@ -70,3 +70,9 @@ rc.main(["--input", src, "--out", out6, "--n-cheap", "4", "--n-top", "2", "--bud
 total = sum(json.loads(l)["cost_usd"] for l in open(out6))
 assert total <= 0.1 + 1e-9, (first, total)
 print("cumulative budget OK", round(first, 4), round(total, 4))
+
+out7 = os.path.join(d, "out7.jsonl")
+rc.main(["--input", src, "--out", out7, "--n-cheap", "4", "--n-top", "2", "--skip-models", "mistral,deepseek"], call=fake, price_fn=prices)
+got = {json.loads(l)["model"] for l in open(out7)}
+assert not any(("mistral" in m or "deepseek" in m) for m in got) and len(got) == 5, got
+print("skip-models OK")

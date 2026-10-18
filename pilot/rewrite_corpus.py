@@ -140,6 +140,7 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
     ap.add_argument("--n-top", type=int, default=500, help="chunks per prompt per top model")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--skip-models", default="", help="comma-separated substrings of model ids to leave out of this run")
     ap.add_argument("--dry-run", action="store_true", help="estimate cost only")
     a = ap.parse_args(argv)
 
@@ -156,6 +157,10 @@ def main(argv=None, call=call_model, price_fn=fetch_prices):
             done.add((r["model"], r["prompt_type"], r["chunk_id"]))
             spent_before += r.get("cost_usd", 0.0)
     jobs = plan_jobs(chunks, a.n_cheap, a.n_top, a.seed, done)
+    skip = [x for x in a.skip_models.split(",") if x]
+    if skip:
+        jobs = [j for j in jobs if not any(x in j[0] for x in skip)]
+        print(f"skipping models matching {skip}")
 
     per_model = {m: 0.0 for m in MODELS}
     for j in jobs:
