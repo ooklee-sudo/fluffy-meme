@@ -15,14 +15,14 @@ if os.path.exists(pf):
 else:
     print("no parse_failures.jsonl (no failures)")
 
-print("\n=== tasks allocated per day (3 expected) ===")
+print("\n=== tasks allocated per day (= tasks_per_day when fully allocated) ===")
 print(f"{'world':40s}{'avg_win':>8s}{'days<3':>8s}{'tasks per agent':>26s}")
-for f in sorted(glob.glob(os.path.join(RES, "pilot_*.events.jsonl"))):
+for f in sorted(glob.glob(os.path.join(RES, "pilot*_*.events.jsonl"))):
     ev = [json.loads(l) for l in open(f, encoding="utf-8")]
     al = [e for e in ev if e["type"] == "allocation"]
     if not al:
         continue
     n = [len(e["winners"]) for e in al]
     per = collections.Counter(w for e in al for w in e["winners"])
-    name = os.path.basename(f).replace("pilot_", "").replace(".events.jsonl", "")
-    print(f"{name:40s}{sum(n)/len(n):8.2f}{sum(1 for x in n if x < 3):8d}   {[per.get(i, 0) for i in range(6)]}")
+    name = os.path.basename(f).replace(".events.jsonl", "")
+    print(f"{name:40s}{sum(n)/len(n):8.2f}{sum(1 for x in n if x < min(3, max(n))):8d}   {[per.get(i, 0) for i in range(6)]}")

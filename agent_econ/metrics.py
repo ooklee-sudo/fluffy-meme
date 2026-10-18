@@ -23,6 +23,11 @@ def spells(seq, n_agents):
     return out
 
 
+def _share(ev, won):
+    v = [e["gifted"] for e in ev if e["type"] == "vote_cast" and e["won"] == won]
+    return float(np.mean(v)) if v else float("nan")
+
+
 def compute(world):
     n, days = world.cfg.n_agents, world.cfg.days
     holders = world.holder_by_day            # list, len days, value in {None, id}
@@ -54,6 +59,8 @@ def compute(world):
         "max_exclusion_spell": int(max(excl)),
         "mean_max_exclusion_spell": float(np.mean(excl)),
         "vote_for_access_exchanges": sum(1 for e in ev if e["type"] == "vfa_exchange"),
+        "gifted_vote_share_winner": _share(ev, True),
+        "gifted_vote_share_loser": _share(ev, False),
         "transfer_volume": int(sum(e["amount"] for e in ev if e["type"] == "transfer")),
         "n_transfers": sum(1 for e in ev if e["type"] == "transfer"),
         "access_promises": len(prom),

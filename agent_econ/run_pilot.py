@@ -19,8 +19,8 @@ POPS = {"claude": [CLAUDE] * 6, "deepseek": [DEEPSEEK] * 6, "mixed": [CLAUDE, DE
 
 def design(seeds):
     for auth, rule, pop, s in itertools.product([True, False], ["plurality", "ranked"], POPS, range(seeds)):
-        tag = f"pilot_{'auth' if auth else 'noauth'}_{rule}_{pop}_s{s}"
-        yield tag, Config(authority=auth, rule=rule, models=tuple(POPS[pop]), seed=s)
+        tag = f"pilot2_{'auth' if auth else 'noauth'}_{rule}_{pop}_s{s}"
+        yield tag, Config(authority=auth, rule=rule, models=tuple(POPS[pop]), seed=s, tasks_per_day=2)
 
 
 def estimate(cfgs, tin=1800, tout=350):
