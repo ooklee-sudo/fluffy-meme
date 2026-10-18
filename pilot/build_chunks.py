@@ -57,6 +57,10 @@ def read_meta(path, id_col, date_col):
 def clean(t):
     t = re.sub(r"<[^>]+>", " ", t)                      # stray markup
     t = re.sub(r"\[\d{4}\]", " ", t)                    # paragraph numbers like [0012]
+    # PatentsView's markup removal glues reference numerals to neighbors ("FIG. 1shows",
+    # "device100installed"); split at letter/digit boundaries so human text carries no
+    # parsing artifact the machine rewrites would lack.
+    t = re.sub(r"(?<=[A-Za-z])(?=\d)|(?<=\d)(?=[A-Za-z])", " ", t)
     return re.sub(r"\s+", " ", t).strip()
 
 
@@ -117,7 +121,8 @@ def main(argv=None):
     for row in r:                                         # reservoir sample, one chunk per application
         if not ok(row[idc]):
             continue
-        cs = chunks_of(clean(row[tc]), a.target_words, a.min_words)
+        cs = [c for c in chunks_of(clean(row[tc]), a.target_words, a.min_words)
+              if len(c.split()) <= 1.5 * a.target_words]      # drop run-on blocks (tables, sequence lists)
         if not cs:
             continue
         item = {"id": row[idc], "filing_date": filed[row[idc]] if filed else None, "pub_year": row[idc][:4], "text": rng.choice(cs)}

@@ -64,3 +64,9 @@ python3 pilot/build_chunks.py --desc <detail_desc_text.tsv[.zip]> --meta <applic
 - The long-text tables carry no filing date. `build_chunks.py` therefore works without `--meta`: `pgpub_id` begins with the publication year, and anything published in or before 2022 was filed before ChatGPT, so the human corpus is safe. Filing dates (needed later for cohorts) come from the application metadata table in the same portal, whose column names still need to be checked.
 - Data are current through 2025-09-30. With an 18-month publication lag, filings are complete only through roughly early 2024, so the clean post-ChatGPT window is about 16 months. Check whether a 2026 release is available before the main analysis.
 - Line breaks are kept in text from 2020 on; `clean()` collapses whitespace.
+
+## First real-data run (2021 sample, 3,000 applications)
+- `build_chunks.py` on the uploaded 2021 samples produced 600 chunks (median 1,084 words, max 1,100), all with a summary-based disclosure.
+- Parsing artifact found: PatentsView text glues reference numerals to neighbors ("FIG. 1shows", "device100installed"). `clean()` now splits at letter/digit boundaries so human text carries no artifact that machine rewrites would lack. The feature extractor for the mixture model should also use alphabetic tokens only.
+- Run-on blocks (tables, sequence lists) are dropped (chunks over 1.5× the target length).
+- `--dry-run` for the small run (500 chunks per prompt per cheap model, 200 per top model; 8,700 calls) on the real chunks: estimated maximum $72.10. The expected actual cost is lower because the estimate prices output at 1.6× chunk length.
