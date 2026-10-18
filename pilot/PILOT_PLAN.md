@@ -44,3 +44,17 @@ python3 pilot/rewrite_corpus.py --input chunks.jsonl --out rewrites.jsonl --budg
 - `<out>.manifest.json` records models, prompts, settings, seed, and budget; each output record stores the served model name and token usage (needed for the AI-use disclosure).
 - Tested offline with a fake API (`test_rewrite.py`); not yet run against the live API.
 - Reasoning is requested off, but some models may ignore it; reasoning tokens would then raise cost above the estimate, which the cap still covers.
+
+## Data access (checked 2026-10-18) and chunk extraction (`build_chunks.py`)
+PatentsView bulk downloads moved to the USPTO Open Data Portal (dataset `pvpgpubtxt` for pre-grant long text, per the transition guide). Downloading now requires a USPTO.gov account with an API key; the old S3 paths return 403 from this environment, and the portal pages are not readable without a browser session. So the long-text tables have to be downloaded by the account holder.
+
+```
+python3 pilot/build_chunks.py --desc <detail_desc_text.tsv[.zip]> --meta <application_with_filing_date.tsv> \
+    [--brief <brief_summary_text.tsv>] --out chunks.jsonl --n 3000
+```
+- Keeps applications filed 2018 through 2022-11-29, one random ~1,100-word chunk per application.
+- Column names are auto-detected from common names but must be checked against the data dictionary of the release actually downloaded; tested on synthetic files only (`test_build_chunks.py`).
+- Metadata (filing date) lives in a different table from the long text; join key is the application/publication id.
+
+## Cost check for the small run (live OpenRouter prices, synthetic 1,100-word chunks)
+`--n-cheap 500 --n-top 200`: 8,700 calls, estimated maximum $89 (output priced at 1.6× chunk length, so the expected actual is lower, roughly $60–70). The 1,000/500 run would be about $184 at maximum. Real figures will be recomputed by `--dry-run` on the actual chunk file.
