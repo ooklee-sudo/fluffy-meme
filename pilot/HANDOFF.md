@@ -31,6 +31,9 @@ Within-group, 2026 weeks exceed the 2021 baseline (all nine differences positive
 ## Decision: option A
 Measurement and prevalence paper first (curve over time by group, firm size, CPC section), then field-level DID. Run order on the user's computer: download the missing weekly zips (list in PILOT_PLAN.md), `make_samples.py <Downloads folder> --n 2000`, then `prevalence_curve.py --baseline <pre-Nov-2022 weeks> --weeks <later weeks> --rewrites rewrites_slim.jsonl.gz --out curve.md [--strata group_cpc]`. Afterwards: rewrite the proposal and manuscript around RQ1 (prevalence/measurement), add figures.
 
+## Prevalence by filing quarter
+Break at 2023Q2 filings (≈1.2% calibrated), rising ≈1 pp per half year to ≈5% by 2025Q4; flat before (curve_v2_filing_quarter.md).
+
 ## Prevalence curve v1
 See curve_v1.md and figures/prevalence_curve.png: flat through 2023 publications, rising from 2024, ≈3–5% calibrated in 2026; US > non-US, small > large firms; CPC G largest. Re-run prevalence_curve.py (latest version) to add the by-filing-quarter table and `--strata group_cpc`.
 

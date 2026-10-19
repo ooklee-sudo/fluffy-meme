@@ -125,3 +125,6 @@ Weekly files for the curve (one per half-year): baseline/placebo 2021-04-08, 202
 
 ## Prevalence curve v1 (15 weekly samples; curve_v1.md, figures/prevalence_curve.png)
 Flat through publication 2023, then rising from 2024 publications and accelerating in 2026 (calibrated share ≈ 4.0%, 3.1%, 5.0% in Jan/Apr/Oct 2026); the six pre-ChatGPT baseline weeks serve as placebo points and stay at about 0. US applicants and small firms show higher levels; the largest sector increases are in CPC G (physics/computing), A, B. Added to prevalence_curve.py: a pooled by-filing-quarter table (re-run needed). Still to do: CPC-stratified rerun (`--strata group_cpc`), by-filing-quarter curve, more weeks (denser time series), uncertainty on group differences.
+
+## Prevalence by filing quarter (curve_v2_filing_quarter.md, figures/prevalence_by_filing_quarter.png)
+Filings through 2022Q3 are flat (alpha-hat ≈ 0.02, calibrated ≈ 0); 2022Q4–2023Q1 filings are at or below baseline; a break appears with 2023Q2 filings (calibrated 1.2%) and the share rises about one percentage point per half year to ≈5% by 2025Q4. The last two quarters are based on few early-published documents. Open: CPC-stratified rerun (`--strata group_cpc`), denser weekly sampling (more weeks per half year), group-by-quarter breakdowns, and filing-quarter confidence in the late quarters.
