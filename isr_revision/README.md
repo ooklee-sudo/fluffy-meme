@@ -2,6 +2,7 @@
 
 | file | content |
 |---|---|
+| `ISR_manuscript_draft_4.docx` | draft 3 plus the seed-count fix, conditional-logit results for winning, the allocation-mechanism analysis (Table 2), the post hoc account (Section 2.5), and the revised discussion and limitations; built by `build_draft4.py` |
 | `ISR_manuscript_draft_3.docx` | draft 2 with the "Working draft" note removed and the figure alt text no longer duplicating the captions |
 | `1_theory_reframing.md` | mechanism-based replacement for Section 2 (post-hoc propositions P1'-P5' with falsification conditions) |
 | `2_robustness_design.md` | preregistered confirmatory design (402 worlds in three blocks) |

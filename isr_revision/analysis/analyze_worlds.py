@@ -77,6 +77,7 @@ from statsmodels.discrete.conditional_models import ConditionalLogit
 S = E[E.stood == 1].copy()
 S["grp"] = S.world_id * 1000 + S.election_id
 keep = S.groupby("grp").filter(lambda x: len(x) > 1 and 0 < x.won.sum() < len(x))
+info = keep.groupby("grp").filter(lambda x: x.claude.nunique() == 2)   # elections where both families stood
 def cl(df, col):
     return ConditionalLogit(df.won, df[[col, "held_before"]], groups=df.grp).fit(disp=0).params[col]
 b = cl(keep, "claude")
@@ -89,4 +90,4 @@ for _ in range(200):
     except Exception: pass
 print(f"\n== Winning | standing (conditional logit within election, world-cluster bootstrap) ==\n"
       f"claude coef {b:+.3f}  95% CI [{np.percentile(boot,2.5):+.3f}, {np.percentile(boot,97.5):+.3f}]  "
-      f"(n elections {keep.grp.nunique()})")
+      f"(informative contested elections {info.grp.nunique()}; Claude won {int(info[info.claude==1].won.sum())}, expected under a uniform draw {info.groupby("grp").claude.mean().sum():.1f})")

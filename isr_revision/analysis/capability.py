@@ -15,6 +15,7 @@ print(g.summary().tables[1])
 
 S = E[E.stood == 1].copy(); S["grp"] = S.world_id * 1000 + S.election_id
 keep = S.groupby("grp").filter(lambda x: len(x) > 1 and 0 < x.won.sum() < len(x))
+info = keep.groupby("grp").filter(lambda x: x.pro.nunique() == 2)   # elections where both types stood
 fit = lambda d: ConditionalLogit(d.won, d[["pro", "held_before"]], groups=d.grp).fit(disp=0).params["pro"]
 b = fit(keep); by = {w: d for w, d in keep.groupby("world_id")}; ids = np.array(list(by)); rng = np.random.default_rng(5); boot = []
 for _ in range(300):
@@ -24,5 +25,5 @@ for _ in range(300):
     except Exception: pass
 print(f"\n== Winning | standing (conditional logit, world-cluster bootstrap) ==\n"
       f"pro coef {b:+.3f}  95% CI [{np.percentile(boot,2.5):+.3f}, {np.percentile(boot,97.5):+.3f}]  "
-      f"(contested elections with a winner among candidates: {keep.grp.nunique()})")
+      f"(informative contested elections {info.grp.nunique()}; Pro won {int(info[info.pro==1].won.sum())}, expected under a uniform draw {info.groupby("grp").pro.mean().sum():.1f})")
 print("stood/won by capability:\n", S.groupby("capability").agg(stood=("stood", "sum"), won=("won", "sum")))
