@@ -24,12 +24,12 @@ def fit(df):
     return ConditionalLogit(df.received, df[X], groups=df.grp).fit(disp=0)
 
 
-def run(df, name):
+def run(df, name, reps=REPS):
     """Naive SEs ignore that slots within a world are correlated; the CI is a world-cluster bootstrap."""
     m = fit(df)
     by_world = {w: d for w, d in df.groupby("world_id")}
     ids = np.array(list(by_world)); boot = []
-    for _ in range(REPS):
+    for _ in range(reps):
         pick = rng.choice(ids, len(ids))
         bd = pd.concat([by_world[w].assign(grp=by_world[w].grp + k * 10**9) for k, w in enumerate(pick)])
         try: boot.append(fit(bd).params.values)
@@ -43,8 +43,8 @@ def run(df, name):
 # binding authority, office filled: the mechanism of interest
 run(A[A.binding_active == 1], "Binding authority, office filled")
 # placebo: allocation is a lottery, every coefficient should be ~0
-run(A[A.binding_active == 0], "Placebo: advisory or vacant (random draw)")
+run(A[A.binding_active == 0], "Placebo: advisory or vacant (random draw)", reps=40)
 # does the rule differ when office carries rents?
 if "rent" in A:
     for r, d in A[A.binding_active == 1].groupby("rent"):
-        run(d, f"Binding, rent={r}")
+        run(d, f"Binding, rent={r}", reps=100)

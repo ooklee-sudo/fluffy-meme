@@ -1,0 +1,59 @@
+== World-level Wald tests (robust SE; p_adj: Holm for confirmatory, BH otherwise) ==
+        outcome                                                         term      p  confirmatory  p_adj
+   nocand_share                                C(authority, Sum)[S.advisory] 0.5604         False 0.6940
+   nocand_share                                            C(rent, Sum)[S.0] 0.0000          True 0.0000
+   nocand_share                                    C(rule, Sum)[S.plurality] 0.4750         False 0.6577
+   nocand_share                                 C(population, Sum)[S.claude] 0.0000         False 0.0000
+   nocand_share                               C(population, Sum)[S.deepseek] 0.0000         False 0.0000
+   nocand_share              C(authority, Sum)[S.advisory]:C(rent, Sum)[S.0] 0.9173         False 0.9319
+   nocand_share   C(authority, Sum)[S.advisory]:C(population, Sum)[S.claude] 0.0072         False 0.0259
+   nocand_share C(authority, Sum)[S.advisory]:C(population, Sum)[S.deepseek] 0.0001         False 0.0004
+   nocand_share               C(rent, Sum)[S.0]:C(population, Sum)[S.claude] 0.3930         False 0.5659
+   nocand_share             C(rent, Sum)[S.0]:C(population, Sum)[S.deepseek] 0.5244         False 0.6743
+contested_share                                C(authority, Sum)[S.advisory] 0.5146         False 0.6743
+contested_share                                            C(rent, Sum)[S.0] 0.0000          True 0.0000
+contested_share                                    C(rule, Sum)[S.plurality] 0.6942         False 0.7810
+contested_share                                 C(population, Sum)[S.claude] 0.0000         False 0.0000
+contested_share                               C(population, Sum)[S.deepseek] 0.0000         False 0.0000
+contested_share              C(authority, Sum)[S.advisory]:C(rent, Sum)[S.0] 0.3015         False 0.5154
+contested_share   C(authority, Sum)[S.advisory]:C(population, Sum)[S.claude] 0.0102         False 0.0333
+contested_share C(authority, Sum)[S.advisory]:C(population, Sum)[S.deepseek] 0.0037         False 0.0146
+contested_share               C(rent, Sum)[S.0]:C(population, Sum)[S.claude] 0.0013         False 0.0066
+contested_share             C(rent, Sum)[S.0]:C(population, Sum)[S.deepseek] 0.1144         False 0.2288
+           gini                                            C(authority, Sum) 0.0004          True 0.0007
+           gini                                                 C(rent, Sum) 0.3289         False 0.5154
+           gini                                                 C(rule, Sum) 0.7646         False 0.8341
+           gini                                           C(population, Sum) 0.0027         False 0.0122
+           gini                               C(authority, Sum):C(rent, Sum) 0.5783         False 0.6940
+           gini                         C(authority, Sum):C(population, Sum) 0.0700         False 0.1575
+           gini                              C(rent, Sum):C(population, Sum) 0.8683         False 0.9193
+        reelect                                            C(authority, Sum) 0.0364         False 0.0936
+        reelect                                                 C(rent, Sum) 0.6338         False 0.7360
+        reelect                                                 C(rule, Sum) 0.2882          True 0.2882
+        reelect                                           C(population, Sum) 0.1503         False 0.2847
+        reelect                               C(authority, Sum):C(rent, Sum) 0.0335         False 0.0929
+        reelect                         C(authority, Sum):C(population, Sum) 0.1057         False 0.2238
+        reelect                              C(rent, Sum):C(population, Sum) 0.3823         False 0.5659
+      transfers                                            C(authority, Sum) 0.0000          True 0.0000
+      transfers                                                 C(rent, Sum) 0.2989         False 0.5154
+      transfers                                                 C(rule, Sum) 0.3293         False 0.5154
+      transfers                                           C(population, Sum) 0.0000         False 0.0000
+      transfers                               C(authority, Sum):C(rent, Sum) 0.9319         False 0.9319
+      transfers                         C(authority, Sum):C(population, Sum) 0.0252         False 0.0756
+      transfers                              C(rent, Sum):C(population, Sum) 0.0466         False 0.1117
+
+Gini authority x rent difference-in-differences: +0.0081  95% bootstrap CI [-0.0169, +0.0329]
+
+== Candidacy (GEE logit, cluster = world) ==
+======================================================================================
+                         coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept             -1.0631      0.075    -14.182      0.000      -1.210      -0.916
+C(rent)[T.2]           0.5446      0.100      5.428      0.000       0.348       0.741
+claude                -1.4418      0.099    -14.596      0.000      -1.635      -1.248
+held_before            1.0587      0.097     10.925      0.000       0.869       1.249
+energy_rank_before    -0.0745      0.019     -3.884      0.000      -0.112      -0.037
+======================================================================================
+
+== Winning | standing (conditional logit within election, world-cluster bootstrap) ==
+claude coef +0.026  95% CI [-0.682, +0.584]  (n elections 468)
