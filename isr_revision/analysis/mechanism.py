@@ -16,11 +16,28 @@ LABEL = {"cum_tasks_before": "rotation (neg = favours those with fewer tasks)",
          "is_holder": "self-allocation by holder",
          "gifted_holder_before": "reciprocity (pos = favours past givers to holder)"}
 
+REPS = 200
+rng = np.random.default_rng(3)
+
+
+def fit(df):
+    return ConditionalLogit(df.received, df[X], groups=df.grp).fit(disp=0)
+
+
 def run(df, name):
-    m = ConditionalLogit(df.received, df[X], groups=df.grp).fit(disp=0)
-    out = pd.DataFrame({"coef": m.params, "se": m.bse, "z": m.params / m.bse})
+    """Naive SEs ignore that slots within a world are correlated; the CI is a world-cluster bootstrap."""
+    m = fit(df)
+    by_world = {w: d for w, d in df.groupby("world_id")}
+    ids = np.array(list(by_world)); boot = []
+    for _ in range(REPS):
+        pick = rng.choice(ids, len(ids))
+        bd = pd.concat([by_world[w].assign(grp=by_world[w].grp + k * 10**9) for k, w in enumerate(pick)])
+        try: boot.append(fit(bd).params.values)
+        except Exception: pass
+    lo, hi = np.percentile(boot, [2.5, 97.5], axis=0)
+    out = pd.DataFrame({"coef": m.params, "naive_se": m.bse, "boot_lo": lo, "boot_hi": hi})
     out.index = [f"{c}: {LABEL[c]}" for c in out.index]
-    print(f"\n== {name} (n slots {df.grp.nunique()}) ==\n{out.round(3).to_string()}")
+    print(f"\n== {name} (n slots {df.grp.nunique()}, worlds {len(ids)}) ==\n{out.round(3).to_string()}")
     return m
 
 # binding authority, office filled: the mechanism of interest

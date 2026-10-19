@@ -13,15 +13,18 @@ D = sys.argv[1]
 W = pd.read_csv(f"{D}/worlds.csv"); E = pd.read_csv(f"{D}/elections.csv")
 W["nocand_share"] = W.n_nocand / W.n_elections
 W["contested_share"] = W.n_contested / W.n_elections
-RHS = "C(authority)*C(rent) + C(authority):C(population) + C(rent):C(population) + C(rule) + C(population)"
+# Sum-to-zero coding: with interactions in the model, a treatment-coded main-effect term tests the effect at
+# the reference levels only. Sum coding makes it the average effect over the balanced design.
+RHS = ("C(authority, Sum)*C(rent, Sum) + C(authority, Sum):C(population, Sum) + C(rent, Sum):C(population, Sum)"
+       " + C(rule, Sum) + C(population, Sum)")
 
 # outcome -> (family, confirmatory hypothesis term)
 SPEC = {
-    "nocand_share":    ("binom", "C(rent)"),
-    "contested_share": ("binom", "C(rent)"),
-    "gini":            ("ols",   "C(authority)"),
-    "reelect":         ("ols",   "C(rule)"),
-    "transfers":       ("pois",  "C(authority)"),
+    "nocand_share":    ("binom", "C(rent, Sum)"),
+    "contested_share": ("binom", "C(rent, Sum)"),
+    "gini":            ("ols",   "C(authority, Sum)"),
+    "reelect":         ("ols",   "C(rule, Sum)"),
+    "transfers":       ("pois",  "C(authority, Sum)"),
 }
 
 def fit(y, fam):
