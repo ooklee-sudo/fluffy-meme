@@ -71,6 +71,7 @@ def compute(world):
         "n_transfers": sum(1 for e in ev if e["type"] == "transfer"),
         "access_promises": len(prom),
         "promise_honor_rate": (float(np.mean([p["honored"] for p in done])) if done else float("nan")),
+        "tribute_to_holder": int(sum(e["amount"] for e in ev if e["type"] == "transfer" and e.get("holder") == e["to"])),
         "holder_self_share": float(np.mean([e["holder"] in e["winners"] for e in filled])) if filled else float("nan"),
         "n_filled_binding_days": len(filled),
         "parse_failures": world.parse_failures,

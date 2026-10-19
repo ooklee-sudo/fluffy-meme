@@ -188,7 +188,7 @@ class World:
             a = acts[i]
             msg = a.get("message")
             if isinstance(msg, str) and msg.strip():
-                self.recent_msgs.append((self.day, i, msg.strip()[:300])); self.log(type="message", frm=i)
+                self.recent_msgs.append((self.day, i, msg.strip()[:300])); self.log(type="message", frm=i, text=msg.strip()[:300])
             for t in a.get("transfers") or []:
                 try:
                     to, amt = int(t["to"]), int(t["amount"])
@@ -198,7 +198,7 @@ class World:
                     continue
                 self.energy[i] -= amt; self.energy[to] += amt
                 self.rep[i]["sent"] += amt; self.rep[to]["recv"] += amt
-                self.log(type="transfer", frm=i, to=to, amount=amt)
+                self.log(type="transfer", frm=i, to=to, amount=amt, holder=self.holder)
             for p in a.get("promises") or []:
                 try:
                     to, k = int(p["to"]), int(p.get("within_days", 5))
