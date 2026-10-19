@@ -128,3 +128,6 @@ Flat through publication 2023, then rising from 2024 publications and accelerati
 
 ## Prevalence by filing quarter (curve_v2_filing_quarter.md, figures/prevalence_by_filing_quarter.png)
 Filings through 2022Q3 are flat (alpha-hat ≈ 0.02, calibrated ≈ 0); 2022Q4–2023Q1 filings are at or below baseline; a break appears with 2023Q2 filings (calibrated 1.2%) and the share rises about one percentage point per half year to ≈5% by 2025Q4. The last two quarters are based on few early-published documents. Open: CPC-stratified rerun (`--strata group_cpc`), denser weekly sampling (more weeks per half year), group-by-quarter breakdowns, and filing-quarter confidence in the late quarters.
+
+## CPC-stratified rerun (curve_v3_cpc.md)
+With human models by applicant group × CPC section the pattern is unchanged: baseline flat, 2023 publications at baseline, rise from 2024, 2026 weeks alpha-hat 0.042–0.047 (calibrated ≈ 3%, versus 3–5% without CPC strata); break at 2023Q2 filings persists and reaches ≈5% calibrated by 2025Q4. The technology-mix confound explains roughly a quarter of the latest estimate, not the trend. Largest within-section increases: A (+0.021), B (+0.015), G (+0.011); no increase in F. This answers the main alternative explanation (topic drift) for the prevalence paper.

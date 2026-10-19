@@ -1,0 +1,5 @@
+# CPC-stratified rerun (strata: applicant group x CPC section; run on the user's computer; same 15 weekly samples)
+
+Baseline weeks stay flat (alpha-hat 0.014–0.024; calibrated ≤0.7%); 2023 publications 0.016 / 0.015; 2024: 0.019 / 0.025; 2025: 0.028 / 0.032; 2026: 0.044 / 0.047 / 0.042 (calibrated 3.0% / 3.3% / 2.7%), versus 0.052 / 0.046 / 0.061 without CPC strata. By filing quarter the break at 2023Q2 persists (alpha-hat 0.028, calibrated 1.1%), rising to 0.059 (calibrated 5.0%) in 2025Q4; 2026Q1 0.068 (n=292) and 2026Q2 0.029 (n=622) are based on few early-published documents.
+Within-section pooled difference (post minus baseline alpha-hat): A +0.021, B +0.015, G +0.011, H +0.009, E +0.009, C +0.008, F −0.005 (no increase in mechanical engineering/F).
+Conclusion: controlling for technology mix shrinks the latest estimates by roughly a quarter (Oct 2026: 0.061 → 0.042) but leaves the pattern intact (flat before, break at 2023Q2 filings, rising since). Data for the filing-quarter series: filing_quarter_cpc_data.csv.
