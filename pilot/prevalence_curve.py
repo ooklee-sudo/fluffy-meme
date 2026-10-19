@@ -160,6 +160,19 @@ def main():
         emit(f"| {wk} | {kind} | {len(items)} | {ah:.3f} ({lo:.3f}–{hi:.3f}) | {cal(ah):.3f} | {sub['US']} | {sub['non-US']} | {sub['large']} | {sub['small']} |")
         csvrows.append([wk, kind, len(items), round(ah, 4), round(lo, 4), round(hi, 4), round(cal(ah), 4)])
 
+    emit("\n## By filing quarter (all weeks pooled; alpha-hat with 95% CI; at least 150 docs)\n")
+    emit("| filing quarter | docs | alpha-hat (95% CI) | calibrated share |\n|---|---|---|---|")
+    fq = collections.defaultdict(list)
+    for kind, d, lp, lq in rows_all:
+        y, m = d["filed"][:4], int(d["filed"][4:6] or 0)
+        if y and m:
+            fq[f"{y}Q{(m - 1) // 3 + 1}"].append((d, lp, lq))
+    for k in sorted(fq):
+        if len(fq[k]) >= 150:
+            ah, lo, hi = est_of(fq[k], a.boot)
+            emit(f"| {k} | {len(fq[k])} | {ah:.3f} ({lo:.3f}–{hi:.3f}) | {cal(ah):.3f} |")
+            csvrows.append([f"filed-{k}", "filing-quarter", len(fq[k]), round(ah, 4), round(lo, 4), round(hi, 4), round(cal(ah), 4)])
+
     emit("\n## By CPC section, pooled over post weeks versus pooled baseline (alpha-hat; at least 60 docs)\n")
     emit("| CPC section | baseline docs | baseline alpha-hat | post docs | post alpha-hat | difference |\n|---|---|---|---|---|---|")
     for sec in sorted({d["cpc"] for d in base + later}):
