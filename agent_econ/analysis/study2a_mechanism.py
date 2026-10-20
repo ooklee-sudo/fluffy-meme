@@ -32,7 +32,7 @@ for jf in sorted(glob.glob(R+'s2a_*.json')):
 m=pd.DataFrame(rows);print('MANIPULATION CHECK (keyword coding of message text; share of messages)');print(m.groupby('prompt')[['n_msg','self_rate','judge_rate','fair_rate','h_self','h_fair']].mean().round(3))
 d=pd.DataFrame(tabs);X=['tasks','energy','is_holder','gift'];rng=np.random.default_rng(7)
 print('\nWITHIN-DAY CONDITIONAL LOGIT (Table 2 spec), by prompt; 95% world-bootstrap (200)')
-for p in ['baseline','self_interest','collective_duty']:
+for p in [q for q in ['baseline','self_interest','collective_duty','content_free_eval','role_only'] if (d.prompt==q).any()]:
     s=d[d.prompt==p];est=ConditionalLogit(s.got.values,s[X].values,groups=s.g.values).fit(disp=0).params
     tg=s.tag.unique();gr={t:s[s.tag==t] for t in tg};bs=[]
     for b in range(200):
