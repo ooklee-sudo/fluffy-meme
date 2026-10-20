@@ -18,7 +18,7 @@ Each of these claims is familiar in isolation. Hitt and Brynjolfsson (1996) show
 
 We make three contributions. First, we extend the IT business value literature from the firm to the value chain, by deriving jointly where profit will appear among developers, adopters, and consumers, and when it will disappear. Second, we define appropriability ex ante, as expected imitation lag and cost, and show how that definition yields testable constructs (quality lead, imitation lag, and organizational capital) that can be measured from public sources. Third, we provide illustrative evidence on these constructs from leaderboard, endpoint-price, and regulatory filing data. The evidence is limited, and we state what it cannot show. For practice, the theory replaces the question that dominates managerial discussion of AI, namely how much to invest, with the question it identifies as decisive: what does the firm own that the model cannot supply, and how long will it take competitors to own it as well?
 
-The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 derives the hypotheses, and Section 6 presents illustrative evidence. Section 7 discusses implications, boundary conditions, and limitations, and Section 8 concludes.
+The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 maps the model to data and states its empirical implications, and Section 6 presents illustrative evidence. Section 7 discusses implications, boundary conditions, and limitations, and Section 8 concludes.
 
 # 2. Theoretical Background
 
@@ -176,7 +176,7 @@ Predictions 4 and 5 are not tested here. Proposition 5 is also untested, but it 
 
 A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost of producing a frontier model $F_T$, so that profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, on the order of three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves both the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And developers can and do move into the complement layer, which is the situation Proposition 5 describes. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 7.3.
 
-# 5. Hypotheses and Empirical Counterparts
+# 5. Empirical Counterparts and Implications
 
 ## 5.1 Mapping model objects to data
 
@@ -194,17 +194,23 @@ We assign each model object an empirical counterpart in public data. The mapping
 | Adopter profit | Operating margin | SEC EDGAR XBRL company facts |
 | Compute payments | Factor payment outside the three-way split | Table 1 (illustrative) |
 
-## 5.2 Hypotheses
+## 5.2 Empirical implications
+
+The comparative statics in Section 4.3 yield five testable implications, stated below as hypotheses. We state all five to show how the theory would be tested, but the public data available to us bear on only some of them. H3 and H4 are examined in Section 6, together with a lab-month association that is related to H1a and H1b but does not test them. H1a, H1b, and H2 are stated for future work.
+
+*Implications examined in Section 6*
+
+**H3.** Firms that ship a dated first-party AI product earn a higher operating margin after the GA year than before, relative to firms with no such product. Treatment is the calendar year of GA (for example, Copilot for Microsoft 365 in 2023, Firefly in 2023, Now Assist in 2023, Cortex in 2023, AIP in 2023, watsonx in 2023, Charlotte AI in 2023, Gemini for Workspace in 2024, Agentforce in 2024, Bits AI in 2024, and analogues), not a time-invariant bundle indicator.
+
+**H4.** The within-firm margin increment after GA declines as event time lengthens. Disconfirmation is a flat or rising post-GA path, or a difference between the first post-GA year and the last post-GA bin that cannot be distinguished from zero.
+
+*Implications stated for future work*
 
 **H1a.** Within a given flagship model, realized inference price rises with the model's own quality lead and falls when a competitor closes it. The dependent variable is the OpenRouter provider-mean blended rate across endpoints for that model, which is a realized multi-provider price and not a single list card. Where endpoints are unpublished, the change-point list price is used as a fallback. Disconfirmation is the absence of a within-model price response to changes in the model's own lead.
 
 **H1b.** Across releases, a model's launch price is increasing in its quality lead at launch. Because proprietary list prices rarely change after launch (Gundlach et al. 2026), the premium in Proposition 3 may attach mainly at release and decay as cheaper successors arrive, not through repricing. H1b captures this channel. Disconfirmation is the absence of any relationship between launch price and lead at launch.
 
 **H2.** Among adopters, pooled exposure to LLMs, meaning use or mention without a dated first-party GA, does not predict economic profit. Disconfirmation is a time-invariant exposure indicator that predicts operating margin in the pooled cross-section.
-
-**H3.** Firms that ship a dated first-party AI product earn a higher operating margin after the GA year than before, relative to firms with no such product. Treatment is the calendar year of GA (for example, Copilot for Microsoft 365 in 2023, Firefly in 2023, Now Assist in 2023, Cortex in 2023, AIP in 2023, watsonx in 2023, Charlotte AI in 2023, Gemini for Workspace in 2024, Agentforce in 2024, Bits AI in 2024, and analogues), not a time-invariant bundle indicator.
-
-**H4.** The within-firm margin increment after GA declines as event time lengthens. Disconfirmation is a flat or rising post-GA path, or a difference between the first post-GA year and the last post-GA bin that cannot be distinguished from zero.
 
 # 6. Illustrative Evidence
 
