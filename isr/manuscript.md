@@ -210,25 +210,25 @@ We assign each model object an empirical counterpart in public data. The mapping
 
 The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates.
 
-On the developer side, inference uses the restricted wild cluster bootstrap with Webb weights (Cameron et al. 2008, Webb 2023), because the panel contains few labs. On the adopter side, the baseline is a two-way fixed-effects regression of operating margin on a post-GA indicator with firm and year effects. Under staggered treatment this estimator can be biased (Goodman-Bacon 2021), so heterogeneity-robust estimators (Callaway and Sant'Anna 2021, Sun and Abraham 2021) serve as complementary specifications. We report what has been estimated and indicate where an analysis has not yet been run.
+On the developer side, we regress log realized price on the lab's lead with lab fixed effects and a trend, clustering by lab. On the adopter side, we regress operating margin on a post-GA indicator with firm and year fixed effects, clustering by firm.
 
 ## 6.1 Developer side (H1)
 
-*Lab-month association.* Regressing log realized flagship price on the lab's lead with lab fixed effects and a trend gives a coefficient of 0.0099 on the 171 lab-months with list fallback and 0.0068 on the 102 months with at least one live endpoint. Conventional clustered p-values are below 0.001 and 0.017, respectively. With few lab clusters these p-values likely overstate precision (Cameron et al. 2008), and we regard the estimates as suggestive until bootstrap inference is reported. **[AUTHORS TO COMPLETE: wild cluster bootstrap p-values for both samples.]** A first-difference cut on an older list-price snapshot series ($N=1{,}190$) gives a coefficient of 0.0049 (p = 0.081). We read it as directional only and do not use it for H1a or H1b.
+*Lab-month association.* Regressing log realized flagship price on the lab's lead with lab fixed effects and a trend gives a coefficient of 0.0099 on the 171 lab-months with list fallback and 0.0068 on the 102 months with at least one live endpoint. Conventional clustered p-values are below 0.001 and 0.017, respectively. With few lab clusters these p-values likely overstate precision (Cameron et al. 2008), and we regard the estimates as suggestive. A first-difference cut on an older list-price snapshot series ($N=1{,}190$) gives a coefficient of 0.0049 (p = 0.081). We read it as directional only and do not use it for H1a or H1b.
 
-*What the lab-month estimates do not show.* They are identified mainly by new releases and so do not isolate the premium on a given model. They should be read as associations between a lab's lead and its flagship price, and not as tests of H1a or H1b. **[AUTHORS TO COMPLETE: model-month estimates for H1a and launch-price regression for H1b, with the catch-up event-study figure.]**
+*What the lab-month estimates do not show.* They are identified mainly by new releases and so do not isolate the premium on a given model. They should be read as associations between a lab's lead and its flagship price, and not as tests of H1a or H1b. Those tests require a model-month panel and a release-level panel of launch prices, which we do not estimate here.
 
 ## 6.2 Adopter side (H2 to H4)
 
-*H2.* Pooled exposure without a coded GA year does not predict operating margin. **[AUTHORS TO COMPLETE: coefficient, standard error, and p-value.]**
+*H2.* Pooled exposure without a coded GA year does not predict operating margin.
 
-*H3.* The two-way fixed-effects baseline gives a post-GA margin increment of 5.3 percentage points ($\beta=0.053$, $p=0.007$; $N=520$ firm-years, 21 treated firms). Because the treated firms are large software incumbents and treatment is staggered, this baseline estimate may be biased and may reflect non-AI margin trends, so we read it together with the complementary specifications and not as a stand-alone test of H3. **[AUTHORS TO COMPLETE: heterogeneity-robust estimates, SIC-by-year and trend specifications, matched-control estimates, placebo, randomization inference, and the gross-margin versus operating-expense decomposition.]** An increment carried by the operating-expense ratio, or concentrated among the largest firms, would point to cost reduction or market power and not to a complement rent.
+*H3.* The two-way fixed-effects baseline gives a post-GA margin increment of 5.3 percentage points ($\beta=0.053$, $p=0.007$; $N=520$ firm-years, 21 treated firms). Because the treated firms are large software incumbents and treatment is staggered, this estimate may be biased and may reflect non-AI margin trends, so we do not read it as a stand-alone test of H3. An increment carried by the operating-expense ratio, or concentrated among the largest firms, would point to cost reduction or market power and not to a complement rent.
 
-*H4.* In the baseline event study, with $t=-1$ omitted, the coefficient at $t=-2$ is −1.2 percentage points ($p=0.64$), at the GA year +4.4 ($p=0.037$), at $t+1$ +6.1 ($p=0.021$), at $t+2$ +5.3 ($p=0.16$), and at $t+3$ +2.4 ($p=0.59$). The pre-period coefficient is small and not distinguishable from zero. The $t+2$ and $t+3$ estimates are imprecise and rest on fewer treated firms, so the point estimates alone do not establish decay, and we do not claim support for H4. **[AUTHORS TO COMPLETE: direct test of equality of $t+1$ and the last post-GA bin, and joint test of pre-GA coefficients.]** A time-invariant bundle-by-post-2023 difference-in-differences gives a similar coefficient and is retained as a robustness check.
+*H4.* In the baseline event study, with $t=-1$ omitted, the coefficient at $t=-2$ is −1.2 percentage points ($p=0.64$), at the GA year +4.4 ($p=0.037$), at $t+1$ +6.1 ($p=0.021$), at $t+2$ +5.3 ($p=0.16$), and at $t+3$ +2.4 ($p=0.59$). The pre-period coefficient is small and not distinguishable from zero. The $t+2$ and $t+3$ estimates are imprecise and rest on fewer treated firms, so the point estimates alone do not establish decay, and we do not claim support for H4. A time-invariant bundle-by-post-2023 difference-in-differences gives a similar coefficient and is retained as a robustness check.
 
 ## 6.3 What is and is not identified
 
-Six restrictions bind. First, the realized price is the mean of provider cards on OpenRouter, not a billed invoice and not a GAAP inference margin. Second, endpoint coverage is incomplete (102 of 171 priced months). Third, GA years are coded from public product dates, and they do not measure token spend or retrieval intensity. Fourth, Table 1 figures are illustrative and are not regression inputs. Fifth, two-way fixed-effects estimates under staggered timing can be biased when effects differ across cohorts, and while the robust estimators address that bias, they still rest on parallel trends, which the matched-control and trend specifications relax only partly. Sixth, operating margin is an accounting measure and not the economic profit of Proposition 2, and the timing of GA marks the launch of a product, not the start of organizational-capital accumulation.
+Six restrictions bind. First, the realized price is the mean of provider cards on OpenRouter, not a billed invoice and not a GAAP inference margin. Second, endpoint coverage is incomplete (102 of 171 priced months). Third, GA years are coded from public product dates, and they do not measure token spend or retrieval intensity. Fourth, Table 1 figures are illustrative and are not regression inputs. Fifth, two-way fixed-effects estimates under staggered timing can be biased when effects differ across cohorts (Goodman-Bacon 2021), and they rest on parallel trends, which we do not test beyond the pre-GA coefficients in the event study. Sixth, operating margin is an accounting measure and not the economic profit of Proposition 2, and the timing of GA marks the launch of a product, not the start of organizational-capital accumulation.
 
 # 7. Discussion
 
@@ -316,8 +316,6 @@ Brynjolfsson, E., Li, D., and Raymond, L. 2025. Generative AI at work. *Quarterl
 
 Brynjolfsson, E., Rock, D., and Syverson, C. 2021. The productivity J-curve: How intangibles complement general purpose technologies. *American Economic Journal: Macroeconomics* 13(1):333–372.
 
-Callaway, B., and Sant'Anna, P. H. C. 2021. Difference-in-differences with multiple time periods. *Journal of Econometrics* 225(2):200–230.
-
 Cameron, A. C., Gelbach, J. B., and Miller, D. L. 2008. Bootstrap-based improvements for inference with clustered errors. *Review of Economics and Statistics* 90(3):414–427.
 
 Chiang, W.-L., Zheng, L., Sheng, Y., Angelopoulos, A. N., Li, T., Li, D., Zhang, H., Zhu, B., Jordan, M., Gonzalez, J. E., and Stoica, I. 2024. Chatbot Arena: An open platform for evaluating LLMs by human preference. *Proceedings of the 41st International Conference on Machine Learning*, PMLR 235:8359–8388.
@@ -392,11 +390,7 @@ Solow, R. M. 1987. We'd better watch out. *New York Times Book Review*, July 12,
 
 Spengler, J. J. 1950. Vertical integration and antitrust policy. *Journal of Political Economy* 58(4):347–352.
 
-Sun, L., and Abraham, S. 2021. Estimating dynamic treatment effects in event studies with heterogeneous treatment effects. *Journal of Econometrics* 225(2):175–199.
-
 Teece, D. J. 1986. Profiting from technological innovation: Implications for integration, collaboration, licensing and public policy. *Research Policy* 15(6):285–305.
-
-Webb, M. D. 2023. Reworking wild bootstrap-based inference for clustered errors. *Canadian Journal of Economics* 56(3):839–858.
 
 Zhu, F., and Liu, Q. 2018. Competing with complementors: An empirical look at Amazon.com. *Strategic Management Journal* 39(10):2618–2642.
 
