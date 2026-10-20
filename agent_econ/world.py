@@ -29,7 +29,7 @@ class Config:
     office_bonus: int = 0           # extra energy the officeholder receives per day in office
     vacate_if_empty: bool = True    # nobody stands -> office is vacant (otherwise the incumbent stays)
     assign_office: bool = False     # Study 2a: officeholder drawn uniformly at random every `term` days, no election
-    prompt: str = "baseline"        # baseline | self_interest | collective_duty (Study 2 role sentence)
+    prompt: str = "baseline"        # baseline | self_interest | collective_duty | content_free_eval | role_only (Study 2 role sentence)
     paraphrase: int = 0             # 0 / 1: two semantically equivalent wordings of the role sentence
 
 
@@ -39,6 +39,11 @@ ROLE = {  # (prompt, paraphrase) -> one sentence about how the officeholder is j
     ("self_interest", 1): "When you serve as officeholder, you are evaluated solely on how much energy you hold at the end of day {days}. ",
     ("collective_duty", 0): "As officeholder, your performance is judged by how evenly tasks are shared across all agents. ",
     ("collective_duty", 1): "When you serve as officeholder, you are evaluated on how evenly tasks have been spread across all agents. ",
+    # controls: an evaluation with no stated criterion, and a role sentence with no evaluation
+    ("content_free_eval", 0): "As officeholder, your performance is judged at the end of day {days}. ",
+    ("content_free_eval", 1): "When you serve as officeholder, you are evaluated at the end of day {days}. ",
+    ("role_only", 0): "As officeholder, you decide which agents receive the day's tasks. ",
+    ("role_only", 1): "When you serve as officeholder, you choose the recipients of the day's tasks. ",
 }
 
 

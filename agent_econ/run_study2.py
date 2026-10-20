@@ -16,11 +16,13 @@ from world import Config
 FAMILY = {"deepseek": "deepseek/deepseek-v4-pro", "claude": "anthropic/claude-haiku-5.5"}
 COST = {"deepseek": 0.62, "claude": 0.09, "scripted": 0.0}   # observed USD per 50-day world: DeepSeek 0.62 in the Study 2 pilot (0.15 in Study 1: price per token rose ~3x); Claude figure is from Study 1
 PROMPTS = ["baseline", "self_interest", "collective_duty"]   # "stripped" needs the prompt audit first and is not implemented
+CONTROLS = ["content_free_eval", "role_only"]                # added after Study 2a: evaluation without a criterion; role sentence without evaluation
+PAIR = {"baseline": 0, "self_interest": 1, "collective_duty": 2, "content_free_eval": 0, "role_only": 0}   # controls reuse the baseline wording pattern per seed
 
 
 def design(stage, families, rents, seeds, prompts=PROMPTS, paraphrases=(0, 1)):
     for s, fam, rent, p, para in itertools.product(range(seeds), families, rents, prompts, paraphrases):
-        if len(paraphrases) == 2 and (s + PROMPTS.index(p)) % 2 != para:   # lite: alternate wording across seeds, one world per cell-seed
+        if len(paraphrases) == 2 and (s + PAIR[p]) % 2 != para:   # lite: alternate wording across seeds, one world per cell-seed
             continue
         model = FAMILY.get(fam, "scripted:0")
         tag = f"s2{stage[-1]}_{fam}_b{rent}_{p}_p{para}_s{s}"
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     ap.add_argument("--rents", nargs="+", type=int, default=[2]); ap.add_argument("--seeds", type=int, default=12)
     ap.add_argument("--workers", type=int, default=3); ap.add_argument("--estimate", action="store_true")
     ap.add_argument("--run", action="store_true")
-    ap.add_argument("--prompts", nargs="+", default=PROMPTS, choices=PROMPTS, help="restrict to some prompt levels, e.g. --prompts baseline")
+    ap.add_argument("--prompts", nargs="+", default=PROMPTS, choices=PROMPTS + CONTROLS, help="restrict to some prompt levels, e.g. --prompts baseline")
     a = ap.parse_args()
     cfgs = list(design(a.stage, a.models, a.rents, a.seeds, prompts=list(a.prompts)))
     print(f"{len(cfgs)} worlds, est. ${estimate(cfgs):.2f} (cap ${llm.CAP_USD:.0f}, already spent ${llm.spent():.2f})")
