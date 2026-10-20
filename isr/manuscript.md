@@ -18,7 +18,7 @@ Each of these claims is familiar in isolation. Hitt and Brynjolfsson (1996) show
 
 We make three contributions. First, we extend the IT business value literature from the firm to the value chain, by deriving jointly where profit will appear among developers, adopters, and consumers, how large it is likely to be, and when it will disappear. Second, we define appropriability ex ante, as expected imitation lag and cost, and show how that definition yields testable constructs (quality lead, imitation lag, and organizational capital) that can be measured from public sources. Third, we offer a first empirical look at these constructs using leaderboard, endpoint-price, and regulatory filing data, and we are explicit about the limits of these tests. For practice, the theory replaces the question that dominates managerial discussion of AI, namely how much to invest, with the question it identifies as decisive: what does the firm own that the model cannot supply, and how long will it take competitors to own it as well?
 
-The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 derives the hypotheses and describes the data and estimation, and Section 6 reports results. Section 7 discusses implications, boundary conditions, and limitations, and Section 8 concludes.
+The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 derives the hypotheses, and Section 6 reports results. Section 7 discusses implications, boundary conditions, and limitations, and Section 8 concludes.
 
 # 2. Theoretical Background
 
@@ -206,17 +206,9 @@ We assign each model object an empirical counterpart in public data. The mapping
 
 **H4.** The within-firm margin increment after GA declines as event time lengthens. Disconfirmation is a flat or rising post-GA path, or a difference between the first post-GA year and the last post-GA bin that cannot be distinguished from zero.
 
-## 5.3 Data and estimation
-
-*Samples.* The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates, which makes the treatment indicator a coarse proxy for organizational capital.
-
-*Developer side.* A lab-month regression of price on lead is identified largely by new releases, which raise price and measured quality at the same moment. H1a therefore uses a model-month panel with model and month fixed effects, so that the coefficient is identified only from changes in a given model's lead as competitors release. H1b is estimated separately on launch prices. Because the panel contains few labs, conventional cluster-robust p-values are unreliable, and inference uses the restricted wild cluster bootstrap with Webb six-point weights (Cameron et al. 2008, Webb 2023).
-
-*Adopter side.* Treated firms are large software incumbents whose margins rose between 2023 and 2025 for reasons unrelated to AI, such as cost reductions and changes in the cost of capital. The baseline is a two-way fixed-effects regression of operating margin on a post-GA indicator. Because treatment is staggered, that estimator can be biased when effects differ across cohorts (Goodman-Bacon 2021), so we use heterogeneity-robust estimators with never-treated and not-yet-treated controls (Callaway and Sant'Anna 2021, Sun and Abraham 2021). Further checks are SIC-by-year fixed effects, firm-specific trends, matched never-treated controls, a placebo that moves each GA date two years earlier, and randomization inference that reassigns GA dates across firms. Because a higher margin could reflect market power and not a complement rent (Section 7.3), the effect is decomposed into gross margin and the operating-expense ratio and allowed to differ by pre-2023 size. For H4, event-time indicators are estimated relative to $t=-1$ only at event times to which at least eight treated firms contribute. The direct test is the equality of the $t+1$ coefficient and the last post-GA bin, together with a joint test of the pre-GA coefficients.
-
 # 6. Results
 
-We report what has been estimated and indicate where an analysis specified in Section 5.3 has not yet been run.
+We report what has been estimated and indicate where an analysis has not yet been run.
 
 ## 6.1 Developer side (H1)
 
