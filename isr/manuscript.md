@@ -18,7 +18,7 @@ Each of these claims is familiar in isolation. Hitt and Brynjolfsson (1996) show
 
 What this benchmark leaves out is a feature of the LLM value chain that sets it apart from most earlier technologies. In the standard account, an adopter's complement rent is threatened by one force, imitation by rival adopters, which takes time because organizational capital is slow to build. For LLMs there is a second force. The supplier of the input can itself move into the adopter's layer. The developer sells the model on posted terms to the adopter and to the adopter's competitors, sees how it is used through the interface, and is able to productize a successful use and sell it to everyone. Research on platform owners entering complementors' markets suggests that this kind of entry is both common and consequential (Gawer and Henderson 2007, Zhu and Liu 2018). Its implication for rent has not been put into the appropriability framework. If the use is productized, the adopter's co-specialized capital becomes a commodity before rivals could have copied it, and the window in which the rent is earned shortens.
 
-The central result of the paper, Proposition 5, formalizes this. When a vendor productizes an adopter's use at rate $\eta$, independent of imitation by rivals, the adopter's expected complement rent falls strictly in $\eta$, so that the rent depends on two clocks and not one. Taken with the benchmark results, this gives a fuller account of where profit appears. API adopters earn nothing from the model itself (Proposition 1). Complement builders earn a rent for as long as both rival imitation and vendor productization are held off (Propositions 2 and 5). The developer earns a rent in proportion to its quality lead, until rivals close it (Proposition 3). The remainder passes to consumers (Proposition 4). The result is deliberately simple, and it takes the rate $\eta$ as given. Section 4.5 then lets the developer choose $\eta$ and shows how contract terms that limit its use of adopters' data change that choice and, through it, the adopter's incentive to invest. Section 4.6 adds competition among vendors, which weakens the effect of such terms. How far an adopter can lower $\eta$ through other means, such as the choice of what to build, we leave to future work.
+The central result of the paper, Proposition 5, formalizes this. When a vendor productizes an adopter's use at rate $\eta$, independent of imitation by rivals, the adopter's expected complement rent falls strictly in $\eta$, so that the rent depends on two clocks and not one. Taken with the benchmark results, this gives a fuller account of where profit appears. API adopters earn nothing from the model itself (Proposition 1). Complement builders earn a rent for as long as both rival imitation and vendor productization are held off (Propositions 2 and 5). The developer earns a rent in proportion to its quality lead, until rivals close it (Proposition 3). The remainder passes to consumers (Proposition 4). The result is deliberately simple, and it takes the rate $\eta$ as given. Section 4.3 then lets the vendor choose $\eta$ and shows how contract terms that limit its use of adopters' data change that choice and, through it, the adopter's incentive to invest. Section 4.4 adds competition among vendors, which weakens the effect of such terms. How far an adopter can lower $\eta$ through other means, such as the choice of what to build, we leave to future work.
 
 We make three contributions. First, Proposition 5 adds vendor encroachment to the appropriability account of IT value and shows that, for a technology whose supplier can enter the adopter's layer, the adopter's profitable window depends on the supplier's behavior as well as on rivals'. Propositions 6 to 8 extend the result by endogenizing $\eta$ and allowing vendors to compete, and they turn contractual choices about data use, fine-tuning ownership, and deployment into strategic decisions of the kind that Section 7.2 discusses. Second, we place that result in an integrated benchmark across the developer, the adopter, and the consumer, with appropriability defined ex ante as expected imitation lag and cost, which yields testable constructs (quality lead, imitation lag, and organizational capital) that can be measured from public sources. Third, we provide illustrative evidence on these constructs from leaderboard, endpoint-price, and regulatory filing data. The evidence does not bear on Proposition 5 itself and is limited, and we state what it cannot show. For practice, the theory replaces the question that dominates managerial discussion of AI, namely how much to invest, with the question it identifies as decisive: what does the firm own that the model cannot supply, and how long will it take competitors, and the model's own supplier, to own it as well?
 
@@ -108,7 +108,7 @@ Organizational capital is built at a convex cost $g(O)$ subject to time-compress
 
 Upstream, models are vertically differentiated by quality $\theta$. The frontier developer holds a lead $\Delta\theta(t)=\theta_{\text{lead}}(t)-\theta_{\text{second}}(t)$ over the best alternative. Inference is supplied at a marginal cost $m$ common to developers with comparable infrastructure. A frontier model costs $F_T$ to train and requires developer organizational capital $O_{\text{dev}}$, built at cost $g(O_{\text{dev}})$. A competitor closes the quality gap only after a lag $\tau_{\text{dev}}$ and at cost $g^m(O_{\text{dev}})\ge g(O_{\text{dev}})$. Compute is bought from its owners at market prices and is a factor payment, not a component of developer rent.
 
-Table 2 lists the notation.
+In what follows, a *vendor* is a model developer that sells to adopters. The frontier developer is one such vendor, and Sections 4.3 and 4.4 consider vendors other than the frontier developer as well. Table 2 lists the notation.
 
 **Table 2. Notation**
 
@@ -124,15 +124,16 @@ Table 2 lists the notation.
 | $q(t)$ | Inference demand served by the developer |
 | $F_T$, $O_{\text{dev}}$ | Training cost per frontier model; developer organizational capital |
 | $\rho$ | Discount rate |
+| $G$, $H$ | A vendor's gain from productizing a use; total productization rate across vendors |
 | $\eta$ | Rate at which a vendor productizes a complement builder's use (Propositions 5 to 8) |
-| $\mu$, $r$ | Rate at which rivals imitate $O_j$ (Section 4.5); $r=\rho+\mu$ |
-| $N$ | Number of vendors able to productize the same use (Section 4.6) |
+| $\mu$, $r$ | Rate at which rivals imitate $O_j$ (Section 4.3); $r=\rho+\mu$ |
+| $N$ | Number of vendors able to productize the same use (Section 4.4) |
 | $s$, $K(s)$ | Contractual protection against productization; developer's cost curvature, increasing in $s$ |
 | $R$, $\phi$ | Rent flow $(p-c_j)q_j$; share of its present value the developer gains by productizing |
 
 ## 4.2 Propositions
 
-We state the propositions once here. Proofs are in Appendix A.
+Propositions 1 to 5 are stated here. Propositions 6 to 8, which endogenize the productization rate and add competition among vendors, follow in Sections 4.3 and 4.4. All proofs are in Appendix A.
 
 **Proposition 1 (Adopter zero profit).** In a competitive industry with $O_j=0$ for all $j$, the economic profit attributable to LLM usage is zero for every adopter. An improvement in the model or a fall in $p_L$ lowers the product price by the full reduction in minimum average cost, so the productivity gain accrues entirely to consumers.
 
@@ -168,47 +169,31 @@ $$E[\Pi_j]=(p-c_j)q_j\frac{1-e^{-(\rho+\eta)\tau_O}}{\rho+\eta}-g(O_j), \tag{5}$
 
 which is strictly decreasing in $\eta$.
 
-## 4.3 Comparative statics
+## 4.3 Endogenous encroachment and contract protection
 
-Five predictions follow, and they are the ones the empirical work in Sections 5 and 6 can address.
+Proposition 5 treats the productization rate $\eta$ as given. Here we let the vendor choose it and ask how contract terms affect the choice. The analysis is a reduced-form extension. It adds the minimum structure needed to endogenize $\eta$, and it should be read as a first formalization and not as a full model of vendor behavior.
 
-1. Realized developer prices for inference rise with $\Delta\theta$ and fall toward serving cost as $\Delta\theta\to 0$ (Proposition 3).
-2. Developer rent is shortened by open-weight releases, compressed release intervals, and falling serving cost (Proposition 3 and Corollary 3).
-3. Adopter-side profit is predicted by a dated first-party product, which proxies $O>0$, and not by pooled exposure to LLMs (Propositions 1 and 2).
-4. Industries with shorter $\tau_O$, or with more vendor encroachment, show weaker associations between AI use and profit (Propositions 2 and 5).
-5. As downstream competition intensifies, the AI–profit association weakens while the AI–productivity association is unaffected (Propositions 1 and 4).
-
-Predictions 4 and 5 are not tested here. Proposition 5 is also untested, but it bears directly on the LLM setting and on managerial choices about data-use terms and fine-tuning ownership, which we take up in Section 7.
-
-## 4.4 What is specific to LLMs
-
-A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost of producing a frontier model $F_T$, so that profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, on the order of three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves both the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And developers can and do move into the complement layer, which is the situation Proposition 5 describes. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 7.3.
-
-## 4.5 Endogenous encroachment and contract protection
-
-Proposition 5 treats the productization rate $\eta$ as given. Here we let the developer choose it and ask how contract terms affect the choice. The analysis is a reduced-form extension. It adds the minimum structure needed to endogenize $\eta$, and it should be read as a first formalization and not as a full model of vendor behavior.
-
-*Setup.* Let $R=(p-c_j)q_j$ be the adopter's rent flow. For tractability, we replace the deterministic imitation lag $\tau_O$ by an exponential one: rivals imitate $O_j$ at rate $\mu$, so that the mean lag is $1/\mu$. Write $r=\rho+\mu$. The adopter's expected rent from Proposition 5 then becomes $R/(r+\eta)-g(O_j)$, with the same comparative statics. A contract specifies protection $s\in[0,1)$, which limits the developer's use of the adopter's data, fine-tuning, or deployment information. The developer exerts effort $e$ at cost $(k/2)e^2$, but only the fraction $1-s$ of that effort converts into productization, so that $\eta=(1-s)e$. The cost of achieving a rate $\eta$ is therefore $(K/2)\eta^2$ with $K(s)=k/(1-s)^2$, which increases in $s$. When it productizes the use, the developer gains the present value $G=\phi R/r$, where $\phi\in(0,1]$ is the share of the rent's present value $R/r$ that it captures, and the rest passes to consumers. The developer chooses $\eta$ to maximize
+*Setup.* Let $R=(p-c_j)q_j$ be the adopter's rent flow. For tractability, we replace the deterministic imitation lag $\tau_O$ by an exponential one: rivals imitate $O_j$ at rate $\mu$, so that the mean lag is $1/\mu$. Write $r=\rho+\mu$. The adopter's expected rent from Proposition 5 then becomes $R/(r+\eta)-g(O_j)$, with the same comparative statics. A contract specifies protection $s\in[0,1)$, which limits the vendor's use of the adopter's data, fine-tuning, or deployment information. The vendor exerts effort $e$ at cost $(k/2)e^2$, but only the fraction $1-s$ of that effort converts into productization, so that $\eta=(1-s)e$. The cost of achieving a rate $\eta$ is therefore $(K/2)\eta^2$ with $K(s)=k/(1-s)^2$, which increases in $s$. When it productizes the use, the vendor gains the present value $G=\phi R/r$, where $\phi\in(0,1]$ is the share of the rent's present value $R/r$ that it captures, and the rest passes to consumers. The vendor chooses $\eta$ to maximize
 
 $$J(\eta)=\frac{G\eta-K\eta^2/2}{r+\eta}, \tag{6}$$
 
 the expected present value of its gain net of effort cost, which accrues until productization or imitation ends the opportunity.
 
-**Proposition 6 (Equilibrium productization).** The developer's problem has a unique interior solution,
+**Proposition 6 (Equilibrium productization).** The vendor's problem has a unique interior solution,
 
 $$\eta^*=-r+\sqrt{r^2+2Gr/K}. \tag{7}$$
 
-The rate $\eta^*$ is increasing in $G$ (and so in $R$ and $\phi$) and decreasing in $K$ (and so in $s$). For a given $G$, it is increasing in $r$: the faster rivals are expected to imitate, the faster the developer productizes.
+The rate $\eta^*$ is increasing in $G$ (and so in $R$ and $\phi$) and decreasing in $K$ (and so in $s$). For a given $G$, it is increasing in $r$: the faster rivals are expected to imitate, the faster the vendor productizes.
 
 **Proposition 7 (Contract protection and complement investment).** The adopter's expected rent $R/(r+\eta^*(s))-g(O_j)$ is increasing in $s$. Consequently, the set of organizational-capital investments that satisfy $R/(r+\eta^*)\ge g(O_j)$ expands as $s$ rises, and some investments that would not be made without protection are made with it.
 
-Proposition 6 says that imitation by rivals and encroachment by the vendor are strategic complements. A shorter expected imitation lag makes the developer move sooner, so that the two threats to the adopter's rent compound. Proposition 7 is the hold-up logic of Klein et al. (1978) and Grossman and Hart (1986) applied to the LLM supply relationship. An adopter that fears productization under-invests in the co-specialized capital that generates its rent, and contract terms that raise the developer's cost of encroaching restore some of that investment.
+Proposition 6 says that imitation by rivals and encroachment by the vendor are strategic complements. A shorter expected imitation lag makes the vendor move sooner, so that the two threats to the adopter's rent compound. Proposition 7 is the hold-up logic of Klein et al. (1978) and Grossman and Hart (1986) applied to the LLM supply relationship. An adopter that fears productization under-invests in the co-specialized capital that generates its rent, and contract terms that raise the vendor's cost of encroaching restore some of that investment.
 
-Whether such protection is actually written is a separate question. The adopter's willingness to pay for a move from $s_0$ to $s_1$ is $R/(r+\eta_1^*)-R/(r+\eta_0^*)$. The developer's loss is $K_1\eta_1^*-K_0\eta_0^*$, because its value at the optimum is $J^*=G-K\eta^*$. A contract can be agreed only if the first exceeds the second. Table 4 gives a numerical illustration. Protection clears for uses with small rents and fails for uses with large rents, because the developer's gain from productizing grows with the rent. The pattern depends on the parameters and is not general, since in a simulation with randomly drawn parameters the willingness to pay fell short of the developer's loss in about five percent of the draws. We therefore offer it as an illustration and not as a proposition. If it held more generally, it would imply that the uses most worth protecting are the ones least likely to be protected.
+Whether such protection is actually written is a separate question. The adopter's willingness to pay for a move from $s_0$ to $s_1$ is $R/(r+\eta_1^*)-R/(r+\eta_0^*)$. The vendor's loss is $K_1\eta_1^*-K_0\eta_0^*$, because its value at the optimum is $J^*=G-K\eta^*$. A contract can be agreed only if the first exceeds the second. Table 3 gives a numerical illustration. Protection clears for uses with small rents and fails for uses with large rents, because the vendor's gain from productizing grows with the rent. The pattern depends on the parameters and is not general, since in a simulation with randomly drawn parameters the willingness to pay fell short of the vendor's loss in about five percent of the draws. We therefore offer it as an illustration and not as a proposition. If it held more generally, it would imply that the uses most worth protecting are the ones least likely to be protected.
 
-**Table 4. Willingness to pay for protection versus the developer's loss (illustration; $r=0.3$, $\phi=0.8$, $k=1$, $s$ raised from 0 to 0.5)**
+**Table 3. Willingness to pay for protection versus the vendor's loss (illustration; $r=0.3$, $\phi=0.8$, $k=1$, $s$ raised from 0 to 0.5)**
 
-| $R$ | $\eta^*$ ($s=0$) | $\eta^*$ ($s=0.5$) | Willingness to pay | Developer's loss | Contract agreed |
+| $R$ | $\eta^*$ ($s=0$) | $\eta^*$ ($s=0.5$) | Willingness to pay | Vendor's loss | Contract agreed |
 |---:|---:|---:|---:|---:|:---|
 | 0.5 | 0.643 | 0.239 | 0.398 | 0.311 | Yes |
 | 1 | 1.000 | 0.400 | 0.659 | 0.600 | Yes |
@@ -216,17 +201,17 @@ Whether such protection is actually written is a separate question. The adopter'
 | 4 | 2.248 | 1.000 | 1.507 | 1.752 | No |
 | 8 | 3.290 | 1.514 | 2.182 | 2.765 | No |
 
-The extension has clear limits. The rate $\eta$ is constant and chosen by a single developer. Competition among vendors is added in Section 4.6. We still do not model the adopter's responses (concealing the use, moving to another vendor) or bargaining over the contract. The functional form $K(s)=k/(1-s)^2$ is a convenience, and the share $\phi$ is a reduced-form parameter that does not model how the developer earns from a productized offering. Contract terms are not publicly observed, so the propositions cannot be examined with the data in Section 6.
+The extension has clear limits. The rate $\eta$ is constant and chosen by a single vendor. Competition among vendors is added in Section 4.4. We still do not model the adopter's responses (concealing the use, moving to another vendor) or bargaining over the contract. The functional form $K(s)=k/(1-s)^2$ is a convenience, and the share $\phi$ is a reduced-form parameter that does not model how the developer earns from a productized offering. Contract terms are not publicly observed, so the propositions cannot be examined with the data in Section 6.
 
-## 4.6 Competition among vendors
+## 4.4 Competition among vendors
 
-Section 4.5 has a single developer decide whether to productize the adopter's use. In practice, several vendors can see that a use is valuable and build it. We now allow $N$ symmetric vendors to race for the same use.
+Section 4.3 has a single vendor decide whether to productize the adopter's use. In practice, several vendors can see that a use is valuable and build it. We now allow $N$ symmetric vendors to race for the same use.
 
 *Setup.* Each vendor $i$ chooses a productization rate $\eta_i$ at cost $(K/2)\eta_i^2$. The first to productize the use earns $G$ and the others earn nothing, and productization by any vendor ends the adopter's rent. Rivals' imitation continues at rate $\mu$. With $H=\sum_i\eta_i$ the total rate, vendor $i$ maximizes
 
 $$J_i=\frac{G\eta_i-K\eta_i^2/2}{r+H}. \tag{8}$$
 
-For given rivals' rates this is the problem of Section 4.5 with $r$ replaced by $r+H-\eta_i$.
+For given rivals' rates this is the problem of Section 4.3 with $r$ replaced by $r+H-\eta_i$.
 
 **Proposition 8 (Vendor competition).** The game has a unique equilibrium, and it is symmetric. The common rate $\eta^*(N)$ is the positive root of
 
@@ -236,9 +221,9 @@ Both the per-vendor rate $\eta^*(N)$ and the total rate $H^*(N)=N\eta^*(N)$ are 
 
 Competition among vendors thus has two effects that work in the same direction. Each vendor moves faster, because a rival's progress raises the cost of waiting, and there are more vendors moving. The adopter's profitable window shortens. The vendors' own payoffs fall, so the race dissipates part of what the use is worth to them, much as competition among developers dissipates the premium in Proposition 3.
 
-*Contract protection under competition.* The result in Proposition 7 required only that one vendor's cost rise with protection. With several vendors, a contract between the adopter and its own supplier binds only that supplier. Let the adopter's supplier have cost $K(s)=k/(1-s)^2$ and let $N-1$ outsiders keep the cost $k$, because they have no access to the adopter's data and so are unaffected by $s$. Table 5 shows what protection then achieves, for different numbers of outsiders. With no outsiders, raising $s$ from 0 to 0.5 cuts the total productization rate by two thirds and raises the value of the adopter's rent flow by more than half. With eight outsiders it cuts the rate by less than a tenth, and the gain in the value of the rent flow is under ten percent. In simulations with randomly drawn parameters (3,000 draws, up to six outsiders), both the proportional reduction in the total rate and the gain in the adopter's rent declined with every added outsider, with no exceptions. We report this as a regularity and not as a proposition, since we have no proof for the asymmetric case.
+*Contract protection under competition.* The result in Proposition 7 required only that one vendor's cost rise with protection. With several vendors, a contract between the adopter and its own supplier binds only that supplier. Let the adopter's supplier have cost $K(s)=k/(1-s)^2$ and let $N-1$ outsiders keep the cost $k$, because they have no access to the adopter's data and so are unaffected by $s$. Table 4 shows what protection then achieves, for different numbers of outsiders. With no outsiders, raising $s$ from 0 to 0.5 cuts the total productization rate by two thirds and raises the value of the adopter's rent flow by more than half. With eight outsiders it cuts the rate by less than a tenth, and the gain in the value of the rent flow is under ten percent. In simulations with randomly drawn parameters (3,000 draws, up to six outsiders), both the proportional reduction in the total rate and the gain in the adopter's rent declined with every added outsider, with no exceptions. We report this as a regularity and not as a proposition, since we have no proof for the asymmetric case.
 
-**Table 5. Effect of protection from the adopter's own supplier, by number of outsider vendors (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$, $s$ raised from 0 to 0.5)**
+**Table 4. Effect of protection from the adopter's own supplier, by number of outsider vendors (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$, $s$ raised from 0 to 0.5)**
 
 | Outsiders | Total rate $H$ ($s=0$) | Total rate $H$ ($s=0.5$) | Reduction (%) | Adopter's rent flow value ($s=0$) | Adopter's rent flow value ($s=0.5$) | Gain |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -252,7 +237,25 @@ Competition among vendors thus has two effects that work in the same direction. 
 
 The implication is that bilateral contract terms are most useful where the adopter's use is visible to few vendors. In a market with many capable vendors, protection from one supplier does little, and an adopter's rent depends more on how hard the use is to replicate without its data than on what it has negotiated. This reinforces the importance of the organizational capital that makes a use difficult to copy (Section 3.3) and suggests that protection would need to be industry-wide, for example through norms or regulation, to be effective in such markets.
 
-The same limits apply as in Section 4.5. Vendors are symmetric apart from their access to the adopter's data, the rate of each vendor is constant, and a vendor whose rival wins earns nothing. Letting the winner share the use, or letting vendors differentiate their offerings, would soften the race.
+The same limits apply as in Section 4.3. Vendors are symmetric apart from their access to the adopter's data, the rate of each vendor is constant, and a vendor whose rival wins earns nothing. Letting the winner share the use, or letting vendors differentiate their offerings, would soften the race.
+
+## 4.5 Comparative statics
+
+Seven predictions follow from the propositions. The first three are the ones the empirical work in Sections 5 and 6 can address.
+
+1. Realized developer prices for inference rise with $\Delta\theta$ and fall toward serving cost as $\Delta\theta\to 0$ (Proposition 3).
+2. Developer rent is shortened by open-weight releases, compressed release intervals, and falling serving cost (Proposition 3 and Corollary 3).
+3. Adopter-side profit is predicted by a dated first-party product, which proxies $O>0$, and not by pooled exposure to LLMs (Propositions 1 and 2).
+4. Industries with shorter $\tau_O$, or with more vendor encroachment, show weaker associations between AI use and profit (Propositions 2 and 5).
+5. As downstream competition intensifies, the AI–profit association weakens while the AI–productivity association is unaffected (Propositions 1 and 4).
+6. Adopters invest more in co-specialized capital when contract terms limit vendors' use of their data (Propositions 6 and 7).
+7. The effect of such terms weakens as the number of vendors able to build the same use grows (Proposition 8 and Table 4).
+
+Predictions 4 to 7 are not tested here. Predictions 6 and 7 bear directly on the LLM setting and on managerial choices about data-use terms and fine-tuning ownership, which we take up in Section 7. They cannot be examined with public data, since contract terms are not observed.
+
+## 4.6 What is specific to LLMs
+
+A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost of producing a frontier model $F_T$, so that profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, on the order of three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves both the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And vendors can and do move into the complement layer, which is the situation Propositions 5 to 8 describe: the productization rate is chosen by vendors, shaped by contract terms, and driven up by competition among them. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 7.3.
 
 # 5. Empirical Counterparts and Implications
 
@@ -260,7 +263,7 @@ The same limits apply as in Section 4.5. Vendors are symmetric apart from their 
 
 We assign each model object an empirical counterpart in public data. The mapping is interpretive. We do not recover structural parameters, and Table 1 figures are not regression inputs.
 
-**Table 3. Model objects and empirical counterparts**
+**Table 5. Model objects and empirical counterparts**
 
 | Model object | Empirical counterpart | Source |
 |:---|:---|:---|
@@ -271,10 +274,11 @@ We assign each model object an empirical counterpart in public data. The mapping
 | $O_j=0$ | Pooled API use or mention without a coded GA year | SEC filings |
 | Adopter profit | Operating margin | SEC EDGAR XBRL company facts |
 | Compute payments | Factor payment outside the three-way split | Table 1 (illustrative) |
+| $\eta$, $s$, $N$ | No public counterpart (contract terms and vendor entry are not observed) | n/a |
 
 ## 5.2 Empirical implications
 
-The comparative statics in Section 4.3 yield five testable implications, stated below as hypotheses. We state all five to show how the theory would be tested, but the public data available to us bear on only some of them. H3 and H4 are examined in Section 6, together with a lab-month association that is related to H1a and H1b but does not test them. H1a, H1b, and H2 are stated for future work.
+Predictions 1 and 3 of Section 4.5, together with the transience of complement rents (Corollary 2), yield the five hypotheses below: H1a and H1b from prediction 1, H2 and H3 from prediction 3, and H4 from Corollary 2. We state all five to show how the theory would be tested, but the public data available to us bear on only some of them. H3 and H4 are examined in Section 6, together with a lab-month association that is related to H1a and H1b but does not test them. H1a, H1b, and H2 are stated for future work.
 
 *Implications examined in Section 6*
 
@@ -296,21 +300,17 @@ This section relates the constructs of Section 5 to public data. It is not a tes
 
 The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates.
 
-On the developer side, we regress log realized price on the lab's lead with lab fixed effects and a trend, clustering by lab. On the adopter side, we regress operating margin on a post-GA indicator with firm and year fixed effects, clustering by firm.
-
-## 6.1 Developer side (H1)
+## 6.1 Developer side
 
 *Lab-month association.* Regressing log realized flagship price on the lab's lead with lab fixed effects and a trend gives a coefficient of 0.0099 on the 171 lab-months with list fallback and 0.0068 on the 102 months with at least one live endpoint. Conventional clustered p-values are below 0.001 and 0.017, respectively. With few lab clusters these p-values likely overstate precision (Cameron et al. 2008), and we regard the estimates as suggestive. A first-difference cut on an older list-price snapshot series ($N=1{,}190$) gives a coefficient of 0.0049 (p = 0.081). We read it as directional only and do not use it for H1a or H1b.
 
 *What the lab-month estimates do not show.* They are identified mainly by new releases and so do not isolate the premium on a given model. They should be read as associations between a lab's lead and its flagship price, and not as tests of H1a or H1b. Those tests require a model-month panel and a release-level panel of launch prices, which we do not estimate here.
 
-## 6.2 Adopter side (H2 to H4)
+## 6.2 Adopter side
 
-*H2.* We do not report a test of H2 here.
+*H3.* A two-way fixed-effects regression of operating margin on a post-GA indicator, with firm and year fixed effects and standard errors clustered by firm, gives a post-GA margin increment of 5.3 percentage points ($\beta=0.053$, $p=0.007$; $N=520$ firm-years, 21 treated firms). Because the treated firms are large software incumbents and treatment is staggered, this estimate may be biased and may reflect non-AI margin trends, so we do not read it as a stand-alone test of H3. An increment carried by the operating-expense ratio, or concentrated among the largest firms, would point to cost reduction or market power and not to a complement rent.
 
-*H3.* The two-way fixed-effects baseline gives a post-GA margin increment of 5.3 percentage points ($\beta=0.053$, $p=0.007$; $N=520$ firm-years, 21 treated firms). Because the treated firms are large software incumbents and treatment is staggered, this estimate may be biased and may reflect non-AI margin trends, so we do not read it as a stand-alone test of H3. An increment carried by the operating-expense ratio, or concentrated among the largest firms, would point to cost reduction or market power and not to a complement rent.
-
-*H4.* In the baseline event study, with $t=-1$ omitted, the coefficient at $t=-2$ is −1.2 percentage points ($p=0.64$), at the GA year +4.4 ($p=0.037$), at $t+1$ +6.1 ($p=0.021$), at $t+2$ +5.3 ($p=0.16$), and at $t+3$ +2.4 ($p=0.59$). The pre-period coefficient is small and not distinguishable from zero. The point estimates peak at $t+1$ and fall afterward, which is the direction the theory predicts. However, the $t+2$ and $t+3$ estimates are imprecise and rest on fewer treated firms, and we do not test the equality of the $t+1$ coefficient and the last post-GA bin. The data are therefore inconclusive on H4, and we do not claim that the margin increment decays. A time-invariant bundle-by-post-2023 difference-in-differences gives a similar coefficient and is retained as a robustness check.
+*H4.* In the baseline event study, with $t=-1$ omitted, the coefficient at $t=-2$ is −1.2 percentage points ($p=0.64$), at the GA year +4.4 ($p=0.037$), at $t+1$ +6.1 ($p=0.021$), at $t+2$ +5.3 ($p=0.16$), and at $t+3$ +2.4 ($p=0.59$). The pre-period coefficient is small and not distinguishable from zero. The point estimates peak at $t+1$ and fall afterward, which is the direction the theory predicts. However, the $t+2$ and $t+3$ estimates are imprecise and rest on fewer treated firms, and we do not test the equality of the $t+1$ coefficient and the last post-GA bin. The data are therefore inconclusive on H4, and we do not claim that the margin increment decays.
 
 ## 6.3 What is and is not identified
 
@@ -326,7 +326,7 @@ We should be clear about what is not new. The mechanisms in each layer are estab
 
 ## 7.2 Implications for practice
 
-For adopters, the central question is not how much to spend on AI but what the firm owns that the model cannot supply, and how long competitors will take to own it too. The theory also says that spending on the model itself is not a source of advantage, since any rival can buy the same model. For developers, the next model is the source of value, not the current one. When leads last only a few months, much of the reported loss is economic (Corollary 4). The valuations of frontier labs are best read as prices for an option on a sequence of future leads and not as capitalized current earnings. For the relationship between the two sides, Propositions 5 to 8 imply that contractual terms covering data use, fine-tuning ownership, and on-premise deployment are strategic decisions, because they affect the rate at which a vendor can productize an adopter's use and so the adopter's incentive to invest in the capital that generates its rent. The illustration in Table 4 suggests that such terms may be hardest to obtain for the most valuable uses, which is a reason for adopters to negotiate them before a use proves valuable and not after. Table 5 adds that, when many vendors can build the use, a clause with one supplier buys little, so that the adopter's protection comes mainly from the difficulty of replicating the use.
+For adopters, the central question is not how much to spend on AI but what the firm owns that the model cannot supply, and how long competitors will take to own it too. The theory also says that spending on the model itself is not a source of advantage, since any rival can buy the same model. For developers, the next model is the source of value, not the current one. When leads last only a few months, much of the reported loss is economic (Corollary 4). The valuations of frontier labs are best read as prices for an option on a sequence of future leads and not as capitalized current earnings. For the relationship between the two sides, Propositions 5 to 8 imply that contractual terms covering data use, fine-tuning ownership, and on-premise deployment are strategic decisions, because they affect the rate at which a vendor can productize an adopter's use and so the adopter's incentive to invest in the capital that generates its rent. The illustration in Table 3 suggests that such terms may be hardest to obtain for the most valuable uses, which is a reason for adopters to negotiate them before a use proves valuable and not after. Table 4 adds that, when many vendors can build the use, a clause with one supplier buys little, so that the adopter's protection comes mainly from the difficulty of replicating the use.
 
 ## 7.3 Boundary conditions and limitations
 
