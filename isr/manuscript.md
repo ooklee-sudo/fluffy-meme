@@ -208,7 +208,9 @@ We assign each model object an empirical counterpart in public data. The mapping
 
 # 6. Results
 
-We report what has been estimated and indicate where an analysis has not yet been run.
+The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates.
+
+On the developer side, inference uses the restricted wild cluster bootstrap with Webb weights (Cameron et al. 2008, Webb 2023), because the panel contains few labs. On the adopter side, the baseline is a two-way fixed-effects regression of operating margin on a post-GA indicator with firm and year effects. Under staggered treatment this estimator can be biased (Goodman-Bacon 2021), so heterogeneity-robust estimators (Callaway and Sant'Anna 2021, Sun and Abraham 2021) serve as the primary specification. We report what has been estimated and indicate where an analysis has not yet been run.
 
 ## 6.1 Developer side (H1)
 
