@@ -18,7 +18,7 @@ Each of these claims is familiar in isolation. Hitt and Brynjolfsson (1996) show
 
 We make three contributions. First, we extend the IT business value literature from the firm to the value chain, by deriving jointly where profit will appear among developers, adopters, and consumers, how large it is likely to be, and when it will disappear. Second, we define appropriability ex ante, as expected imitation lag and cost, and show how that definition yields testable constructs (quality lead, imitation lag, and organizational capital) that can be measured from public sources. Third, we offer a first empirical look at these constructs using leaderboard, endpoint-price, and regulatory filing data, and we are explicit about the limits of these tests. For practice, the theory replaces the question that dominates managerial discussion of AI, namely how much to invest, with the question it identifies as decisive: what does the firm own that the model cannot supply, and how long will it take competitors to own it as well?
 
-The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 derives hypotheses, Section 6 describes data and estimation, and Section 7 reports results. Section 8 discusses implications, boundary conditions, and limitations, and Section 9 concludes.
+The paper proceeds as follows. Section 2 reviews the relevant literatures and the public financial record of frontier developers. Section 3 defines the constructs. Section 4 presents the model and states the propositions, with proofs in Appendix A. Section 5 derives the hypotheses and describes the data and estimation, and Section 6 reports results. Section 7 discusses implications, boundary conditions, and limitations, and Section 8 concludes.
 
 # 2. Theoretical Background
 
@@ -66,7 +66,7 @@ Revenue is large and growing. OpenAI's 2025 operating loss of \$20.9 billion on 
 
 *Notes.* OpenAI figures for 2024 and 2025 are taken from audited financial statements reported by Zitron (2026) and line items as presented by MLQ (2026). The 2025 net loss of \$38.5 billion includes a \$41.55 billion non-cash charge related to the for-profit conversion, which is excluded here. Other sources place 2025 gross margin at 33 percent (Sacra 2026), which suggests definitional differences in cost of revenue. The 2026 OpenAI figure and all Anthropic figures are unaudited annualized run-rates (latest month × 12) from company disclosures and press reports (Sacra 2026, SaaStr 2026). Anthropic books cloud-reseller revenue gross, so its run-rates are not comparable with OpenAI's booked revenue. The table is illustrative and does not enter any regression.
 
-These figures are too coarse to test the theory, and they should not be read as doing so. Run-rate is not profit, and a hyperscaler's AI profit is not a developer's rent. Their role in this paper is to motivate the developer half of the theory and to fix orders of magnitude. The formal tests appear in Section 7.
+These figures are too coarse to test the theory, and they should not be read as doing so. Run-rate is not profit, and a hyperscaler's AI profit is not a developer's rent. Their role in this paper is to motivate the developer half of the theory and to fix orders of magnitude. The formal tests appear in Section 6.
 
 # 3. Constructs
 
@@ -162,7 +162,7 @@ which is strictly decreasing in $\eta$.
 
 ## 4.3 Comparative statics
 
-Five predictions follow, and they are the ones the empirical work in Sections 5 to 7 can address.
+Five predictions follow, and they are the ones the empirical work in Sections 5 and 6 can address.
 
 1. Realized developer prices for inference rise with $\Delta\theta$ and fall toward serving cost as $\Delta\theta\to 0$ (Proposition 3).
 2. Developer rent is shortened by open-weight releases, compressed release intervals, and falling serving cost (Proposition 3 and Corollary 3).
@@ -170,11 +170,11 @@ Five predictions follow, and they are the ones the empirical work in Sections 5 
 4. Industries with shorter $\tau_O$, or with more vendor encroachment, show weaker associations between AI use and profit (Propositions 2 and 5).
 5. As downstream competition intensifies, the AI–profit association weakens while the AI–productivity association is unaffected (Propositions 1 and 4).
 
-Predictions 4 and 5 are not tested here. Proposition 5 is also untested, but it bears directly on the LLM setting and on managerial choices about data-use terms and fine-tuning ownership, which we take up in Section 8.
+Predictions 4 and 5 are not tested here. Proposition 5 is also untested, but it bears directly on the LLM setting and on managerial choices about data-use terms and fine-tuning ownership, which we take up in Section 7.
 
 ## 4.4 What is specific to LLMs
 
-A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost of producing a frontier model $F_T$, so that profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, on the order of three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves both the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And developers can and do move into the complement layer, which is the situation Proposition 5 describes. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 8.3.
+A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost of producing a frontier model $F_T$, so that profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, on the order of three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves both the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And developers can and do move into the complement layer, which is the situation Proposition 5 describes. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 7.3.
 
 # 5. Hypotheses and Empirical Counterparts
 
@@ -206,35 +206,25 @@ We assign each model object an empirical counterpart in public data. The mapping
 
 **H4.** The within-firm margin increment after GA declines as event time lengthens. Disconfirmation is a flat or rising post-GA path, or a difference between the first post-GA year and the last post-GA bin that cannot be distinguished from zero.
 
-# 6. Data and Method
+## 5.3 Data and estimation
 
-## 6.1 Measurement
+*Samples.* The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates, which makes the treatment indicator a coarse proxy for organizational capital.
 
-Quality lead is measured as the gap between the leading and the second-ranked lab on public preference leaderboards, sampled at release dates. Imitation lag is the time from a frontier release to the first competitor release that matches its score within a stated tolerance. Inference price at a given capability level is reconstructed as a monthly panel. Organizational capital must be measured independently of LLM spending. Four LLM-specific proxies correspond to its components: the share of model calls that use retrieval or fine-tuning on internal data; the share of LLM-using roles in which model output enters a recorded decision; existing customer reach in the product line where the model is deployed; and dedicated evaluation, red-teaming, and governance roles in job-posting data. General complementarity proxies, such as decentralization, data-driven decision practices, and capitalized organizational SG&A, remain applicable. In the present study, only the GA-dated indicator is available at scale, and it is a coarse proxy.
+*Developer side.* A lab-month regression of price on lead is identified largely by new releases, which raise price and measured quality at the same moment. H1a therefore uses a model-month panel with model and month fixed effects, so that the coefficient is identified only from changes in a given model's lead as competitors release. H1b is estimated separately on launch prices. Because the panel contains few labs, conventional cluster-robust p-values are unreliable, and inference uses the restricted wild cluster bootstrap with Webb six-point weights (Cameron et al. 2008, Webb 2023).
 
-## 6.2 Samples
+*Adopter side.* Treated firms are large software incumbents whose margins rose between 2023 and 2025 for reasons unrelated to AI, such as cost reductions and changes in the cost of capital. The baseline is a two-way fixed-effects regression of operating margin on a post-GA indicator. Because treatment is staggered, that estimator can be biased when effects differ across cohorts (Goodman-Bacon 2021), so we use heterogeneity-robust estimators with never-treated and not-yet-treated controls (Callaway and Sant'Anna 2021, Sun and Abraham 2021). Further checks are SIC-by-year fixed effects, firm-specific trends, matched never-treated controls, a placebo that moves each GA date two years earlier, and randomization inference that reassigns GA dates across firms. Because a higher margin could reflect market power and not a complement rent (Section 7.3), the effect is decomposed into gross margin and the operating-expense ratio and allowed to differ by pre-2023 size. For H4, event-time indicators are estimated relative to $t=-1$ only at event times to which at least eight treated firms contribute. The direct test is the equality of the $t+1$ coefficient and the last post-GA bin, together with a joint test of the pre-GA coefficients.
 
-The developer panel combines Arena overall leaderboard snapshots (Chiang et al. 2024) with OpenRouter endpoint prices (OpenRouter 2026). It contains 171 lab-months with a price, of which 102 have at least one live endpoint and 69 use the list-price fallback. The adopter panel is drawn from SEC EDGAR XBRL company facts (SEC 2026) and covers 81 firms and 520 firm-years, with staggered GA-year treatment for 21 firms. GA years are coded by hand from public product dates.
+# 6. Results
 
-## 6.3 Identification and estimation
+We report what has been estimated and indicate where an analysis specified in Section 5.3 has not yet been run.
 
-*Developer side.* A lab-month regression of price on lead is identified largely by new releases, which raise price and measured quality at the same moment. H1a therefore requires a model-month panel with model and month fixed effects, so that the coefficient is identified only from changes in a given model's lead as competitors release, net of common price declines. H1b is estimated separately on launch prices. A catch-up event study traces a model's price in the months around the month in which it loses the lead. Because the panel contains few labs, conventional cluster-robust p-values are unreliable. We therefore plan inference by the restricted wild cluster bootstrap with Webb six-point weights (Cameron et al. 2008, Webb 2023).
-
-*Adopter side.* Treated firms are large software incumbents whose operating margins rose between 2023 and 2025 for reasons unrelated to AI, including cost reductions and changes in the cost of capital. The baseline is a two-way fixed-effects regression of operating margin on a post-GA indicator with firm and year effects. Because treatment is staggered and effects may differ across cohorts, that estimator can be biased (Goodman-Bacon 2021). We therefore specify heterogeneity-robust estimators with never-treated and not-yet-treated controls (Callaway and Sant'Anna 2021, Sun and Abraham 2021), and four further checks: two-digit SIC-by-year fixed effects, firm-specific linear trends, never-treated controls matched within two-digit SIC on pre-2023 margin level, trend, and size, and a placebo that moves each GA date two years earlier. Randomization inference reassigns GA dates to randomly chosen firms. Because a higher margin could reflect market power in place of a complement rent (Section 8.3), the effect is decomposed into gross margin and the operating-expense ratio and allowed to differ by pre-2023 size.
-
-For H4 we estimate event-time indicators relative to the GA year, omitting $t=-1$, with firm and year effects, and only at event times to which at least eight treated firms contribute. For the 2023 cohort, $t+3$ is fiscal 2026, which few firms had reported by September 2026. The direct test of H4 is the equality of the coefficient at $t+1$ and that of the last post-GA bin, together with a joint test of the pre-GA coefficients.
-
-# 7. Results
-
-We report what has been estimated and indicate where an analysis specified in Section 6 has not yet been run.
-
-## 7.1 Developer side (H1)
+## 6.1 Developer side (H1)
 
 *Lab-month association.* Regressing log realized flagship price on the lab's lead with lab fixed effects and a trend gives a coefficient of 0.0099 on the 171 lab-months with list fallback and 0.0068 on the 102 months with at least one live endpoint. Conventional clustered p-values are below 0.001 and 0.017, respectively. With few lab clusters these p-values likely overstate precision (Cameron et al. 2008), and we regard the estimates as suggestive until bootstrap inference is reported. **[AUTHORS TO COMPLETE: wild cluster bootstrap p-values for both samples.]** A first-difference cut on an older list-price snapshot series ($N=1{,}190$) gives a coefficient of 0.0049 (p = 0.081). We read it as directional only and do not use it for H1a or H1b.
 
 *What the lab-month estimates do not show.* They are identified mainly by new releases and so do not isolate the premium on a given model. They should be read as associations between a lab's lead and its flagship price, and not as tests of H1a or H1b. **[AUTHORS TO COMPLETE: model-month estimates for H1a and launch-price regression for H1b, with the catch-up event-study figure.]**
 
-## 7.2 Adopter side (H2 to H4)
+## 6.2 Adopter side (H2 to H4)
 
 *H2.* Pooled exposure without a coded GA year does not predict operating margin. **[AUTHORS TO COMPLETE: coefficient, standard error, and p-value.]**
 
@@ -242,29 +232,29 @@ We report what has been estimated and indicate where an analysis specified in Se
 
 *H4.* In the baseline event study, with $t=-1$ omitted, the coefficient at $t=-2$ is −1.2 percentage points ($p=0.64$), at the GA year +4.4 ($p=0.037$), at $t+1$ +6.1 ($p=0.021$), at $t+2$ +5.3 ($p=0.16$), and at $t+3$ +2.4 ($p=0.59$). The pre-period coefficient is small and not distinguishable from zero. The $t+2$ and $t+3$ estimates are imprecise and rest on fewer treated firms, so the point estimates alone do not establish decay, and we do not claim support for H4. **[AUTHORS TO COMPLETE: direct test of equality of $t+1$ and the last post-GA bin, and joint test of pre-GA coefficients.]** A time-invariant bundle-by-post-2023 difference-in-differences gives a similar coefficient and is retained as a robustness check.
 
-## 7.3 What is and is not identified
+## 6.3 What is and is not identified
 
 Six restrictions bind. First, the realized price is the mean of provider cards on OpenRouter, not a billed invoice and not a GAAP inference margin. Second, endpoint coverage is incomplete (102 of 171 priced months). Third, GA years are coded from public product dates, and they do not measure token spend or retrieval intensity. Fourth, Table 1 figures are illustrative and are not regression inputs. Fifth, two-way fixed-effects estimates under staggered timing can be biased when effects differ across cohorts, and while the robust estimators address that bias, they still rest on parallel trends, which the matched-control and trend specifications relax only partly. Sixth, operating margin is an accounting measure and not the economic profit of Proposition 2, and the timing of GA marks the launch of a product, not the start of organizational-capital accumulation.
 
-# 8. Discussion
+# 7. Discussion
 
-## 8.1 Contributions
+## 7.1 Contributions
 
 The paper extends IT business value theory (Melville et al. 2004) from the adopting firm to the vertical structure of a general-purpose technology. Modeling the developer, the adopter, and the consumer in one framework lets us say why developer losses, adopter productivity gains, and weak adopter profit effects are observed together. The same account separates the profitability paradox from the productivity paradox and derives the former from the zero-profit condition applied to an input with a common market price. We also provide an ex ante definition of appropriability that applies to developers and adopters alike, which speaks to the tautology charge against resource-based IT research, and we show how a model can be a source of rent at one date and a marginal-cost input at another.
 
 We should be clear about what is not new. The mechanisms in each layer are established in industrial organization and strategy (Section 2.4). What the paper adds is their combination under a single appropriability definition and the specification of measurable counterparts for a technology in which those counterparts are observable.
 
-## 8.2 Implications for practice
+## 7.2 Implications for practice
 
 For adopters, the central question is not how much to spend on AI but what the firm owns that the model cannot supply, and how long competitors will take to own it too. The theory also says that spending on the model itself is not a source of advantage, since any rival can buy the same model. For developers, the next model is the source of value, not the current one. When leads last only a few months, much of the reported loss is economic (Corollary 4). The valuations of frontier labs are best read as prices for an option on a sequence of future leads and not as capitalized current earnings. For the relationship between the two sides, Proposition 5 implies that contractual terms covering data use, fine-tuning ownership, and on-premise deployment are strategic decisions, because they affect the rate at which a vendor can productize an adopter's use.
 
-## 8.3 Boundary conditions and limitations
+## 7.3 Boundary conditions and limitations
 
 The theory assumes competitive downstream product markets. Where adopters hold market power, pass-through is incomplete, and commodity LLM use can raise profit. Evidence that IT intensity accompanies rising industry concentration suggests that this case is empirically relevant (Autor et al. 2020, Bessen 2020), and it is also an alternative reading of the margin increment in H3. The theory further assumes that the developer's lead closes. Economies of scale in compute and data flywheels could prevent closure and shift surplus durably toward the developer, and sustained margins without a quality lead, that is, disconfirmation of H1, would indicate that this case dominates.
 
 The model abstracts from uncertainty in training outcomes, from strategic interaction among developers (the lead and the catch-up lag are treated as exogenous), and from purchasable organizational capital. Making the lead endogenous to a training race is the most natural extension, and it is where we would expect a more specifically LLM-based theory to develop. The empirical proxies are imperfect, and misclassification biases the estimated difference between commodity and complementary use toward zero. The adopter sample is small and made up of large software incumbents, so the results should not be generalized to adopters in other industries. Finally, the evidence is observational and cross-sectional in time, over a period in which the technology and its business models are still changing. The tests here are best viewed as a first look at the constructs, and they are not a confirmation of the theory.
 
-# 9. Conclusion
+# 8. Conclusion
 
 LLMs create value, and the theory developed here says where it goes. Adopters that use a model available to every competitor on the same terms pass their gain to consumers. The frontier developer captures a share in proportion to its quality lead, and only until a competitor closes it. Adopters that combine the model with organizational capital that rivals cannot quickly build earn a rent in proportion to how long the building takes, and that rent shrinks if a vendor productizes the use. The remainder goes to consumers, and statistics that pool all three positions report an average close to zero.
 
