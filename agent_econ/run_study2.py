@@ -20,8 +20,8 @@ CONTROLS = ["content_free_eval", "role_only", "self_interest_undated"]          
 PAIR = {"baseline": 0, "self_interest": 1, "collective_duty": 2, "content_free_eval": 0, "role_only": 0, "self_interest_undated": 1}   # controls reuse the baseline wording pattern per seed
 
 
-def design(stage, families, rents, seeds, prompts=PROMPTS, paraphrases=(0, 1), days=50):
-    for s, fam, rent, p, para in itertools.product(range(seeds), families, rents, prompts, paraphrases):
+def design(stage, families, rents, seeds, prompts=PROMPTS, paraphrases=(0, 1), days=50, seed_start=0):
+    for s, fam, rent, p, para in itertools.product(range(seed_start, seeds), families, rents, prompts, paraphrases):
         if len(paraphrases) == 2 and (s + PAIR[p]) % 2 != para:   # lite: alternate wording across seeds, one world per cell-seed
             continue
         model = FAMILY.get(fam, "scripted:0")
@@ -41,10 +41,11 @@ if __name__ == "__main__":
     ap.add_argument("--rents", nargs="+", type=int, default=[2]); ap.add_argument("--seeds", type=int, default=12)
     ap.add_argument("--workers", type=int, default=3); ap.add_argument("--estimate", action="store_true")
     ap.add_argument("--run", action="store_true")
+    ap.add_argument("--seed-start", type=int, default=0, help="first seed index; --seeds stays the end (exclusive)")
     ap.add_argument("--days", type=int, default=50, help="game length; 100 for the horizon test (tag gets a _d100 suffix)")
     ap.add_argument("--prompts", nargs="+", default=PROMPTS, choices=PROMPTS + CONTROLS, help="restrict to some prompt levels, e.g. --prompts baseline")
     a = ap.parse_args()
-    cfgs = list(design(a.stage, a.models, a.rents, a.seeds, prompts=list(a.prompts), days=a.days))
+    cfgs = list(design(a.stage, a.models, a.rents, a.seeds, prompts=list(a.prompts), days=a.days, seed_start=a.seed_start))
     print(f"{len(cfgs)} worlds, est. ${estimate(cfgs):.2f} (cap ${llm.CAP_USD:.0f}, already spent ${llm.spent():.2f})")
     if a.estimate or not (a.run or a.models == ["scripted"]):
         raise SystemExit
