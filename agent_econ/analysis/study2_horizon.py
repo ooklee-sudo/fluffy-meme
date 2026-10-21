@@ -20,6 +20,8 @@ for d in sys.argv[1:]:
         else: r.update(early=share(ev,0,25),mid=share(ev,25,n-25),late=share(ev,n-25,n),last10=share(ev,n-10,n))
         rows.append(r)
 d=pd.DataFrame(rows)
+for _c in ('early','mid','late','last10'):
+    if _c not in d: d[_c]=np.nan
 if d.empty: raise SystemExit('no worlds found')
 print(d.groupby(['prompt','days'])[['early','mid','late','last10']].mean().round(3))
 rng=np.random.default_rng(9)
