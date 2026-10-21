@@ -16,7 +16,7 @@ Information systems researchers will recognize the puzzle. It is the profitabili
 
 What the benchmark leaves out is a feature that sets LLMs apart from most earlier technologies. In the standard account, an adopter's complement rent is threatened by one force, imitation by rival adopters, which takes time because organizational capital is slow to build. In the LLM chain there is a second force: the supplier of the input can move into the adopter's layer. A developer sells its model on posted terms to an adopter and to the adopter's competitors, can observe how the model is used through its interface, and can productize a successful use and sell it to everyone. Research on platform owners that enter complementors' markets suggests that such entry is common and consequential (Gawer and Henderson 2007, Zhu and Liu 2018), but its implication for rent has not been brought into the appropriability framework. Once a use is productized, the adopter's co-specialized capital becomes a commodity before rivals could have copied it, and the window in which the rent is earned shortens.
 
-Proposition 5 formalizes this. If a vendor productizes an adopter's use at rate $\eta$, independently of imitation, the adopter's expected complement rent falls strictly in $\eta$. The rent runs on two clocks, not one. The result is deliberately simple, and the later propositions build on it in two ways. Section 4.3 lets the vendor choose $\eta$ and shows how contract terms that limit its use of adopters' data change that choice and, through it, the adopter's incentive to invest. Section 4.4 adds competition among vendors, which speeds productization and weakens the effect of any single contract. Section 4.5 lets adopters respond by concealing the use, which protects against all vendors at once, and Section 4.6 lets them switch supplier, which loses its effect as vendors multiply. Together with the benchmark results for developers, adopters, and consumers (Propositions 1 to 4), these results give a fuller account of where profit appears.
+Proposition 5 formalizes this. If a vendor productizes an adopter's use at rate $\eta$, independently of imitation, the adopter's expected complement rent falls strictly in $\eta$. The rent runs on two clocks, not one. The result is deliberately simple, and the later propositions build on it in two ways. Appendix A.1 lets the vendor choose $\eta$ and shows how contract terms that limit its use of adopters' data change that choice and, through it, the adopter's incentive to invest. Appendix A.2 adds competition among vendors, which speeds productization and weakens the effect of any single contract. Appendix A.3 lets adopters respond by concealing the use, which protects against all vendors at once, and Appendix A.4 lets them switch supplier, which loses its effect as vendors multiply. Together with the benchmark results for developers, adopters, and consumers (Propositions 1 to 4), these results give a fuller account of where profit appears.
 
 The paper makes three contributions, developed in Section 7.1. It adds vendor encroachment to the appropriability account of IT value. It places that result in an integrated benchmark in which appropriability is defined ex ante, so that quality lead, imitation lag, and organizational capital become measurable constructs. And it offers illustrative evidence on those constructs from public data. The evidence is limited and does not bear on the encroachment results, and we say what it cannot show. Section 2 reviews the literature and the public financial record of frontier developers. Section 3 defines the constructs, Section 4 presents the model, Section 5 maps it to data, and Section 6 presents the evidence. Section 7 discusses implications and limitations, and Section 8 concludes.
 
@@ -102,7 +102,7 @@ Organizational capital is built at a convex cost $g(O)$, reflecting time-compres
 
 Upstream, models are vertically differentiated by quality $\theta$. The frontier developer holds a lead $\Delta\theta(t)=\theta_{\text{lead}}(t)-\theta_{\text{second}}(t)$ over the best alternative. Developers with comparable infrastructure supply inference at a common marginal cost $m$. A frontier model costs $F_T$ to train and requires developer organizational capital $O_{\text{dev}}$, built at cost $g(O_{\text{dev}})$. A competitor closes the quality gap only after a lag $\tau_{\text{dev}}$ and at cost $g^m(O_{\text{dev}})\ge g(O_{\text{dev}})$. Compute is bought from its owners at market prices. It is a factor payment and not part of developer rent.
 
-A *vendor* is a model developer that sells to adopters. The frontier developer is one such vendor, and Sections 4.3 and 4.4 also consider others. Table 2 lists the notation.
+A *vendor* is a model developer that sells to adopters. The frontier developer is one such vendor, and Appendix A also considers others. Table 2 lists the notation.
 
 **Table 2. Notation**
 
@@ -120,15 +120,15 @@ A *vendor* is a model developer that sells to adopters. The frontier developer i
 | $\rho$ | Discount rate |
 | $G$, $H$ | A vendor's gain from productizing a use; total productization rate across vendors |
 | $\eta$ | Rate at which a vendor productizes a complement builder's use (Propositions 5 to 11) |
-| $\mu$, $r$ | Rate at which rivals imitate $O_j$ (Section 4.3); $r=\rho+\mu$ |
-| $N$ | Number of vendors able to productize the same use (Section 4.4) |
+| $\mu$, $r$ | Rate at which rivals imitate $O_j$ (Appendix A.1); $r=\rho+\mu$ |
+| $N$ | Number of vendors able to productize the same use (Appendix A.2) |
 | $s$, $K(s)$ | Contractual protection against productization; developer's cost curvature, increasing in $s$ |
-| $v$, $\lambda$ | Visibility of the adopter's use to vendors; cost of concealment as a share of the rent flow per unit of concealment (Section 4.5) |
+| $v$, $\lambda$ | Visibility of the adopter's use to vendors; cost of concealment as a share of the rent flow per unit of concealment (Appendix A.3) |
 | $R$, $\phi$ | Rent flow $(p-c_j)q_j$; share of its present value the developer gains by productizing |
 
 ## 4.2 Propositions
 
-Propositions 1 to 5 are stated here. Propositions 6 to 11, which endogenize the productization rate, add competition among vendors, and let adopters respond by concealing the use or switching supplier, follow in Sections 4.3 to 4.6. All proofs are in Appendix A.
+Propositions 1 to 5 are stated here. Section 4.3 summarizes Propositions 6 to 11, which endogenize the productization rate, add competition among vendors, and let adopters respond by concealing the use or switching supplier. They are stated in Appendix A. All proofs are in Appendix B.
 
 **Proposition 1 (Adopter zero profit).** In a competitive industry in which no adopter holds organizational capital ($O_j=0$ for all $j$), LLM usage earns no adopter an economic profit. An improvement in the model, or a fall in $p_L$, lowers the product price by the full reduction in minimum average cost, so the productivity gain accrues entirely to consumers.
 
@@ -164,125 +164,21 @@ $$E[\Pi_j]=(p-c_j)q_j\frac{1-e^{-(\rho+\eta)\tau_O}}{\rho+\eta}-g(O_j), \tag{5}$
 
 which is strictly decreasing in $\eta$.
 
-Section 4.3 repeats this result with an exponential imitation lag, which makes it possible to solve for the vendor's choice of $\eta$.
+Appendix A.1 repeats this result with an exponential imitation lag, which makes it possible to solve for the vendor's choice of $\eta$.
 
-## 4.3 Endogenous encroachment and contract protection
+## 4.3 Extensions: encroachment, competition, and adopter responses
 
-Proposition 5 takes the productization rate $\eta$ as given. Here we let the vendor choose it and ask how contract terms affect the choice. The analysis is a reduced-form extension that adds only the structure needed to endogenize $\eta$. It is a first formalization and not a full model of vendor behavior.
+Proposition 5 takes the productization rate as given. Appendix A relaxes this assumption in four steps and states Propositions 6 to 11. We summarize the results here.
 
-*Setup.* Let $R=(p-c_j)q_j$ be the adopter's rent flow. To keep the problem tractable, we replace the deterministic imitation lag $\tau_O$ with an exponential one: rivals imitate $O_j$ at rate $\mu$, so the mean lag is $1/\mu$. Write $r=\rho+\mu$. The adopter's expected rent from Proposition 5 then becomes $R/(r+\eta)-g(O_j)$, with the same comparative statics. A contract specifies protection $s\in[0,1)$, which limits the vendor's use of the adopter's data, fine-tuning, or deployment information. The vendor exerts effort $e$ at cost $(k/2)e^2$, but only the fraction $1-s$ of that effort converts into productization, so $\eta=(1-s)e$. Achieving a rate $\eta$ therefore costs $(K/2)\eta^2$, where $K(s)=k/(1-s)^2$ increases in $s$. If the vendor productizes the use, it gains the present value $G=\phi R/r$. Here $\phi\in(0,1]$ is the share of the rent's present value $R/r$ that the vendor captures, and the rest passes to consumers. The vendor chooses $\eta$ to maximize
+*Endogenous encroachment.* When a vendor chooses its productization rate at a convex cost, the rate rises with the value of the use and falls with the cost that contract terms impose. It also rises when rivals imitate faster, so that imitation and encroachment are strategic complements (Proposition 6). Contract terms that limit the vendor's use of the adopter's data therefore raise the adopter's expected rent and widen the set of complement investments worth making (Proposition 7).
 
-$$J(\eta)=\frac{G\eta-K\eta^2/2}{r+\eta}, \tag{6}$$
+*Competition among vendors.* When several vendors race to productize the same use, the equilibrium is unique. The rate of each vendor and the total rate rise with the number of vendors, and each vendor's payoff falls (Proposition 8). A protection clause with the adopter's own supplier lowers the total rate, but it removes only that supplier's marginal contribution to the race, so its proportional effect vanishes as vendors multiply (Proposition 9).
 
-the expected present value of its gain net of effort cost, which runs until productization or imitation ends the opportunity.
+*Adopter responses.* Concealing the use raises the cost of productizing for all vendors at once. Its proportional effect stays bounded away from zero as vendors multiply, and it is worthwhile when its cost is low relative to the threat (Proposition 10). Switching to a neutral supplier shares the weakness of a contract, because its effect also vanishes as vendors multiply (Proposition 11).
 
-**Proposition 6 (Equilibrium productization).** The vendor's problem has a unique interior solution,
+Three conclusions follow. First, the profitable window of a complement builder depends on its suppliers as well as on its competitors. Second, protection that rests on a single counterparty weakens as the market for a use becomes crowded. Third, in a crowded market the adopter's protection comes mainly from concealment and from the difficulty of replicating the use, which is why the organizational capital of Section 3 matters. The extensions are reduced-form, and Appendix A states their limits. Tables A1 to A3 in that appendix give numerical illustrations. The propositions are not tested with the data in Section 6.
 
-$$\eta^*=-r+\sqrt{r^2+2Gr/K}. \tag{7}$$
-
-The rate $\eta^*$ is increasing in $G$ (and so in $R$ and $\phi$) and decreasing in $K$ (and so in $s$). For a given $G$, it is increasing in $r$: the faster rivals are expected to imitate, the faster the vendor productizes.
-
-**Proposition 7 (Contract protection and complement investment).** The adopter's expected rent $R/(r+\eta^*(s))-g(O_j)$ is increasing in $s$. Consequently, the set of organizational-capital investments that satisfy $R/(r+\eta^*)\ge g(O_j)$ expands as $s$ rises, and some investments that would not be made without protection are made with it.
-
-Proposition 6 says that imitation by rivals and encroachment by the vendor are strategic complements. A shorter expected imitation lag makes the vendor move sooner, so the two threats to the adopter's rent compound. Proposition 7 applies the hold-up logic of Klein et al. (1978) and Grossman and Hart (1986) to the LLM supply relationship. An adopter that fears productization under-invests in the co-specialized capital that generates its rent, and contract terms that raise the vendor's cost of encroaching restore some of that investment.
-
-Whether such protection is actually written is a separate question. The adopter's willingness to pay for a move from $s_0$ to $s_1$ is $R/(r+\eta_1^*)-R/(r+\eta_0^*)$. The vendor's loss is $K_1\eta_1^*-K_0\eta_0^*$, because its value at the optimum is $J^*=G-K\eta^*$. A contract can be agreed only if the first exceeds the second. Table 3 gives a numerical illustration. Protection clears for uses with small rents and fails for uses with large rents, because the vendor's gain from productizing grows with the rent. The pattern depends on the parameters. In a simulation with randomly drawn parameters, the willingness to pay fell short of the vendor's loss in about five percent of the draws. We therefore offer the pattern as an illustration and not as a proposition. If it held more generally, the uses most worth protecting would be the ones least likely to be protected.
-
-**Table 3. Willingness to pay for protection versus the vendor's loss (illustration; $r=0.3$, $\phi=0.8$, $k=1$, $s$ raised from 0 to 0.5)**
-
-| $R$ | $\eta^*$ ($s=0$) | $\eta^*$ ($s=0.5$) | Willingness to pay | Vendor's loss | Contract agreed |
-|---:|---:|---:|---:|---:|:---|
-| 0.5 | 0.643 | 0.239 | 0.398 | 0.311 | Yes |
-| 1 | 1.000 | 0.400 | 0.659 | 0.600 | Yes |
-| 2 | 1.514 | 0.643 | 1.017 | 1.060 | No |
-| 4 | 2.248 | 1.000 | 1.507 | 1.752 | No |
-| 8 | 3.290 | 1.514 | 2.182 | 2.765 | No |
-
-The extension has clear limits. The rate $\eta$ is constant and chosen by a single vendor, and Section 4.4 adds competition among vendors. We still do not model the adopter's responses, such as concealing the use or moving to another vendor, or bargaining over the contract. The functional form $K(s)=k/(1-s)^2$ is a convenience, and the share $\phi$ is a reduced-form parameter that says nothing about how the vendor earns from a productized offering. Contract terms are not publicly observed, so the propositions cannot be examined with the data in Section 6.
-
-## 4.4 Competition among vendors
-
-Section 4.3 has a single vendor decide whether to productize the adopter's use. In practice, several vendors may see that a use is valuable and try to build it. We now let $N$ symmetric vendors race for the same use.
-
-*Setup.* Each vendor $i$ chooses a productization rate $\eta_i$ at cost $(K/2)\eta_i^2$. The first vendor to productize the use earns $G$ and the others earn nothing, and productization by any vendor ends the adopter's rent. Imitation by rival adopters continues at rate $\mu$. Let $H=\sum_i\eta_i$ be the total rate. Vendor $i$ maximizes
-
-$$J_i=\frac{G\eta_i-K\eta_i^2/2}{r+H}. \tag{8}$$
-
-For given rivals' rates this is the problem of Section 4.3 with $r$ replaced by $r+H-\eta_i$.
-
-**Proposition 8 (Vendor competition).** The game has a unique equilibrium, and it is symmetric. The common rate $\eta^*(N)$ is the positive root of
-
-$$K\left(N-\tfrac{1}{2}\right)\eta^2+\big(Kr-G(N-1)\big)\eta-Gr=0. \tag{9}$$
-
-Both the per-vendor rate $\eta^*(N)$ and the total rate $H^*(N)=N\eta^*(N)$ are increasing in $N$. Each vendor's expected payoff, $G-K\eta^*(N)$, is decreasing in $N$, and the adopter's expected rent $R/(r+H^*(N))-g(O_j)$ is decreasing in $N$. For $N=1$ the solution is that of Proposition 6.
-
-Competition among vendors thus has two effects, and they work in the same direction. Each vendor moves faster, because a rival's progress raises the cost of waiting, and more vendors are moving. The adopter's profitable window shortens. The vendors' own payoffs fall, so the race dissipates part of what the use is worth to them, much as competition among developers dissipates the premium in Proposition 3.
-
-*Contract protection under competition.* Proposition 7 required only that one vendor's cost rise with protection. With several vendors, a contract between the adopter and its own supplier binds that supplier alone. Let the adopter's supplier have cost $K(s)=k/(1-s)^2$, and let $N-1$ outsiders keep the cost $k$, because they have no access to the adopter's data and are therefore unaffected by $s$. Table 4 shows what protection achieves for different numbers of outsiders. With no outsiders, raising $s$ from 0 to 0.5 cuts the total productization rate by two thirds and raises the value of the adopter's rent flow by more than half. With eight outsiders it cuts the rate by less than a tenth, and the value of the rent flow rises by under ten percent. Proposition 9 below shows that such protection does lower the total rate, so the pattern in Table 4 is not an artifact of the example. That the proportional effect falls with every added outsider we have verified only numerically: in simulations with randomly drawn parameters (3,000 draws, up to six outsiders), both the proportional reduction in the total rate and the gain in the adopter's rent fell with every added outsider, without exception.
-
-**Table 4. Effect of protection from the adopter's own supplier, by number of outsider vendors (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$, $s$ raised from 0 to 0.5)**
-
-| Outsiders | Total rate $H$ ($s=0$) | Total rate $H$ ($s=0.5$) | Reduction (%) | Adopter's rent flow value ($s=0$) | Adopter's rent flow value ($s=0.5$) | Gain |
-|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 0.340 | 0.112 | 67.0 | 1.562 | 2.425 | 0.864 |
-| 1 | 0.827 | 0.493 | 40.4 | 0.887 | 1.261 | 0.374 |
-| 2 | 1.347 | 0.980 | 27.3 | 0.607 | 0.781 | 0.174 |
-| 4 | 2.406 | 2.021 | 16.0 | 0.369 | 0.431 | 0.061 |
-| 8 | 4.536 | 4.143 | 8.7 | 0.207 | 0.225 | 0.018 |
-
-*Note.* The adopter's value is $R/(r+H)$, before subtracting the cost of organizational capital.
-
-Vendors in this setting differ in their costs, so we first establish that the game is well behaved when they do.
-
-**Proposition 9 (Heterogeneous vendors and own-supplier protection).** Let vendor $i$ have cost curvature $K_i$. (a) The game has a unique equilibrium. (b) A rise in any one vendor's $K_j$ lowers the total rate $H^*$ and every vendor's rate. In particular, protection $s$ against the adopter's own supplier lowers the total rate and the rate of every outsider. (c) Complete protection from the adopter's own supplier, so that it cannot productize the use at all, lowers the total rate from $H^*(N)$ to $H^*(N-1)$. The proportional reduction $1-H^*(N-1)/H^*(N)$ equals 1 when $N=1$ and tends to 0 as $N\to\infty$.
-
-Part (b) shows that the vendors' rates are strategic complements: when the supplier is slowed, its rivals slow too, so the effect of protection on the total rate is larger than the supplier's own reduction. Part (c) gives the limiting case. Complete protection from one supplier removes only that supplier's marginal contribution to the race. Table 5 gives the proportional reduction for several values of $N$.
-
-Bilateral contract terms are therefore most useful where few vendors can see the adopter's use. In a market with many capable vendors, protection from one supplier does little, and the adopter's rent depends more on how hard the use is to replicate without its data than on what it has negotiated. This reinforces the role of the organizational capital that makes a use difficult to copy (Section 3.3). It also suggests that protection would have to be industry-wide, for example through norms or regulation, to be effective in such markets.
-
-The limits noted in Section 4.3 apply here as well. Vendors are symmetric apart from their access to the adopter's data, each vendor's rate is constant, and a vendor whose rival wins earns nothing. Letting the winner share the use, or letting vendors differentiate their offerings, would soften the race.
-
-## 4.5 Adopter responses: concealment
-
-An adopter need not rely on a contract with its own supplier. It can instead make the use harder to see, for example by keeping the distinctive element of the workflow off the vendor's interface, splitting the work across systems, or leaving the most informative data inside its own boundary. Such concealment acts on every vendor at once, but it costs the adopter something.
-
-*Setup.* Let $v\in(0,1]$ be the visibility of the use. A vendor's effort converts into productization at the fraction $v$, so that $\eta_i=ve_i$ and the cost of achieving a rate $\eta_i$ is $(K/2)\eta_i^2$ with $K=k/v^2$. This is the same function as in Section 4.3 with $1-s$ replaced by $v$, but it applies to all vendors and not just to the adopter's own supplier. Concealment costs the adopter $\lambda R(1-v)$ per period, with $\lambda>0$, and it does not change the value $G$ of the use to a vendor. Given the equilibrium total rate $H^*(v)$, the adopter's value is
-
-$$V(v)=\frac{R\big(1-\lambda(1-v)\big)}{r+H^*(v)}. \tag{10}$$
-
-**Proposition 10 (Concealment).** (a) With a single vendor, a small amount of concealment raises the adopter's value if and only if
-$$\lambda<1-\frac{r^2}{D^2},\qquad D=\sqrt{r^2+2rG/k}. \tag{11}$$
-The right-hand side rises with $G/k$, so a stronger threat of encroachment makes concealment worthwhile at a higher cost. (b) With $N$ symmetric vendors, concealment lowers the total productization rate for every $N$, and $H^*(N;v)/H^*(N;1)\to v^2$ as $N\to\infty$. The proportional reduction therefore tends to $1-v^2>0$.
-
-Part (b) contrasts with Proposition 9(c). A contract with one supplier loses its effect as vendors multiply, while concealment keeps it, because concealment raises the cost of productizing for all of them. Table 5 shows both for the same parameters. With a single vendor the two instruments are identical (a contract with $s=0.5$ and concealment with $v=0.5$ both give $K=4k$). As vendors are added, the contract's effect falls from 67 to 9 percent, and the effect of concealment rises slightly and approaches 75 percent.
-
-**Table 5. Proportional reduction in the total productization rate, by number of vendors and instrument (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$)**
-
-| Vendors ($N$) | Contract with own supplier ($s=0.5$) | Complete protection from own supplier | Concealment ($v=0.5$) | Switch to a neutral supplier ($\alpha=2$) |
-|---:|---:|---:|---:|---:|
-| 1 | 67.0% | 100.0% | 67.0% | 38.6% |
-| 2 | 40.4% | 58.9% | 71.7% | 28.5% |
-| 3 | 27.3% | 38.6% | 73.3% | 22.2% |
-| 5 | 16.0% | 22.1% | 74.3% | 15.4% |
-| 9 | 8.7% | 11.7% | 74.8% | 9.5% |
-
-*Note.* In the first three instruments the cost curvature of the targeted vendors rises from 5 to 20, or the supplier is removed. In the switching column the supplier's advantage of a factor of two is removed, so that its cost curvature rises from 2.5 to 5.
-
-The implication is that, where many vendors can build a use, the adopter's protection comes from concealment and from how difficult the use is to replicate, and not from any single contract. Concealment has costs, however. It may reduce the efficiency of the adopter's own operations (the term $\lambda$), and it may sacrifice the data feedback that improves the model the adopter relies on. We do not model the choice of a different vendor, which would let the adopter move to a supplier with a lower productization rate, or the vendor's response to concealment, such as investing in detection.
-
-## 4.6 Adopter responses: switching supplier
-
-The adopter can also change who sees its use. In practice a vendor learns most from the customers it serves, so the adopter's own supplier has an advantage in productizing its use. Some suppliers are neutral: their business model or a credible commitment means that they will not build competing products. We ask what the adopter gains by moving to one.
-
-*Setup.* Let the adopter's current supplier have cost curvature $K_o/\alpha$ with $\alpha\ge 1$, where $\alpha$ measures the advantage that comes from seeing the use, and let each of the other $N-1$ vendors have cost curvature $K_o$. The adopter can switch to a neutral supplier at a one-time cost $c$, expressed as a present value. After the switch the former supplier no longer sees the use, so it loses its advantage and joins the other $N-1$ vendors, all with cost $K_o$. The neutral supplier does not race. Write $H_s(N;\alpha)$ for the equilibrium total rate before the switch and $H^*(N)$ for the symmetric rate after it.
-
-**Proposition 11 (Switching).** (a) Switching lowers the total rate from $H_s(N;\alpha)$ to $H^*(N)$ if and only if $\alpha>1$, and the reduction increases in $\alpha$. (b) The adopter switches if and only if $R/(r+H^*(N))-R/(r+H_s(N;\alpha))>c$. (c) Switching is weaker than complete protection from the supplier: $H^*(N-1)\le H^*(N)\le H_s(N;\alpha)$. (d) The proportional reduction $1-H^*(N)/H_s(N;\alpha)$ tends to 0 as $N\to\infty$.
-
-Switching has the same weakness as a contract. It changes the position of one vendor, and the former supplier remains in the race. Table 5 shows that with $\alpha=2$ the reduction falls from 39 percent for a single vendor to under 10 percent for nine. In its effect on the race, switching is equivalent to a contract that raises the supplier's cost to that of the outsiders, but it costs the adopter $c$, and it is weaker than complete protection because the former supplier stays in the race. Switching therefore matters most where the supplier's advantage from seeing the use is large and where few other vendors could build the use. Where many could, an adopter that wants protection is left with concealment and with uses that are hard to replicate.
-
-We do not model how the neutral supplier earns its position, or why neutral suppliers would not themselves begin to productize once they serve enough customers.
-
-## 4.7 Comparative statics
+## 4.4 Comparative statics
 
 Nine predictions follow from the propositions. The empirical work in Sections 5 and 6 can address only the first three.
 
@@ -292,13 +188,13 @@ Nine predictions follow from the propositions. The empirical work in Sections 5 
 4. Industries with shorter $\tau_O$, or with more vendor encroachment, show weaker associations between AI use and profit (Propositions 2 and 5).
 5. As downstream competition intensifies, the AI–profit association weakens while the AI–productivity association is unaffected (Propositions 1 and 4).
 6. Adopters invest more in co-specialized capital when contract terms limit vendors' use of their data (Propositions 6 and 7).
-7. The effect of a clause with one supplier weakens as the number of vendors able to build the same use grows (Propositions 8 and 9 and Tables 4 and 5).
-8. Adopters conceal valuable uses when concealment is cheap relative to the threat of encroachment, and concealment retains its effect as vendors multiply (Proposition 10 and Table 5).
-9. Adopters switch to neutral suppliers only when the supplier's advantage from seeing the use is large relative to the cost of switching, and switching loses its effect as vendors multiply (Proposition 11 and Table 5).
+7. The effect of a clause with one supplier weakens as the number of vendors able to build the same use grows (Propositions 8 and 9 and Tables A2 and A3).
+8. Adopters conceal valuable uses when concealment is cheap relative to the threat of encroachment, and concealment retains its effect as vendors multiply (Proposition 10 and Table A3).
+9. Adopters switch to neutral suppliers only when the supplier's advantage from seeing the use is large relative to the cost of switching, and switching loses its effect as vendors multiply (Proposition 11 and Table A3).
 
 Predictions 4 to 9 are not tested here. Predictions 6 to 9 bear directly on managerial choices about data-use terms and fine-tuning ownership, which we take up in Section 7, but they cannot be examined with public data because contract terms are not observed.
 
-## 4.8 What is specific to LLMs
+## 4.5 What is specific to LLMs
 
 A fair question is whether anything in the model is specific to LLMs, or whether the same propositions would describe any layered technology market. The structure is general. What is specific is the combination of values and measurement conditions that LLMs bring to it. Marginal inference cost $m$ is low relative to the cost $F_T$ of producing a frontier model, so profit depends almost entirely on the premium $\kappa\Delta\theta$. The catch-up lag $\tau_{\text{dev}}$ is short, about three to four months for open-weight models relative to the closed frontier (Emberson 2025, Epoch AI 2026), which places the developer close to the zero-rent corner of Proposition 3. The same model serves the complement builder and its competitors on posted terms, which is what makes the adopter's position commodity-like in the first place. And vendors can and do move into the complement layer, which is the situation Propositions 5 to 11 describe: the productization rate is chosen by vendors, shaped by contract terms, and driven up by competition among them. In this sense the theory is less a new mechanism than a calibration of known mechanisms to a market in which the state variables can be observed. We return to the limits of this claim in Section 7.3.
 
@@ -306,9 +202,9 @@ A fair question is whether anything in the model is specific to LLMs, or whether
 
 ## 5.1 Mapping model objects to data
 
-Table 6 assigns each object of the model an empirical counterpart in public data. The mapping is interpretive. We do not recover structural parameters, and the figures in Table 1 are not regression inputs.
+Table 3 assigns each object of the model an empirical counterpart in public data. The mapping is interpretive. We do not recover structural parameters, and the figures in Table 1 are not regression inputs.
 
-**Table 6. Model objects and empirical counterparts**
+**Table 3. Model objects and empirical counterparts**
 
 | Model object | Empirical counterpart | Source |
 |:---|:---|:---|
@@ -323,7 +219,7 @@ Table 6 assigns each object of the model an empirical counterpart in public data
 
 ## 5.2 Empirical implications
 
-Prediction 3 of Section 4.7 and the transience of complement rents (Corollary 2) yield two hypotheses about adopters.
+Prediction 3 of Section 4.4 and the transience of complement rents (Corollary 2) yield two hypotheses about adopters.
 
 **H1.** Firms that ship a dated first-party AI product earn a higher operating margin after the GA year than before, relative to firms with no such product. Treatment is the calendar year of GA, not a time-invariant indicator. Examples are Copilot for Microsoft 365, Firefly, Now Assist, Cortex, AIP, watsonx, and Charlotte AI (all 2023), and Gemini for Workspace, Agentforce, and Bits AI (all 2024), together with analogues.
 
@@ -367,13 +263,13 @@ We should be clear about what is not new. The mechanisms in each layer are estab
 
 ## 7.2 Implications for practice
 
-For adopters, the central question is not how much to spend on AI but what the firm owns that the model cannot supply, and how long competitors will take to own it too. The theory also says that spending on the model itself is not a source of advantage, since any rival can buy the same model. For developers, the next model is the source of value, not the current one. When leads last only a few months, much of the reported loss is economic (Corollary 4). The valuations of frontier labs are best read as prices for an option on a sequence of future leads and not as capitalized current earnings. For the relationship between the two sides, Propositions 5 to 11 imply that contractual terms covering data use, fine-tuning ownership, and on-premise deployment are strategic decisions, because they affect the rate at which a vendor can productize an adopter's use and so the adopter's incentive to invest in the capital that generates its rent. The illustration in Table 3 suggests that such terms may be hardest to obtain for the most valuable uses, which is a reason for adopters to negotiate them before a use proves valuable and not after. Tables 4 and 5 add that, when many vendors can build the use, a clause with one supplier or a move to a neutral supplier buys little, while concealing the use keeps its effect. The adopter's protection then comes mainly from concealment and from the difficulty of replicating the use. The tables are illustrations and not estimates.
+For adopters, the central question is not how much to spend on AI but what the firm owns that the model cannot supply, and how long competitors will take to own it too. The theory also says that spending on the model itself is not a source of advantage, since any rival can buy the same model. For developers, the next model is the source of value, not the current one. When leads last only a few months, much of the reported loss is economic (Corollary 4). The valuations of frontier labs are best read as prices for an option on a sequence of future leads and not as capitalized current earnings. For the relationship between the two sides, Propositions 5 to 11 imply that contractual terms covering data use, fine-tuning ownership, and on-premise deployment are strategic decisions, because they affect the rate at which a vendor can productize an adopter's use and so the adopter's incentive to invest in the capital that generates its rent. The illustration in Table A1 suggests that such terms may be hardest to obtain for the most valuable uses, which is a reason for adopters to negotiate them before a use proves valuable and not after. Tables A2 and A3 add that, when many vendors can build the use, a clause with one supplier or a move to a neutral supplier buys little, while concealing the use keeps its effect. The adopter's protection then comes mainly from concealment and from the difficulty of replicating the use. The tables are illustrations and not estimates.
 
 ## 7.3 Boundary conditions and limitations
 
 The theory assumes competitive downstream product markets. Where adopters hold market power, pass-through is incomplete, and commodity LLM use can raise profit. Evidence that IT intensity accompanies rising industry concentration suggests that this case is empirically relevant (Autor et al. 2020, Bessen 2020), and it is also an alternative reading of the margin increment in H1. The theory further assumes that the developer's lead closes. Economies of scale in compute and data flywheels could prevent closure and shift surplus durably toward the developer, and sustained developer margins without a quality lead would run against Proposition 3 and indicate that this case dominates.
 
-The model abstracts from uncertainty in training outcomes, from purchasable organizational capital, and from strategic interaction in the quality race itself: the lead and the catch-up lag are treated as exogenous. Section 4.4 introduces competition among vendors, but only in the race to productize a given use. Making the lead endogenous to a training race is the most natural extension, and it is where we would expect a more specifically LLM-based theory to develop. The extensions in Sections 4.3 to 4.6 are reduced-form. The productization rate is constant, vendors are symmetric apart from their access to the adopter's data, concealment costs the adopter a fixed share of its rent, and neutral suppliers are taken as given. We also do not model vendors' responses to concealment. Propositions 6 to 11 are not tested, because contract terms, vendor entry, concealment, and switching are not publicly observed. The empirical proxies are imperfect, and misclassification biases the estimated difference between commodity and complementary use toward zero. The adopter sample is small and made up of large software incumbents, so the results should not be generalized to adopters in other industries. Finally, the evidence is observational and covers a short period in which the technology and its business models are still changing. Prediction 1 is not tested here, and the evidence on H2 is inconclusive. The evidence reported is best viewed as a first look at the constructs, and it is not a confirmation of the theory.
+The model abstracts from uncertainty in training outcomes, from purchasable organizational capital, and from strategic interaction in the quality race itself: the lead and the catch-up lag are treated as exogenous. Appendix A.2 introduces competition among vendors, but only in the race to productize a given use. Making the lead endogenous to a training race is the most natural extension, and it is where we would expect a more specifically LLM-based theory to develop. The extensions in Appendix A are reduced-form. The productization rate is constant, vendors are symmetric apart from their access to the adopter's data, concealment costs the adopter a fixed share of its rent, and neutral suppliers are taken as given. We also do not model vendors' responses to concealment. Propositions 6 to 11 are not tested, because contract terms, vendor entry, concealment, and switching are not publicly observed. The empirical proxies are imperfect, and misclassification biases the estimated difference between commodity and complementary use toward zero. The adopter sample is small and made up of large software incumbents, so the results should not be generalized to adopters in other industries. Finally, the evidence is observational and covers a short period in which the technology and its business models are still changing. Prediction 1 is not tested here, and the evidence on H2 is inconclusive. The evidence reported is best viewed as a first look at the constructs, and it is not a confirmation of the theory.
 
 # 8. Conclusion
 
@@ -383,7 +279,127 @@ The public record makes the developer half of this account visible. Frontier lab
 
 The adopter half is harder to see in the data, and it is where we think the theory adds most. An adopter's profitable window is bounded by its suppliers as well as by its competitors. How fast vendors productize a successful use depends on the contract terms that limit their access to the adopter's data, and on how many other vendors are in a position to build the same use. Where they are many, the difficulty of replicating the use matters more than any clause. Testing these claims requires data on contract terms and vendor entry that are not now public, and making the quality race itself endogenous is the next step for the theory. The profitability puzzle that accompanies every general-purpose technology is, on this account, what competition over a common input looks like from the inside.
 
-# Appendix A. Proofs
+# Appendix A. Extensions of the Model
+
+This appendix develops the extensions summarized in Section 4.3. Proofs are in Appendix B.
+
+## A.1 Endogenous encroachment and contract protection
+
+Proposition 5 takes the productization rate $\eta$ as given. Here we let the vendor choose it and ask how contract terms affect the choice. The analysis is a reduced-form extension that adds only the structure needed to endogenize $\eta$. It is a first formalization and not a full model of vendor behavior.
+
+*Setup.* Let $R=(p-c_j)q_j$ be the adopter's rent flow. To keep the problem tractable, we replace the deterministic imitation lag $\tau_O$ with an exponential one: rivals imitate $O_j$ at rate $\mu$, so the mean lag is $1/\mu$. Write $r=\rho+\mu$. The adopter's expected rent from Proposition 5 then becomes $R/(r+\eta)-g(O_j)$, with the same comparative statics. A contract specifies protection $s\in[0,1)$, which limits the vendor's use of the adopter's data, fine-tuning, or deployment information. The vendor exerts effort $e$ at cost $(k/2)e^2$, but only the fraction $1-s$ of that effort converts into productization, so $\eta=(1-s)e$. Achieving a rate $\eta$ therefore costs $(K/2)\eta^2$, where $K(s)=k/(1-s)^2$ increases in $s$. If the vendor productizes the use, it gains the present value $G=\phi R/r$. Here $\phi\in(0,1]$ is the share of the rent's present value $R/r$ that the vendor captures, and the rest passes to consumers. The vendor chooses $\eta$ to maximize
+
+$$J(\eta)=\frac{G\eta-K\eta^2/2}{r+\eta}, \tag{6}$$
+
+the expected present value of its gain net of effort cost, which runs until productization or imitation ends the opportunity.
+
+**Proposition 6 (Equilibrium productization).** The vendor's problem has a unique interior solution,
+
+$$\eta^*=-r+\sqrt{r^2+2Gr/K}. \tag{7}$$
+
+The rate $\eta^*$ is increasing in $G$ (and so in $R$ and $\phi$) and decreasing in $K$ (and so in $s$). For a given $G$, it is increasing in $r$: the faster rivals are expected to imitate, the faster the vendor productizes.
+
+**Proposition 7 (Contract protection and complement investment).** The adopter's expected rent $R/(r+\eta^*(s))-g(O_j)$ is increasing in $s$. Consequently, the set of organizational-capital investments that satisfy $R/(r+\eta^*)\ge g(O_j)$ expands as $s$ rises, and some investments that would not be made without protection are made with it.
+
+Proposition 6 says that imitation by rivals and encroachment by the vendor are strategic complements. A shorter expected imitation lag makes the vendor move sooner, so the two threats to the adopter's rent compound. Proposition 7 applies the hold-up logic of Klein et al. (1978) and Grossman and Hart (1986) to the LLM supply relationship. An adopter that fears productization under-invests in the co-specialized capital that generates its rent, and contract terms that raise the vendor's cost of encroaching restore some of that investment.
+
+Whether such protection is actually written is a separate question. The adopter's willingness to pay for a move from $s_0$ to $s_1$ is $R/(r+\eta_1^*)-R/(r+\eta_0^*)$. The vendor's loss is $K_1\eta_1^*-K_0\eta_0^*$, because its value at the optimum is $J^*=G-K\eta^*$. A contract can be agreed only if the first exceeds the second. Table A1 gives a numerical illustration. Protection clears for uses with small rents and fails for uses with large rents, because the vendor's gain from productizing grows with the rent. The pattern depends on the parameters. In a simulation with randomly drawn parameters, the willingness to pay fell short of the vendor's loss in about five percent of the draws. We therefore offer the pattern as an illustration and not as a proposition. If it held more generally, the uses most worth protecting would be the ones least likely to be protected.
+
+**Table A1. Willingness to pay for protection versus the vendor's loss (illustration; $r=0.3$, $\phi=0.8$, $k=1$, $s$ raised from 0 to 0.5)**
+
+| $R$ | $\eta^*$ ($s=0$) | $\eta^*$ ($s=0.5$) | Willingness to pay | Vendor's loss | Contract agreed |
+|---:|---:|---:|---:|---:|:---|
+| 0.5 | 0.643 | 0.239 | 0.398 | 0.311 | Yes |
+| 1 | 1.000 | 0.400 | 0.659 | 0.600 | Yes |
+| 2 | 1.514 | 0.643 | 1.017 | 1.060 | No |
+| 4 | 2.248 | 1.000 | 1.507 | 1.752 | No |
+| 8 | 3.290 | 1.514 | 2.182 | 2.765 | No |
+
+The extension has clear limits. The rate $\eta$ is constant and chosen by a single vendor, and Section A.2 adds competition among vendors. We still do not model the adopter's responses, such as concealing the use or moving to another vendor, or bargaining over the contract. The functional form $K(s)=k/(1-s)^2$ is a convenience, and the share $\phi$ is a reduced-form parameter that says nothing about how the vendor earns from a productized offering. Contract terms are not publicly observed, so the propositions cannot be examined with the data in Section 6.
+
+## A.2 Competition among vendors
+
+Section A.1 has a single vendor decide whether to productize the adopter's use. In practice, several vendors may see that a use is valuable and try to build it. We now let $N$ symmetric vendors race for the same use.
+
+*Setup.* Each vendor $i$ chooses a productization rate $\eta_i$ at cost $(K/2)\eta_i^2$. The first vendor to productize the use earns $G$ and the others earn nothing, and productization by any vendor ends the adopter's rent. Imitation by rival adopters continues at rate $\mu$. Let $H=\sum_i\eta_i$ be the total rate. Vendor $i$ maximizes
+
+$$J_i=\frac{G\eta_i-K\eta_i^2/2}{r+H}. \tag{8}$$
+
+For given rivals' rates this is the problem of Section A.1 with $r$ replaced by $r+H-\eta_i$.
+
+**Proposition 8 (Vendor competition).** The game has a unique equilibrium, and it is symmetric. The common rate $\eta^*(N)$ is the positive root of
+
+$$K\left(N-\tfrac{1}{2}\right)\eta^2+\big(Kr-G(N-1)\big)\eta-Gr=0. \tag{9}$$
+
+Both the per-vendor rate $\eta^*(N)$ and the total rate $H^*(N)=N\eta^*(N)$ are increasing in $N$. Each vendor's expected payoff, $G-K\eta^*(N)$, is decreasing in $N$, and the adopter's expected rent $R/(r+H^*(N))-g(O_j)$ is decreasing in $N$. For $N=1$ the solution is that of Proposition 6.
+
+Competition among vendors thus has two effects, and they work in the same direction. Each vendor moves faster, because a rival's progress raises the cost of waiting, and more vendors are moving. The adopter's profitable window shortens. The vendors' own payoffs fall, so the race dissipates part of what the use is worth to them, much as competition among developers dissipates the premium in Proposition 3.
+
+*Contract protection under competition.* Proposition 7 required only that one vendor's cost rise with protection. With several vendors, a contract between the adopter and its own supplier binds that supplier alone. Let the adopter's supplier have cost $K(s)=k/(1-s)^2$, and let $N-1$ outsiders keep the cost $k$, because they have no access to the adopter's data and are therefore unaffected by $s$. Table A2 shows what protection achieves for different numbers of outsiders. With no outsiders, raising $s$ from 0 to 0.5 cuts the total productization rate by two thirds and raises the value of the adopter's rent flow by more than half. With eight outsiders it cuts the rate by less than a tenth, and the value of the rent flow rises by under ten percent. Proposition 9 below shows that such protection does lower the total rate, so the pattern in Table A2 is not an artifact of the example. That the proportional effect falls with every added outsider we have verified only numerically: in simulations with randomly drawn parameters (3,000 draws, up to six outsiders), both the proportional reduction in the total rate and the gain in the adopter's rent fell with every added outsider, without exception.
+
+**Table A2. Effect of protection from the adopter's own supplier, by number of outsider vendors (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$, $s$ raised from 0 to 0.5)**
+
+| Outsiders | Total rate $H$ ($s=0$) | Total rate $H$ ($s=0.5$) | Reduction (%) | Adopter's rent flow value ($s=0$) | Adopter's rent flow value ($s=0.5$) | Gain |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 0.340 | 0.112 | 67.0 | 1.562 | 2.425 | 0.864 |
+| 1 | 0.827 | 0.493 | 40.4 | 0.887 | 1.261 | 0.374 |
+| 2 | 1.347 | 0.980 | 27.3 | 0.607 | 0.781 | 0.174 |
+| 4 | 2.406 | 2.021 | 16.0 | 0.369 | 0.431 | 0.061 |
+| 8 | 4.536 | 4.143 | 8.7 | 0.207 | 0.225 | 0.018 |
+
+*Note.* The adopter's value is $R/(r+H)$, before subtracting the cost of organizational capital.
+
+Vendors in this setting differ in their costs, so we first establish that the game is well behaved when they do.
+
+**Proposition 9 (Heterogeneous vendors and own-supplier protection).** Let vendor $i$ have cost curvature $K_i$. (a) The game has a unique equilibrium. (b) A rise in any one vendor's $K_j$ lowers the total rate $H^*$ and every vendor's rate. In particular, protection $s$ against the adopter's own supplier lowers the total rate and the rate of every outsider. (c) Complete protection from the adopter's own supplier, so that it cannot productize the use at all, lowers the total rate from $H^*(N)$ to $H^*(N-1)$. The proportional reduction $1-H^*(N-1)/H^*(N)$ equals 1 when $N=1$ and tends to 0 as $N\to\infty$.
+
+Part (b) shows that the vendors' rates are strategic complements: when the supplier is slowed, its rivals slow too, so the effect of protection on the total rate is larger than the supplier's own reduction. Part (c) gives the limiting case. Complete protection from one supplier removes only that supplier's marginal contribution to the race. Table A3 gives the proportional reduction for several values of $N$.
+
+Bilateral contract terms are therefore most useful where few vendors can see the adopter's use. In a market with many capable vendors, protection from one supplier does little, and the adopter's rent depends more on how hard the use is to replicate without its data than on what it has negotiated. This reinforces the role of the organizational capital that makes a use difficult to copy (Section 3.3). It also suggests that protection would have to be industry-wide, for example through norms or regulation, to be effective in such markets.
+
+The limits noted in Section A.1 apply here as well. Vendors are symmetric apart from their access to the adopter's data, each vendor's rate is constant, and a vendor whose rival wins earns nothing. Letting the winner share the use, or letting vendors differentiate their offerings, would soften the race.
+
+## A.3 Adopter responses: concealment
+
+An adopter need not rely on a contract with its own supplier. It can instead make the use harder to see, for example by keeping the distinctive element of the workflow off the vendor's interface, splitting the work across systems, or leaving the most informative data inside its own boundary. Such concealment acts on every vendor at once, but it costs the adopter something.
+
+*Setup.* Let $v\in(0,1]$ be the visibility of the use. A vendor's effort converts into productization at the fraction $v$, so that $\eta_i=ve_i$ and the cost of achieving a rate $\eta_i$ is $(K/2)\eta_i^2$ with $K=k/v^2$. This is the same function as in Section A.1 with $1-s$ replaced by $v$, but it applies to all vendors and not just to the adopter's own supplier. Concealment costs the adopter $\lambda R(1-v)$ per period, with $\lambda>0$, and it does not change the value $G$ of the use to a vendor. Given the equilibrium total rate $H^*(v)$, the adopter's value is
+
+$$V(v)=\frac{R\big(1-\lambda(1-v)\big)}{r+H^*(v)}. \tag{10}$$
+
+**Proposition 10 (Concealment).** (a) With a single vendor, a small amount of concealment raises the adopter's value if and only if
+$$\lambda<1-\frac{r^2}{D^2},\qquad D=\sqrt{r^2+2rG/k}. \tag{11}$$
+The right-hand side rises with $G/k$, so a stronger threat of encroachment makes concealment worthwhile at a higher cost. (b) With $N$ symmetric vendors, concealment lowers the total productization rate for every $N$, and $H^*(N;v)/H^*(N;1)\to v^2$ as $N\to\infty$. The proportional reduction therefore tends to $1-v^2>0$.
+
+Part (b) contrasts with Proposition 9(c). A contract with one supplier loses its effect as vendors multiply, while concealment keeps it, because concealment raises the cost of productizing for all of them. Table A3 shows both for the same parameters. With a single vendor the two instruments are identical (a contract with $s=0.5$ and concealment with $v=0.5$ both give $K=4k$). As vendors are added, the contract's effect falls from 67 to 9 percent, and the effect of concealment rises slightly and approaches 75 percent.
+
+**Table A3. Proportional reduction in the total productization rate, by number of vendors and instrument (illustration; $R=1$, $r=0.3$, $\phi=0.8$, $k=5$)**
+
+| Vendors ($N$) | Contract with own supplier ($s=0.5$) | Complete protection from own supplier | Concealment ($v=0.5$) | Switch to a neutral supplier ($\alpha=2$) |
+|---:|---:|---:|---:|---:|
+| 1 | 67.0% | 100.0% | 67.0% | 38.6% |
+| 2 | 40.4% | 58.9% | 71.7% | 28.5% |
+| 3 | 27.3% | 38.6% | 73.3% | 22.2% |
+| 5 | 16.0% | 22.1% | 74.3% | 15.4% |
+| 9 | 8.7% | 11.7% | 74.8% | 9.5% |
+
+*Note.* In the first three instruments the cost curvature of the targeted vendors rises from 5 to 20, or the supplier is removed. In the switching column the supplier's advantage of a factor of two is removed, so that its cost curvature rises from 2.5 to 5.
+
+The implication is that, where many vendors can build a use, the adopter's protection comes from concealment and from how difficult the use is to replicate, and not from any single contract. Concealment has costs, however. It may reduce the efficiency of the adopter's own operations (the term $\lambda$), and it may sacrifice the data feedback that improves the model the adopter relies on. We do not model the choice of a different vendor, which would let the adopter move to a supplier with a lower productization rate, or the vendor's response to concealment, such as investing in detection.
+
+## A.4 Adopter responses: switching supplier
+
+The adopter can also change who sees its use. In practice a vendor learns most from the customers it serves, so the adopter's own supplier has an advantage in productizing its use. Some suppliers are neutral: their business model or a credible commitment means that they will not build competing products. We ask what the adopter gains by moving to one.
+
+*Setup.* Let the adopter's current supplier have cost curvature $K_o/\alpha$ with $\alpha\ge 1$, where $\alpha$ measures the advantage that comes from seeing the use, and let each of the other $N-1$ vendors have cost curvature $K_o$. The adopter can switch to a neutral supplier at a one-time cost $c$, expressed as a present value. After the switch the former supplier no longer sees the use, so it loses its advantage and joins the other $N-1$ vendors, all with cost $K_o$. The neutral supplier does not race. Write $H_s(N;\alpha)$ for the equilibrium total rate before the switch and $H^*(N)$ for the symmetric rate after it.
+
+**Proposition 11 (Switching).** (a) Switching lowers the total rate from $H_s(N;\alpha)$ to $H^*(N)$ if and only if $\alpha>1$, and the reduction increases in $\alpha$. (b) The adopter switches if and only if $R/(r+H^*(N))-R/(r+H_s(N;\alpha))>c$. (c) Switching is weaker than complete protection from the supplier: $H^*(N-1)\le H^*(N)\le H_s(N;\alpha)$. (d) The proportional reduction $1-H^*(N)/H_s(N;\alpha)$ tends to 0 as $N\to\infty$.
+
+Switching has the same weakness as a contract. It changes the position of one vendor, and the former supplier remains in the race. Table A3 shows that with $\alpha=2$ the reduction falls from 39 percent for a single vendor to under 10 percent for nine. In its effect on the race, switching is equivalent to a contract that raises the supplier's cost to that of the outsiders, but it costs the adopter $c$, and it is weaker than complete protection because the former supplier stays in the race. Switching therefore matters most where the supplier's advantage from seeing the use is large and where few other vendors could build the use. Where many could, an adopter that wants protection is left with concealment and with uses that are hard to replicate.
+
+We do not model how the neutral supplier earns its position, or why neutral suppliers would not themselves begin to productize once they serve enough customers.
+
+# Appendix B. Proofs
 
 **Proof of Proposition 1.** With $O_j=0$, $\varphi=0$ and $L$ enters only through the third argument of $F$. Firm $j$'s first-order condition for $L_j$ is
 
