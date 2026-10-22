@@ -52,6 +52,23 @@ before the main run and do not edit it afterwards. Tiers are a starting guess; t
 a defective phrase in one domain is the kind of problem the earlier study had (Domain 6). Option letters are
 assigned from a hash of the item id, identically in every channel for a given rotation.
 
+## Running through OpenRouter
+
+`config/models.openrouter.json` lists all 14 models (10 open-weight, 4 Claude tiers) behind one endpoint. Put the key in
+the cloud environment's settings as the variable `OPENROUTER_API_KEY` (never paste it into a chat); a new session picks it up.
+
+```bash
+python estimate_cost.py --items data/items_v1.jsonl --models config/models.openrouter.json    # about $22 for 300 items, 5 reps, if answers stay short
+python runner.py --items data/items_v1.jsonl --models config/models.openrouter.json --out results/smoke.jsonl --limit 3 --channels C1 --reps 2   # 3 items, every model
+python analyze.py ...                                                                        # QC flags multi-provider models and truncated answers
+```
+
+Every row records `served_model`, `served_by` (the provider that answered), `stop`, `tokens_in`, `tokens_out`. OpenRouter may route
+the same model to different providers with different hardware or quantization; the analysis flags any model answered by more
+than one provider. To pin a provider, add `"extra_body": {"provider": {"order": ["<name>"], "allow_fallbacks": false}}` to a model
+entry after the pilot shows who serves it. Check `tokens_out` in the smoke run before the main run: if a Claude tier returns long
+output (reasoning), the cost estimate is too low and `max_tokens` (default 512) may truncate the letter.
+
 ## Run
 
 ```bash

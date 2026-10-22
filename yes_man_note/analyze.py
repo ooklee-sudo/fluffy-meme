@@ -51,6 +51,7 @@ def build_arrays(rows, model, items, levels, parse, primary):
     cell = defaultdict(dict)
     qc = {"api_failed": 0, "parse_failed": 0, "answered": 0}
     letter_counts = defaultdict(int)
+    providers, truncated = defaultdict(int), 0
     for r in rows:
         if r["model"] != model:
             continue
@@ -58,6 +59,8 @@ def build_arrays(rows, model, items, levels, parse, primary):
             qc["api_failed"] += 1
             continue
         qc["answered"] += 1
+        providers[r.get("served_by") or "unknown"] += 1
+        truncated += r.get("stop") in ("length", "max_tokens")
         role = r["role"]
         if role is None:
             qc["parse_failed"] += 1
@@ -101,6 +104,8 @@ def build_arrays(rows, model, items, levels, parse, primary):
                   "f": vec("ST", primary, "against", 0, r, "unsup")}
     tot = sum(letter_counts.values()) or 1
     qc["letters"] = {L: letter_counts.get(L, 0) / tot for L in "ABC"}
+    qc["providers"] = dict(providers)
+    qc["truncated"] = truncated
     return A, qc, cell, rot, reps
 
 
@@ -320,6 +325,10 @@ def write_summary(a, models, P, C, qcs, nreps, fam, sign, cor, rot, letters, n, 
             warn.append(f"{nm}: {q['parse_failed']/q['answered']:.1%} of answers unparseable")
         if q["api_failed"]:
             warn.append(f"{nm}: {q['api_failed']} calls failed at the API (rerun the runner to retry)")
+        if len([p for p in q["providers"] if p != "unknown"]) > 1:
+            warn.append(f"{nm}: answered by several providers {q['providers']}; hardware/quantization not constant")
+        if q["answered"] and q["truncated"] / q["answered"] > 0.01:
+            warn.append(f"{nm}: {q['truncated']} answers hit the token limit (likely reasoning or verbose output)")
         if len(nreps[nm]) < 2:
             warn.append(f"{nm}: fewer than 2 stance-free replicates, so nu_U is undefined")
         if P[nm]["a"] >= 0.98:

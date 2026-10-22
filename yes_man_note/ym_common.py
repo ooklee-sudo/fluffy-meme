@@ -208,13 +208,22 @@ class AnthropicBackend:
             body["temperature"] = self.m["temperature"]
         r = _post("https://api.anthropic.com/v1/messages",
                   {"x-api-key": self.key, "anthropic-version": "2023-06-01", "content-type": "application/json"}, body)
-        return "".join(b.get("text", "") for b in r.get("content", []) if b.get("type") == "text")
+        text = "".join(b.get("text", "") for b in r.get("content", []) if b.get("type") == "text")
+        u = r.get("usage", {})
+        return text, {"model": r.get("model"), "provider": "anthropic", "stop": r.get("stop_reason"),
+                      "tokens_in": u.get("input_tokens"), "tokens_out": u.get("output_tokens")}
 
 
 class OpenAIBackend:
+    """Any OpenAI-compatible chat endpoint. For OpenRouter set base_url_env to a variable holding
+    https://openrouter.ai/api/v1 (or leave it unset and give "base_url" in the model entry). The model entry's
+    "extra_body" is merged into the request, e.g. {"provider": {"order": ["Together"], "allow_fallbacks": false}}
+    to pin the serving provider; the provider that actually answered is recorded on every row."""
+
     def __init__(self, m, max_tokens=512):
         self.m, self.max_tokens = m, max_tokens
-        self.base = os.environ.get(m.get("base_url_env", "OPENAI_BASE_URL"), "https://api.openai.com/v1").rstrip("/")
+        self.base = (m.get("base_url") or os.environ.get(m.get("base_url_env", "OPENAI_BASE_URL"),
+                                                          "https://api.openai.com/v1")).rstrip("/")
         self.key = os.environ.get(m.get("api_key_env", "OPENAI_API_KEY"), "")
         if not self.key:
             raise SystemExit(f"missing env var {m.get('api_key_env', 'OPENAI_API_KEY')} for {m['name']}")
@@ -224,9 +233,21 @@ class OpenAIBackend:
                 "messages": [{"role": "system", "content": req.system}, {"role": "user", "content": req.user}]}
         if self.m.get("temperature") is not None:
             body["temperature"] = self.m["temperature"]
-        r = _post(f"{self.base}/chat/completions",
-                  {"Authorization": f"Bearer {self.key}", "content-type": "application/json"}, body)
-        return r["choices"][0]["message"].get("content") or ""
+        body.update(self.m.get("extra_body") or {})
+        headers = {"Authorization": f"Bearer {self.key}", "content-type": "application/json"}
+        if "openrouter.ai" in self.base:
+            headers.update({"HTTP-Referer": "https://github.com/ooklee-sudo/fluffy-meme", "X-Title": "stance-sensitivity"})
+        r = _post(f"{self.base}/chat/completions", headers, body)
+        if not r.get("choices"):
+            err = r.get("error") or {}
+            code = err.get("code") if isinstance(err, dict) else None
+            raise ApiError(f"error body: {str(err)[:300]}",
+                           retryable=not (isinstance(code, int) and 400 <= code < 500 and code not in (408, 429)))
+        ch = r["choices"][0]
+        u = r.get("usage") or {}
+        return ch["message"].get("content") or "", {
+            "model": r.get("model"), "provider": r.get("provider"), "stop": ch.get("finish_reason"),
+            "tokens_in": u.get("prompt_tokens"), "tokens_out": u.get("completion_tokens")}
 
 
 class MockBackend:
@@ -256,8 +277,8 @@ class MockBackend:
             if req.direction == "for" and role != "gold" and rng.random() < p.get("rescue", 0.5):
                 role = "gold"
         if rng.random() < p.get("parse_fail", 0):
-            return "I think the situation is nuanced."
-        return f"{req.letters[role]}"
+            return "I think the situation is nuanced.", {"model": "mock", "provider": "mock"}
+        return f"{req.letters[role]}", {"model": "mock", "provider": "mock"}
 
 
 def make_backend(m, max_tokens=512):
@@ -267,13 +288,15 @@ def make_backend(m, max_tokens=512):
 
 
 def call_with_retry(backend, req, tries=6):
+    """-> (text, meta, error). meta carries the serving model/provider and token usage when the API reports them."""
     delay = 2.0
     for attempt in range(tries):
         try:
-            return backend(req), None
+            text, meta = backend(req)
+            return text, meta, None
         except ApiError as e:
             if not e.retryable or attempt == tries - 1:
-                return None, str(e)
+                return None, {}, str(e)
             time.sleep(e.retry_after or delay)
             delay = min(delay * 2, 60)
-    return None, "exhausted"
+    return None, {}, "exhausted"

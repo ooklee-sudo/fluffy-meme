@@ -74,7 +74,7 @@ def main():
         t0 = time.time()
 
         def work(r):
-            text, err = yc.call_with_retry(backend, r)
+            text, meta, err = yc.call_with_retry(backend, r)
             row = {"key": r.key, "model": m["name"], "item": r.item["id"], "domain": r.item["domain"],
                    "channel": r.channel, "level": r.level, "direction": r.direction, "rep": r.rep,
                    "rot": r.rot, "letters": r.letters, "ts": round(time.time(), 1)}
@@ -83,7 +83,9 @@ def main():
             else:
                 letter = yc.parse_letter(text)
                 inv = {v: k for k, v in r.letters.items()}
-                row.update(api_ok=True, raw=text[:200], parsed=letter, role=inv.get(letter))
+                row.update(api_ok=True, raw=text[:200], parsed=letter, role=inv.get(letter),
+                           served_model=meta.get("model"), served_by=meta.get("provider"),
+                           stop=meta.get("stop"), tokens_in=meta.get("tokens_in"), tokens_out=meta.get("tokens_out"))
             return row
 
         with ThreadPoolExecutor(max_workers=a.workers) as ex, open(a.out, "a") as f:
