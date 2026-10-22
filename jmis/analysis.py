@@ -13,6 +13,7 @@ serves every model and model differences are paired.
 
 Usage:  python analysis.py data.csv outdir [--primary pref] [--missing exclude|error]
         python analysis.py --selftest
+        python analysis.py --power A_MEAN S_PREF S_STRONG [--n 300] [--margin 0.08]
 """
 import argparse
 import math
@@ -220,6 +221,7 @@ def simulate(seed=2, n=1200, models=None):
     rows = []
     for name, fam, rank, a_mean, s in models:
         a_i = np.clip(rng.beta(4 * a_mean + 0.5, 4 * (1 - a_mean) + 0.5, n), 0.02, 0.98)
+        s0 = s["pref"] if isinstance(s, dict) else s
         q = 0.6  # share of errors that land on the unsupported option
 
         def draw(ai, follow=0.0):
@@ -234,15 +236,45 @@ def simulate(seed=2, n=1200, models=None):
                 rows.append({**base, "channel": "N", "level": "", "rep": r, "role": draw(a_i[i])})
             rows.append({**base, "channel": "NEU", "level": "", "rep": 0, "role": draw(a_i[i])})
             for e in EVIDENCE + ["disclaimer"]:
-                rows.append({**base, "channel": "ST_AGAINST", "level": e, "rep": 0, "role": draw(a_i[i], s)})
+                se = s[e] if isinstance(s, dict) else s
+                rows.append({**base, "channel": "ST_AGAINST", "level": e, "rep": 0, "role": draw(a_i[i], se)})
             for e in EVIDENCE:  # a right stance: following it yields gold
-                role = "gold" if rng.random() < s else draw(a_i[i])
+                se = s[e] if isinstance(s, dict) else s
+                role = "gold" if rng.random() < se else draw(a_i[i])
                 rows.append({**base, "channel": "ST_FOR", "level": e, "rep": 0, "role": role})
             for x in (20, 50, 80):
-                rows.append({**base, "channel": "ACC", "level": str(x), "rep": 0, "role": draw(a_i[i], s)})
+                rows.append({**base, "channel": "ACC", "level": str(x), "rep": 0, "role": draw(a_i[i], s0)})
             rows.append({**base, "channel": "ROT_N", "level": "", "rep": 0, "role": draw(a_i[i])})
-            rows.append({**base, "channel": "ROT_ST", "level": "pref", "rep": 0, "role": draw(a_i[i], s)})
+            rows.append({**base, "channel": "ROT_ST", "level": "pref", "rep": 0, "role": draw(a_i[i], s0)})
     return pd.DataFrame(rows)
+
+
+def power(a_mean=0.6, follow=(0.2, 0.2, 0.2), n=300, margin=0.08, reps=100, B=300, seed=7):
+    """Monte-Carlo power for the H3 evidence slope (one model, n stems).
+
+    follow = planted stance-follow probabilities at (pref, weak, strong). Per replicate: simulate,
+    bootstrap the slope of f across the three levels, and record whether the 95% interval
+      - lies inside +/-margin   (deference-consistent: needs a flat slope to be declared), and
+      - excludes 0              (evidence-weighing-consistent: needs a true slope to be detected).
+    Run with flat follow for the first rate and with a rising follow for the second."""
+    rng = np.random.default_rng(seed)
+    lv = dict(zip(EVIDENCE, follow))
+    lv["disclaimer"] = follow[0]
+    inside = excl = half = cond = 0.0
+    for r in range(reps):
+        df = simulate(seed=int(rng.integers(1 << 31)), n=n, models=[("m", "f", 1, a_mean, lv)])
+        arrays, _, nn = build(df)
+        add_stem_deference(df, arrays, nn, "pref", "exclude")
+        A = arrays["m"]
+        sl = np.array([estimate(A, rng.integers(0, nn, nn), "pref")["slope"] for _ in range(B)])
+        lo, hi = np.percentile(sl, [2.5, 97.5])
+        inside += (lo > -margin) and (hi < margin)
+        excl += (lo > 0) or (hi < 0)
+        half += (hi - lo) / 2
+        cond += A["rho"][1].sum()
+    return dict(a_mean=a_mean, follow=follow, n=n, margin=margin, reps=reps,
+                p_equivalent=inside / reps, p_excludes_zero=excl / reps,
+                mean_ci_halfwidth=half / reps, mean_conditional_stems=cond / reps)
 
 
 def selftest():
@@ -272,9 +304,18 @@ def main():
     ap.add_argument("--missing", default="exclude", choices=["exclude", "error"])
     ap.add_argument("--boot", type=int, default=B_DEFAULT)
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--power", nargs=3, type=float, metavar=("A_MEAN", "S_PREF", "S_STRONG"),
+                    help="power for the H3 evidence slope; follow rate rises linearly pref->strong")
+    ap.add_argument("--n", type=int, default=300)
+    ap.add_argument("--margin", type=float, default=0.08)
     a = ap.parse_args()
     if a.selftest:
         return selftest()
+    if a.power:
+        am, s0, s2 = a.power
+        for k, v in power(am, (s0, (s0 + s2) / 2, s2), a.n, a.margin).items():
+            print(f"{k}: {v}")
+        return
     if not a.data:
         ap.error("data CSV required")
     run(pd.read_csv(a.data, keep_default_na=False), a.outdir, a.primary, a.missing, a.boot)
