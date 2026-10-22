@@ -19,11 +19,13 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.properties import PageSetupProperties
 
 
-INSTRUCTIONS = [
+def instructions(n):
+    hrs = f"roughly {round(n / 60)} to {round(n * 2 / 60)} hours in total"
+    return [
     "Reviewer instructions: answer key check for a sample of a decision-item bank",
     "",
     "PURPOSE",
-    "This workbook contains 50 short business-calculation questions. Each states its own rules and has exactly one correct answer under those rules. We want to know whether independent readers reach the same answer. Please work through the questions without seeing any answer key.",
+    f"This workbook contains {n} short business-calculation questions. Each states its own rules and has exactly one correct answer under those rules. We want to know whether independent readers reach the same answer. Please work through the questions without seeing any answer key.",
     "",
     "WHAT TO DO",
     "1. Go to the Review sheet. For each row, read the question and choose A, B or C in the column 'Your answer (A/B/C)'. Use the drop-down list, one letter per row.",
@@ -37,10 +39,10 @@ INSTRUCTIONS = [
     "Do not share the questions or this file. They are part of an ongoing study.",
     "",
     "TIME",
-    "Expect about one to two minutes per question, so roughly one to two hours in total. You may work in several sessions; save the file after each session.",
+    f"Expect about one to two minutes per question, so {hrs}. You may work in several sessions; save the file after each session.",
     "",
     "RETURN",
-    "Save the file under its current name with your initials added and send it back by [return date]. Answer all 50 rows.",
+    f"Save the file under its current name with your initials added and send it back by [return date]. Answer all {n} rows.",
 ]
 
 
@@ -68,7 +70,7 @@ def stratified_sample(bank, n, seed):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("bankdir"); ap.add_argument("outdir"); ap.add_argument("--seed", type=int, default=7)
-    ap.add_argument("--n", type=int, default=50, help="items per reviewer, a stratified random sample of the bank")
+    ap.add_argument("--n", type=int, default=100, help="items per reviewer, a stratified random sample of the bank")
     a = ap.parse_args()
     bank = stratified_sample(json.load(open(os.path.join(a.bankdir, "bank.json"))), a.n, a.seed)
     order = list(range(len(bank)))
@@ -76,7 +78,7 @@ def main():
     os.makedirs(a.outdir, exist_ok=True)
 
     wb = Workbook(); info = wb.active; info.title = "Instructions"; ws = wb.create_sheet("Review")
-    for line in INSTRUCTIONS:
+    for line in instructions(len(bank)):
         info.append([line])
     info.column_dimensions["A"].width = 100
     for r in info.iter_rows():
