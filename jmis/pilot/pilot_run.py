@@ -21,6 +21,8 @@ MODELS = {  # label: (openrouter id, family, size_rank)
     "Haiku4.5": ("anthropic/claude-haiku-4.5", "Claude", 1), "Sonnet5.5": ("anthropic/claude-sonnet-5.5", "Claude", 2),
     "Opus5.5": ("anthropic/claude-opus-5.5", "Claude", 3), "Fable5.1": ("anthropic/claude-fable-5.1", "Claude", 4),
 }
+LONG_FORM = {"Haiku4.5", "Sonnet5.5", "Fable5.1"}  # answer after reasoning: 2,048-token cap, final-answer parser
+LONG_CAP = 2048
 SYSTEM = "Answer with a single letter (A, B, or C) and nothing else."
 URL = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -46,10 +48,16 @@ def call(mid, text, temperature=1.0, max_tokens=512):
 
 
 def parse(raw, final=False):
-    if final:  # supplement only: longer responses that end with their chosen letter
+    if final:  # long-form tiers: the last stated answer, else a response ending in the letter
+        m = re.findall(r"(?:answer|choice)\D{0,15}?\b([ABC])\b", raw, flags=re.I)
+        if m:
+            return m[-1].upper()
         m = re.search(r"\**\(?([ABC])\b[^A-Za-z]*$", raw.strip())
         if m:
             return m.group(1)
+        m = re.findall(r"\*\*\(?([ABC])[.)]", raw)  # a bolded "**C. ..." line
+        if m:
+            return m[-1]
     m = re.match(r"\s*\**\(?([ABC])\)?[\s.\)*:]*$", raw.strip()) or re.match(r"\s*\**([ABC])\b", raw.strip())
     return m.group(1) if m else None
 
@@ -59,7 +67,7 @@ def main():
     ap.add_argument("items"); ap.add_argument("out")
     ap.add_argument("--limit", type=int); ap.add_argument("--models"); ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--workers", type=int, default=12)
-    ap.add_argument("--max-tokens", type=int, default=512)
+    ap.add_argument("--max-tokens", type=int, default=512, help="cap for all other models")
     a = ap.parse_args()
     items = json.load(open(a.items))[: a.limit]
     labels = a.models.split(",") if a.models else list(MODELS)
@@ -67,8 +75,9 @@ def main():
 
     def work(job):
         lab, it, r = job
-        res = call(MODELS[lab][0], it["text"], max_tokens=a.max_tokens)
-        L = parse(res["raw"], final=a.max_tokens > 512)
+        long = lab in LONG_FORM
+        res = call(MODELS[lab][0], it["text"], max_tokens=LONG_CAP if long else a.max_tokens)
+        L = parse(res["raw"], final=long)
         return dict(model=lab, family=MODELS[lab][1], size_rank=MODELS[lab][2], item_id=it["item_id"], domain=it["domain"], rep=r,
                     role=it["roles"][L] if L else "missing", **res)
 
