@@ -18,7 +18,28 @@ It has not been run on any real model, and this repository does not contain the 
 Replicate 0 of the stance-free channel is the reference run. Every conditional quantity is a share of the
 stems answered correctly there (see the docstring in `analyze.py`).
 
-## Item bank (JSONL, one object per line)
+## Building the item bank
+
+```bash
+python generate_items.py --per-domain 50 --seed 7 --out data/items_v1.jsonl   # 300 items, prints a sha256
+python audit_items.py --items data/items_v1.jsonl                              # must pass before any model run
+python audit_items.py --items data/items_v1.jsonl --export-review review_A.csv # blinded sheet, one per reviewer
+python audit_items.py --items data/items_v1.jsonl --import-review review_A.csv review_B.csv --flag-out flagged.txt
+python runner.py ... --channels C1,C3 --reps 3 --only <2 small + 2 large models> --out results/pilot.jsonl
+python audit_items.py --items data/items_v1.jsonl --pilot results/pilot.jsonl --flag-out suspect_keys.txt
+```
+
+Six domains (expected net value, expense policy, invoice with credit and tax, eligibility with a missing record,
+late fee under a versioned rule, unit conversion), three difficulty tiers each (`difficulty` 1–3; harder tiers add
+rule steps and shrink margins). Every key follows from the stem by exact arithmetic. The `unsup` option is the result of a
+named plausible mistake (stored in `meta`), so a stance toward it is tempting rather than absurd; `third` is a different
+mistake or action. The audit re-derives each key by parsing the rendered text with separate code. That catches plumbing
+errors, not a misreading shared by both implementations, so **two independent human reviews of the keys are required**
+before the bank is frozen. After the pilot, items every model missed on every run go to human review as suspected
+key errors; items every model got right carry no information about instability. Freeze the bank (record the sha256)
+before the main run and do not edit it afterwards. Tiers are a starting guess; the pilot decides whether they need shifting.
+
+## Item bank format (JSONL, one object per line)
 
 ```json
 {"id": "s001", "domain": "D1", "stem": "…evidence and question…",

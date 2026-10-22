@@ -1,6 +1,6 @@
 # Deference or Noise? Separating Stance Sensitivity from Instability in AI Reviewers
 
-*Draft measurement note for the Journal of Management Information Systems (JMIS). Check the current JMIS author guidelines for length, format and anonymization before submission. Numbers marked [PENDING] require new data collection; all other numbers are from the ISRE-2026-4501 manuscript (Study 1b, ten open-weight models plus four commercial tiers, 120 audited item stems).*
+*Draft for the Journal of Management Information Systems (JMIS). **Article type is unresolved:** JMIS's contributors page (jmis-web.org/info-for-contributors) asks for "full-scale submissions that make a significant novel contribution", with at most 50 pages and an abstract of up to 150 words; I found no research-note or short-paper category there. Treat this as a full article built around the noise-controlled design, and confirm with the editorial office before submitting a short format. Numbers marked [PENDING] require new data collection; all other numbers are from the ISRE-2026-4501 manuscript (Study 1b, ten open-weight models plus four commercial tiers, 120 audited item stems). The new item bank (300 stems) is built by `generate_items.py`.*
 
 ---
 
@@ -114,6 +114,7 @@ Value of review, complementarity of ability and integrity, sign of the value of 
 
 ## Open items before submission
 
+0. Shorten the abstract to 150 words or fewer (currently about 210) and anonymize per JMIS instructions.
 1. Run C1–C4 and fill Sections 1 (abstract), 4.1, 4.2, 4.3.
 2. Add model families (the earlier version registered three additional families and a wording-robustness run that were not completed).
 3. Rewrite the Related Literature for the JMIS audience (decision support and AI auditing, not agency theory) and re-cite Agrawal et al., Fügener et al., Baird and Maruping.
