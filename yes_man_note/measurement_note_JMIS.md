@@ -33,14 +33,16 @@ Only (4) is the failure that Prendergast's (1993) yes-man captures, and only (4)
 
 Let each stem have a gold action G and an unsupported action U that a stated stance endorses. For a model, define the following, each measured as a share of stems:
 
+All four quantities below are shares of the stems the model answered correctly in the reference run (stance-free, replicate 0). Conditioning every channel on the same reference run selects the same stems throughout, so regression to the mean cancels in the differences.
+
 | Symbol | Channel | Definition |
 |---|---|---|
-| a | stance-free, run 1 | share correct |
-| ν | stance-free, runs 1 vs 2 | share of stems correct in run 1 and incorrect in run 2 (instability) |
-| ρ | neutral sentence | share correct without a stance that become incorrect after an irrelevant sentence of matched length (perturbation) |
-| f(e) | stance for U with claimed evidence strength e | share correct without a stance that move to U under the stance |
+| a | stance-free, all replicates | share correct |
+| ν_U | stance-free, replicates 1..k−1 | share answering the unsupported option U (instability) |
+| ρ_U | one length-matched neutral sentence | share answering U (instability plus any-sentence effect) |
+| f(e) | stance for U with claimed evidence strength e | share answering U |
 
-**Baseline-corrected deference.** s* (e) = [f(e) − ρ] / a, where ρ already contains ν for the same draw protocol. The earlier version used f / a with no subtraction (the conditional deference, CondRS). Because correct-to-incorrect flips occur at rate ν even with no stance, the uncorrected statistic is biased upward and the bias is largest for unstable, small models, which are the models that drive the headline results.
+**Baseline-corrected deference.** s* = f(e) − ρ_U for a primary level e. Because ρ_U already contains ν_U for the same draw protocol, ρ_U − ν_U isolates the any-sentence effect and f − ρ_U the effect of the stance itself. The earlier version reported the uncorrected conditional deference, CondRS = f, which subtracts neither. Correct-to-incorrect flips occur at rate ν_U even with no stance, so f is biased upward, most for unstable small models, which are the models that drive the headline results.
 
 **Gradient test.** Vary the claimed evidence strength e in {none stated, "I prefer U", weak support, strong support, "I have no evidence for U"}. Under evidence-updating, f(e) should rise with e and respond to an explicit disclaimer. Under deference, f(e) should be flat in e. We register the slope of f in e, and the response to the disclaimer, as the discriminating quantities.
 
@@ -55,12 +57,12 @@ Let each stem have a gold action G and an unsupported action U that a stated sta
 **Models.** The ten open-weight models and four commercial tiers from Study 1b. The commercial ladder sits at ceiling (a = .992 to 1.000), so it is reported but excluded from every test of the correction, since there is no instability to remove.
 
 **New channels, all [PENDING].**
-- C1: stance-free, k = 5 independent completions per stem, at a documented non-zero temperature where the interface allows it, and at default otherwise. Provides ν and a more precise a.
-- C2: neutral sentence, matched in length to the stance sentence, four variants. Provides ρ.
+- C1: stance-free, k = 5 independent completions per stem, at a documented non-zero temperature where the interface allows it, and at default otherwise. Provides ν_U and a more precise a.
+- C2: one neutral sentence per stem, drawn from a pool of ten and matched in length (word count) to that stem's stance sentence. Provides ρ_U.
 - C3: evidence-strength gradient, five levels as above, for both a wrong stance and a right stance.
 - C4: order-of-options rotation, to rule out letter and position effects that a hash assignment holds fixed.
 
-**Registered analysis.** (i) Within-family Large-minus-Small differences in s*, with bootstrap over stems and a sign test; with five families the smallest two-sided p is .0625, so we add families and report the exact permutation distribution across all models as primary. (ii) Slope of f in e, per model, pooled with family fixed effects. (iii) Share of the raw flip rate removed by the baseline, per model. Failed parses are coded as missing in the primary analysis and as errors in a sensitivity analysis, reversing the earlier version's choice, because parse failure is itself instability.
+**Registered analysis.** (i) Within-family Large-minus-Small differences in s*, with bootstrap over stems and a sign test; with five families the smallest two-sided p is .0625, so we add families and report the exact permutation distribution across all models as primary. (ii) Slope of f in e, per model, pooled with family fixed effects. (iii) Share of the raw conditional deference removed by the baseline, per model. Failed parses are coded as missing in the primary analysis and as errors in a sensitivity analysis, reversing the earlier version's choice, because parse failure is itself instability.
 
 ---
 
@@ -68,7 +70,7 @@ Let each stem have a gold action G and an unsupported action U that a stated sta
 
 ### 4.1 Noise-controlled stance sensitivity [PENDING]
 
-Report, per model: raw Flip, ν, ρ, and s*. State the headline as the share of raw Flip that survives correction. *This subsection must be written from the new data. The earlier raw figures (conditional deference from .000 for three commercial tiers to .619 for Gemma-3-4B; .101 for Qwen2.5-72B to .491 for Gemma-3-27B) are the upper bound against which the corrected values are compared.*
+Report, per model: raw f (conditional deference), ν_U, ρ_U, and s*. State the headline as the share of raw Flip that survives correction. *This subsection must be written from the new data. The earlier raw figures (conditional deference from .000 for three commercial tiers to .619 for Gemma-3-4B; .101 for Qwen2.5-72B to .491 for Gemma-3-27B) are the upper bound against which the corrected values are compared.*
 
 ### 4.2 Deference or evidence-updating [PENDING for the gradient; existing data below]
 
@@ -105,6 +107,10 @@ We offer a procedure, not a price.
 ## Appendix A. Propositions (from the earlier version, unchanged)
 
 Value of review, complementarity of ability and integrity, sign of the value of integrity, overstatement by 1/(1 − s), the sophisticated-requester result by Blackwell (1953) garbling, ranking reversals, validity of ability as a ranking cue, and the blinding bound. Proofs as in the earlier Appendix A.
+
+## Implementation
+
+`runner.py` runs C1–C4 and `analyze.py` produces every quantity above with stem-bootstrap intervals; see `README.md`. Both were validated only against a synthetic mock model (`tests/`), not against any real model.
 
 ## Open items before submission
 
