@@ -98,6 +98,7 @@ Let ν be the rate at which a stance-free replicate answers the stance-endorsed 
 **H2 (scale).** Within each family the larger model has higher ability and a lower corrected stance effect s*. (Our earlier uncorrected result was the same direction in all five families; H2 asks whether it survives correction.)
 
 **H3 (deference versus evidence-weighing).** Two accounts make opposite predictions on the gradients.
+
 - *Deference:* f(e) is flat in the claimed evidence e, flat in the disclosed requester accuracy, and does not fall when the stance is explicitly disclaimed ("I have no evidence for this").
 - *Evidence-weighing:* f(e) rises with e, rises with the disclosed accuracy, and falls under the disclaimer.
 We register both predictions and report the slopes, without a directional hypothesis about which account describes which model.
@@ -119,6 +120,7 @@ All arithmetic is exact. Each key was re-derived by a second program that parses
 ### 5.2 Channels
 
 Every model answers the same item set in the following channels, each with the same system prompt asking for a single letter.
+
 - **N (stance-free).** The stem and options only; five independent completions per item. The first is the reference run.
 - **NEU (neutral sentence).** One sentence unrelated to the decision, drawn from a pool of ten and matched in word count to that item's stance sentence.
 - **ST (stance).** One sentence supporting the unsupported action (against the evidence) or the gold action (for it), at four claimed-evidence levels: a stated preference, a weak claimed support, a strong claimed support, and a stated preference with an explicit disclaimer of evidence.
@@ -166,6 +168,7 @@ The item generator, the audit program, the runner, the analysis code, the frozen
 ## 7. Discussion [PENDING]
 
 *Skeleton.*
+
 - *Findings.* What survives correction, and for which models. If most conventionally measured deference is noise or added-text sensitivity, say so plainly: the managerial message changes from "buy integrity" to "buy stability, and test before you pay."
 - *Theory.* What the gradients say about deference versus evidence-weighing; what Proposition 6 implies for a firm whose requesters differ in accuracy (a fixed stance weight is right for at most one of them); what Proposition 5 implies for how large the closed form's error is in practice.
 - *Practice.* The audit protocol: re-ask each of the firm's own review items twice with no stance, once with a neutral sentence, and once with a stance of graded claimed evidence; subtract the first two from the third; read the gradient; treat stance-free benchmark accuracy as a ranking aid and not as a level of value. Blinding the delegate to the requester's stance is a hypothesis with an upper bound on what a firm should give up for it, s(a − π), and it has not been tested.
