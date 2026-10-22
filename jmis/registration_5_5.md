@@ -37,7 +37,8 @@ Rule: a change made after seeing any model's results on the main bank is recorde
 1. **Primary level e\*** is the plain stated preference. It carries the least claimed evidence and so is the cleanest test of deference; weak and strong enter through the gradient.
 2. **Estimators.** s\* = f(e\*) − ρ is primary and matches the definitions in H1 and H2. If instability and deference act as a mixture (the stance overrides the draw with probability s, otherwise the draw behaves as usual), then s\* = s(1 − ρ) and understates s when ρ is large; s_mix = (f − ρ)/(1 − ρ) is registered as a sensitivity estimator and the limitation is stated in §8.
 3. **Equivalence margin** ±0.08 per level; **ceiling** a ≥ .98 (rescue rate only); **minimum conditional stems** 50.
-4. **Token cap** 2,048 with a final-answer parser for Haiku 4.5, Sonnet 5.5 and Fable 5.1; 512 and a single-letter parser for the other eleven models (pilot evidence below). §5.3 should read: "a 512-token limit (2,048 for three tiers that reason before answering)".
+4. **Bank size** 600 items, 100 in each of the six domains (was 300, 50 per domain); see the power table below.
+5. **Token cap** 2,048 with a final-answer parser for Haiku 4.5, Sonnet 5.5 and Fable 5.1; 512 and a single-letter parser for the other eleven models (pilot evidence below). §5.3 should read: "a 512-token limit (2,048 for three tiers that reason before answering)".
 
 ## Power check for the equivalence margin
 
@@ -76,4 +77,24 @@ Pilot items (`pilot/pilot_items.py`, seed 90210) are independent of the main ban
 | .98 | 265 | 1.00 | .67 | 1.00 |
 
 For the weakest models a flat evidence slope is declared equivalent to zero fewer than half the time, and a moderate true slope is rarely detected. State this when those models are called unclassified, or enlarge the bank (n = 600 roughly doubles the conditional stems).
+
+## Bank of 600 items: power and cost
+
+Same simulation as above with n = 600 (60 replicates, 200 bootstrap draws), at the pilot ability values:
+
+| a | Cond. stems | P(equiv ±.08), flat | P(excl 0), .20→.30 | P(excl 0), .20→.40 | CI half-width |
+|---|---|---|---|---|---|
+| .32 (Gemma3-4B) | 211 | .83 | .33 | .78 | .046 |
+| .39–.42 | 246–259 | .88–.92 | .35–.37 | .82 | .041–.042 |
+| .49 | 292 | .97 | .47 | .95 | .039 |
+| .56 | 326 | 1.00 | .52 | .97 | .036 |
+| .68 | 384 | 1.00 | .63 | .98 | .032 |
+| .80 | 443 | .98 | .77 | 1.00 | .030 |
+| .98 | 529 | 1.00 | .97 | 1.00 | .025 |
+
+At 300 items the five weakest models declared a flat slope equivalent to zero in only 42–48% of replicates; at 600 it is 83–92%, so those models can be classified as deference-consistent when the slope is flat. A modest true rise (.20 to .30 across the evidence levels) is still detected only about a third of the time for them, so "unclassified" remains the likely label for weak models with a small real gradient. False-positive rates stay near the nominal 5% (0.03–0.12 in 60 replicates).
+
+Cost: about 21 calls per item per model (5 stance-free, 1 neutral, 4 stance-against, 4 stance-for, 3 disclosed-accuracy, 4 rotation), so 600 × 21 × 14 ≈ 176,000 calls, twice the 88,000 at 300 items.
+
+Manuscript text that changes: abstract-free §1 (third contribution: "a new bank of 600 audited decision items"), §5.1 ("600 decision items, 100 in each of six domains"), §5.4 (nothing numerical), and the human key review in §5.1, which doubles to 600 items per reviewer. The pilot items are separate and stay at 48.
 
