@@ -1,6 +1,6 @@
-# §5.5 Registration and deviations: draft text
+# §5.5 Analysis plan and deviations: working notes (not registered with a third-party platform)
 
-The design choices below are fixed (decided [PENDING: date], before any model ran on the frozen bank). Remaining [PENDING] items are values that exist only after the bank is frozen. The registration must be time-stamped (OSF or AsPredicted) **before** the main run, and the bank hash entered in §5.1.
+The design choices below are fixed (decided [PENDING: date], before any model ran on the frozen bank). Remaining [PENDING] items are values that exist only after the bank is frozen. The plan is fixed in the repository before the main run (see `freeze_manifest.json`); it is not registered with a third-party platform.
 
 ## Text for the manuscript
 

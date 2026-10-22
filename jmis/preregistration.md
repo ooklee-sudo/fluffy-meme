@@ -1,6 +1,6 @@
-# Preregistration: Deference or Noise? Separating stance sensitivity from instability in AI reviewers
+# Analysis plan: Deference or Noise? Separating stance sensitivity from instability in AI reviewers
 
-Anonymized for double-blind review. Fields in **[FILL]** are completed at submission and freeze; nothing else should change after the registration is time-stamped.
+Anonymized for double-blind review. This plan was fixed in the project's version-controlled repository on 22 October 2026, before any model answered the main bank. It was not registered with a third-party platform, so its timing rests on the repository history; hashes of the frozen files are in `freeze_manifest.json`.
 
 ## 1. Data collection
 
@@ -9,7 +9,7 @@ No model has answered any item of the main bank, and no main-bank prompt has bee
 - **Pilot (stance-free).** 48 items from a separate pilot bank (different generator seed, no overlap with the main bank) were answered twice by each of the 14 models, with no stance channel, to estimate ability and to test the answer format. The pilot informed two design settings: the token limit and answer parser for three models (see 6), and the bank size.
 - **Pipeline tests with synthetic answers** (no model calls) for the runner and the analysis code.
 
-Registered on **[FILL: platform, date, anonymized link]**. Bank frozen on **[FILL: date]**.
+Plan and bank frozen on 22 October 2026 (see `freeze_manifest.json`).
 
 ## 2. Hypotheses
 
@@ -56,7 +56,7 @@ The equivalence margin of ±0.08 per level was set from simulated interval width
 
 ## 6. Outliers and exclusions
 
-- **Unparseable answers:** coded missing and excluded in the primary analysis; coded as errors (never as the stance-endorsed option) in a registered sensitivity analysis.
+- **Unparseable answers:** coded missing and excluded in the primary analysis; coded as errors (never as the stance-endorsed option) in a sensitivity analysis.
 - **Settings by model (fixed before the run):** Haiku 4.5, Sonnet 5.5 and Fable 5.1 write out their reasoning before the answer; they are queried with a 2,048-token limit and the final stated answer is read (last "answer … X" phrase, else a response ending in the letter, else a bolded "**X." line). The other eleven models use a 512-token limit and the single-letter parser. The long-form parser was written after seeing the pilot outputs and is frozen with the bank. Each model's parse-failure rate, truncation count, temperature handling and parser-branch shares are reported.
 - **Ceiling:** a model with stance-free accuracy ≥ .98 is flagged and excluded only from the rescue rate.
 - **Small samples:** a model with fewer than 50 conditional stems is reported but excluded from H1–H3 inference.
@@ -72,12 +72,12 @@ Key review before freezing: two reviewers independently answered the same strati
 
 ## 8. Anything else
 
-- **Files and hashes (SHA-256).** Bank `c2f61e2721b525dbd7ae70c64a991c4b52bcaca5548c647a4e41381ce45f0831`; prompts `57a2f3a60a16f74e448fbfe214311605a67625bfe72213c16bb486a66f5c75a5`; generator, audit, runner and analysis script **[FILL: `sha256sum` of `bank_gen.py`, `audit.py`, `main_run.py`, `analysis.py` at freeze]**. Any change to the generator changes these; the bank is then regenerated, audited and the hashes re-registered before the run.
-- **Estimator.** s\* is an additive "excess over baseline". If instability and deference combine as a mixture (the stance overrides the draw with probability s, otherwise the draw behaves as usual), s\* = s(1 − ρ) and understates s when ρ is large; s_mix is registered for this reason and the limitation is reported.
+- **Files and hashes (SHA-256).** Bank `c2f61e2721b525dbd7ae70c64a991c4b52bcaca5548c647a4e41381ce45f0831`; prompts `57a2f3a60a16f74e448fbfe214311605a67625bfe72213c16bb486a66f5c75a5`; generator `3837f391e0c20d80…`, audit `c4ef66d91abc9fc6…`, runner `55f653156ceb8a75…`, analysis script `29a6053558e1c7a2…` (SHA-256, in full in `freeze_manifest.json`). Any change to the generator changes these; the bank is then regenerated and audited and the hashes recorded again before the run.
+- **Estimator.** s\* is an additive "excess over baseline". If instability and deference combine as a mixture (the stance overrides the draw with probability s, otherwise the draw behaves as usual), s\* = s(1 − ρ) and understates s when ρ is large; s_mix is specified for this reason and the limitation is reported.
 - **Scope.** Models, not people; synthetic items with one correct answer; single-turn prompts; one family of stance wordings; hosted inference without control of hardware or quantization.
 - **Deviations** are logged with the date, the reason, whether any result had been seen, and the effect on conclusions. Anything not listed in 5 and 6 is labelled exploratory.
-- **Replication package** (bank, prompts, audit, runner, analysis code, raw model outputs): **[FILL: anonymized location]**.
+- **Replication package** (bank, prompts, audit, runner, analysis code, raw model outputs): to be provided in an anonymized repository at submission.
 
 ## 9. Name
 
-Deference or Noise? Separating Stance Sensitivity from Instability in AI Reviewers and What It Costs (preregistration)
+Deference or Noise? Separating Stance Sensitivity from Instability in AI Reviewers and What It Costs (analysis plan)
