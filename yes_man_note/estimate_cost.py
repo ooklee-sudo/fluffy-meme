@@ -1,6 +1,6 @@
 """Estimate the OpenRouter cost of a run before spending anything.
 
-  python estimate_cost.py --items data/items_v1.jsonl --models config/models.openrouter.json [--reps 5] [--channels C1,C2,C3,C4]
+  python estimate_cost.py --items data/items_v1.jsonl --models config/models.openrouter.json [--reps 5] [--channels C1,C2,C3,C4,C5]
 
 Prices come from the public https://openrouter.ai/api/v1/models list (no key needed). Tokens are estimated as
 characters / 4 for the prompt and --out-tokens (default 4) per answer. A model that emits reasoning or long text
@@ -18,7 +18,7 @@ def main():
     ap.add_argument("--items", required=True)
     ap.add_argument("--models", required=True)
     ap.add_argument("--reps", type=int, default=5)
-    ap.add_argument("--channels", default="C1,C2,C3,C4")
+    ap.add_argument("--channels", default="C1,C2,C3,C4,C5")
     ap.add_argument("--out-tokens", type=float, default=4.0)
     ap.add_argument("--price-file", default=None, help="saved /models JSON (otherwise fetched)")
     a = ap.parse_args()

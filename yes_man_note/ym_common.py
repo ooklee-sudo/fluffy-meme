@@ -6,6 +6,8 @@ Channels (see README):
   C3  ST     stance sentence at a graded claimed-evidence level, against the evidence (direction
              'against': endorses the unsupported option) and for it ('for': endorses the gold option)
   C4  rot    the same N and ST(primary level, against) prompts with the option letters permuted
+  C5  ACC    a 'pref' stance against the evidence plus the requester's disclosed track record (X% correct),
+             X in cfg['accuracy_levels']; tests whether following rises with the disclosed accuracy
 """
 import hashlib
 import itertools
@@ -113,6 +115,8 @@ class Request:
             sent = neutral_sentence(item, cfg)
         elif channel == "ST":
             sent = stance_sentence(item, level, direction, cfg)
+        elif channel == "ACC":
+            sent = stance_sentence(item, "pref", direction, cfg) + " " + cfg["accuracy_template"].format(x=level)
         else:
             raise ValueError(channel)
         self.sentence = sent
@@ -126,7 +130,7 @@ class Request:
                 "rep": self.rep, "rot": self.rot, "letters": self.letters, "item": self.item["id"]}
 
 
-def enumerate_requests(model, items, cfg, channels=("C1", "C2", "C3", "C4"), reps=5,
+def enumerate_requests(model, items, cfg, channels=("C1", "C2", "C3", "C4", "C5"), reps=5,
                        levels=None, primary="weak"):
     """All requests for one model. N rep 0 (rot 0) is always included: it is the reference run."""
     levels = levels or list(cfg["levels"])
@@ -149,6 +153,9 @@ def enumerate_requests(model, items, cfg, channels=("C1", "C2", "C3", "C4"), rep
             for lv in levels:
                 for d in ("against", "for"):
                     add(it, "ST", lv, d, 0, 0)
+        if "C5" in channels:
+            for x in cfg.get("accuracy_levels", []):
+                add(it, "ACC", str(x), "against", 0, 0)
         if "C4" in channels:
             for rot in (1, 2):
                 add(it, "N", None, None, 0, rot)
@@ -254,6 +261,7 @@ class MockBackend:
     """Synthetic model for testing the pipeline only. Parameters live in the model entry under 'mock':
        q_mean, q_spread: stem-level P(gold) without a stance is q_mean +/- q_spread/2 (stems vary),
        rho: extra probability of the unsupported answer after a neutral sentence,
+       acc_s0, acc_slope: under the disclosed-accuracy channel P(switch) = acc_s0 + acc_slope*(X-50)/30,
        s0, slope: P(switch to unsupported) = s0 + slope*level_index for pref/weak/strong, and
                   max(0, s0 - slope) for noev; rescue: P(switch to gold) under a right stance."""
     LEVEL_IDX = {"pref": 0, "weak": 1, "strong": 2}
@@ -269,6 +277,10 @@ class MockBackend:
         role = "gold" if rng.random() < q else rng.choice(["unsup", "third"])
         if req.channel == "NEU" and rng.random() < p.get("rho", 0):
             role = "unsup"
+        if req.channel == "ACC":
+            s = p.get("acc_s0", p["s0"]) + p.get("acc_slope", 0.0) * (int(req.level) - 50) / 30
+            if rng.random() < min(1.0, max(0.0, s)):
+                role = "unsup"
         if req.channel == "ST":
             lv = req.level
             s = max(0.0, p["s0"] - p["slope"]) if lv == "noev" else p["s0"] + p["slope"] * self.LEVEL_IDX[lv]

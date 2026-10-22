@@ -1,4 +1,4 @@
-"""Run channels C1-C4 for a set of models and append one JSON line per call to a results file.
+"""Run channels C1-C5 for a set of models and append one JSON line per call to a results file.
 
   python runner.py --items items.jsonl --models config/models.json --out results/run1.jsonl
   python runner.py ... --channels C1,C2 --reps 5 --only Qwen --workers 8
@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--models", required=True)
     ap.add_argument("--stances", default=None)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--channels", default="C1,C2,C3,C4")
+    ap.add_argument("--channels", default="C1,C2,C3,C4,C5")
     ap.add_argument("--reps", type=int, default=5, help="stance-free replicates per stem (C1)")
     ap.add_argument("--levels", default=None, help="comma list; default all levels in the stance config")
     ap.add_argument("--primary", default="weak", help="stance level used for the C4 rotation check")

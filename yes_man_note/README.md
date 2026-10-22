@@ -1,6 +1,6 @@
 # Stance-sensitivity protocol (C1–C4): runner and analysis
 
-Code for the measurement note in `measurement_note_JMIS.md`. It separates answer changes caused by a
+Code for the paper in `measurement_note_JMIS.md`. It separates answer changes caused by a
 stated stance from run-to-run instability, any-sentence effects and evidence-weighing.
 
 **Status.** Validated only against a synthetic mock model (`python -m unittest tests.test_pipeline`).
@@ -14,6 +14,7 @@ It has not been run on any real model, and this repository does not contain the 
 | C2 | one length-matched neutral sentence | any-sentence effect `rho_U` |
 | C3 | stance sentence at 4 claimed-evidence levels (`pref`, `weak`, `strong`, `noev`), against and for the evidence | corrected effect, gradient, Rescue |
 | C4 | option letters rotated (2 extra permutations) for N and the primary stance | letter/position effects |
+| C5 | a `pref` stance against the evidence plus the requester's disclosed track record (`accuracy_levels`: 20, 50, 80% correct) | does following rise with the disclosed accuracy? (Proposition 6). Same sentence length at every level, so the slope is free of a length effect |
 
 Replicate 0 of the stance-free channel is the reference run. Every conditional quantity is a share of the
 stems answered correctly there (see the docstring in `analyze.py`).
@@ -86,7 +87,7 @@ python analyze.py ... --exclude-domain D6 --outdir out_no_d6/          # sensiti
 Dry run without any API: `python make_mock_items.py --n 120 --out data/mock_items.jsonl` and a models file
 whose entries use `"backend": "mock"` (see `tests/mock_models.json`). Mock results mean nothing about real models.
 
-Calls per model with 120 stems and the defaults: 120 × (5 + 1 + 4×2 + 2×2 rotations) = 2,160.
+Calls per model with the defaults: 5 stance-free + 1 neutral + 4 levels × 2 directions + 2 rotations × 2 prompts + 3 disclosed-accuracy levels = 21 per item, so 6,300 per model for 300 items (about $26 for all 14 models if answers stay short).
 Resuming is safe: finished calls are skipped, failed API calls are retried, unparseable answers are kept as data.
 
 ## Outputs (`--outdir`)
@@ -98,6 +99,7 @@ Resuming is safe: finished calls are skipped, failed API calls are retried, unpa
 
 - **A.** `raw s` is the old conditional deference. If `nu_U` and `rho_U` are close to `raw s`, most of it is noise or
   any-sentence sensitivity; `s*` is the remainder.
+- **B2.** Slope in the disclosed accuracy > 0 supports evidence-weighing; ≈ 0 supports deference.
 - **B.** Slope > 0 and a negative `noev − pref` say the answer responds to the claimed evidence (evidence-weighing).
   Both near 0 say the stance moves the answer whatever it claims (deference). Neither proves the model's reason.
 - **E.** With few families the exact sign test cannot reach p < .05 (the table prints the smallest attainable p).

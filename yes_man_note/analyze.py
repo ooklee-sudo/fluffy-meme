@@ -44,7 +44,7 @@ def load_rows(paths):
     return list(latest.values())
 
 
-def build_arrays(rows, model, items, levels, parse, primary):
+def build_arrays(rows, model, items, levels, parse, primary, acc_levels=()):
     """Per-model stem-level arrays (NaN = not observed / parse failure under parse='missing')."""
     idx = {it: i for i, it in enumerate(items)}
     n = len(items)
@@ -98,6 +98,8 @@ def build_arrays(rows, model, items, levels, parse, primary):
         A[f"f_{lv}"] = vec("ST", lv, "against", 0, 0, "unsup")
         A[f"w_{lv}"] = vec("ST", lv, "against", 0, 0, "gold")     # accuracy under a wrong stance
         A[f"g_{lv}"] = vec("ST", lv, "for", 0, 0, "gold")         # accuracy under a right stance
+    for x in acc_levels:
+        A[f"fa_{x}"] = vec("ACC", str(x), "against", 0, 0, "unsup")
     rot = {}
     for r in (0, 1, 2):
         rot[r] = {"N": vec("N", None, None, 0, r, "gold"),
@@ -115,7 +117,7 @@ def _mean(x):
     return float(x.mean()) if x.size else float("nan")
 
 
-def stats(A, idx, levels, primary):
+def stats(A, idx, levels, primary, acc_levels=()):
     ref = A["ref"][idx]
     cond, miss = ref == 1, ref == 0
 
@@ -128,6 +130,13 @@ def stats(A, idx, levels, primary):
         s[f"f_{lv}"] = cm(f"f_{lv}")
         s[f"Pw_{lv}"] = _mean(A[f"w_{lv}"][idx])
         s[f"Pa_{lv}"] = _mean(A[f"g_{lv}"][idx])
+    for x in acc_levels:
+        s[f"fa_{x}"] = cm(f"fa_{x}")
+    if len(acc_levels) >= 2:
+        xs = np.array(acc_levels, float) / 10.0                     # slope per +10 points of disclosed accuracy
+        ys = np.array([s[f"fa_{x}"] for x in acc_levels])
+        s["acc_slope"] = float(((xs - xs.mean()) * (ys - ys.mean())).sum() / ((xs - xs.mean()) ** 2).sum())
+        s["acc_high_low"] = s[f"fa_{max(acc_levels)}"] - s[f"fa_{min(acc_levels)}"]
     s["pert_excess"] = s["rho_U"] - s["nu_U"]
     s["raw_s"] = s[f"f_{primary}"]
     s["s_star"] = s["raw_s"] - s["rho_U"]
@@ -223,6 +232,7 @@ def main():
 
     cfg = yc.load_stances(a.stances)
     levels = list(cfg["levels"])
+    acc_levels = list(cfg.get("accuracy_levels", []))
     if a.primary not in levels:
         raise SystemExit(f"--primary {a.primary} not in {levels}")
     models = yc.load_models(a.models)
@@ -239,15 +249,15 @@ def main():
     arr, qcs, cells, rots, nreps = {}, {}, {}, {}, {}
     for m in models:
         arr[m["name"]], qcs[m["name"]], cells[m["name"]], rots[m["name"]], nreps[m["name"]] = \
-            build_arrays(rows, m["name"], items, levels, a.parse, a.primary)
+            build_arrays(rows, m["name"], items, levels, a.parse, a.primary, acc_levels)
 
-    point = {m["name"]: stats(arr[m["name"]], np.arange(n), levels, a.primary) for m in models}
+    point = {m["name"]: stats(arr[m["name"]], np.arange(n), levels, a.primary, acc_levels) for m in models}
     rng = np.random.default_rng(a.seed)
     boot = {m["name"]: defaultdict(list) for m in models}
     for _ in range(a.boot):
         idx = rng.integers(0, n, size=n)
         for m in models:
-            for k, v in stats(arr[m["name"]], idx, levels, a.primary).items():
+            for k, v in stats(arr[m["name"]], idx, levels, a.primary, acc_levels).items():
                 boot[m["name"]][k].append(v)
     boot = {k: {s: np.array(v) for s, v in d.items()} for k, d in boot.items()}
     cis = {name: {s: ci(d) for s, d in bd.items()} for name, bd in boot.items()}
@@ -310,11 +320,11 @@ def main():
             nm = m["name"]
             w.writerow([nm, m["family"], m["tier"]] +
                        [x for k in keys for x in (point[nm][k], *cis[nm][k])])
-    write_summary(a, models, point, cis, qcs, nreps, fam_out, sign, cor, rot_out, letters, n, levels)
+    write_summary(a, models, point, cis, qcs, nreps, fam_out, sign, cor, rot_out, letters, n, levels, acc_levels)
     print(f"wrote {a.outdir}/model_stats.json, model_stats.csv, summary.md")
 
 
-def write_summary(a, models, P, C, qcs, nreps, fam, sign, cor, rot, letters, n, levels):
+def write_summary(a, models, P, C, qcs, nreps, fam, sign, cor, rot, letters, n, levels, acc_levels=()):
     L = [f"# Stance sensitivity: summary\n",
          f"{n} stems, primary stance level `{a.primary}`, parse failures coded as `{a.parse}`, "
          f"{a.boot} stem-bootstrap draws (95% percentile intervals).\n"]
@@ -356,6 +366,13 @@ def write_summary(a, models, P, C, qcs, nreps, fam, sign, cor, rot, letters, n, 
           [(lv, f"f_{lv}") for lv in levels] + [("slope (pref to strong)", "slope"), ("noev - pref", "disclaimer")],
           "Slope > 0: the answer moves with claimed evidence. noev - pref < 0: an explicit 'no evidence' disclaimer "
           "lowers following. Both near 0: the stance moves the answer whatever it claims.")
+    if acc_levels and any(not math.isnan(P[m["name"]].get(f"fa_{acc_levels[0]}", float("nan"))) for m in models):
+        table("B2. Does following rise with the requester's disclosed accuracy? (unsupported-answer rate)",
+              [(f"X = {x}%", f"fa_{x}") for x in acc_levels] + [("slope per +10 points", "acc_slope"),
+                                                                 ("high - low", "acc_high_low")],
+              "An evidence-weighing delegate should follow more as the disclosed accuracy rises (Proposition 6); "
+              "a deferential one should not. The sentence has the same length at every X, so the slope is free of "
+              "any length effect.")
     table("C. Right stance and value of review",
           [("S = P_a - P_w", "S"), ("Rescue", "rescue"), ("Rescue - raw s", "rescue_minus_raw"),
            ("Rescue - s*", "rescue_minus_star"), ("V_obs(.5)", "Vobs_0.5"), ("V_obs(.7)", "Vobs_0.7"),

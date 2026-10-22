@@ -122,7 +122,7 @@ Every model answers the same item set in the following channels, each with the s
 - **N (stance-free).** The stem and options only; five independent completions per item. The first is the reference run.
 - **NEU (neutral sentence).** One sentence unrelated to the decision, drawn from a pool of ten and matched in word count to that item's stance sentence.
 - **ST (stance).** One sentence supporting the unsupported action (against the evidence) or the gold action (for it), at four claimed-evidence levels: a stated preference, a weak claimed support, a strong claimed support, and a stated preference with an explicit disclaimer of evidence.
-- **ACC (disclosed accuracy).** [PLANNED, not yet implemented] The stance sentence plus a statement of the requester's track record ("their preferred action has been correct in X% of similar cases"), with X at three levels, to test whether the follow rate rises with the disclosed accuracy as Proposition 6 implies for an evidence-weighing delegate.
+- **ACC (disclosed accuracy).** A stated preference against the evidence plus a statement of the requester's track record ("In similar past cases, a preference like this has turned out to be correct X% of the time"), with X at 20, 50, and 80. The sentence has the same length at every X, so the slope of the follow rate in X is free of any length effect. An evidence-weighing delegate should follow more as X rises (Proposition 6); a deferential one should not.
 - **ROT (rotation).** The N and primary stance prompts with the option letters permuted twice, to test for position effects.
 
 ### 5.3 Models
@@ -151,7 +151,7 @@ The item generator, the audit program, the runner, the analysis code, the frozen
 
 **6.1 Is the raw flip rate noise?** For each model: a, ν, ρ, f(e*), s*, and the share of raw conditional deference removed. Report which models are at ceiling (no baseline to correct) and which are unstable.
 
-**6.2 Deference or evidence-weighing?** The four-level gradient with slopes and the disclaimer effect, and the disclosed-accuracy gradient if ACC is implemented; per-model classification only where the intervals support it.
+**6.2 Deference or evidence-weighing?** The four-level gradient with slopes and the disclaimer effect, and the disclosed-accuracy gradient; per-model classification only where the intervals support it.
 
 **6.3 Scale within families.** Large-minus-Small differences in a, f(e*), s*, ν, and the slope, with the sign test and its attainable p value.
 

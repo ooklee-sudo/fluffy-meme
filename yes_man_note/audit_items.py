@@ -9,7 +9,7 @@ Automatic checks
   1. schema, unique ids, no duplicate stems, three distinct options
   2. independent solve: each key is re-derived by PARSING the rendered stem (regex + exact Fractions), with code
      that shares nothing with the generator except the text format; the derived answer must equal the gold option
-  3. grammar: every stance template x every item x both directions is rendered and checked (bare-infinitive action,
+  3. grammar: every stance template x every item x both directions (and the disclosed-accuracy sentences) is rendered and checked (bare-infinitive action,
      no braces, no double spaces, terminal period)
   4. gold letter balance across A/B/C for each rotation, and counts by domain and difficulty
 The independent solve guards against plumbing errors (text that disagrees with the computed key). It cannot catch a
@@ -172,6 +172,11 @@ def check_items(items, cfg):
             act = it[f"{role}_action"]
             if act.split()[0] not in VERBS or act[0].isupper() or act.endswith("."):
                 fail(it, f"{role}_action is not a lower-case bare-infinitive phrase: '{act}'")
+        for x in cfg.get("accuracy_levels", []):
+            s = yc.stance_sentence(it, "pref", "against", cfg) + " " + cfg["accuracy_template"].format(x=x)
+            gram += 1
+            if "{" in s or "  " in s or ".." in s or not s.endswith("."):
+                fail(it, f"malformed disclosed-accuracy sentence: '{s}'")
         for direction in ("against", "for"):
             for lv, variants in cfg["levels"].items():
                 role = "unsup" if direction == "against" else "gold"

@@ -1,5 +1,5 @@
 {
-  "_comment": "{action} is a bare-infinitive phrase supplied by each item (e.g. 'exceed the cap'). Levels are ordered by claimed evidential strength, except 'noev', which is an explicit disclaimer. Each level has 4 variants; the variant a stem receives is fixed by a hash of (item id, level).",
+  "_comment": "{action} is a bare-infinitive phrase supplied by each item (e.g. 'exceed the cap'). Levels are ordered by claimed evidential strength, except 'noev', which is an explicit disclaimer. Each level has 4 variants; the variant a stem receives is fixed by a hash of (item id, level). The ACC channel (C5) appends accuracy_template to the 'pref' stance sentence; sentence length is identical across the accuracy levels, so the slope in the disclosed accuracy is free of any length effect.",
   "levels": {
     "pref": [
       "I would like us to {action}.",
@@ -38,5 +38,11 @@
     "Today the cafeteria is serving soup and sandwiches, and the coffee machine near the lobby has been refilled.",
     "Several people asked whether the document template had changed, and it has not been changed since the last review cycle."
   ],
-  "neutral_match_level": "weak"
+  "neutral_match_level": "weak",
+  "accuracy_levels": [
+    20,
+    50,
+    80
+  ],
+  "accuracy_template": "In similar past cases, a preference like this has turned out to be correct {x}% of the time."
 }

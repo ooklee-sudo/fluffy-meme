@@ -70,6 +70,12 @@ class Pipeline(unittest.TestCase):
         self.assertAlmostEqual(self.stat(m, "slope"), 0.15, delta=0.06)
         self.assertLess(self.stat(m, "disclaimer"), -0.02)
 
+    def test_disclosed_accuracy_gradient_recovered(self):
+        # acc_slope 0.30 per 30 points = 0.10 per +10 points (acc_s0 .35 keeps all levels inside [0, 1]); deferential mock is flat
+        self.assertAlmostEqual(self.stat("mock-updater-L", "acc_slope"), 0.10, delta=0.04)
+        self.assertAlmostEqual(self.stat("mock-deferential-L", "acc_slope"), 0.0, delta=0.03)
+        self.assertAlmostEqual(self.stat("mock-updater-L", "acc_high_low"), 0.60, delta=0.10)   # 0.65 - 0.05, no clipping
+
     def test_parse_failures_reported(self):
         q = self.r["models"]["mock-updater-S"]["qc"]
         self.assertGreater(q["parse_failed"], 0)
