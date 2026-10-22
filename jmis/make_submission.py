@@ -26,50 +26,88 @@ body_main = sub(body_main, "will be made available as a replication package", "a
 body_main = sub(body_main, " [PENDING: location, anonymized for review]", "")
 proofs = proofs.replace(escape("Appendix A. Proofs"), escape("Appendix A. Proofs of the propositions"))
 shead = x[:bstart]
-def write(name, body, extra_sect=None):
-    d = tempfile.mkdtemp(); shutil.copytree(tmp, d + "/p"); open(f"{d}/p/word/document.xml", "w", encoding="utf8").write(shead + body + sect + "</w:body></w:document>")
-    out = os.path.abspath(f"{OUT}/{name}"); 
+FOOTER = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
+          'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:p><w:pPr><w:pStyle w:val="Normal"/><w:jc w:val="center"/></w:pPr>'
+          '<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>1</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:ftr>')
+def write(name, body, double=True):
+    d = tempfile.mkdtemp(); shutil.copytree(tmp, d + "/p"); root = d + "/p"
+    # table and note paragraphs single-spaced, everything else per style
+    body = body.replace('<w:spacing w:before="30" w:after="30"/>', '<w:spacing w:before="30" w:after="30" w:line="240" w:lineRule="auto"/>').replace('<w:spacing w:before="60"/>', '<w:spacing w:before="60" w:line="240" w:lineRule="auto"/>')
+    sec = re.sub(r'w:footer="0"', 'w:footer="720"', sect)
+    sec = sec.replace("<w:type", '<w:footerReference w:type="default" r:id="rIdFtr1"/><w:type', 1)
+    open(f"{root}/word/document.xml", "w", encoding="utf8").write(shead + body + sec + "</w:body></w:document>")
+    open(f"{root}/word/footer1.xml", "w", encoding="utf8").write(FOOTER)
+    r = open(f"{root}/word/_rels/document.xml.rels", encoding="utf8").read()
+    r = r.replace("</Relationships>", '<Relationship Id="rIdFtr1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>')
+    open(f"{root}/word/_rels/document.xml.rels", "w", encoding="utf8").write(r)
+    c = open(f"{root}/[Content_Types].xml", encoding="utf8").read()
+    c = c.replace("</Types>", '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>')
+    open(f"{root}/[Content_Types].xml", "w", encoding="utf8").write(c)
+    if double:  # 12-point, double-spaced, left-justified body text
+        st = open(f"{root}/word/styles.xml", encoding="utf8").read()
+        for sid in ("Normal", "BodyText", "FirstParagraph"):
+            st = re.sub(r'(w:styleId="%s".*?<w:spacing w:lineRule="auto" w:line=")360(")' % sid, r"\g<1>480\g<2>", st, count=1, flags=re.S)
+        open(f"{root}/word/styles.xml", "w", encoding="utf8").write(st)
+    out = os.path.abspath(f"{OUT}/{name}")
     if os.path.exists(out): os.remove(out)
-    subprocess.run(f"cd {d}/p && zip -qXr {out} .", shell=True, check=True); print("wrote", name)
+    subprocess.run(f"cd {root} && zip -qXr {out} .", shell=True, check=True); print("wrote", name)
 def title_style(t): return f'<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr>{runs(t)}</w:p>'
 
 TITLE = "Deference or Noise? Separating Stance Sensitivity from Instability in AI Reviewers and What It Costs"
+import unicodedata
+# --- references: one alphabetical list
+ri = body_main.index(escape("References")); rstart = body_main.rindex("<w:p>", 0, ri) if body_main.rfind("<w:p>", 0, ri) > body_main.rfind("<w:p ", 0, ri) else body_main.rindex("<w:p ", 0, ri)
+rhead_end = body_main.index("</w:p>", ri) + 6
+refs = re.findall(r"<w:p[ >].*?</w:p>", body_main[rhead_end:], flags=re.S)
+key = lambda p: unicodedata.normalize("NFKD", re.sub(r"<[^>]+>", "", p)).encode("ascii", "ignore").decode().lower()
+refs.sort(key=key)
+refs_xml = "".join(refs)
+before = body_main[:rhead_end]
+# --- tables and figures at the end, with their place marked in the text
+blocks = []
+def grab(m):
+    n = re.search(r"Table (\d+)\.", re.sub(r"<[^>]+>", "", m.group(0))).group(1)
+    blocks.append((int(n), m.group(0)))
+    return f'<w:p><w:pPr><w:pStyle w:val="BodyText"/><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:i/><w:iCs/></w:rPr><w:t xml:space="preserve">[Insert Table {n} about here]</w:t></w:r></w:p>'
+before = re.sub(r'<w:p><w:pPr><w:pStyle w:val="TableCaption"/>.*?</w:p><w:tbl>.*?</w:tbl><w:p>.*?</w:p>', grab, before, flags=re.S)
+assert len(blocks) == 6, len(blocks)
+blocks.sort()
+pb = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+big = lambda t: t.replace('w:val="17"', 'w:val="20"').replace('w:val="16"', 'w:val="19"').replace('w:val="18"', 'w:val="20"')
+tables_xml = "".join(pb + big(b) for _, b in blocks)
+body_main = before + refs_xml + tables_xml
 write("1_manuscript_blinded.docx", body_main)
 
-# ------------------------------------------------------------------ title page
+# ------------------------------------------------------------------ cover letter with title page and bios
 abstract = re.sub(r"<[^>]+>", "", [x[p[0]:p[1]] for p in P if p[2].startswith("Organizations ask AI systems")][0])
 kw = [p[2] for p in P if p[2].startswith("Keywords:")][0]
-main_text = re.sub(r"<[^>]+>", " ", body_main[: body_main.index(escape("References"))])
-wc = len(re.findall(r"\S+", main_text))
-T = [title_style(TITLE),
-     para("TITLE PAGE (not for the blinded review file)", "BodyText", bold_lead=""),
-     head("Authors and affiliations", 3),
-     para("[Author name(s), in order], [Department, University, Country]"),
-     para("Corresponding author: [name], ooklee@hanyang.ac.kr"),
-     head("Abstract", 3), para(abstract), para(kw),
-     head("Manuscript details", 3),
-     para(f"Main text (Sections 1 to 8, with tables, without the reference list): about {wc:,} words. Online appendix: separate file. The abstract has 138 words."),
-     head("Acknowledgments", 3), para("[Add, or state “none”.]"),
-     head("Funding", 3), para("[State funding sources, or “This research received no external funding.” Note: the model queries for the study were paid for with the authors’ own API credit.]"),
-     head("Conflicts of interest", 3), para("[Confirm. One disclosure to consider: four of the fourteen language models studied are Claude models from one vendor, and the AI assistant named below is from the same vendor.]"),
-     head("Data and code availability", 3), para("The item bank, prompts, audit program, runner, raw model outputs (176,400 calls), analysis code and results are provided as anonymized supplementary files (S1: code, item bank and results; S2: raw model outputs); a public repository will replace them if the paper is accepted."),
-     head("Use of AI tools", 3), para("[Draft for the authors to confirm or correct before submission.] An AI assistant (Claude, Anthropic) was used under the authors’ direction to write and run analysis code, to generate and audit the item bank, to run the model queries, and to draft and edit parts of the text and tables. The authors reviewed the outputs and take responsibility for the content. The study design, the hypotheses and decision rules, and the interpretation of results are the authors’."),
-     head("Prior versions", 3), para("[Confirm: this manuscript has not been published and is not under review elsewhere. If the earlier study cited in the first version was by the same authors, say so here and not in the blinded file.]")]
-write("2_title_page.docx", "".join(T))
-
-# ------------------------------------------------------------------ cover letter
-CL = [para("[Corresponding author name]"), para("[Affiliation, address]"), para("ooklee@hanyang.ac.kr"), para("22 October 2026"), para(""),
-      para("Editor-in-Chief, Journal of Management Information Systems"), para(""),
+CL = [para("[Corresponding author name]"), para("[Department, university, postal address, country]"), para("Telephone: [number]"), para("E-mail: ooklee@hanyang.ac.kr"), para("22 October 2026"), para(""),
+      para("Editor-in-Chief, Journal of Management Information Systems"), para("jmis@fdu.edu"), para(""),
       para("Dear Editor,"),
       para(f"We submit “{TITLE}” for consideration as a research article in the Journal of Management Information Systems."),
       para("Organizations increasingly ask AI systems to review decisions that a requester has already leaned toward. When the AI’s answer follows the requester’s stated view, it is read as sycophancy. We argue that this reading is not yet a measurement: the change may come from run-to-run instability, from sensitivity to any added sentence, from treating the stance as evidence, or from deference. The paper makes three contributions. It gives a measurement design that separates these mechanisms (stance-free replicates, a length-matched neutral sentence, gradients in the stance’s claimed evidence and in the requester’s disclosed accuracy, and rotated option letters). It extends the value-of-review function of a deferential delegate with two results the measurement needs: the closed form with a measured conditional deference is biased by the covariance between ability and deference across stems, and a delegate that weights the stance at the rate rational for the requester’s accuracy loses nothing. And it applies the design to fourteen language models in five families on a new bank of 600 audited decision items (176,400 answers)."),
       para("The main findings are these. The baseline correction removes a median 9% of the conventionally measured deference, but 21% to 75% for the five least stable models. Stance-following responds to claimed evidence and to an explicit disclaimer in most models, yet no model meets our rule for pure deference. Larger models are not reliably less deferential (the corrected effect is lower for the larger model in three of five families, and significantly so in one). Ten of the fourteen models answer only 35% to 54% of the items correctly, so for a requester whose own accuracy is 50% or higher reviewing adds little or nothing. Some hypotheses were not supported (heterogeneity across stems, and ability as a ranking cue), and we report these results with the robustness checks, including those that show the classification of some models is unstable."),
       para("We believe the paper fits the Journal because it addresses delegation to AI systems and the auditing of AI decision support with a formal model and a transparent empirical design, and because it gives managers an audit protocol they can run on their own review items. We are careful about scope: the study concerns models, not people, uses synthetic items with a single correct answer, and does not offer a theory of why models defer."),
-      para("The analysis plan (hypotheses, estimators, decision rules, exclusions) was fixed in a version-controlled repository before any model answered the main item bank; it was not registered with a third-party platform, and the manuscript says so. A separate stance-free pilot of 48 items informed the token limit and answer parser for three models, and is described in the online appendix. The item bank was audited by an independent program and by two human reviewers on a stratified sample of 100 items. Anonymized supplementary files with the bank, prompts, raw outputs and code are provided."),
-      para("The manuscript has not been published and is not under review elsewhere. It has been prepared for double-blind review; identifying information appears only on the separate title page. [Confirm the statements on prior versions, funding and conflicts on the title page.] An AI assistant was used in the research and writing, as disclosed on the title page."),
-      para("[Optional: suggested reviewers, with affiliation and reason; reviewers or editors to exclude.]"),
-      para("Thank you for considering our work."), para("Sincerely,"), para(""), para("[Corresponding author name], on behalf of all authors")]
-write("3_cover_letter.docx", "".join(CL))
+      para("The analysis plan (hypotheses, estimators, decision rules, exclusions) was fixed in a version-controlled repository before any model answered the main item bank; it was not registered with a third-party platform, and the manuscript says so. A separate stance-free pilot of 48 items informed the token limit and answer parser for three models and is described in the online appendix. The item bank was audited by an independent program and by two human reviewers on a stratified sample of 100 items. Anonymized supplementary files with the bank, prompts, raw outputs and code are provided; the online appendix is a separate file."),
+      para("By submitting this manuscript we certify that it is not copyrighted, and that it is not and will not be under simultaneous review by any other journal or proceedings. It has not been published. It has been prepared for double-blind review; the author names and affiliations appear only in the title page below. An AI assistant was used in the research and writing, as disclosed in the acknowledgments on the title page."),
+      para("Optional reviewer nominations (no conflicts of interest): [name, affiliation, e-mail, expertise] (up to three)."),
+      para("Thank you for considering our work."), para("Sincerely,"), para(""), para("[Corresponding author name], on behalf of all authors"),
+      '<w:p><w:r><w:br w:type="page"/></w:r></w:p>',
+      title_style(TITLE),
+      para("Title page", "BodyText", italic=True),
+      head("Authors and affiliations", 3),
+      para("[Author 1 name], [department, university, postal address, country], [e-mail], [telephone]. Corresponding author."),
+      para("[Author 2 name, and so on for every author: affiliation, postal address, e-mail, telephone]."),
+      para("Corresponding author: [name], ooklee@hanyang.ac.kr, [telephone]."),
+      head("Abstract", 3), para(abstract), para(kw),
+      head("Acknowledgments and funding", 3),
+      para("Funding: [state every funding source, or “This research received no external funding.” The model queries were paid for with the authors’ own API credit.]"),
+      para("Acknowledgments: [add, or state “none”.]"),
+      para("Use of AI tools: [draft for the authors to confirm or correct before submission.] An AI assistant (Claude, Anthropic) was used under the authors’ direction to write and run analysis code, to generate and audit the item bank, to run the model queries, and to draft and edit parts of the text and tables. The authors reviewed the outputs and take responsibility for the content. Four of the fourteen language models studied are Claude models from the same vendor as the assistant."),
+      head("Authors’ biographical statements", 3),
+      para("[Author 1: two to four sentences: position, institution, research interests, selected publications.]"),
+      para("[Author 2: the same, for every author.]")]
+write("2_cover_letter_with_title_page.docx", "".join(CL), double=False)
 
 # ------------------------------------------------------------------ online appendix
 m = pd.read_csv("results/primary/model_metrics.csv"); G = lambda k: m[m.metric == k].set_index("model")
@@ -181,4 +219,4 @@ A_body += caption("G1", "Pilot ability under the 512-token rule") + table(["Mode
 pw = [["0.32", "211", "0.83", "0.33", "0.78", "0.046"], ["0.39–0.42", "246–259", "0.88–0.92", "0.35–0.37", "0.82", "0.041–0.042"], ["0.49", "292", "0.97", "0.47", "0.95", "0.039"], ["0.56", "326", "1.00", "0.52", "0.97", "0.036"], ["0.68", "384", "1.00", "0.63", "0.98", "0.032"], ["0.80", "443", "0.98", "0.77", "1.00", "0.030"], ["0.98", "529", "1.00", "0.97", "1.00", "0.025"]]
 A_body += para("Power. The size of the bank was chosen from simulated power at the pilot ability values (analysis.py --power; 60 replicates, 200 bootstrap draws). With 600 items a flat evidence slope is declared equivalent to zero (within ±0.08 per level) in 83% to 100% of cases, and a rise of 0.10 across the evidence levels is detected in 33% to 97%.")
 A_body += caption("G2", "Simulated power at 600 items") + table(["Ability a", "Cond. stems", "Flat slope inside ±0.08", "Rise of 0.10 detected", "Rise of 0.20 detected", "CI half-width"], pw, [1300, 1300, 1900, 1700, 1700, 1460])
-write("4_online_appendix.docx", A_body)
+write("4_online_appendix.docx", A_body, double=False)
