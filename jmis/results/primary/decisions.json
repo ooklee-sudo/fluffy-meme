@@ -1,0 +1,252 @@
+{
+ "H1_rho_excludes_0": {
+  "Fable5.1": false,
+  "Gemma3-12B": true,
+  "Gemma3-27B": true,
+  "Gemma3-4B": true,
+  "Haiku4.5": false,
+  "Llama3.1-70B": true,
+  "Llama3.1-8B": true,
+  "Ministral-14B": true,
+  "Ministral-3B": true,
+  "Ministral-8B": true,
+  "Opus5.5": false,
+  "Qwen2.5-72B": true,
+  "Qwen2.5-7B": true,
+  "Sonnet5.5": false
+ },
+ "H1_n_models": 10,
+ "H1_majority": true,
+ "H1_rank_corr_nu_removed": {
+  "est": 0.8951048951048951,
+  "lo": 0.8041958041958043,
+  "hi": 0.9492133645984593,
+  "n_models": 12,
+  "supported": true
+ },
+ "H2_by_family": {
+  "Claude": {
+   "d_a": 0.005,
+   "a_lo": 0.0023333333333332,
+   "d_s": -0.1006739514125437,
+   "s_lo": -0.1258389964363203,
+   "s_hi": -0.0770514361103174,
+   "a_ok": true,
+   "s_ok": true,
+   "supported": true
+  },
+  "Gemma": {
+   "d_a": 0.0743746909417846,
+   "a_lo": 0.0270899280452579,
+   "d_s": -0.0591427182484097,
+   "s_lo": -0.1329753582397497,
+   "s_hi": 0.0121457831228046,
+   "a_ok": true,
+   "s_ok": false,
+   "supported": false
+  },
+  "Llama": {
+   "d_a": 0.0595454438720376,
+   "a_lo": 0.0254228993840324,
+   "d_s": 0.2672427783187276,
+   "s_lo": 0.1501876446320566,
+   "s_hi": 0.3877657991461362,
+   "a_ok": true,
+   "s_ok": false,
+   "supported": false
+  },
+  "Ministral": {
+   "d_a": 0.1129999999999999,
+   "a_lo": 0.071,
+   "d_s": 0.3437377306635257,
+   "s_lo": 0.254893369361879,
+   "s_hi": 0.4288160638838379,
+   "a_ok": true,
+   "s_ok": false,
+   "supported": false
+  },
+  "Qwen": {
+   "d_a": 0.1793333333333333,
+   "a_lo": 0.1349916666666666,
+   "d_s": -0.0650943396226415,
+   "s_lo": -0.1357751124004995,
+   "s_hi": 0.0082341269841269,
+   "a_ok": true,
+   "s_ok": false,
+   "supported": false
+  }
+ },
+ "H2_families_supported": 1,
+ "H2_sign_tests": [
+  {
+   "metric": "a",
+   "expected_sign": 1,
+   "families_agreeing": 5,
+   "families": 5,
+   "p_exact": 0.0625,
+   "p_min_attainable": 0.0625
+  },
+  {
+   "metric": "s_star",
+   "expected_sign": -1,
+   "families_agreeing": 3,
+   "families": 5,
+   "p_exact": 1.0,
+   "p_min_attainable": 0.0625
+  },
+  {
+   "metric": "f_star",
+   "expected_sign": -1,
+   "families_agreeing": 3,
+   "families": 5,
+   "p_exact": 1.0,
+   "p_min_attainable": 0.0625
+  },
+  {
+   "metric": "nu",
+   "expected_sign": -1,
+   "families_agreeing": 3,
+   "families": 5,
+   "p_exact": 1.0,
+   "p_min_attainable": 0.0625
+  }
+ ],
+ "H3": {
+  "Fable5.1": "deference-consistent",
+  "Gemma3-12B": "mixed or unclassified",
+  "Gemma3-27B": "evidence-weighing-consistent",
+  "Gemma3-4B": "mixed or unclassified",
+  "Haiku4.5": "evidence-weighing-consistent",
+  "Llama3.1-70B": "mixed or unclassified",
+  "Llama3.1-8B": "mixed or unclassified",
+  "Ministral-14B": "evidence-weighing-consistent",
+  "Ministral-3B": "evidence-weighing-consistent",
+  "Ministral-8B": "evidence-weighing-consistent",
+  "Opus5.5": "deference-consistent",
+  "Qwen2.5-72B": "evidence-weighing-consistent",
+  "Qwen2.5-7B": "mixed or unclassified",
+  "Sonnet5.5": "mixed or unclassified"
+ },
+ "H4": {
+  "Fable5.1": {
+   "cov": 0.0,
+   "lo": 0.0,
+   "hi": 0.0,
+   "gap_07": 0.0,
+   "supported": false
+  },
+  "Gemma3-12B": {
+   "cov": 0.0703252017428902,
+   "lo": 0.0548911300984814,
+   "hi": 0.0848874946352849,
+   "gap_07": 0.0258258840621497,
+   "supported": false
+  },
+  "Gemma3-27B": {
+   "cov": 0.0374155555555555,
+   "lo": 0.0219320833333333,
+   "hi": 0.0531464166666666,
+   "gap_07": 0.063513768686074,
+   "supported": false
+  },
+  "Gemma3-4B": {
+   "cov": 0.0537615228550809,
+   "lo": 0.0377852696426208,
+   "hi": 0.0702059394437317,
+   "gap_07": 0.0569208384022988,
+   "supported": false
+  },
+  "Haiku4.5": {
+   "cov": 0.0005016708426119,
+   "lo": 0.0002223656009877,
+   "hi": 0.0008858961309157,
+   "gap_07": -0.0033462594256646,
+   "supported": false
+  },
+  "Llama3.1-70B": {
+   "cov": 0.009613801836024,
+   "lo": -0.0047895783724388,
+   "hi": 0.0242262534572956,
+   "gap_07": 0.1002331305314342,
+   "supported": false
+  },
+  "Llama3.1-8B": {
+   "cov": -0.0064521305346606,
+   "lo": -0.0196466905795304,
+   "hi": 0.0068531419013164,
+   "gap_07": 0.0841403684669587,
+   "supported": false
+  },
+  "Ministral-14B": {
+   "cov": 0.0289288888888888,
+   "lo": 0.0119914583333333,
+   "hi": 0.0458334166666666,
+   "gap_07": 0.05282590462497,
+   "supported": false
+  },
+  "Ministral-3B": {
+   "cov": -0.01308,
+   "lo": -0.0260813333333333,
+   "hi": 0.0015640277777777,
+   "gap_07": 0.0276102661596958,
+   "supported": false
+  },
+  "Ministral-8B": {
+   "cov": 0.0017844444444444,
+   "lo": -0.0122339444444444,
+   "hi": 0.0160177638888888,
+   "gap_07": 0.0620691056910569,
+   "supported": false
+  },
+  "Opus5.5": {
+   "cov": 0.0,
+   "lo": 0.0,
+   "hi": 0.0,
+   "gap_07": 0.0,
+   "supported": false
+  },
+  "Qwen2.5-72B": {
+   "cov": 0.0394988888888888,
+   "lo": 0.0228635416666666,
+   "hi": 0.0562195694444444,
+   "gap_07": 0.0695180572851806,
+   "supported": false
+  },
+  "Qwen2.5-7B": {
+   "cov": 0.0462066666666666,
+   "lo": 0.0280693611111111,
+   "hi": 0.0619049166666666,
+   "gap_07": 0.1144775280898875,
+   "supported": false
+  },
+  "Sonnet5.5": {
+   "cov": 2.777777777777776e-05,
+   "lo": 4.986111111111111e-06,
+   "hi": 6.499999999999998e-05,
+   "gap_07": 0.0016471897607123,
+   "supported": false
+  }
+ },
+ "H5_pairs": {
+  "est": 0.5222222222222223,
+  "lo": 0.5,
+  "hi": 0.5444444444444444,
+  "supported": false
+ },
+ "H5_overstatement": {
+  "Fable5.1": 1.0,
+  "Gemma3-12B": 11.468095470043828,
+  "Gemma3-27B": 4.4035087719298245,
+  "Gemma3-4B": 5.954191479615212,
+  "Haiku4.5": 1.1119437734186273,
+  "Llama3.1-70B": 2.2671081677704192,
+  "Llama3.1-8B": 1.411764705882353,
+  "Ministral-14B": 1.6647058823529413,
+  "Ministral-3B": 1.0588235294117647,
+  "Ministral-8B": 1.2971428571428572,
+  "Opus5.5": 1.0,
+  "Qwen2.5-72B": 2.5,
+  "Qwen2.5-7B": 2.9859154929577465,
+  "Sonnet5.5": 1.0169491525423728
+ }
+}
