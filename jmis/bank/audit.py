@@ -182,7 +182,10 @@ def main():
     # 5. stems and prompts
     for it in bank:
         s = it["stem"]
-        check(s[0].isupper() and s.endswith("?"), f"{it['item_id']}: stem form")
+        ROUND = " Round to two decimal places, with exact halves rounded up."
+        body = s[: -len(ROUND)] if s.endswith(ROUND) else s
+        check(s.endswith(ROUND) == (it["kind"] != "count"), f"{it['item_id']}: rounding sentence")
+        check(s[0].isupper() and body.endswith("?"), f"{it['item_id']}: stem form")
         for pat in GRAMMAR_BAD:
             check(not re.search(pat, s), f"{it['item_id']}: grammar pattern {pat!r}")
     byitem = {}

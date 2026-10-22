@@ -241,8 +241,13 @@ def letters_for(iid, seed):
     return {ROLES[j]: pos for pos, j in enumerate(order)}  # role -> letter index
 
 
+ROUNDING = " Round to two decimal places, with exact halves rounded up."
+
+
 def make_item(di, t, k, vals, stem, kind, names, seed):
     iid = f"b{di + 1}-t{t}-{k:03d}"
+    if kind != "count":
+        stem += ROUNDING  # the question states how values that are not exact cents are rounded
     idx = letters_for(iid, seed)
     texts = {role: show(kind, v) for role, v in zip(ROLES, vals)}
     opts = {LETTERS[idx[role]]: texts[role] for role in ROLES}
