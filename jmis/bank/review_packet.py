@@ -16,6 +16,32 @@ import random
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.worksheet.properties import PageSetupProperties
+
+
+INSTRUCTIONS = [
+    "Reviewer instructions: answer key check for a decision-item bank",
+    "",
+    "PURPOSE",
+    "This workbook contains 600 short business-calculation questions. Each states its own rules and has exactly one correct answer under those rules. We want to know whether independent readers reach the same answer. Please work through the questions without seeing any answer key.",
+    "",
+    "WHAT TO DO",
+    "1. Go to the Review sheet. For each row, read the question and choose A, B or C in the column 'Your answer (A/B/C)'. Use the drop-down list, one letter per row.",
+    "2. Apply only the rules stated in the question. Do not use outside conventions where the question gives a rule.",
+    "3. If a question seems unclear, or more than one option looks defensible, still choose the option you think is best and describe the problem in the Comments column. Please do not leave an answer blank.",
+    "4. Rows are in random order. Neighbouring rows are not related.",
+    "",
+    "RULES",
+    "Work alone and do not discuss the questions with anyone, including the other reviewer, until all sheets are returned.",
+    "A calculator or spreadsheet is fine. Please do not use an AI system to answer or to check answers.",
+    "Do not share the questions or this file. They are part of an ongoing study.",
+    "",
+    "TIME",
+    "Expect about one to two minutes per question, so roughly 10 to 20 hours in total. You may work in several sessions; save the file after each session.",
+    "",
+    "RETURN",
+    "Save the file under its current name with your initials added and send it back by [return date]. Answer all 600 rows.",
+]
 
 
 def main():
@@ -27,7 +53,16 @@ def main():
     random.Random(a.seed).shuffle(order)
     os.makedirs(a.outdir, exist_ok=True)
 
-    wb = Workbook(); ws = wb.active; ws.title = "Review"
+    wb = Workbook(); info = wb.active; info.title = "Instructions"; ws = wb.create_sheet("Review")
+    for line in INSTRUCTIONS:
+        info.append([line])
+    info.column_dimensions["A"].width = 100
+    for r in info.iter_rows():
+        r[0].alignment = Alignment(wrap_text=True, vertical="top")
+    info["A1"].font = Font(bold=True, size=14)
+    for r in info.iter_rows(min_row=2):
+        if r[0].value and r[0].value.isupper():
+            r[0].font = Font(bold=True)
     ws.append(["Row", "Question", "A", "B", "C", "Your answer (A/B/C)", "Comments (unclear, ambiguous, or more than one defensible answer)"])
     for c in ws[1]:
         c.font = Font(bold=True); c.alignment = Alignment(wrap_text=True, vertical="top")
@@ -44,6 +79,10 @@ def main():
             c.alignment = Alignment(wrap_text=True, vertical="top")
     dv = DataValidation(type="list", formula1='"A,B,C"', allow_blank=True); ws.add_data_validation(dv); dv.add(f"F2:F{len(bank) + 1}")
     ws.freeze_panes = "A2"
+    for sh in (info, ws):
+        sh.page_setup.orientation = "landscape"; sh.page_setup.fitToWidth = 1; sh.page_setup.fitToHeight = 0
+        sh.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+    ws.print_title_rows = "1:1"
     wb.save(os.path.join(a.outdir, "reviewer_sheet.xlsx"))
     with open(os.path.join(a.outdir, "key_and_map.csv"), "w", newline="") as f:
         w = csv.writer(f); w.writerow(["row", "item_id", "gold_letter", "domain", "tier"]); w.writerows(rows)
