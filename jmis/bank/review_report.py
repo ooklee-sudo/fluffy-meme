@@ -49,9 +49,17 @@ lines = [
     (f"{LB}: share correct by domain", "; ".join(f"domain {d}: {a}/{m}" for d, (a, m) in domB.items())),
     ("", None),
     ("Reading", None),
-    (f"{LA} answered all {n} items as the key does, so the key is confirmed on this sample. If a reviewer disagreed with the key on none of {n} items, the 95% upper bound on the share of disputed keys is about 3% (rule of three). This does not certify the {600 - n} items that were not sampled.", None),
-    (f"{LB}'s answers are not usable as evidence either way. Agreement with the key is {sb}/{n}, close to the 33% expected from guessing; the wrong answers are spread evenly over the three options; accuracy does not rise on the easier tiers or in any domain; and the answer column contains runs such as ABCABCABC. Nothing in the pattern points to a flaw in the key, since {LA} agrees with the key on every item. Treat {LB}'s sheet as missing and obtain a second independent review before reporting agreement between reviewers.", None),
 ]
+def reading(label, k):
+    if k / n >= 0.95:
+        return f"{label} answered {k}/{n} items as the key does."
+    return (f"{label}'s answers are not usable as evidence either way: agreement with the key is {k}/{n}, compared with the 33% expected from guessing, and the wrong answers are spread over all three options. Treat that sheet as missing.")
+lines.append((reading(LA, sa), None)); lines.append((reading(LB, sb), None))
+if sa / n >= 0.95 and sb / n >= 0.95:
+    lines.append((f"Both reviewers confirm the key on this sample. If neither disagreed with the key on any of {n} items, the 95% upper bound on the share of disputed keys is about {3 / n:.0%} (rule of three). Identical answer columns are what two correct reviewers produce, so this review cannot show how independently the two sheets were completed; confirm that before reporting inter-reviewer agreement (kappa is {ka:.2f}). The {600 - n} unsampled items are covered only by the second-program audit.", None))
+elif sa / n >= 0.95:
+    lines.append((f"{LA} confirms the key on this sample (95% upper bound on disputed keys about {3 / n:.0%}); this does not certify the {600 - n} unsampled items. Obtain a second independent review before reporting agreement between reviewers.", None))
+lines = [l for l in lines]
 for a, b in lines:
     s.append([a, b])
 s["A1"].font = Font(bold=True, size=14)
@@ -61,8 +69,9 @@ s.column_dimensions["A"].width = 70; s.column_dimensions["B"].width = 70
 for r in s.iter_rows():
     for c in r:
         c.alignment = Alignment(wrap_text=True, vertical="top")
-for r in (14, 15):
-    s.merge_cells(f"A{r}:B{r}"); s.row_dimensions[r].height = 80
+for r in range(14, 17):
+    if s.cell(r, 1).value:
+        s.merge_cells(f"A{r}:B{r}"); s.row_dimensions[r].height = 80
 hdr = ["Row", "Item id", "Domain", "Tier", "Key", f"{LA} answer", f"{LA} = key", f"{LB} answer", f"{LB} = key", f"{LB} chose", "Reviewers agree", "Comments"]
 for title, data in (("Items", rows), ("Disagreements", [r for r in rows if not (r[6] and r[8]) or r[11]])):
     w = wb.create_sheet(title); w.append(hdr)
