@@ -4,7 +4,7 @@ Every table maps to a file written by `analysis.py` (`model_metrics.csv`, `famil
 
 ## 6. Results
 
-**Overview paragraph.** [PENDING: N models analysed of 14; models excluded for ceiling or for too few conditional stems; share of calls with unparseable answers; providers per model.]
+**Overview paragraph.** [PENDING: N models analysed of 14; models at ceiling (a ≥ .98, excluded from the rescue rate only); models with fewer than 50 conditional stems (excluded from H1–H3); share of calls with unparseable answers; providers per model.]
 
 ### 6.1 Is the raw flip rate noise?
 
@@ -30,7 +30,7 @@ Every table maps to a file written by `analysis.py` (`model_metrics.csv`, `famil
 
 - *In [PENDING] of 5 families the larger model has higher ability and lower s\*; exact p = [PENDING] (smallest attainable .0625).*
 - With five families the sign test can never reach conventional significance in a two-sided test; say this next to the p-value. Report intervals for each family as the main evidence.
-- Families with a single model or a ceiling model are listed and excluded from the sign test.
+- Families with a single model, or in which a model has fewer than 50 conditional stems, are listed and excluded from the sign test.
 
 ### 6.4 Heterogeneity and the closed form
 
