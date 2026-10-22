@@ -13,7 +13,7 @@ from openpyxl import load_workbook
 
 
 def read(path):
-    ws = load_workbook(path, read_only=True).active
+    ws = load_workbook(path, read_only=True)["Review"]
     out = {}
     for r in list(ws.iter_rows(values_only=True))[1:]:
         if r[0]:

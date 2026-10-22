@@ -20,10 +20,10 @@ from openpyxl.worksheet.properties import PageSetupProperties
 
 
 INSTRUCTIONS = [
-    "Reviewer instructions: answer key check for a decision-item bank",
+    "Reviewer instructions: answer key check for a sample of a decision-item bank",
     "",
     "PURPOSE",
-    "This workbook contains 600 short business-calculation questions. Each states its own rules and has exactly one correct answer under those rules. We want to know whether independent readers reach the same answer. Please work through the questions without seeing any answer key.",
+    "This workbook contains 50 short business-calculation questions. Each states its own rules and has exactly one correct answer under those rules. We want to know whether independent readers reach the same answer. Please work through the questions without seeing any answer key.",
     "",
     "WHAT TO DO",
     "1. Go to the Review sheet. For each row, read the question and choose A, B or C in the column 'Your answer (A/B/C)'. Use the drop-down list, one letter per row.",
@@ -37,18 +37,40 @@ INSTRUCTIONS = [
     "Do not share the questions or this file. They are part of an ongoing study.",
     "",
     "TIME",
-    "Expect about one to two minutes per question, so roughly 10 to 20 hours in total. You may work in several sessions; save the file after each session.",
+    "Expect about one to two minutes per question, so roughly one to two hours in total. You may work in several sessions; save the file after each session.",
     "",
     "RETURN",
-    "Save the file under its current name with your initials added and send it back by [return date]. Answer all 600 rows.",
+    "Save the file under its current name with your initials added and send it back by [return date]. Answer all 50 rows.",
 ]
+
+
+def stratified_sample(bank, n, seed):
+    """n items spread as evenly as possible over the 6 domains and, within each domain, over the 3 tiers;
+    the leftover slots go to randomly chosen domains and tiers. Items within a cell are drawn at random.
+    Same seed, same sample."""
+    rng = random.Random(f"sample-{seed}")
+    cells = {}
+    for it in bank:
+        cells.setdefault((it["domain"], it["tier"]), []).append(it)
+    doms = sorted({d for d, _ in cells})
+    per_dom, extra_dom = divmod(n, len(doms))
+    bonus_dom = set(rng.sample(doms, extra_dom))
+    out = []
+    for d in doms:
+        nd = per_dom + (d in bonus_dom)
+        base, extra = divmod(nd, 3)
+        bonus_t = set(rng.sample([1, 2, 3], extra))
+        for t in (1, 2, 3):
+            out += rng.sample(cells[(d, t)], base + (t in bonus_t))
+    return out
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("bankdir"); ap.add_argument("outdir"); ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--n", type=int, default=50, help="items per reviewer, a stratified random sample of the bank")
     a = ap.parse_args()
-    bank = json.load(open(os.path.join(a.bankdir, "bank.json")))
+    bank = stratified_sample(json.load(open(os.path.join(a.bankdir, "bank.json"))), a.n, a.seed)
     order = list(range(len(bank)))
     random.Random(a.seed).shuffle(order)
     os.makedirs(a.outdir, exist_ok=True)
