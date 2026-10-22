@@ -33,7 +33,8 @@ for d in sys.argv[1:]:
         rows.append(dict(tag=j['tag'],prompt=p,reward=c['task_reward'],early=share(ev,0,25),late=share(ev,25,50),minoth_late=min_others(ev,c,25,50),minoth_early=min_others(ev,c,0,25)))
 d=pd.DataFrame(rows);d['change']=d.late-d.early
 if d.empty: raise SystemExit('no worlds')
-print(d.groupby(['prompt','reward'])[['early','late','change','minoth_early','minoth_late']].agg(['mean']).round(3).join(d.groupby(['prompt','reward']).size().rename('n')))
+g=d.groupby(['prompt','reward'])
+print(g[['early','late','change','minoth_early','minoth_late']].mean().round(3).assign(n=g.size()))
 rng=np.random.default_rng(13)
 def perm(x,y,n=10000):
     x,y=np.asarray(x,float),np.asarray(y,float);o=x.mean()-y.mean();z=np.r_[x,y];c=0
