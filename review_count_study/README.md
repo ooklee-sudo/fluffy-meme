@@ -23,6 +23,12 @@
 - OpenRouter 코더는 추론(reasoning)을 꺼서 JSON 잘림을 방지하고 `finish_reason=length`는 실패로 처리. 토큰 사용량은 `[usage]`로 출력.
 - 비용 감각(Haiku 5.5, 입력 $0.1/M·출력 $0.5/M 기준): 리뷰 1건당 입력 약 1.2k·출력 약 0.16k 토큰 ≈ $0.0002 → 3만 건 ≈ $6 + 실제 리뷰 길이만큼 가산.
 
+## 인간 코딩 워크플로 (측정오차 보정용)
+1. `python tools/make_labeling_sheets.py --coded out/reviews_coded.parquet --out-dir labeling --n 400 --overlap 100` — 분석 행의 **단순 무작위 표본** 추출, 코더 A/B용 블라인드 CSV(LLM 코드·별점·반응 수 비공개) + `sample_key.csv`(추출 기록). 겹침 100건은 두 코더가 모두 코딩.
+2. 코더는 `codebook.md`를 읽고 시트를 채움(첫 행 `#ALLOWED_VALUES`는 삭제해도 무방, 병합 시 무시됨).
+3. `python tools/merge_human_labels.py --a coder_A.csv --b coder_B.csv --key sample_key.csv --out-dir labeling` — 값 검증, 코더 간 신뢰도(`inter_coder_reliability.csv`), 불일치 행(`adjudication.csv`) 출력, `human.csv` 생성. 불일치 행은 합의 후 `--adjudicated`로 되돌려 넣어야 표본이 무작위성을 유지.
+4. `python run_pipeline.py ... --human-labels labeling/human.csv` — LLM-vs-인간 신뢰도와 DSL 보정 회귀가 함께 출력.
+
 ## 실행
 ```bash
 pip install -r requirements.txt
