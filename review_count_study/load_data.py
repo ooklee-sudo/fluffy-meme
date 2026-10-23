@@ -33,6 +33,19 @@ def load_yelp(review_path, user_path, n_max=500_000):
     return df.assign(author_reviews=df["author_reviews"].fillna(1))[COMMON]
 
 
+def load_yelp_mirror(review_path, user_path):
+    """Output of tools/fetch_yelp_mirror.py (unofficial mirror). count = total_interaction (assumed
+    useful+funny+cool, NOT `useful` alone). No business categories -> H3 heterogeneity is skipped."""
+    rv = pd.read_parquet(review_path)
+    us = pd.read_parquet(user_path, columns=["user_id", "review_count"]).rename(columns={"review_count": "author_reviews"})
+    df = rv.merge(us, on="user_id", how="left")
+    df["date"] = pd.to_datetime(df["date"])
+    df["days_since_post"] = (df["date"].max() - df["date"]).dt.days
+    df = df.rename(columns={"total_interaction": "count", "business_id": "group_id"})
+    df["category"] = "restaurant_or_service"
+    return df.assign(author_reviews=df["author_reviews"].fillna(1))[COMMON]
+
+
 def load_amazon(review_path, category, n_max=500_000):
     """Amazon Reviews 2023 JSONL (per category). count = helpful_vote. Product = parent_asin.
     Author review counts are not provided; compute from the file if user_id repeats."""
