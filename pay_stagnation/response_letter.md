@@ -5,7 +5,7 @@ Submission ID e1f8f39f-ffa0-4b28-b8b5-c3ed9708dcf9
 
 Dear Ms Muthukumaran,
 
-Thank you for the technical check. I have addressed each request below; changes are in `HSSC_manuscript_revised.docx`.
+Thank you for the technical check. I have addressed each request below; changes are marked as tracked changes in `HSSC_manuscript_revised_tracked.docx` (a clean copy is `HSSC_manuscript_revised.docx`).
 
 **1. Data and supporting documentation**
 - The dataset behind Tables 1-2, Figs 1-2 and the figures quoted in the text, variable definitions, the handling of missing years (no interpolation), every transformation (CPI deflation, 2013 = 100 indices, compound growth rates, ratios), and a script that recomputes every derived number are deposited at https://github.com/ooklee-sudo/fluffy-meme/tree/main/pay_stagnation (`data/*.csv`, `README.md`, `reproduce.py`). The study uses no individual-level or restricted data; the underlying figures are the published sources listed in Supplementary Table S1.
