@@ -46,6 +46,18 @@ def load_yelp_mirror(review_path, user_path):
     return df.assign(author_reviews=df["author_reviews"].fillna(1))[COMMON]
 
 
+def load_amazon_sample(path, group="user_id"):
+    """Output of tools/fetch_amazon_sample.py. count = helpful_vote; author_reviews = reviews by that user in
+    the category file; group_id defaults to user_id (the sampling cluster)."""
+    d = pd.read_parquet(path)
+    d["date"] = pd.to_datetime(d["timestamp"], unit="ms")
+    d["days_since_post"] = (d["date"].max() - d["date"]).dt.days
+    d["review_id"] = d["user_id"] + "|" + d["asin"] + "|" + d["timestamp"].astype(str)
+    d = d.rename(columns={"helpful_vote": "count", "rating": "stars"})
+    d["group_id"] = d[group]
+    return d[COMMON]
+
+
 def load_amazon(review_path, category, n_max=500_000):
     """Amazon Reviews 2023 JSONL (per category). count = helpful_vote. Product = parent_asin.
     Author review counts are not provided; compute from the file if user_id repeats."""

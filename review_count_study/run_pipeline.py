@@ -17,7 +17,7 @@ import correction, embeddings, lexicon, llm_coding, load_data, models, prompts, 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=["demo", "yelp", "yelp_mirror", "amazon"], default="demo")
+    ap.add_argument("--source", choices=["demo", "yelp", "yelp_mirror", "amazon", "amazon_sample"], default="demo")
     ap.add_argument("--review-path"); ap.add_argument("--user-path"); ap.add_argument("--category", default="amazon")
     ap.add_argument("--n", type=int, default=3000)
     ap.add_argument("--coder", choices=["mock", "anthropic", "openrouter"], default="mock")
@@ -37,6 +37,8 @@ def main():
     # 1. data
     if a.source == "demo":
         df = load_data.make_demo(a.n, a.seed)
+    elif a.source == "amazon_sample":
+        df = load_data.load_amazon_sample(a.review_path)
     elif a.source == "yelp_mirror":
         df = load_data.load_yelp_mirror(a.review_path, a.user_path)
     elif a.source == "yelp":
