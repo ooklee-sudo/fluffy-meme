@@ -13,20 +13,19 @@
 
 \title{Deference or Noise? A Baseline-Corrected Protocol for Auditing Stance Sensitivity in LLM Reviewers}
 
-\author{Ook Lee%
-\thanks{O. Lee is with the Department of Information System, Hanyang University, Seoul, Korea (e-mail: ooklee@hanyang.ac.kr).}%
+\author{Anonymous Author(s)%
 \thanks{Manuscript submitted for review. Code, the frozen item bank and all raw model outputs accompany the submission.}}
 
-\markboth{IEEE Transactions on Artificial Intelligence}{Lee: Deference or Noise?}
+\markboth{Deference or Noise?}{Deference or Noise?}
 \maketitle
 
 \begin{abstract}
-Organizations increasingly ask language models to review a decision after a requester has already stated a preference. Sycophancy measures usually count every change of answer under a stated view as deference. That count mixes run-to-run instability, sensitivity to any added text, and a reasonable use of the stance as evidence. We propose a baseline-corrected audit protocol that separates these sources and links the corrected quantity to the value of review. The protocol uses a frozen bank of 600 items with one correct answer, stance-free replicates, a length-matched neutral sentence, and stances that vary claimed evidence and disclosed accuracy. Across 14 models and 176,400 answers, the correction removes a median 9\% of the raw conditional deference but 21\% to 75\% for the five least stable models, and the share removed is strongly rank-correlated with instability (Spearman 0.90). Stance-following responds to the form of claimed evidence more than to the requester's disclosed record, no model shows pure deference, and larger models are not reliably less deferential. Two models that each answer 35\% of items correctly have corrected deference of 0.06 and 0.67. In post-hoc extensions, turning reasoning off raises corrected deference by 0.34 to 0.37 in two open hybrid models, whose accuracy collapses at the same time, but not detectably in a commercial model that stays accurate; a commercial model from a second vendor shows none.
+Organizations increasingly ask language models to review a decision after a requester has already stated a preference. Sycophancy measures usually count every change of answer under a stated view as deference. That count mixes run-to-run instability, sensitivity to any added text, and a reasonable use of the stance as evidence. We propose a baseline-corrected audit protocol that separates these sources and links the corrected quantity to the value of review. The protocol uses a frozen bank of 600 items with one correct answer, stance-free replicates, a length-matched neutral sentence, and stances that vary claimed evidence and disclosed accuracy. Across 14 models and 176,400 answers, the correction removes a median 9\% of the raw conditional deference but 21\% to 75\% for the five least stable models, and the share removed is strongly rank-correlated with instability (Spearman 0.90). Stance-following responds to the form of claimed evidence more than to the requester's disclosed record, no model shows pure deference, and larger models are not reliably less deferential. Two models that each answer 35\% of items correctly have corrected deference of 0.06 and 0.67. In post-hoc extensions, turning reasoning off raises corrected deference by 0.34 to 0.37 in two open hybrid models, whose accuracy collapses at the same time, but not detectably in a commercial model that stays accurate; a commercial model from a second vendor shows none. Rankings of AI reviewers by accuracy alone can therefore mislead.
 \end{abstract}
 
 \section*{Impact Statement}
 \begin{quote}\small
-Organizations increasingly ask large language models to review decisions after a requester has already stated a preference. Existing sycophancy measurements count every answer change under a stated view as deference, which conflates run-to-run instability, sensitivity to added text, and reasonable use of the stance as evidence. This paper introduces a baseline-corrected audit protocol that separates these sources and links the corrected quantity to the value of AI review. Applied to fourteen models and 176,400 answers, the protocol shows that up to three quarters of measured deference in unstable models is attributable to instability, that models respond to the form of claimed evidence but barely to the requester's stated reliability, and that two models with equal benchmark accuracy can differ more than tenfold in how much a stated preference moves their answers. The protocol is inexpensive; practitioners can run it on their own items before deploying an AI reviewer.
+Many organizations now let AI systems double-check decisions that a manager, clerk or engineer has already leaned toward. The check is worthless if the AI simply agrees with whoever asks. Existing tests call every changed answer ``agreement,'' yet an AI also changes its answers at random, or because of any added sentence. This paper separates these causes with a simple test that a firm can run on its own cases for the cost of a few hundred queries. Across 14 AI models, up to three quarters of what looked like agreement came from the model's own inconsistency, and two models with equal benchmark accuracy differed more than tenfold in how far a stated opinion moved them. Buyers who rank AI reviewers by accuracy alone can therefore choose the wrong one. The test can inform procurement, auditing and oversight of AI decision support.
 \end{quote}
 
 \begin{IEEEkeywords}
@@ -49,7 +48,7 @@ This paper makes four contributions, in order of importance.
 \end{enumerate}
 We do not claim to measure how people are influenced by AI, nor that the deference we find in synthetic items transfers to open-ended review. The scope of the claims is stated in Section~\ref{sec:limits}.
 
-\section{Related Work}
+\section{Background and Related Work}
 Perez et~al.\ showed that larger models trained with human feedback tend to repeat a user's stated opinions \cite{perez2023discovering}. Sharma et~al.\ traced part of this behavior to preference data, in which responses that match a user's view are more likely to be preferred \cite{sharma2024towards}. Wei et~al.\ reduced it by fine-tuning on synthetic data that decouples the claim from the user's opinion \cite{wei2023simple}. Subsequent work moved toward two settings: challenge after an answer, and social rather than factual agreement. In the first, a model is asked ``Are you sure?'' and its accuracy is compared before and after \cite{laban2023flipflop}; rebuttals can also be placed before or inside the dialogue, which changes the measured rate \cite{fanous2025syceval}; and multi-turn benchmarks count the turn at which a model gives in \cite{hong2025sycon}. In the second, sycophancy is defined by preservation of the user's self-image rather than by a factual error \cite{cheng2025social}. These studies establish that the behavior is common. Most of them score a flip, a change of answer, or agreement, without a baseline for the rate at which the same model would change anyway.
 
 Two further sources of change are documented separately from sycophancy. Outputs shift with trivial changes to a prompt \cite{sclar2024quantifying} and with the position of the correct option \cite{zheng2024large}, and stated views can bias answers without the model acknowledging them \cite{turpin2023language}, which shows influence but not its mechanism. Run-to-run variation is documented as well. Atil et~al.\ report accuracy variation of up to 10\% across identical runs at deterministic settings, and no model that is repeatable on every task \cite{atil2024llm}. Evaluation based on a single sampled answer therefore confounds noise with treatment. On the decision-theoretic side, a deferential report is a garbling of a non-deferential one, which Blackwell's ordering of experiments ranks as less informative for every decision-maker \cite{blackwell1953equivalent}. We take the repeated-measures view from experimental design and use replicate draws to estimate the noise before attributing change to the stance. Our approach is closest in spirit to a placebo control. The neutral sentence plays the role of the placebo: it has the same length as the stance sentence and no content bearing on the answer.
@@ -259,11 +258,13 @@ Ranking by stance-free accuracy preserves value at the top and little elsewhere.
 
 \emph{Post-hoc analyses.} The reasoning and second-vendor experiments were added after the main-run results were seen. They are labeled as such in the deviation log, and their selection was based on a pilot of 1{,}450 calls that used the same bank. We report them as supplementary evidence and not as tests of pre-specified hypotheses.
 
-\section{Conclusion}
+\section{Conclusion and Future Work}
 A change of answer under a stated view is a mixture of instability, sensitivity to added text, and the use of the stance as evidence. A baseline-corrected protocol with replicate and neutral-sentence channels separates the first two from the third, and a design that varies claimed evidence and disclosed accuracy helps to tell deference from evidence-weighing. Applied to 14 models, it removes up to three quarters of the measured deference in the least stable models, shows a stronger response to the form of claimed evidence than to the requester's disclosed record, and finds no consistent effect of scale. Turning reasoning off raises corrected deference in two open hybrid models, in which accuracy collapses at the same time, and not detectably in a commercial model that remains accurate. We recommend that practitioners run the protocol on their own items, report the corrected effect next to accuracy, and treat a ranking by accuracy alone as a ranking of one of two ingredients of the value of a reviewer.
 
+Four extensions follow from the limits above. First, a tier of items on which commercial models are correct 70--85\% of the time would show whether a corrected effect of zero survives when the answer is not easy for them. Second, several families from other vendors, each with a small and a large model, would give the cross-family sign test enough power to say something about scale. Third, paraphrased stance sentences, a temperature-zero check and repeated measurements at the item level would show how far the corrected effect depends on one wording, one sampling setting and a single draw per item. Fourth, the protocol measures models, not people; a study of how readers combine a reviewer's output with their own view would connect the corrected effect to realized decisions.
+
 \section*{Acknowledgments}
-The authors used an AI assistant (Claude Code, Anthropic) for code development, data processing and drafting and editing of this manuscript, and take responsibility for its content. The experiments were queried through a commercial aggregator; the cost of the main run was about US\$170 and of the additional experiments about US\$171.
+AI-generated text was used in drafting and editing this manuscript (Sections I--VIII) and an AI coding assistant was used to develop the analysis code \cite{claudecode}. The authors reviewed the text and the results and take responsibility for the content.
 
 \begin{thebibliography}{10}
 \bibitem{perez2023discovering}
@@ -301,6 +302,9 @@ C.~Zheng, H.~Zhou, F.~Meng, J.~Zhou, and M.~Huang, ``Large language models are n
 
 \bibitem{turpin2023language}
 M.~Turpin, J.~Michael, E.~Perez, and S.~R. Bowman, ``Language models don't always say what they think: Unfaithful explanations in chain-of-thought prompting,'' in \emph{Advances in Neural Information Processing Systems}, vol.~36, 2023.
+
+\bibitem{claudecode}
+Anthropic, ``Claude Code,'' AI coding assistant, 2026. [Online]. Available: https://claude.com/claude-code
 
 \bibitem{atil2024llm}
 B.~Atil \emph{et~al.}, ``LLM stability: A detailed analysis with some surprises,'' arXiv:2408.04667, 2024.

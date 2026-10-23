@@ -211,7 +211,7 @@ PRE = r"""\documentclass[10pt,a4paper]{article}
 \begin{document}
 \begin{center}
 {\Large\bfseries Supplementary Material\\[3pt] \large Deference or Noise? A Baseline-Corrected Protocol for Auditing Stance Sensitivity in LLM Reviewers}\\[6pt]
-Ook Lee\\ Department of Information System, Hanyang University, Seoul, Korea
+Anonymous Author(s)
 \end{center}
 \medskip
 \noindent\textbf{Contents.} A.~Proofs of the propositions. B.~The item bank. C.~Prompts. D.~Models and call settings. E.~Complete results by model. F.~Robustness details. G.~Pilot study, power and human review. H.~Experiments added after the main run.
