@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-import correction, lexicon, llm_coding, load_data, models, prompts, reliability
+import correction, embeddings, lexicon, llm_coding, load_data, models, prompts, reliability
 
 
 def main():
@@ -26,6 +26,8 @@ def main():
     ap.add_argument("--human-labels", help="CSV: review_id + coded fields; must be a simple random sample of the analysis rows")
     ap.add_argument("--demo-human-n", type=int, default=400, help="demo only: simulate this many human labels")
     ap.add_argument("--out", default="out")
+    ap.add_argument("--embedding", choices=["none", "tfidf", "st"], default="tfidf", help="text-embedding baseline for RQ2 (M4/M5)")
+    ap.add_argument("--emb-dim", type=int, default=20)
     ap.add_argument("--min-level-share", type=float, default=0.05, help="collapse dominant_emotion levels rarer than this into 'other'")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -82,6 +84,10 @@ def main():
             "M1 +lexicon (VADER)": models.CONTROLS + lexicon.LEXICON_TERMS,
             "M2 +LLM": rhs,
             "M3 +lexicon +LLM": rhs + lexicon.LEXICON_TERMS}
+    if a.embedding != "none":
+        d, ecols = embeddings.add_embeddings(d, a.embedding, a.emb_dim)
+        sets["M4 +embedding"] = models.CONTROLS + ecols
+        sets["M5 +embedding +LLM"] = rhs + ecols
     cv = models.cv_compare(d, sets)
     cv.to_csv(out / "cv_compare.csv", index=False)
     print("\n[RQ2 held-out Poisson deviance]\n", cv.round(4).to_string(index=False))
