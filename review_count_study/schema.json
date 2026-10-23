@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReviewCoding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["valid", "sentiment", "emotional_intensity", "specificity", "informativeness",
+               "argument_balance", "narrative", "explicit_recommendation", "comparison",
+               "dominant_emotion", "evidence"],
+  "properties": {
+    "valid": {"type": "boolean"},
+    "sentiment": {"type": "integer", "minimum": 1, "maximum": 5},
+    "emotional_intensity": {"type": "integer", "minimum": 1, "maximum": 5},
+    "specificity": {"type": "integer", "minimum": 1, "maximum": 5},
+    "informativeness": {"type": "integer", "minimum": 1, "maximum": 5},
+    "argument_balance": {"type": "integer", "minimum": 1, "maximum": 3},
+    "narrative": {"type": "integer", "enum": [0, 1]},
+    "explicit_recommendation": {"type": "integer", "enum": [0, 1]},
+    "comparison": {"type": "integer", "enum": [0, 1]},
+    "dominant_emotion": {"type": "string", "enum": ["joy", "anger", "anxiety", "sadness", "surprise", "none"]},
+    "evidence": {"type": "string", "maxLength": 300,
+                 "description": "점수 근거가 된 텍스트 구절 1–2개(감사/디버깅용, 분석에는 미사용)"}
+  }
+}
