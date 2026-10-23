@@ -46,9 +46,28 @@ class AnthropicCoder:
 
 class MockCoder:
     """Keyword heuristics that recover the demo generator's traits. Offline testing only."""
-    model, variant = "mock", "base"
+    variant = "base"
+
+    def __init__(self, measurement_error=True):
+        """measurement_error=False yields the 'true' codes (used to simulate human labels in the demo);
+        True adds extra coding error on top, mimicking an imperfect LLM."""
+        self.measurement_error = measurement_error
+        self.model = "mock" if measurement_error else "mock_truth"
 
     def code(self, text):
+        out = self._truth(text)
+        if self.measurement_error:
+            h = int(hashlib.md5(("err" + text).encode()).hexdigest(), 16)
+            for i, f in enumerate(prompts.SCORE_FIELDS):
+                hi = 3 if f == "argument_balance" else 5
+                if (h >> (5 * i)) % 3 == 0:  # ~1/3 of scores off by one
+                    out[f] = max(1, min(hi, out[f] + ((h >> (5 * i + 2)) % 2) * 2 - 1))
+            for i, f in enumerate(prompts.BINARY_FIELDS):
+                if (h >> (40 + 3 * i)) % 8 == 0:  # ~12% binary misclassification
+                    out[f] = 1 - out[f]
+        return out
+
+    def _truth(self, text):
         t = text.lower()
         neg = any(w in t for w in ("awful", "bad", "not happy", "disappointed"))
         spec = bool(re.search(r"\d", t))

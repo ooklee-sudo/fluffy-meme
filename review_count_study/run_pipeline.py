@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-import llm_coding, load_data, models, prompts, reliability
+import correction, lexicon, llm_coding, load_data, models, prompts, reliability
 
 
 def main():
@@ -23,7 +23,8 @@ def main():
     ap.add_argument("--coder", choices=["mock", "anthropic"], default="mock")
     ap.add_argument("--model", default=llm_coding.DEFAULT_MODEL)
     ap.add_argument("--variant", choices=["base", "alt"], default="base")
-    ap.add_argument("--human-labels")
+    ap.add_argument("--human-labels", help="CSV: review_id + coded fields; must be a simple random sample of the analysis rows")
+    ap.add_argument("--demo-human-n", type=int, default=400, help="demo only: simulate this many human labels")
     ap.add_argument("--out", default="out")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
@@ -48,16 +49,22 @@ def main():
     print(f"[coding] failed rows: {failed}")
     coded = coded[coded["error"].isna()] if "error" in coded else coded
 
-    # 3. reliability vs human labels (if provided)
+    # 3. reliability vs human labels (if provided; the demo simulates them from the noise-free mock coder)
+    h = None
     if a.human_labels:
         h = pd.read_csv(a.human_labels).set_index("review_id")
+    elif a.source == "demo" and a.demo_human_n > 0:
+        sub = coded.sample(min(a.demo_human_n, len(coded)), random_state=a.seed)
+        h = llm_coding.code_reviews(sub[load_data.COMMON], llm_coding.MockCoder(False), out / "demo_truth_cache.jsonl")
+        h = h.set_index("review_id")[prompts.CODED_FIELDS + ["valid"]]
+    if h is not None:
         c = coded.set_index("review_id").loc[h.index]
         tab = reliability.agreement_table(c, h)
         tab.to_csv(out / "reliability.csv", index=False)
         print("[reliability]\n", tab.round(3).to_string(index=False))
 
     # 4. models
-    d = models.prepare(coded)
+    d = lexicon.add_lexicon_features(models.prepare(coded))
     rhs = models.CONTROLS + models.LLM_TERMS
     print("[collinearity]", models.collinearity_check(d, rhs))
     print("[dispersion]", {k: round(v, 3) for k, v in models.dispersion_report(d, rhs).items()})
@@ -68,12 +75,24 @@ def main():
     models.irr_table(nb).to_csv(out / "irr_nb2.csv")
 
     # 5. RQ2: held-out deviance by feature set (M1 lexicon baseline needs a lexicon column; skipped if absent)
-    sets = {"M0 controls": models.CONTROLS, "M2 +LLM": rhs}
-    if "lexicon_sentiment" in d:
-        sets["M1 +lexicon"] = models.CONTROLS + ["lexicon_sentiment"]
+    sets = {"M0 controls": models.CONTROLS,
+            "M1 +lexicon (VADER)": models.CONTROLS + lexicon.LEXICON_TERMS,
+            "M2 +LLM": rhs,
+            "M3 +lexicon +LLM": rhs + lexicon.LEXICON_TERMS}
     cv = models.cv_compare(d, sets)
     cv.to_csv(out / "cv_compare.csv", index=False)
     print("\n[RQ2 held-out Poisson deviance]\n", cv.round(4).to_string(index=False))
+
+    # 5b. measurement-error corrected (DSL/PPI-style) Poisson using the human-labelled random subset
+    if h is not None:
+        hum = models.prepare(h.reset_index().merge(coded[["review_id", "text", "days_since_post", "author_reviews",
+                                                          "count", "stars", "group_id"]], on="review_id"))
+        hum.index = hum["review_id"].map(pd.Series(d.index, index=d["review_id"]))  # align to d's row index
+        res = correction.dsl_poisson(d, hum, rhs)
+        res.to_csv(out / "irr_dsl.csv")
+        naive = models.irr_table(models.fit_glm(d, rhs, "poisson"))[["IRR", "ci_low", "ci_high"]].add_prefix("naive_")
+        both = naive.join(res[["IRR", "ci_low", "ci_high", "p"]].add_prefix("dsl_"), how="inner")
+        print(f"\n[Corrected Poisson: DSL with n_human={len(hum)} of N={len(d)} vs naive LLM-only]\n", both.round(3).to_string())
 
     # 6. H3: product-type heterogeneity
     if d["category"].nunique() > 1:
