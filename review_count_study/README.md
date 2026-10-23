@@ -17,6 +17,12 @@
 | `run_pipeline.py` | 전체 실행 |
 | `docs/literature_review.md` | 선행연구·이론·가설 (**인용은 투고 전 검증 필요**) |
 
+## LLM 코딩 백엔드
+- `--coder anthropic` (ANTHROPIC_API_KEY) / `--coder openrouter` (OPENROUTER_API_KEY 또는 자격증명 주입 프록시, 모델 예: `anthropic/claude-haiku-5.5`) / `--coder mock`.
+- `--workers 12`로 동시 호출. 실패 행은 캐시에서 재사용하지 않고 다음 실행 때 다시 시도.
+- OpenRouter 코더는 추론(reasoning)을 꺼서 JSON 잘림을 방지하고 `finish_reason=length`는 실패로 처리. 토큰 사용량은 `[usage]`로 출력.
+- 비용 감각(Haiku 5.5, 입력 $0.1/M·출력 $0.5/M 기준): 리뷰 1건당 입력 약 1.2k·출력 약 0.16k 토큰 ≈ $0.0002 → 3만 건 ≈ $6 + 실제 리뷰 길이만큼 가산.
+
 ## 실행
 ```bash
 pip install -r requirements.txt

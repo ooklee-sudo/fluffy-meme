@@ -2,6 +2,7 @@
 
 Backends:
   anthropic : real coding via the Anthropic Messages API (needs ANTHROPIC_API_KEY)
+  openrouter: any model via OpenRouter (OPENROUTER_API_KEY, or a credential-injecting proxy)
   mock      : deterministic keyword coder for tests / demo (NOT for research use)
 Cache key = hash(backend model, prompt variant, text), so re-runs only code new rows.
 """
@@ -42,6 +43,43 @@ class AnthropicCoder:
             model=self.model, max_tokens=400, temperature=0, system=self.system,
             messages=[{"role": "user", "content": prompts.user_message(text)}])
         return prompts.validate(_parse_json(resp.content[0].text))
+
+
+class OpenRouterCoder:
+    """OpenAI-compatible chat endpoint on OpenRouter; any model id, e.g. 'anthropic/claude-haiku-5.5'.
+    Auth: sends OPENROUTER_API_KEY if set; otherwise relies on a proxy that injects credentials.
+    Accumulates token usage in self.usage for cost estimates."""
+    URL = "https://openrouter.ai/api/v1/chat/completions"
+
+    def __init__(self, model="anthropic/claude-haiku-5.5", variant="base", timeout=60):
+        import os
+        import requests  # lazy import
+        self.requests, self.timeout = requests, timeout
+        self.model, self.variant = model, variant
+        self.system = prompts.SYSTEM_PROMPT if variant == "base" else prompts.SYSTEM_PROMPT_VARIANT
+        self.headers = {"Content-Type": "application/json"}
+        if os.environ.get("OPENROUTER_API_KEY"):
+            self.headers["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+        self.usage = {"prompt_tokens": 0, "completion_tokens": 0, "calls": 0}
+        import threading
+        self._lock = threading.Lock()
+
+    def code(self, text):
+        body = {"model": self.model, "temperature": 0, "max_tokens": 600,
+                "reasoning": {"enabled": False},  # reasoning tokens would eat max_tokens and truncate the JSON
+                "messages": [{"role": "system", "content": self.system},
+                             {"role": "user", "content": prompts.user_message(text)}]}
+        r = self.requests.post(self.URL, headers=self.headers, json=body, timeout=self.timeout)
+        r.raise_for_status()
+        j = r.json()
+        if j["choices"][0].get("finish_reason") == "length":
+            raise ValueError("response truncated (finish_reason=length)")
+        u = j.get("usage", {})
+        with self._lock:
+            self.usage["prompt_tokens"] += u.get("prompt_tokens", 0)
+            self.usage["completion_tokens"] += u.get("completion_tokens", 0)
+            self.usage["calls"] += 1
+        return prompts.validate(_parse_json(j["choices"][0]["message"]["content"]))
 
 
 class MockCoder:
@@ -85,35 +123,45 @@ class MockCoder:
             dominant_emotion=["anger", "sadness", "none"][h % 3] if neg else (["joy", "surprise", "none"][h % 3] if not emo else "joy"), evidence="")
 
 
-def code_reviews(df, coder, cache_path, max_retries=3, sleep=1.0, log_every=200):
+def _code_one(coder, text, max_retries, sleep):
+    err = None
+    for attempt in range(max_retries):
+        try:
+            return coder.code(text)
+        except Exception as e:  # malformed JSON, API errors, rate limits
+            err = e
+            time.sleep(sleep * 2 ** attempt)
+    return {"error": str(err)}
+
+
+def code_reviews(df, coder, cache_path, max_retries=3, sleep=1.0, log_every=200, workers=1):
+    """Code every review, reusing the on-disk cache. Rows that previously failed (error entries) are retried.
+    workers>1 issues API calls concurrently (the cache file is only written from the calling thread)."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     cache_path = Path(cache_path)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache = {}
     if cache_path.exists():
         for line in cache_path.read_text().splitlines():
             r = json.loads(line)
-            cache[r["key"]] = r["coding"]
+            if "error" not in r["coding"]:
+                cache[r["key"]] = r["coding"]
+    todo = {}
+    for text in df["text"].fillna("").tolist():
+        k = _key(coder.model, coder.variant, text)
+        if k not in cache:
+            todo.setdefault(k, text)  # de-duplicate identical texts
     n_new = 0
-    with cache_path.open("a") as f:
-        for text in df["text"].fillna("").tolist():
-            k = _key(coder.model, coder.variant, text)
-            if k in cache:
-                continue
-            coding = None
-            for attempt in range(max_retries):
-                try:
-                    coding = coder.code(text)
-                    break
-                except Exception as e:  # malformed JSON, API errors, rate limits
-                    time.sleep(sleep * 2 ** attempt)
-                    err = e
-            if coding is None:
-                coding = {"error": str(err)}
+    with cache_path.open("a") as f, ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
+        futs = {ex.submit(_code_one, coder, t, max_retries, sleep): k for k, t in todo.items()}
+        for fut in as_completed(futs):
+            k, coding = futs[fut], fut.result()
             cache[k] = coding
             f.write(json.dumps({"key": k, "coding": coding}) + "\n")
             f.flush()
             n_new += 1
             if n_new % log_every == 0:
-                print(f"  coded {n_new} new reviews")
+                print(f"  coded {n_new}/{len(todo)} new reviews")
     rows = [cache[_key(coder.model, coder.variant, t)] for t in df["text"].fillna("")]
     out = pd.DataFrame(rows).drop(columns=["evidence"], errors="ignore")
     out.index = df.index

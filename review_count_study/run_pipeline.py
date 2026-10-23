@@ -20,12 +20,13 @@ def main():
     ap.add_argument("--source", choices=["demo", "yelp", "amazon"], default="demo")
     ap.add_argument("--review-path"); ap.add_argument("--user-path"); ap.add_argument("--category", default="amazon")
     ap.add_argument("--n", type=int, default=3000)
-    ap.add_argument("--coder", choices=["mock", "anthropic"], default="mock")
-    ap.add_argument("--model", default=llm_coding.DEFAULT_MODEL)
+    ap.add_argument("--coder", choices=["mock", "anthropic", "openrouter"], default="mock")
+    ap.add_argument("--model", default=None, help="model id (anthropic: claude-haiku-5-5; openrouter: anthropic/claude-haiku-5.5)")
     ap.add_argument("--variant", choices=["base", "alt"], default="base")
     ap.add_argument("--human-labels", help="CSV: review_id + coded fields; must be a simple random sample of the analysis rows")
     ap.add_argument("--demo-human-n", type=int, default=400, help="demo only: simulate this many human labels")
     ap.add_argument("--out", default="out")
+    ap.add_argument("--workers", type=int, default=1, help="concurrent API calls for LLM coding")
     ap.add_argument("--embedding", choices=["none", "tfidf", "st"], default="tfidf", help="text-embedding baseline for RQ2 (M4/M5)")
     ap.add_argument("--emb-dim", type=int, default=20)
     ap.add_argument("--min-level-share", type=float, default=0.05, help="collapse dominant_emotion levels rarer than this into 'other'")
@@ -44,9 +45,17 @@ def main():
     print(f"[data] {len(df)} reviews, mean count={df['count'].mean():.2f}")
 
     # 2. LLM coding (cached, resumable)
-    coder = llm_coding.MockCoder() if a.coder == "mock" else llm_coding.AnthropicCoder(
-        a.model, "base" if a.variant == "base" else "alt")
-    coded = llm_coding.code_reviews(df, coder, out / f"coding_cache_{coder.model}_{coder.variant}.jsonl")
+    variant = "base" if a.variant == "base" else "alt"
+    if a.coder == "mock":
+        coder = llm_coding.MockCoder()
+    elif a.coder == "anthropic":
+        coder = llm_coding.AnthropicCoder(a.model or llm_coding.DEFAULT_MODEL, variant)
+    else:
+        coder = llm_coding.OpenRouterCoder(a.model or "anthropic/claude-haiku-5.5", variant)
+    coded = llm_coding.code_reviews(df, coder, out / ("coding_cache_" + coder.model.replace("/", "_") + f"_{coder.variant}.jsonl"),
+                                    workers=a.workers)
+    if hasattr(coder, "usage"):
+        print("[usage]", coder.usage)
     coded.to_parquet(out / "reviews_coded.parquet") if _has_pyarrow() else coded.to_csv(out / "reviews_coded.csv", index=False)
     failed = coded["error"].notna().sum() if "error" in coded else 0
     print(f"[coding] failed rows: {failed}")
