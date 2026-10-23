@@ -10,8 +10,18 @@ LLM_TERMS = ["sentiment_c", "I(sentiment_c**2)", "emotional_intensity", "specifi
 CONTROLS = ["stars", "np.log(text_len)", "np.log(author_reviews)"]
 
 
-def prepare(df):
+def rare_level_map(series, min_share=0.05):
+    """Map levels with share < min_share (in the main LLM-coded sample) to 'other'. Compute ONCE on the full
+    LLM-coded data and pass the same map to every frame (including human labels) so designs stay aligned."""
+    share = series.value_counts(normalize=True)
+    keep = set(share[share >= min_share].index)
+    return {lv: (lv if lv in keep else "other") for lv in share.index}
+
+
+def prepare(df, emotion_map=None):
     d = df[df.get("valid", True) == True].copy()  # noqa: E712
+    if emotion_map is not None:  # levels unseen in the main sample (e.g. only in human labels) -> 'other'
+        d["dominant_emotion"] = d["dominant_emotion"].map(lambda v: emotion_map.get(v, "other"))
     d["sentiment_c"] = d["sentiment"] - 3
     d["text_len"] = d["text"].str.split().str.len().clip(lower=1)
     d["author_reviews"] = d["author_reviews"].clip(lower=1)

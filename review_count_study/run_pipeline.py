@@ -26,6 +26,7 @@ def main():
     ap.add_argument("--human-labels", help="CSV: review_id + coded fields; must be a simple random sample of the analysis rows")
     ap.add_argument("--demo-human-n", type=int, default=400, help="demo only: simulate this many human labels")
     ap.add_argument("--out", default="out")
+    ap.add_argument("--min-level-share", type=float, default=0.05, help="collapse dominant_emotion levels rarer than this into 'other'")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(exist_ok=True)
@@ -64,7 +65,9 @@ def main():
         print("[reliability]\n", tab.round(3).to_string(index=False))
 
     # 4. models
-    d = lexicon.add_lexicon_features(models.prepare(coded))
+    emap = models.rare_level_map(coded["dominant_emotion"], a.min_level_share)
+    print("[levels] dominant_emotion map:", {k: v for k, v in emap.items() if k != v} or "no collapsing needed")
+    d = lexicon.add_lexicon_features(models.prepare(coded, emap))
     rhs = models.CONTROLS + models.LLM_TERMS
     print("[collinearity]", models.collinearity_check(d, rhs))
     print("[dispersion]", {k: round(v, 3) for k, v in models.dispersion_report(d, rhs).items()})
@@ -86,7 +89,7 @@ def main():
     # 5b. measurement-error corrected (DSL/PPI-style) Poisson using the human-labelled random subset
     if h is not None:
         hum = models.prepare(h.reset_index().merge(coded[["review_id", "text", "days_since_post", "author_reviews",
-                                                          "count", "stars", "group_id"]], on="review_id"))
+                                                          "count", "stars", "group_id"]], on="review_id"), emap)
         hum.index = hum["review_id"].map(pd.Series(d.index, index=d["review_id"]))  # align to d's row index
         res = correction.dsl_poisson(d, hum, rhs)
         res.to_csv(out / "irr_dsl.csv")

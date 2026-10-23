@@ -52,7 +52,7 @@ class MockCoder:
         """measurement_error=False yields the 'true' codes (used to simulate human labels in the demo);
         True adds extra coding error on top, mimicking an imperfect LLM."""
         self.measurement_error = measurement_error
-        self.model = "mock" if measurement_error else "mock_truth"
+        self.model = "mock-v2" if measurement_error else "mock_truth-v2"  # bump when coding logic changes (cache key)
 
     def code(self, text):
         out = self._truth(text)
