@@ -86,8 +86,9 @@ def main():
             "M3 +lexicon +LLM": rhs + lexicon.LEXICON_TERMS}
     if a.embedding != "none":
         d, ecols = embeddings.add_embeddings(d, a.embedding, a.emb_dim)
-        sets["M4 +embedding"] = models.CONTROLS + ecols
-        sets["M5 +embedding +LLM"] = rhs + ecols
+        sets["M4 +embedding (unpenalized)"] = models.CONTROLS + ecols
+        sets["M4r +embedding (ridge)"] = (models.CONTROLS + ecols, ["emb_"])
+        sets["M5r +embedding +LLM (ridge)"] = (rhs + ecols, ["emb_"])
     cv = models.cv_compare(d, sets)
     cv.to_csv(out / "cv_compare.csv", index=False)
     print("\n[RQ2 held-out Poisson deviance]\n", cv.round(4).to_string(index=False))

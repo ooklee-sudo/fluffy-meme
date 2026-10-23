@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from patsy import build_design_matrices, dmatrix
 from sklearn.model_selection import GroupKFold
 
 LLM_TERMS = ["sentiment_c", "I(sentiment_c**2)", "emotional_intensity", "specificity", "informativeness",
@@ -73,18 +74,64 @@ def poisson_deviance(y, mu):
     return 2 * np.mean(term - (y - mu))
 
 
+ALPHA_GRID = np.logspace(-5, 1, 9)  # if the chosen alpha sits at the upper end, widen the grid
+
+
+def _design(formula, train, test=None):
+    X = dmatrix(formula, train, return_type="dataframe")
+    Xt = None if test is None else build_design_matrices([X.design_info], test, return_type="dataframe")[0]
+    return X, Xt
+
+
+def _ridge_fit(X, y, off, pen_mask, alpha):
+    """Poisson ridge: L2 penalty (L1_wt=0) on columns flagged in pen_mask only; intercept and controls free."""
+    pen = np.where(pen_mask, alpha, 0.0)
+    mod = sm.GLM(y, X, family=sm.families.Poisson(), offset=off)
+    return mod.fit_regularized(alpha=pen, L1_wt=0.0, maxiter=300)
+
+
+def ridge_cv_alpha(d, rhs, penalized, k=3, group_col="group_id", grid=ALPHA_GRID):
+    """Choose the ridge strength by group K-fold held-out Poisson deviance on `d` (inner loop)."""
+    X, _ = _design(" + ".join(rhs), d)
+    mask = np.array([any(c == p or c.startswith(p) for p in penalized) for c in X.columns])
+    y, off = d["count"].to_numpy(float), np.log(d["exposure"].to_numpy(float))
+    Xv = X.to_numpy(float)
+    scores = np.zeros(len(grid))
+    for tr, te in GroupKFold(n_splits=k).split(Xv, groups=d[group_col]):
+        for j, al in enumerate(grid):
+            b = _ridge_fit(Xv[tr], y[tr], off[tr], mask, al).params
+            scores[j] += poisson_deviance(y[te], np.exp(Xv[te] @ np.asarray(b) + off[te]))
+    return float(grid[int(np.argmin(scores))])
+
+
 def cv_compare(d, feature_sets: dict, k=5, group_col="group_id"):
-    """Held-out Poisson deviance by group-wise K-fold (RQ2). feature_sets: name -> list of RHS terms."""
+    """Held-out Poisson deviance by group-wise K-fold (RQ2).
+    feature_sets: name -> list of RHS terms, or (rhs, penalized_cols) for a ridge-regularized fit whose penalty
+    is re-chosen by inner CV inside every outer training fold (no peeking at held-out groups)."""
     gkf = GroupKFold(n_splits=k)
     rows = []
-    for name, rhs in feature_sets.items():
-        devs = []
+    for name, spec in feature_sets.items():
+        rhs, penalized = (spec, None) if isinstance(spec, list) else spec
+        devs, alphas = [], []
         for tr, te in gkf.split(d, groups=d[group_col]):
             tr_d, te_d = d.iloc[tr], d.iloc[te]
+            if penalized:
+                al = ridge_cv_alpha(tr_d, rhs, penalized)
+                Xtr, Xte = _design(" + ".join(rhs), tr_d, te_d)
+                mask = np.array([any(c.startswith(p) for p in penalized) for c in Xtr.columns])
+                b = np.asarray(_ridge_fit(Xtr.to_numpy(float), tr_d["count"].to_numpy(float),
+                                          np.log(tr_d["exposure"].to_numpy(float)), mask, al).params)
+                mu = np.exp(Xte.to_numpy(float) @ b + np.log(te_d["exposure"].to_numpy(float)))
+                devs.append(poisson_deviance(te_d["count"], mu)); alphas.append(al)
+                continue
             res = smf.glm("count ~ " + " + ".join(rhs), data=tr_d, family=sm.families.Poisson(),
                           offset=np.log(tr_d["exposure"])).fit()
             mu = res.predict(te_d, offset=np.log(te_d["exposure"]))
             devs.append(poisson_deviance(te_d["count"], mu))
+        if penalized:  # AIC is not comparable for penalized fits
+            rows.append({"model": name, "cv_deviance": np.mean(devs), "cv_sd": np.std(devs), "aic_poisson": np.nan,
+                         "ridge_alpha_median": float(np.median(alphas))})
+            continue
         full = smf.glm("count ~ " + " + ".join(rhs), data=d, family=sm.families.Poisson(),
                        offset=np.log(d["exposure"])).fit()
         rows.append({"model": name, "cv_deviance": np.mean(devs), "cv_sd": np.std(devs), "aic_poisson": full.aic})
