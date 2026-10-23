@@ -20,9 +20,11 @@ def dsl_poisson(llm_df, human_df, rhs, group_col="group_id", pi=None, max_iter=1
     """llm_df: all rows (N) with LLM codes; human_df: subset with human codes (same columns, index aligned
     to llm_df). Returns DataFrame with coef, IRR, se, ci, p for the human-coded Poisson regression."""
     formula = " + ".join(rhs)
-    Xh_all = dmatrix(formula, llm_df, return_type="dataframe")           # LLM-coded design
-    info = Xh_all.design_info
     hum = human_df.loc[human_df.index.intersection(llm_df.index)]
+    # factor levels = union over LLM and human codes, so a category seen only in human labels is not lost
+    info = dmatrix(formula, pd.concat([llm_df[hum.columns.intersection(llm_df.columns)], hum]),
+                   return_type="dataframe").design_info
+    Xh_all = build_design_matrices([info], llm_df, return_type="dataframe")[0]
     X_lab = np.asarray(build_design_matrices([info], hum, return_type="dataframe")[0])
     n, p = Xh_all.shape
     R = llm_df.index.isin(hum.index)
