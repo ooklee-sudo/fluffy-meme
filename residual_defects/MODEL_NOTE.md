@@ -158,3 +158,10 @@ Detection: tests in uniformly random order; defect with `f` failing of `M` tests
   versus rare edge cases. This heterogeneity is what produces the heavy tail.
 - Limits: signature count is a proxy for defects; random test order is unrealistic (developers run easy tests first);
   timeouts are capped at 5 per sample (over-counts TIMEOUT); HumanEval+ functions are small.
+
+## Update: formal results moved to THEORY.md
+Propositions P1-P6 with proofs and numerical checks are in `THEORY.md` (`theory_check.py`, `elasticity_check.py`).
+New in that document: the value of quality is `c/(theta lam)` regardless of liability (baseline), the externality loss
+`L(delta)` does not depend on tool quality, warranties cannot signal quality when `lam` is known, and the payout elasticity is
+`1 - rho` in general. The earlier 2-SE gap between `E[R_tau]` and `r*` was sampling noise (0.0362 vs 0.0357 at n = 30,000).
+Still open: vendor pricing/competition game, welfare ranking of the lemons equilibria, proof of C1 and of stopping-rule optimality.
