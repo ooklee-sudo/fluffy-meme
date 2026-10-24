@@ -22,6 +22,7 @@ def main():
     ap.add_argument("--labels", required=True, help="LLM product labels CSV (defines the sampling frame)")
     ap.add_argument("--meta-dir", required=True); ap.add_argument("--out-dir", required=True)
     ap.add_argument("--n", type=int, default=200); ap.add_argument("--seed", type=int, default=2024)
+    ap.add_argument("--first-item", type=int, default=1, help="write sheets only for items P<first-item>.. (e.g. 101 for a fresh validation half); the key still covers the whole draw")
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
     lab = pd.read_csv(a.labels).dropna(subset=["good_type", "motive"]).drop_duplicates("parent_asin")
@@ -43,13 +44,14 @@ def main():
     hint = {"item_id": "#ALLOWED_VALUES", "title": "(delete this row after reading; see the coder guide)",
             "good_type": "search|experience", "motive": "hedonic|utilitarian", "confidence": "1-3 (1=guess, 3=sure)",
             "notes": "free text"}
+    view = view[view["item_id"].str[1:].astype(int) >= a.first_item].reset_index(drop=True)
     for coder in ("A", "B"):
         sheet = view.sample(frac=1, random_state=int(rng.integers(1e9))).reset_index(drop=True)
         for c in COLS:
             sheet[c] = ""
         order = ["item_id", "title", "main_category", "category_path", "features", "description"] + COLS
         pd.concat([pd.DataFrame([hint]), sheet]).fillna("")[order].to_csv(out / f"product_coder_{coder}.csv", index=False, encoding="utf-8-sig")
-    sample[["item_id", "parent_asin", "good_type", "motive"]].rename(
+    sample[sample["item_id"].str[1:].astype(int) >= a.first_item][["item_id", "parent_asin", "good_type", "motive"]].rename(
         columns={"good_type": "llm_good_type", "motive": "llm_motive"}).to_csv(out / "product_sample_key.csv", index=False)
     print(f"sampled {len(sample)} of {len(frame)} products -> coder_A/B sheets (same items, different order) + private key")
 
