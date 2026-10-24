@@ -112,3 +112,27 @@ Simulation (n = 40,000; alpha=2, beta0=1, A=35, theta=0.8, c=1):
   (ii) incomplete offsetting from Bayesian shrinkage; (iii) warranty separation depending on learning speed;
   (iv) calibration of `lam`, `theta`, hazard shape from LLM-generated-code data.
 - No source found modelling AI code generation as a vendor warranty + developer verification game. Absence not proven.
+
+## Close reading: Catalini et al. (2602.20946v2) and Bhati (2609.04681v1)
+Read from the PDF text (key sections: Catalini Sec. 3.4, 6.1.5 incl. footnote 11, Prop. 1-4, provenance premium;
+Bhati Sec. 8-10). Keyword scan: neither paper contains "Poisson", "stochastic", "Bayes", "posterior", "Peltzman",
+"risk compensation" or "offsetting"; "adverse selection" appears once in Catalini, "warranty" twice.
+
+| Aspect | Catalini-Hui-Wu (working paper) | Bhati (practitioner synthesis) | This model |
+|---|---|---|---|
+| Type | Formal macro/task-level model, 4 propositions, preprint | Conceptual synthesis, "no new model experiment"; no derivations | Micro model with closed forms, simulations |
+| Unit | Task `i` with verification cost `c_H(i) = w t_fb(i) / S_nm`; verifiable iff `c_H < B` | Candidate change; PQC gates; `V_tax = (C_CI+C_review+C_security+C_rework)/C_generation` | Defect count with Poisson thinning |
+| Defect process | None; deterministic measurability thresholds, drift `eta` | None | `N ~ Poisson`, detection survival `S(e)`, residual `R` |
+| Verification effort | Binary (task above/below budget `B`); continuous only in footnote 11 | Cost accounting, no choice model | Continuous `e`, FOC, hazard-based comparative statics |
+| Moral hazard / liability | Footnote 11: `kappa'(v) = theta (1-tau) L_a dsv/dV`; internalisation `theta < 1` gives under-supply; Prop. 4: liability raises `B` | Not modelled | `E[R] = c / ((1-phi) l theta)`; wedge `1/(1-phi)`. **Same qualitative externality result** |
+| Tool quality -> verification | Automation cost falls, verification does not; gap widens. No offsetting mechanism | "Cheaper model can raise total cost" (qualitative) | Offsetting: `eps = a/(a+h)`, `1/(1+k)`, over-offsetting. **Not in either paper** |
+| Learning about quality | None | None | Gamma-Poisson posterior, shrinkage, incomplete offsetting |
+| Vendor/warranty signalling | Provenance premium, adverse selection (one line), "warranties" listed | None | Warranty separation depends on learning speed (sketch) |
+| Empirical calibration | None | Cites others' studies | EvalPlus-style count data planned |
+
+### Verdict
+- Overlap: the externality wedge (Catalini footnote 11, my `1/(1-phi)`) and the general claim that liability raises
+  verification. Do not claim these.
+- No overlap found: stochastic residual-defect micro-foundation, offsetting elasticity, over-offsetting, learning-induced
+  incomplete offsetting, learning-dependent warranty separation, count-model calibration.
+- Caveat: two papers read in full text; Okumoto-Goel and security-economics literature still overlap on Prop. 1 and the wedge.
