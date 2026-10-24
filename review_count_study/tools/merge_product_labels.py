@@ -16,7 +16,10 @@ G, M = {"search", "experience"}, {"hedonic", "utilitarian"}
 
 
 def load(path):
-    d = pd.read_csv(path, dtype=str, encoding="utf-8-sig").fillna("")
+    if str(path).lower().endswith((".xlsx", ".xls")):
+        d = pd.read_excel(path, dtype=str).fillna("")
+    else:
+        d = pd.read_csv(path, dtype=str, encoding="utf-8-sig").fillna("")
     d = d[~d["item_id"].str.startswith("#")].copy()
     for c, ok in (("good_type", G), ("motive", M)):
         d[c] = d[c].str.strip().str.lower()
