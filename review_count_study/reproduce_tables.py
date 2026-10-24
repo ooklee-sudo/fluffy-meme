@@ -79,7 +79,14 @@ def pf(p): return "<.001" if p < .0005 else f"{p:.3f}".lstrip("0")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data"); ap.add_argument("--out", default="results"); ap.add_argument("--procs", type=int, default=4)
+    ap.add_argument("--dump-model-data", help="only write the six model-ready product-level data files (input of misclass_sensitivity.py) to this folder and exit")
     a = ap.parse_args()
+    if a.dump_model_data:
+        init(a.data_dir); Path(a.dump_model_data).mkdir(parents=True, exist_ok=True)
+        cols = ["review_id", "parent_asin", "count", "gap", "experience", "hedonic", "len_chars", "star_f", "has_image", "exposure", "age", "stars", "stars_llm"]
+        for p, l in COMBOS:
+            prep(p, l, True)[cols].to_csv(Path(a.dump_model_data) / f"{p}_{l}.csv", index=False)
+        print("wrote", len(COMBOS), "files to", a.dump_model_data); return
     Path(a.out).mkdir(exist_ok=True)
     jobs = [(p, l, prod) for (p, l) in COMBOS for prod in (False, True)]
     with mp.Pool(a.procs, initializer=init, initargs=(a.data_dir,)) as pool:

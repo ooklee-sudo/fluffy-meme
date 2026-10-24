@@ -15,7 +15,7 @@
 
 **Keywords:** large language models; online reviews; review helpfulness; sentiment analysis; replication; count models
 
-**Word count:** about 2,960 words (abstract, text, and references; tables excluded), 3 tables, online appendix about 1,100 words.
+**Word count:** about 3,040 words (abstract, text, and references; tables excluded), 3 tables, online appendix about 1,540 words.
 
 ## Declarations
 

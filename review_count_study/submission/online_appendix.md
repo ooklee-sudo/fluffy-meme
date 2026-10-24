@@ -54,6 +54,34 @@ For each combination we compared NB2 with a zero-inflated negative binomial (log
 | original | Llama 3.3 70B | product | -22346.10 | -22346.10 | 44714.2 / 44718.2 | 2.44e-102 |
 | original | GPT-4.1 nano | product | -22278.01 | -22278.01 | 44578.0 / 44582.0 | 3.52e-91 |
 
-## E. Replication package
+## E. Sensitivity to misclassified product labels
+
+The product-level labels come from an LLM and contain errors. Against the two-coder consensus (100 products), the labels had sensitivity 1.00 (29/29) and specificity .89 (63/71) for experience goods, and sensitivity .92 (24/26) and specificity .89 (66/74) for hedonic goods. Because misclassifying the moderator can bias an interaction toward zero, we corrected the key estimates for these error rates by regression calibration. In each of 120 draws, sensitivity and specificity were drawn from Beta posteriors (uniform prior) given the validation counts; the true prevalence was backed out of the observed LLM share (Rogan–Gladen identity); and each product's expected true label, E[T | LLM label], computed from the implied positive and negative predictive values, replaced the LLM label in the Model 2 negative binomial regression of Table 2 and in the regression of the gap on the hedonic indicator. We report the median and the range of the corrected estimates over the draws, and estimates pooled with Rubin's rules, which add the between-draw variance to the clustered sampling variance so that the intervals reflect uncertainty about the error rates. The method assumes that misclassification is non-differential (independent of helpful votes and of the gap), that error rates are equal across categories, and that the validation sample is representative; none of these assumptions can be tested here. Regression calibration is exact for linear models and approximate for the log-linear negative binomial model.
+
+**Table E1. Gap × experience interaction and net gap effect for experience goods, before and after correction**
+
+| Prompt | LLM | Gap × experience IRR, observed [95% CI] | Corrected: median (range over error-rate draws) | Corrected, pooled [95% CI] | Net gap IRR, experience goods: observed | Net gap IRR, corrected, pooled [95% CI] |
+|---|---|---|---|---|---|---|
+| ours | Claude Haiku 5.5 | 0.946 [0.732, 1.223] | 0.928 (0.888–0.938) | 0.924 [0.636, 1.343] | 1.234 | 1.206 [0.879, 1.656] |
+| ours | Llama 3.3 70B | 0.805 [0.649, 0.999] | 0.745 (0.629–0.777) | 0.734 [0.525, 1.026] | 1.084 | 0.993 [0.772, 1.277] |
+| ours | GPT-4.1 nano | 0.885 [0.704, 1.112] | 0.847 (0.770–0.868) | 0.840 [0.599, 1.179] | 1.138 | 1.082 [0.824, 1.421] |
+| original | Claude Haiku 5.5 | 0.826 [0.638, 1.069] | 0.771 (0.665–0.801) | 0.762 [0.516, 1.123] | 1.086 | 1.005 [0.729, 1.386] |
+| original | Llama 3.3 70B | 0.868 [0.675, 1.115] | 0.825 (0.738–0.848) | 0.817 [0.563, 1.185] | 1.178 | 1.112 [0.813, 1.521] |
+| original | GPT-4.1 nano | 0.979 [0.756, 1.267] | 0.971 (0.955–0.975) | 0.970 [0.666, 1.412] | 1.204 | 1.194 [0.881, 1.617] |
+
+**Table E2. Hedonic coefficient on the gap, before and after correction**
+
+| Prompt | LLM | Observed [95% CI] | Corrected: median (range over error-rate draws) | Corrected, pooled [95% CI] |
+|---|---|---|---|---|
+| ours | Claude Haiku 5.5 | −0.029 [−0.046, −0.011] | −0.048 (−0.102 to −0.037) | −0.058 [−0.201, 0.085] |
+| ours | Llama 3.3 70B | −0.017 [−0.032, −0.002] | −0.028 (−0.060 to −0.022) | −0.034 [−0.125, 0.057] |
+| ours | GPT-4.1 nano | −0.017 [−0.036, 0.002] | −0.028 (−0.061 to −0.022) | −0.034 [−0.133, 0.064] |
+| original | Claude Haiku 5.5 | −0.026 [−0.043, −0.008] | −0.043 (−0.091 to −0.033) | −0.052 [−0.182, 0.078] |
+| original | Llama 3.3 70B | −0.017 [−0.032, −0.001] | −0.028 (−0.060 to −0.022) | −0.034 [−0.124, 0.057] |
+| original | GPT-4.1 nano | −0.020 [−0.038, −0.003] | −0.034 (−0.073 to −0.026) | −0.041 [−0.149, 0.067] |
+
+The corrected interactions lie further below one (medians 0.745–0.971) than the observed ones (0.805–0.979 in these refits), but every pooled interval includes one, and the corrected net gap effect for experience goods stays near or above one (pooled estimates 0.99–1.21, all intervals include one). The corrected hedonic coefficients are 1.6–1.7 times larger than the observed ones (−0.028 to −0.048), which matches the factor of about 1.7 implied by the error rates, but the pooled intervals include zero because the validation sample is small. A likelihood-based (EM) variant, run for one combination (Claude, our prompt, 80 draws), gave similar corrected experience estimates (interaction 0.960, range 0.904–1.045; net gap IRR 1.211) but a hedonic coefficient of −0.083, about three times the observed value and well above what the error rates imply for a linear association. We attribute this to the Gaussian outcome model fitting the discrete, skewed gap poorly and therefore do not use EM for the hedonic coefficient. Overall, the correction moves the interaction in the direction reported by WZH but does not make it detectable, and the validation sample is too small for precise correction.
+
+## F. Replication package
 
 Planned contents: review IDs of the sampled reviews, the LLM-inferred ratings for each LLM and prompt, product-level labels, and analysis code. Raw review text and metadata are not redistributed (Amazon Reviews 2023 is available from its authors; cite Hou et al. 2024). [AUTHORS TO COMPLETE: anonymized repository link.]
