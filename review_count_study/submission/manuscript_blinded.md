@@ -27,13 +27,13 @@ A competing account emerged after our first look at the data. A 2,000-review pil
 
 ## 3. Data and measures
 
-**Sample.** We use Amazon Reviews 2023 (Hou et al. 2024). The raw category files are sorted by user, so we read random byte windows from four category files and keep every review of the users who fall entirely inside a window. The categories approximate WZH's two-by-two design: Cell Phones and Accessories (assumed search, hedonic), Office Products (search, utilitarian), Beauty and Personal Care (experience, hedonic), and Home and Kitchen (experience, utilitarian). We cap reviews per user at five, draw 6,500 reviews per category, and remove reviews without text and duplicates, which leaves 25,783 reviews (25,711–25,783 depending on the LLM and prompt, after dropping unparseable responses). Windows over-represent prolific reviewers, and reviews cluster within users, so we cluster standard errors by product, as WZH do, and by user as a check. The sampling code and the IDs of all sampled reviews are in the replication package. The outcome is the number of helpful votes (mean = 0.89, SD = 10.1, maximum = 1,130; 78.7% zeros).
+**Sample.** We use Amazon Reviews 2023 (Hou et al. 2024). The raw category files are sorted by user, so we read random byte windows from four category files and keep every review of the users who fall entirely inside a window. The categories approximate WZH's two-by-two design: Cell Phones and Accessories (assumed search, hedonic), Office Products (search, utilitarian), Beauty and Personal Care (experience, hedonic), and Home and Kitchen (experience, utilitarian). We cap reviews per user at five, draw 6,500 reviews per category, and remove reviews without text and duplicates, which leaves 25,783 reviews (25,729–25,783 depending on the LLM and prompt, after dropping unparseable responses). Windows over-represent prolific reviewers, and reviews cluster within users, so we cluster standard errors by product, as WZH do, and by user as a check. The sampling code and the IDs of all sampled reviews are in the replication package. The outcome is the number of helpful votes (mean = 0.89, SD = 10.1, maximum = 1,130; 78.7% zeros).
 
 **Gap.** Each LLM received only the review text and returned the star rating (1–5) it believed the author had given. The gap is the absolute difference from the author's rating. We use Claude Haiku 5.5, Llama 3.3 70B Instruct, and GPT-4.1 nano, each with two prompts: our own (JSON output, temperature 0) and the system prompt in WZH's supplementary material, an instruction to act as a classifier and answer only with a number from 1 to 5, sent with the unwrapped review text at temperature 0.2 (Web Appendix A). The supplement lists the prompt's sentences separately, so the original separator is unknown; WZH used OpenAI models, and their versions and access date cannot be matched.
 
 **Goods classification.** Category-level coding is coarse, so we also classified every sampled product (20,672 products) with Claude Haiku 5.5 from its title, category path, features, and description, using the definitions in WZH's tradition: a search good's main quality can be judged before purchase from seller information; an experience good's cannot; hedonic goods are bought mainly for pleasure, utilitarian goods for a functional task (Web Appendix B). Llama 3.3 70B labeled a random 3,000 products as a check. Agreement was 88.8% for search versus experience (κ = .755) and 87.6% for hedonic versus utilitarian (κ = .698). Two human coders then labeled a random sample of 100 products, working independently according to their instructions, after a calibration round on a different 100 products; agreement between the coders was κ = .93 for search versus experience and κ = .86 for hedonic versus utilitarian. Against the coders' consensus, the LLM labels agreed on 92.0% (κ = .82) and 90.0% (κ = .76) of products, and its errors lean toward assigning the experience and hedonic labels (Web Appendix B). Table 3 shows that the category assumptions differ markedly from the product-level labels.
 
-**Models.** Controls follow WZH: review length, rating dummies (one star as reference), an image indicator, and review age; we lack their video indicator and product-level review count. We estimate (a) a Tobit model, left-censored at zero, with standard errors clustered by product, mirroring WZH; (b) a negative binomial model (NB2) with log review age as an exposure offset and log length; and (c) a zero-inflated negative binomial (ZINB) as a diagnostic. Code and the replication package are available at [anonymized repository link to be inserted at submission]; raw review text is not redistributed. The study was not preregistered: we analyzed a 2,000-review pilot first, and the main design followed it. We report every model estimated for the main question. Generative AI was used in this project in two ways. First, the LLMs named above served as research objects and measurement instruments. Second, the authors used an AI coding assistant (Claude, Anthropic) to write and run analysis code and to draft and edit text; the authors checked the code against the logged outputs, verified every reported number, and take full responsibility for the content.
+**Models.** Controls follow WZH: review length, rating dummies (one star as reference), an image indicator, and review age; we lack their video indicator and product-level review count. We estimate (a) a Tobit model, left-censored at zero, with standard errors clustered by product, mirroring WZH; (b) a negative binomial model (NB2) with log review age as an exposure offset and log length; and (c) a zero-inflated negative binomial (ZINB) as a diagnostic. Code and the replication package are available at [anonymized repository link to be inserted at submission]; raw review text is not redistributed. The study was not preregistered: we analyzed a 2,000-review pilot first, and the main design followed it. We report every model estimated for the main question. Generative AI was used in this project in two ways. First, the LLMs named above served as research objects and measurement instruments. Second, the author used an AI coding assistant (Claude, Anthropic) to write and run analysis code and to draft and edit text; the author checked the code against the logged outputs and takes full responsibility for the content.
 
 ## 4. Results
 
@@ -47,20 +47,20 @@ WZH report smaller gaps for hedonic goods (β = −.058, p < .001). With categor
 
 | Prompt | LLM | r | Exact match | Hedonic coef., category (p) | Hedonic coef., product (p) |
 |---|---|---|---|---|---|
-| Ours | Claude Haiku 5.5 | .907 | 70.7% | −.010 (.25) | −.029 (.001) |
-| Ours | Llama 3.3 70B | .923 | 79.0% | +.003 (.72) | −.017 (.031) |
-| Ours | GPT-4.1 nano | .889 | 64.6% | −.004 (.66) | −.017 (.078) |
-| Original | Claude Haiku 5.5 | .897 | 70.9% | −.006 (.49) | −.026 (.004) |
-| Original | Llama 3.3 70B | .921 | 78.3% | −.002 (.79) | −.017 (.032) |
-| Original | GPT-4.1 nano | .888 | 67.6% | −.005 (.61) | −.021 (.025) |
+| Ours | Claude Haiku 5.5 | .907 | 70.7% | −.010 (.247) | −.029 (.001) |
+| Ours | Llama 3.3 70B | .923 | 79.0% | +.003 (.715) | −.017 (.031) |
+| Ours | GPT-4.1 nano | .889 | 64.6% | −.004 (.663) | −.017 (.078) |
+| Original | Claude Haiku 5.5 | .896 | 70.8% | −.006 (.447) | −.026 (.004) |
+| Original | Llama 3.3 70B | .921 | 78.3% | −.002 (.795) | −.017 (.032) |
+| Original | GPT-4.1 nano | .888 | 67.6% | −.005 (.604) | −.020 (.025) |
 
 *Note.* OLS of the gap on a hedonic indicator, rating dummies, length, and age; standard errors clustered by product. The gap correlates across LLMs at .63–.76.
 
 ### 4.2 Gap and helpfulness
 
-Table 2 reports the negative binomial results for all twelve combinations of LLM, prompt, and goods classification; Tobit estimates are in Web Appendix C. With category-level coding, a one-star larger gap goes with 21–28% more helpful votes (IRR 1.21–1.28, p ≤ .015). The Tobit gap coefficient is also positive (Model 2: 0.71–1.45, significant in five of six combinations; Model 1: 0.45–0.98, significant except for GPT-4.1 nano under the original prompt, p = .18). WZH's own Model 2 yields a positive coefficient for search goods as well (+4.345), as does their GPT-5-nano check (+6.29, p = .001; Web Appendix 4 of WZH), so the negative association described in their abstract is confined to the interaction with experience goods. H1 is therefore not supported: the association is positive rather than negative.
+Table 2 reports the negative binomial results for all twelve combinations of LLM, prompt, and goods classification; Tobit estimates are in Web Appendix C. With category-level coding, a one-star larger gap goes with 20–28% more helpful votes (IRR 1.20–1.28, p ≤ .016). The Tobit gap coefficient is also positive (Model 2: 0.71–1.45, significant in four of six combinations; Model 1: 0.45–0.98, significant except for GPT-4.1 nano under the original prompt, p = .18). WZH's own Model 2 yields a positive coefficient for search goods as well (+4.345), as does their GPT-5-nano check (+6.29, p = .001; Web Appendix 4 of WZH), so the negative association described in their abstract is confined to the interaction with experience goods. H1 is therefore not supported: the association is positive rather than negative.
 
-The interaction, however, is not significant. With category-level coding the NB2 interaction IRR ranges from 0.82 to 1.03 (p = .09–.88), and the Tobit interaction from −0.54 to −1.06 (p = .12–.46); its sign varies across LLMs. Product-level labels do not change this conclusion. The gap effect stays positive (IRR 1.22–1.29, p ≤ .005), the NB2 interaction IRR is below 1 in all six combinations (0.80–0.98), directionally as in WZH, but only one of the six p-values falls below .05 (Llama with our prompt, p = .049, not corrected for multiple comparisons), and the Tobit interaction ranges from −0.39 to −0.82 (p = .29–.58). Point estimates imply that the net gap effect for experience goods is not negative (e.g., 1.30 × 0.95 ≈ 1.23 for Claude with our prompt; products of point estimates, not tested). H2 is not supported. Because classification error biases interactions toward zero, this null should be read as "not detected with these labels" and not as evidence of absence.
+The interaction, however, is not significant. With category-level coding the NB2 interaction IRR ranges from 0.82 to 1.03 (p = .09–.88), and the Tobit interaction from −0.50 to −1.06 (p = .12–.54); its sign varies across LLMs. Product-level labels do not change this conclusion. The gap effect stays positive (IRR 1.22–1.29, p ≤ .005), the NB2 interaction IRR is below 1 in all six combinations (0.80–0.98), directionally as in WZH, but only one of the six p-values falls below .05 (Llama with our prompt, p = .049, not corrected for multiple comparisons), and the Tobit interaction ranges from −0.39 to −0.82 (p = .29–.58). Point estimates imply that the net gap effect for experience goods is not negative (e.g., 1.30 × 0.95 ≈ 1.23 for Claude with our prompt; products of point estimates, not tested). H2 is not supported. Because classification error biases interactions toward zero, this null should be read as "not detected with these labels" and not as evidence of absence.
 
 Controls behave as in WZH: longer reviews and reviews with images attract more votes (length IRR ≈ 2.7 per log unit; image IRR ≈ 5.4–5.6). Clustering by user rather than product leaves the interaction essentially unchanged (e.g., IRR = 0.820, 95% CI [0.650, 1.034], Llama, our prompt, category labels).
 
@@ -68,12 +68,12 @@ Controls behave as in WZH: longer reviews and reviews with images attract more v
 
 | Prompt | LLM | Gap IRR, Model 1 (category) | Gap × experience IRR (category) | Gap IRR, Model 1 (product) | Gap × experience IRR (product) |
 |---|---|---|---|---|---|
-| Ours | Claude Haiku 5.5 | 1.26 (.001) | 1.02 (.88) | 1.28 (<.001) | 0.95 (.67) |
-| Ours | Llama 3.3 70B | 1.24 (.003) | 0.82 (.09) | 1.25 (.002) | 0.80 (.049) |
-| Ours | GPT-4.1 nano | 1.22 (.001) | 0.90 (.38) | 1.23 (.001) | 0.88 (.30) |
-| Original | Claude Haiku 5.5 | 1.21 (.015) | 0.92 (.58) | 1.23 (.005) | 0.83 (.15) |
-| Original | Llama 3.3 70B | 1.28 (.001) | 0.89 (.34) | 1.29 (.001) | 0.87 (.27) |
-| Original | GPT-4.1 nano | 1.21 (.007) | 1.03 (.83) | 1.22 (.004) | 0.98 (.87) |
+| Ours | Claude Haiku 5.5 | 1.26 (.001) | 1.02 (.878) | 1.28 (<.001) | 0.95 (.673) |
+| Ours | Llama 3.3 70B | 1.24 (.003) | 0.82 (.090) | 1.25 (.002) | 0.80 (.049) |
+| Ours | GPT-4.1 nano | 1.22 (.001) | 0.90 (.380) | 1.23 (.001) | 0.88 (.295) |
+| Original | Claude Haiku 5.5 | 1.20 (.016) | 0.93 (.607) | 1.23 (.005) | 0.83 (.147) |
+| Original | Llama 3.3 70B | 1.28 (.001) | 0.89 (.338) | 1.29 (.001) | 0.87 (.268) |
+| Original | GPT-4.1 nano | 1.21 (.007) | 1.03 (.827) | 1.22 (.004) | 0.98 (.870) |
 
 *Note.* IRR (p). Controls: length (logs), rating dummies, image indicator; log review age as offset; standard errors clustered by product. WZH (Tobit, Model 2): gap +4.345; gap × experience −7.239 (p < .001).
 
@@ -90,7 +90,7 @@ Controls behave as in WZH: longer reviews and reviews with images attract more v
 
 ### 4.3 Excess zeros
 
-With about 79% of reviews at zero, we compared NB2 with a ZINB whose inflation component depends on a constant and the experience dummy. In all twelve combinations the log-likelihoods are identical to the second decimal, the implied probability of a structural zero is below 10⁻⁹⁰, and AIC favors NB2 by four points. The inflation component is not identified and the model collapses to NB2: the zeros are consistent with the negative binomial itself (Web Appendix D).
+With about 79% of reviews at zero, we compared NB2 with a ZINB whose inflation component depends on a constant and the experience dummy. In all twelve combinations the log-likelihoods differ by at most 0.01, the implied probability of a structural zero is below 10⁻⁹⁰, and AIC favors NB2 by four points. The inflation component is not identified and the model collapses to NB2: the zeros are consistent with the negative binomial itself (Web Appendix D).
 
 ## 5. Discussion
 

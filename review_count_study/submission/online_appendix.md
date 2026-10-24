@@ -20,10 +20,10 @@ Gap coefficients, Tobit (left-censored at 0) with standard errors clustered by p
 |---|---|---|---|---|---|---|---|---|
 | ours | Claude Haiku 5.5 | category | 0.98 (.014) | 1.28 (.026) | -0.59 (.404) | 1.26 [1.10, 1.44] | 1.25 [1.03, 1.50] | 1.02 [0.79, 1.31] |
 | ours | Llama 3.3 70B | category | 0.82 (.040) | 1.38 (.025) | -1.06 (.123) | 1.24 [1.08, 1.42] | 1.36 [1.11, 1.66] | 0.82 [0.65, 1.03] |
-| ours | GPT-4.1 nano | category | 0.90 (.010) | 1.45 (.007) | -1.05 (.131) | 1.22 [1.08, 1.38] | 1.29 [1.08, 1.54] | 0.90 [0.72, 1.14] |
-| original | Claude Haiku 5.5 | category | 0.82 (.024) | 1.13 (.044) | -0.60 (.462) | 1.21 [1.04, 1.40] | 1.25 [1.00, 1.57] | 0.92 [0.70, 1.22] |
+| ours | GPT-4.1 nano | category | 0.90 (.010) | 1.45 (.007) | -1.06 (.131) | 1.22 [1.08, 1.38] | 1.29 [1.08, 1.54] | 0.90 [0.72, 1.14] |
+| original | Claude Haiku 5.5 | category | 0.78 (.032) | 1.02 (.061) | -0.50 (.537) | 1.20 [1.03, 1.40] | 1.25 [1.00, 1.56] | 0.93 [0.71, 1.22] |
 | original | Llama 3.3 70B | category | 0.84 (.041) | 1.34 (.026) | -1.01 (.165) | 1.28 [1.11, 1.49] | 1.36 [1.12, 1.64] | 0.89 [0.69, 1.14] |
-| original | GPT-4.1 nano | category | 0.45 (.181) | 0.71 (.158) | -0.54 (.437) | 1.21 [1.05, 1.38] | 1.19 [0.97, 1.46] | 1.03 [0.79, 1.34] |
+| original | GPT-4.1 nano | category | 0.45 (.180) | 0.71 (.158) | -0.54 (.439) | 1.21 [1.05, 1.38] | 1.19 [0.97, 1.46] | 1.03 [0.79, 1.34] |
 | ours | Claude Haiku 5.5 | product | 1.01 (.012) | 1.33 (.012) | -0.82 (.291) | 1.28 [1.12, 1.46] | 1.30 [1.11, 1.53] | 0.95 [0.73, 1.22] |
 | ours | Llama 3.3 70B | product | 0.81 (.040) | 1.03 (.054) | -0.51 (.440) | 1.25 [1.09, 1.43] | 1.35 [1.13, 1.60] | 0.80 [0.65, 1.00] |
 | ours | GPT-4.1 nano | product | 0.91 (.009) | 1.11 (.016) | -0.49 (.474) | 1.23 [1.09, 1.39] | 1.29 [1.11, 1.49] | 0.88 [0.70, 1.11] |
@@ -37,16 +37,16 @@ Clustering by user instead of product changes the NB2 interaction p-value by at 
 
 ## D. Zero-inflation diagnostics
 
-For each combination we compared NB2 with a zero-inflated negative binomial (logit inflation on a constant and the experience dummy; same count-part covariates; log review age as exposure). In every case the inflation intercept diverged and the log-likelihood equals that of NB2, so the model is not identified beyond NB2 (a boundary solution, not a convergence failure).
+For each combination we compared NB2 with a zero-inflated negative binomial (logit inflation on a constant and the experience dummy; same count-part covariates; log review age as exposure). In every case the inflation intercept diverged and the log-likelihood equals that of NB2 (difference at most 0.001), so the model is not identified beyond NB2 (a boundary solution, not a convergence failure).
 
 | Prompt | LLM | Goods labels | logLik NB2 | logLik ZINB | AIC NB2 / ZINB | Implied P(structural zero) |
 |---|---|---|---|---|---|---|
 | ours | Claude Haiku 5.5 | category | -22339.85 | -22339.85 | 44701.7 / 44705.7 | 2.55e-102 |
 | ours | Llama 3.3 70B | category | -22345.46 | -22345.46 | 44712.9 / 44716.9 | 3.72e-99 |
-| ours | GPT-4.1 nano | category | -22291.97 | -22291.97 | 44605.9 / 44609.9 | 6.24e-95 |
-| original | Claude Haiku 5.5 | category | -22307.74 | -22307.74 | 44637.5 / 44641.5 | 3.34e-116 |
+| ours | GPT-4.1 nano | category | -22294.33 | -22294.33 | 44610.7 / 44614.7 | 5.89e-95 |
+| original | Claude Haiku 5.5 | category | -22318.98 | -22318.97 | 44660.0 / 44663.9 | 9.60e-107 |
 | original | Llama 3.3 70B | category | -22340.87 | -22340.87 | 44703.7 / 44707.7 | 1.23e-103 |
-| original | GPT-4.1 nano | category | -22274.58 | -22274.58 | 44571.2 / 44575.2 | 1.79e-96 |
+| original | GPT-4.1 nano | category | -22274.91 | -22274.91 | 44571.8 / 44575.8 | 1.76e-96 |
 | ours | Claude Haiku 5.5 | product | -22342.92 | -22342.92 | 44707.8 / 44711.8 | 5.85e-96 |
 | ours | Llama 3.3 70B | product | -22349.81 | -22349.81 | 44721.6 / 44725.6 | 4.59e-98 |
 | ours | GPT-4.1 nano | product | -22299.12 | -22299.12 | 44620.2 / 44624.2 | 2.37e-91 |
