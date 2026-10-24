@@ -136,3 +136,25 @@ Bhati Sec. 8-10). Keyword scan: neither paper contains "Poisson", "stochastic", 
 - No overlap found: stochastic residual-defect micro-foundation, offsetting elasticity, over-offsetting, learning-induced
   incomplete offsetting, learning-dependent warranty separation, count-model calibration.
 - Caveat: two papers read in full text; Okumoto-Goel and security-economics literature still overlap on Prop. 1 and the wedge.
+
+## Empirical calibration from LLM sampling (HumanEval+, 8 models x 157 tasks x 20 samples = 25,120 samples, $2.09)
+Scripts: `generate.py`, `execute.py`, `analyze_samples.py`, `bootstrap_k.py`; table `results_bootstrap_k.csv`.
+Defect proxy = distinct failure signatures per sample (exception type / wrong-answer shape / timeout / load error).
+Detection: tests in uniformly random order; defect with `f` failing of `M` tests survives `e` tests w.p. `C(M-f,e)/C(M,e)`.
+
+- Quality range is wide: mean defect clusters per sample 0.078 (claude-haiku-5.5) to 0.78 (llama-3.2-3b), pass rate 0.42-0.93.
+- Counts: pooled Pearson dispersion 1.39 (NegBin preferred); mostly task heterogeneity and mixing of models.
+  Within (model, task) cells dispersion is 0.63, i.e. *under*-dispersed: the signature count is bounded (0, 1, 2 ...) so
+  the Poisson assumption is not directly testable with this proxy. Treat the Poisson thinning as a modelling device.
+- Detection curve: exponential fits poorly (SSE 8.8) vs gamma-mixed exponential (SSE 1.3).
+  Pooled `k = 0.63` (95% task-bootstrap CI 0.51-0.78), implied `eps = 1/(1+k) = 0.62` (0.56-0.66).
+  Dropping samples with timeouts / load errors: `k = 0.72` (0.59-0.94), `eps = 0.58` (0.52-0.63).
+  So offsetting is partial (roughly 40% of a proportional quality gain is absorbed by less verification), under
+  linear cost and random test order.
+- Per-model `k` is tight for weak models (0.57-0.65) and very imprecise for strong ones (haiku CI 0.23-36.7).
+  Spearman(quality, k) = -0.38 (CI -0.93..0.60) on all samples, -0.43 (CI -0.95..-0.07) after dropping timeouts /
+  load errors. The hypothesis "better tools -> larger k -> stronger offsetting" is **not robust**.
+- Failing share `f/M` is bimodal (median 22%, top quartile >= 85%, bottom decile <= 0.4%): near-total failures
+  versus rare edge cases. This heterogeneity is what produces the heavy tail.
+- Limits: signature count is a proxy for defects; random test order is unrealistic (developers run easy tests first);
+  timeouts are capped at 5 per sample (over-counts TIMEOUT); HumanEval+ functions are small.
