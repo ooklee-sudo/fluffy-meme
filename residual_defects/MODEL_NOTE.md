@@ -165,3 +165,20 @@ New in that document: the value of quality is `c/(theta lam)` regardless of liab
 `L(delta)` does not depend on tool quality, warranties cannot signal quality when `lam` is known, and the payout elasticity is
 `1 - rho` in general. The earlier 2-SE gap between `E[R_tau]` and `r*` was sampling noise (0.0362 vs 0.0357 at n = 30,000).
 Still open: vendor pricing/competition game, welfare ranking of the lemons equilibria, proof of C1 and of stopping-rule optimality.
+
+## Sensitivity of the tail index (`sensitivity_k.py`, `results_sensitivity_k.csv`; 8,659 defects, task bootstrap, B = 300)
+| Variant | k (95% CI) | eps = 1/(1+k) (95% CI) | SSE exp / heavy |
+|---|---|---|---|
+| base (random order, signatures) | 0.63 (0.52-0.78) | 0.62 (0.56-0.66) | 8.8 / 1.3 |
+| whole sample = one defect | 0.52 (0.42-0.69) | 0.66 (0.59-0.71) | 14.3 / 1.4 |
+| subtle defects only (f/M < 0.5, no load error) | 0.94 (0.73-1.29) | 0.52 (0.44-0.58) | 3.6 / 0.8 |
+| drop timeout / load-error samples | 0.72 (0.59-0.90) | 0.58 (0.53-0.63) | 7.6 / 1.3 |
+| canonical dataset order | 0.62 (0.44-1.68) | 0.62 (0.37-0.70) | 11.4 / 0.5 |
+| short inputs first | 0.84 (0.60-1.37) | 0.54 (0.42-0.63) | 8.2 / 0.1 |
+| long inputs first (adversarial) | 0.23 (0.18-0.30) | 0.82 (0.77-0.85) | 5.4 / 0.5 |
+
+Reading: the heavy-tailed form beats the exponential in every variant (SSE 5-100 times smaller than exponential or equal order),
+all `k < 1`, so `eps` stays between 0.5 and 0.7 for defensible definitions and orders (0.52-0.66); only the adversarial
+long-inputs-first order gives 0.82. The headline "offsetting is partial, eps ~ 0.6" is robust to these choices; the exact value is not.
+Not varied: how defects are counted beyond signatures (e.g. clustering failing inputs), the benchmark (HumanEval+ only), and the
+sampling temperature (0.8 only).

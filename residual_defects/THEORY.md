@@ -224,4 +224,5 @@ all losses, but weak developer liability enlarges it through two channels: lower
 
 ## Link to the data
 `bootstrap_k.py` estimates `k = 0.63` (95% CI 0.51-0.78; 0.72 without timeouts) from 25,120 LLM samples, i.e. `eps ~ 0.58-0.62`
-under linear cost and random test order. P2's general form shows that with such a tail the value of quality depends on `delta`.
+under linear cost and random test order. `sensitivity_k.py`: across defect definitions and test orders `eps` lies in 0.52-0.66
+(0.82 only for an adversarial long-inputs-first order), see `MODEL_NOTE.md`. P2's general form shows that with such a tail the value of quality depends on `delta`.
