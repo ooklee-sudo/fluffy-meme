@@ -58,7 +58,7 @@ def run_set(name, specs, out, procs):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="../results"); ap.add_argument("--procs", type=int, default=os.cpu_count())
-    ap.add_argument("--only", default="base,schedulers,injection,pricing,beta,beta_obs"); ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--only", default="base,schedulers,injection,pricing,beta,beta_obs,beta_fine"); ap.add_argument("--quick", action="store_true")
     a = ap.parse_args()
     os.makedirs(os.path.join(a.out, "runs"), exist_ok=True)
     only = a.only.split(",")
@@ -100,6 +100,10 @@ def main():
         # elasticity at the SAGraph point estimate (0.66), beyond the sweep range
         specs = [(f"beta_{b:.2f}", dict(beta=b), p, r, {}) for b in (0.66,) for r in range(q(N_BETA)) for p in plans]
         run_set("beta_obs", specs, a.out, a.procs)
+    if "beta_fine" in only:
+        # finer grid between 0.30 and 0.66 to localize the reversal of final reach; 30 replications per cell
+        specs = [(f"beta_{b:.2f}", dict(beta=b), p, r, {}) for b in (0.35, 0.40, 0.45, 0.60) for r in range(q(30)) for p in plans]
+        run_set("beta_fine", specs, a.out, a.procs)
     if "beta" in only:
         specs = [(f"beta_{b:.2f}", dict(beta=b), p, r, {}) for b in BETAS for r in range(q(N_BETA)) for p in plans]
         run_set("beta", specs, a.out, a.procs)

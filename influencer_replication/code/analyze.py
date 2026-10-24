@@ -169,6 +169,8 @@ def main():
     bt = load(R, "beta")
     if os.path.exists(os.path.join(R, "runs", "beta_obs.json.gz")):
         bt.update(load(R, "beta_obs"))
+    if os.path.exists(os.path.join(R, "runs", "beta_fine.json.gz")):
+        bt.update(load(R, "beta_fine"))
     md.append("## Table 6. Concentrated vs. distributed seeding by engagement elasticity beta (equal-link budget)\n")
     md.append("| beta | Adopters (C / D) | Delta adopters [95% CI] | P(C > D) | Delta V(delta=1/h) [95% CI] | CVaR_0.2 (C / D) | Adopters at 1 h (C / D) |\n|---|---|---|---|---|---|---|")
     betas = sorted(float(k.split("_")[1]) for k in bt)
