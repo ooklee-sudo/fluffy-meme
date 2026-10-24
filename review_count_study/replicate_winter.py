@@ -125,19 +125,15 @@ def main():
         print(f"\n[NB2 count model, log(age) offset; IRR; {nm}]\n", tab.round(3).to_string())
         tab.to_csv(out / f"replication_nb2_{nm[-1]}.csv")
 
-    from statsmodels.discrete.count_model import ZeroInflatedNegativeBinomialP
-    y, X = dmatrices(f"count ~ gap * experience + {base_rhs}", d, return_type="dataframe")
-    Xi = X[["Intercept", "experience"]]
     try:
-        zm = ZeroInflatedNegativeBinomialP(y.iloc[:, 0], X, exog_infl=Xi, exposure=d["exposure"], inflation="logit", p=2)
-        zr = zm.fit(method="bfgs", maxiter=1000, disp=0, cov_type="cluster", cov_kwds=cl)
-        t = pd.DataFrame({"coef": zr.params, "se": zr.bse, "p": zr.pvalues})
-        print("\n[ZINB (inflation: const + experience), cluster SE]  count-part coefficients are log rate ratios")
-        print(t.reindex(["gap", "experience", "gap:experience", "inflate_experience", "np.log(len_chars)", "has_image"]).dropna(how="all").round(3).to_string())
-        print(f"AIC  NB2 Model 2: {n2.aic:.0f}   ZINB: {zr.aic:.0f}   (lower = better; NB2 AIC from GLM with fixed alpha, rough guide)")
-        t.to_csv(out / "replication_zinb.csv")
-    except Exception as e:  # convergence problems are common with 80% zeros
-        print("\n[ZINB] failed to converge:", repr(e)[:200])
+        z = models.zero_inflation_check(d)
+        print("\n[Zero inflation: NB2 vs ZINB (inflation: const + experience)]")
+        print(f"  logLik NB2 {z['nb_llf']:.2f} | ZINB {z['zinb_llf']:.2f}   AIC NB2 {z['nb_aic']:.1f} | ZINB {z['zinb_aic']:.1f}")
+        print(f"  implied P(structural zero) = {z['p_structural_zero']:.2e} -> "
+              + ("ZINB collapses to NB2 (no excess zeros beyond the NB distribution); use NB2" if z["collapsed_to_nb"] else "ZINB differs from NB2; inspect"))
+        print(f"  gap IRR: NB2 {z['nb_gap_irr']:.3f} | ZINB count part {z['zinb_gap_irr']:.3f}")
+    except Exception as e:
+        print("\n[Zero inflation] check failed:", repr(e)[:200])
 
     # ---------------- Robustness: product vs user clusters for the key NB2 interaction
     for other in ("group_id", "parent_asin"):

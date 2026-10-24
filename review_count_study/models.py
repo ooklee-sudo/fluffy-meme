@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from patsy import dmatrices
 from patsy import build_design_matrices, dmatrix
 from sklearn.model_selection import GroupKFold
 
@@ -142,3 +143,24 @@ def heterogeneity(d, rhs, interact="specificity", by="category"):
     """H3: interaction of a text feature with product-type category (NB2)."""
     r = [t for t in rhs] + [f"C({by})", f"{interact}:C({by})"]
     return fit_glm(d, r, "nb")
+
+
+def zero_inflation_check(d, rhs="gap * experience + z_loglen + C(star_f) + has_image"):
+    """Compare NB2 with ZINB (logit inflation: const + experience), same count-part covariates and log-age exposure.
+    Needs columns: count, gap, experience, len_chars, star_f, has_image, exposure. Returns a dict.
+    If the inflation intercept diverges to -inf, ZINB collapses to NB2 (no excess zeros): the Hessian is then
+    singular, which is a boundary solution rather than a convergence bug."""
+    from statsmodels.discrete.count_model import ZeroInflatedNegativeBinomialP
+    from statsmodels.discrete.discrete_model import NegativeBinomialP
+    d = d.copy()
+    ll = np.log(d["len_chars"])
+    d["z_loglen"] = (ll - ll.mean()) / ll.std()
+    y, X = dmatrices("count ~ " + rhs, d, return_type="dataframe")
+    nb = NegativeBinomialP(y.iloc[:, 0], X, exposure=d["exposure"], p=2).fit(method="bfgs", maxiter=3000, disp=0)
+    zi = ZeroInflatedNegativeBinomialP(y.iloc[:, 0], X, exog_infl=X[["Intercept", "experience"]],
+                                       exposure=d["exposure"], inflation="logit", p=2).fit(method="bfgs", maxiter=3000, disp=0)
+    p0 = float(1 / (1 + np.exp(-zi.params["inflate_Intercept"])))
+    return {"nb_llf": float(nb.llf), "zinb_llf": float(zi.llf), "nb_aic": float(nb.aic), "zinb_aic": float(zi.aic),
+            "p_structural_zero": p0, "collapsed_to_nb": bool(abs(nb.llf - zi.llf) < 0.5 or p0 < 1e-6),
+            "nb_gap_irr": float(np.exp(nb.params["gap"])), "nb_gap_x_exp_irr": float(np.exp(nb.params["gap:experience"])),
+            "zinb_gap_irr": float(np.exp(zi.params["gap"]))}
