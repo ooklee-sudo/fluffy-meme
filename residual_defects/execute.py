@@ -72,8 +72,20 @@ def main():
         return {**meta, "n": res["n"], "fails": res["fails"]}
 
     rows = []
-    with ThreadPoolExecutor(a.workers) as ex:
-        rows = list(ex.map(go, jobs))
+    if a.canonical:
+        with ThreadPoolExecutor(a.workers) as ex:
+            rows = list(ex.map(go, jobs))
+    else:  # write each row as soon as it is done so progress is visible and runs can be resumed
+        n = 0
+        with ThreadPoolExecutor(a.workers) as ex, open(a.out, "a") as f:
+            for r in ex.map(go, jobs):
+                f.write(json.dumps(r) + "\n")
+                f.flush()
+                n += 1
+                if n % 500 == 0:
+                    print(f"{n}/{len(jobs)} executed", flush=True)
+        print(f"wrote {n} rows to {a.out}")
+        return
     if a.canonical:
         bad = [r for r in rows if r["fails"]]
         (DATA / "canonical_ok.json").write_text(json.dumps(sorted(r["task_id"] for r in rows if not r["fails"])))

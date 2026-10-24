@@ -73,9 +73,9 @@ fails, n_timeouts = {}, 0
 for i in range(n):
     sig = None
     try:
-        signal.alarm(2)
+        signal.setitimer(signal.ITIMER_REAL, 1.0)
         out = fn(*copy.deepcopy(inputs[i]))
-        signal.alarm(0)
+        signal.setitimer(signal.ITIMER_REAL, 0)
         try:
             assertion(norm(out), norm(results[i]), atol)
         except BaseException:
@@ -84,13 +84,13 @@ for i in range(n):
         sig = "TIMEOUT"
         n_timeouts += 1
     except BaseException as e:
-        signal.alarm(0)
+        signal.setitimer(signal.ITIMER_REAL, 0)
         sig = "EXC:" + type(e).__name__
     finally:
-        signal.alarm(0)
+        signal.setitimer(signal.ITIMER_REAL, 0)
     if sig:
         fails.setdefault(sig, []).append(i)
-    if n_timeouts >= 15:
+    if n_timeouts >= 5:
         fails.setdefault("TIMEOUT", []).extend(range(i + 1, n))
         break
 finish(fails, n)
