@@ -5,6 +5,7 @@ cost (OpenRouter `usage.cost`), so cost data for the economic model comes for fr
 """
 import argparse
 import json
+import os
 import pathlib
 import random
 import threading
@@ -26,7 +27,10 @@ def call(model, prompt, temperature, max_tokens):
     body = json.dumps({"model": model, "temperature": temperature, "max_tokens": max_tokens,
                        "messages": [{"role": "user", "content": PROMPT.format(prompt=prompt)}],
                        "usage": {"include": True}}).encode()
-    req = urllib.request.Request(URL, body, {"Content-Type": "application/json"})
+    headers = {"Content-Type": "application/json"}
+    if os.environ.get("OPENROUTER_API_KEY"):  # not needed behind a proxy that injects credentials
+        headers["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+    req = urllib.request.Request(URL, body, headers)
     last = None
     for attempt in range(4):
         try:
