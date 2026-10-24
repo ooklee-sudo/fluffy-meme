@@ -15,7 +15,7 @@
 
 **Keywords:** large language models; online reviews; review helpfulness; star ratings; count models; replication
 
-**Word count:** about 4,950 words including abstract, text, references, tables, and table notes, 4 tables, abstract 137 words, online appendix about 1,830 words excluding its tables.
+**Word count:** about 4,950 words including abstract, text, references, tables, and table notes, 4 tables, abstract 137 words, online appendix about 1,980 words including its tables.
 
 ## Declarations
 

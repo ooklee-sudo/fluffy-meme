@@ -15,7 +15,7 @@ I submit the manuscript "Does disagreement between LLM-inferred and actual star 
 
 **Contribution and transparency.** The manuscript contributes (i) an independent test of a published claim with count models, three LLMs, and the original prompt; (ii) human-validated product-level goods labels with a sensitivity analysis for label error; and (iii) a direction-of-disagreement analysis that qualifies how the gap should be interpreted. The study was not preregistered and followed a pilot; the direction and rating-level analyses and the alternative explanation behind them were developed after the main results and are labeled exploratory. Earlier exploratory work on LLM-coded content features (two small unreported samples) is disclosed in the manuscript. I used the original authors' openly available supplementary materials, including their prompt, and did not contact them. Generative AI was used as described in the manuscript and on the title page.
 
-**Materials.** The manuscript is about 4,950 words including abstract, references, and tables (4 tables); the online appendix is about 1,830 words excluding tables. The replication package contains code, prompts, identifiers, ratings, LLM outputs, and human validation labels; raw review text is not redistributed.
+**Materials.** The manuscript is about 4,950 words including abstract, references, and tables (4 tables); the online appendix is about 1,980 words including tables. The replication package contains code, prompts, identifiers, ratings, LLM outputs, and human validation labels; raw review text is not redistributed.
 
 **Declarations.** The manuscript is not under consideration elsewhere and has not been published previously. [AUTHOR TO COMPLETE: conflicts of interest, funding.]
 
