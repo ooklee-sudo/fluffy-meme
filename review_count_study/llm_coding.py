@@ -64,8 +64,8 @@ class OpenRouterCoder:
         import threading
         self._lock = threading.Lock()
 
-    def code(self, text):
-        body = {"model": self.model, "temperature": 0, "max_tokens": 600,
+    def _call(self, text, max_tokens=600):
+        body = {"model": self.model, "temperature": 0, "max_tokens": max_tokens,
                 "reasoning": {"enabled": False},  # reasoning tokens would eat max_tokens and truncate the JSON
                 "messages": [{"role": "system", "content": self.system},
                              {"role": "user", "content": prompts.user_message(text)}]}
@@ -79,7 +79,10 @@ class OpenRouterCoder:
             self.usage["prompt_tokens"] += u.get("prompt_tokens", 0)
             self.usage["completion_tokens"] += u.get("completion_tokens", 0)
             self.usage["calls"] += 1
-        return prompts.validate(_parse_json(j["choices"][0]["message"]["content"]))
+        return j["choices"][0]["message"]["content"]
+
+    def code(self, text):
+        return prompts.validate(_parse_json(self._call(text)))
 
 
 class MockCoder:

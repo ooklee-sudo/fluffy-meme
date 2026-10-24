@@ -56,6 +56,8 @@ def sample_category(cat, n, chunk, max_per_user, seed):
     df = df.sample(frac=1, random_state=seed).groupby("user_id").head(max_per_user)  # random cap per user
     df["text"] = (df["title"].fillna("") + ". " + df["text"].fillna("")).str.strip(". ").str.strip()
     df = df[df["text"].str.len() > 0]
+    df["has_image"] = df["images"].map(lambda v: int(v is not None and len(v) > 0))
+    df["parent_asin"] = df["parent_asin"].astype(str)
     df["category"] = GOODS[cat]
     df["product_category"] = cat
     return df.sample(min(n, len(df)), random_state=seed).drop(columns=["images"], errors="ignore")
