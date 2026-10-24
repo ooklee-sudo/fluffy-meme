@@ -58,11 +58,12 @@ def main():
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
 
-    base = load_data.load_amazon_sample(a.sample)
+    base = load_data.load_amazon_sample(a.sample).drop_duplicates("review_id")  # same user/asin/timestamp can repeat
     extra = pd.read_parquet(a.sample)[["user_id", "asin", "timestamp", "has_image", "parent_asin"]]
     extra["review_id"] = extra["user_id"] + "|" + extra["asin"] + "|" + extra["timestamp"].astype(str)
-    base = base.merge(extra[["review_id", "has_image", "parent_asin"]], on="review_id")
-    coded = pd.read_parquet(a.coded)
+    extra = extra.drop_duplicates("review_id")
+    base = base.merge(extra[["review_id", "has_image", "parent_asin"]], on="review_id").reset_index(drop=True)
+    coded = pd.read_parquet(a.coded).drop_duplicates("review_id")
     content = coded.drop(columns=[c for c in base.columns if c != "review_id" and c in coded.columns], errors="ignore")
     d = base.merge(content, on="review_id", how="left")
 
