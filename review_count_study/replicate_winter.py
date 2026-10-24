@@ -52,20 +52,26 @@ def fit_tobit(formula, d, group):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sample", required=True); ap.add_argument("--coded", required=True)
+    ap.add_argument("--sample", required=True)
+    ap.add_argument("--coded", help="reviews_coded.parquet with LLM content codes; omit to skip the content-feature extension")
+    ap.add_argument("--cluster", choices=["group_id", "parent_asin"], default="parent_asin",
+                    help="cluster-robust SE unit: parent_asin (product, as in the paper) or group_id (user)")
     ap.add_argument("--out-dir", required=True); ap.add_argument("--model", default="anthropic/claude-haiku-5.5")
     ap.add_argument("--workers", type=int, default=16)
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
 
     base = load_data.load_amazon_sample(a.sample).drop_duplicates("review_id")  # same user/asin/timestamp can repeat
-    extra = pd.read_parquet(a.sample)[["user_id", "asin", "timestamp", "has_image", "parent_asin"]]
+    raw = pd.read_parquet(a.sample)
+    extra = raw[["user_id", "asin", "timestamp", "has_image", "parent_asin"] + (["hedonic"] if "hedonic" in raw else [])].copy()
     extra["review_id"] = extra["user_id"] + "|" + extra["asin"] + "|" + extra["timestamp"].astype(str)
     extra = extra.drop_duplicates("review_id")
-    base = base.merge(extra[["review_id", "has_image", "parent_asin"]], on="review_id").reset_index(drop=True)
-    coded = pd.read_parquet(a.coded).drop_duplicates("review_id")
-    content = coded.drop(columns=[c for c in base.columns if c != "review_id" and c in coded.columns], errors="ignore")
-    d = base.merge(content, on="review_id", how="left")
+    base = base.merge(extra.drop(columns=["user_id", "asin", "timestamp"]), on="review_id").reset_index(drop=True)
+    d = base
+    if a.coded:
+        coded = pd.read_parquet(a.coded).drop_duplicates("review_id")
+        content = coded.drop(columns=[c for c in base.columns if c != "review_id" and c in coded.columns], errors="ignore")
+        d = base.merge(content, on="review_id", how="left")
 
     # LLM star inference (cached; failed rows retried on rerun)
     sc = star_rating.StarCoder(a.model)
@@ -81,42 +87,80 @@ def main():
     d["star_f"] = d["stars"].astype(int)
     d.to_csv(out / "replication_data.csv", index=False)
 
+    G = a.cluster
     # ---------------- Study 1 analogue
     r, _ = stats.pearsonr(d["stars"], d["stars_llm"])
     print(f"\n[Study 1] N={len(d)}  r(author stars, LLM stars)={r:.3f}  exact match={np.mean(d.gap == 0):.1%}  "
           f"off by >=2: {np.mean(d.gap >= 2):.1%}   (paper: r=.763, 37% misclassified, ~5% off by >=2)")
     print(d.groupby("category")["gap"].agg(["mean", "size"]).round(3).to_string())
     print(d.groupby("star_f")["gap"].mean().round(3).rename("mean gap by author star").to_string())
+    if "hedonic" in d and (d["hedonic"] >= 0).all():
+        o = smf.ols("gap ~ hedonic + C(star_f) + len_chars + age", data=d).fit(
+            cov_type="cluster", cov_kwds={"groups": pd.factorize(d[G])[0]})
+        print("\n[Study 1 regression, OLS: gap ~ hedonic + rating dummies + length + age]  (paper: hedonic -.058***)")
+        print(pd.DataFrame({"coef": o.params, "se": o.bse, "p": o.pvalues}).loc[["hedonic", "len_chars", "age"]].round(4).to_string())
+        d.groupby(["category", "hedonic"])["gap"].mean().round(3).rename("mean gap by cell").to_frame().pipe(print)
 
     # ---------------- Study 2 analogue: Tobit
     ctrl = "len_chars + C(star_f) + has_image + age"
-    t1, _ = fit_tobit(f"count ~ gap + experience + {ctrl}", d, "group_id")
-    t2, _ = fit_tobit(f"count ~ gap * experience + {ctrl}", d, "group_id")
-    print("\n[Study 2, Tobit left-censored at 0; SE clustered by user]  (paper Model 2: gap +4.345*, gap x experience -7.239***)")
-    print(t2.loc[["gap", "experience", "gap:experience", "len_chars", "has_image", "age"]].round(3).to_string())
+    t1, _ = fit_tobit(f"count ~ gap + experience + {ctrl}", d, G)
+    t2, _ = fit_tobit(f"count ~ gap * experience + {ctrl}", d, G)
+    keep = ["gap", "experience", "gap:experience", "len_chars", "has_image", "age"]
+    print(f"\n[Study 2, Tobit left-censored at 0; SE clustered by {G}]  (paper Model 1: gap -0.650 n.s.; "
+          "Model 2: gap +4.345*, gap x experience -7.239***)")
+    print("Model 1:\n", t1.reindex(keep).dropna().round(3).to_string())
+    print("Model 2:\n", t2.reindex(keep).round(3).to_string())
     t2.to_csv(out / "replication_tobit_model2.csv")
 
-    # ---------------- Our count specification
-    f_nb = lambda rhs: smf.glm("count ~ " + rhs, data=d, family=sm.families.NegativeBinomial(alpha=models._estimate_alpha(d, [rhs])),
-                               offset=np.log(d["exposure"])).fit(cov_type="cluster", cov_kwds={"groups": pd.factorize(d["group_id"])[0]})
+    # ---------------- Our count specifications: NB2 (offset log age) and ZINB
+    cl = {"groups": pd.factorize(d[G])[0]}
     base_rhs = "np.log(len_chars) + C(star_f) + has_image"
+    def f_nb(rhs):
+        al = models._estimate_alpha(d.assign(), [rhs])
+        return smf.glm("count ~ " + rhs, data=d, family=sm.families.NegativeBinomial(alpha=al),
+                       offset=np.log(d["exposure"])).fit(cov_type="cluster", cov_kwds=cl)
     n1, n2 = f_nb(f"gap + experience + {base_rhs}"), f_nb(f"gap * experience + {base_rhs}")
-    tab = models.irr_table(n2).loc[["gap", "experience", "gap:experience", "np.log(len_chars)", "has_image"]]
-    print("\n[Study 2 analogue, NB2 with log(age) offset; IRR]\n", tab.round(3).to_string())
-    tab.to_csv(out / "replication_nb2_model2.csv")
+    for nm, m in (("Model 1", n1), ("Model 2", n2)):
+        tab = models.irr_table(m).reindex(["gap", "experience", "gap:experience", "np.log(len_chars)", "has_image"]).dropna(how="all")
+        print(f"\n[NB2 count model, log(age) offset; IRR; {nm}]\n", tab.round(3).to_string())
+        tab.to_csv(out / f"replication_nb2_{nm[-1]}.csv")
+
+    from statsmodels.discrete.count_model import ZeroInflatedNegativeBinomialP
+    y, X = dmatrices(f"count ~ gap * experience + {base_rhs}", d, return_type="dataframe")
+    Xi = X[["Intercept", "experience"]]
+    try:
+        zm = ZeroInflatedNegativeBinomialP(y.iloc[:, 0], X, exog_infl=Xi, exposure=d["exposure"], inflation="logit", p=2)
+        zr = zm.fit(method="bfgs", maxiter=1000, disp=0, cov_type="cluster", cov_kwds=cl)
+        t = pd.DataFrame({"coef": zr.params, "se": zr.bse, "p": zr.pvalues})
+        print("\n[ZINB (inflation: const + experience), cluster SE]  count-part coefficients are log rate ratios")
+        print(t.reindex(["gap", "experience", "gap:experience", "inflate_experience", "np.log(len_chars)", "has_image"]).dropna(how="all").round(3).to_string())
+        print(f"AIC  NB2 Model 2: {n2.aic:.0f}   ZINB: {zr.aic:.0f}   (lower = better; NB2 AIC from GLM with fixed alpha, rough guide)")
+        t.to_csv(out / "replication_zinb.csv")
+    except Exception as e:  # convergence problems are common with 80% zeros
+        print("\n[ZINB] failed to converge:", repr(e)[:200])
+
+    # ---------------- Robustness: product vs user clusters for the key NB2 interaction
+    for other in ("group_id", "parent_asin"):
+        m = smf.glm("count ~ gap * experience + " + base_rhs, data=d,
+                    family=sm.families.NegativeBinomial(alpha=models._estimate_alpha(d, ["gap * experience + " + base_rhs])),
+                    offset=np.log(d["exposure"])).fit(cov_type="cluster", cov_kwds={"groups": pd.factorize(d[other])[0]})
+        ci = np.exp(m.conf_int().loc["gap:experience"])
+        print(f"[robustness] NB2 gap:experience cluster={other}: IRR={np.exp(m.params['gap:experience']):.3f} "
+              f"CI [{ci[0]:.3f}, {ci[1]:.3f}] p={m.pvalues['gap:experience']:.3f}")
 
     # ---------------- Extension: gap + LLM content features
-    d["sentiment_c"] = d["sentiment"] - 3
-    d = d[d["error"].isna()] if "error" in d else d
-    emap = models.rare_level_map(d["dominant_emotion"], 0.05)
-    d["dominant_emotion"] = d["dominant_emotion"].map(emap)
-    feats = ("sentiment_c + emotional_intensity + specificity + informativeness + argument_balance + narrative + "
-             "explicit_recommendation + comparison")
-    n3 = f_nb(f"gap * experience + {feats} + C(dominant_emotion) + {base_rhs}")
-    tab3 = models.irr_table(n3).loc[["gap", "experience", "gap:experience", "specificity", "informativeness",
-                                      "argument_balance", "emotional_intensity", "sentiment_c"]]
-    print("\n[Extension: NB2 with gap AND LLM content features; IRR]\n", tab3.round(3).to_string())
-    tab3.to_csv(out / "replication_nb2_with_content.csv")
+    if a.coded and "sentiment" in d:
+        d = d.dropna(subset=["sentiment"]).copy()
+        d["sentiment_c"] = d["sentiment"] - 3
+        emap = models.rare_level_map(d["dominant_emotion"], 0.05)
+        d["dominant_emotion"] = d["dominant_emotion"].map(emap)
+        feats = ("sentiment_c + emotional_intensity + specificity + informativeness + argument_balance + narrative + "
+                 "explicit_recommendation + comparison")
+        n3 = f_nb(f"gap * experience + {feats} + C(dominant_emotion) + {base_rhs}")
+        tab3 = models.irr_table(n3).loc[["gap", "experience", "gap:experience", "specificity", "informativeness",
+                                          "argument_balance", "emotional_intensity", "sentiment_c"]]
+        print("\n[Extension: NB2 with gap AND LLM content features; IRR]\n", tab3.round(3).to_string())
+        tab3.to_csv(out / "replication_nb2_with_content.csv")
 
 
 if __name__ == "__main__":

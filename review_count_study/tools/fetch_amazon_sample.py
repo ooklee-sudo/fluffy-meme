@@ -16,9 +16,16 @@ import pandas as pd
 import requests
 
 URL = "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/review_categories/{}.jsonl"
-SIZES_MB = {"Grocery_and_Gourmet_Food": 5974, "Electronics": 22616, "Video_Games": 2683, "Software": 1869,
+SIZES_MB = {"Cell_Phones_and_Accessories": 9343, "Office_Products": 5777, "Beauty_and_Personal_Care": 11021,
+            "Home_and_Kitchen": 31409, "Grocery_and_Gourmet_Food": 5974, "Electronics": 22616, "Video_Games": 2683, "Software": 1869,
             "Musical_Instruments": 1558, "Movies_and_TV": 8391, "Toys_and_Games": 7316, "Pet_Supplies": 8351}
-GOODS = {"Grocery_and_Gourmet_Food": "experience", "Movies_and_TV": "experience", "Video_Games": "experience",
+# 2x2 preset approximating Winter et al. (2026): smartphone (search, hedonic), printer (search, utilitarian),
+# mascara (experience, hedonic), vacuum cleaner (experience, utilitarian). Category-level, coarser than their
+# product-level coding by Kubler et al. (2024); these assignments are OUR assumption.
+WINTER4 = ["Cell_Phones_and_Accessories", "Office_Products", "Beauty_and_Personal_Care", "Home_and_Kitchen"]
+HEDONIC = {"Cell_Phones_and_Accessories": 1, "Office_Products": 0, "Beauty_and_Personal_Care": 1, "Home_and_Kitchen": 0}
+GOODS = {"Cell_Phones_and_Accessories": "search", "Office_Products": "search",
+         "Beauty_and_Personal_Care": "experience", "Home_and_Kitchen": "experience", "Grocery_and_Gourmet_Food": "experience", "Movies_and_TV": "experience", "Video_Games": "experience",
          "Electronics": "search", "Software": "search", "Musical_Instruments": "search", "Toys_and_Games": "search",
          "Pet_Supplies": "search"}
 
@@ -59,6 +66,7 @@ def sample_category(cat, n, chunk, max_per_user, seed):
     df["has_image"] = df["images"].map(lambda v: int(v is not None and len(v) > 0))
     df["parent_asin"] = df["parent_asin"].astype(str)
     df["category"] = GOODS[cat]
+    df["hedonic"] = HEDONIC.get(cat, -1)  # -1 = not classified
     df["product_category"] = cat
     return df.sample(min(n, len(df)), random_state=seed).drop(columns=["images"], errors="ignore")
 
@@ -66,6 +74,7 @@ def sample_category(cat, n, chunk, max_per_user, seed):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--categories", nargs="+", default=["Grocery_and_Gourmet_Food", "Electronics"])
+    ap.add_argument("--preset", choices=["winter4"], help="use the 2x2 category preset")
     ap.add_argument("--n-per-cat", type=int, default=1000)
     ap.add_argument("--chunk-bytes", type=int, default=200_000)
     ap.add_argument("--max-per-user", type=int, default=5)
@@ -73,9 +82,11 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
+    if a.preset == "winter4":
+        a.categories = WINTER4
     df = pd.concat([sample_category(c, a.n_per_cat, a.chunk_bytes, a.max_per_user, a.seed) for c in a.categories])
     df.to_parquet(out / "amazon_sample.parquet")
-    print(df.groupby("category").agg(n=("text", "size"), users=("user_id", "nunique"),
+    print(df.groupby(["product_category", "category", "hedonic"]).agg(n=("text", "size"), users=("user_id", "nunique"),
                                      mean_helpful=("helpful_vote", "mean"), zero_share=("helpful_vote", lambda s: (s == 0).mean())))
 
 
