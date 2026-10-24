@@ -134,7 +134,7 @@ for improving `lam` from 1.0 to 0.5 falls with the developer's share:
 | WTP relative to delta = 1 | 1.00 | 0.80 | 0.57 | 0.37 |
 
 So with the estimated tail, weakening the developer's liability lowers the value of tool quality and hence the vendor's
-quality incentive. P7 is a baseline benchmark, not a robust empirical claim. The stake `ell s = 20` is illustrative, not calibrated.
+quality incentive (exactly `delta^eps`, see P10). P7 is a baseline benchmark, not a robust empirical claim. The stake `ell s = 20` is illustrative, not calibrated.
 
 ### P8. Monopoly under-provides quality by a factor of two (closed form)
 Take `kappa ~ U[0, kbar]`, a fixed quality cost `K(lam) = K0/lam`, zero marginal cost, one product `(lam, p)`. The monopolist sells to
@@ -164,6 +164,47 @@ Price competition and vertical differentiation (several vendors); the continuum-
 vendors; welfare comparison "warranty signalling vs unravelling" (P5 vs P9); the general-tail extension of P8 (P7's failure means
 the factor of two is baseline-specific).
 
+## 8. Heavy-tail generalisation (linear cost, `S(e) = (1 + theta e/k)^-k`, `eps = 1/(k+1)`)
+Check: `heavy_check.py` (all formulas below equal the numerical optimum to 5-6 digits). Interior iff `Z := A lam s theta / c > 1`.
+
+### P10. Closed forms
+The FOC gives `(1 + theta e*/k)^(k+1) = Z`, so `1 + theta e*/k = Z^eps` and `R* = lam s Z^(-k eps)` (elasticity `eps`, as in P1(c)). Then
+- developer cost `V(lam) = (c/theta) [ (k+1) Z^eps - k ]`;
+- social cost at the privately chosen effort `W(lam) = (c/theta) [ (k + 1/delta) Z^eps - k ]`;
+- willingness to pay `WTP = V(lam0) - V(lam) = (c/theta)(1/eps)(A theta s/c)^eps [lam0^eps - lam^eps]`, which is **proportional to `delta^eps`**.
+*Proof.* `A lam s = c Z/theta`, so `A lam s S(e*) = (c/theta) Z^eps` and `c e* = (ck/theta)(Z^eps - 1)`; add. For `W`, `ell lam s = (c/(delta theta)) Z`.
+Limit `k -> infinity` (`eps -> 0`): `V -> (c/theta)(1 + ln Z)`, the baseline. QED
+This explains the table in P7 exactly: `0.7^eps = 0.8035`, `0.4^eps = 0.5700`, `0.2^eps = 0.3725` for `k = 0.63`.
+
+### P11. Private value of quality understates its social value; the externality loss shrinks with quality
+(a) Social benefit of adopting quality `lam` over `lam0` (at the privately chosen effort) divided by private WTP is
+**`psi = (k + 1/delta)/(k + 1) >= 1`**, equal to 1 iff `delta = 1` (or `k -> infinity`, the baseline of P2).
+For `k = 0.63`: `psi = 1.26, 1.92, 3.45` at `delta = 0.7, 0.4, 0.2` (matches the numerics).
+(b) The externality loss `L_k(lam, delta) = W(lam; delta) - W(lam; 1) = (c/theta)(ell lam s theta/c)^eps [ (k + 1/delta) delta^eps - (k+1) ]`
+is non-negative and **increases in `lam` with elasticity `eps`**: unlike P2b (where `L` was independent of quality), better tools
+shrink the loss caused by weak developer liability, but only by the factor `lam^eps`.
+*Proof.* Subtract the `delta = 1` case in P10; non-negativity because first best minimises the social cost; the `lam` factor is `Z^eps`. QED
+
+### P12. Monopoly quality distortion with a heavy tail
+Let types differ in a scalar multiplier `nu ~ U[0, nubar]` (assumption; e.g. verification cost `c` at fixed `theta`, `nu ~ c^(1-eps)`),
+`WTP_nu = nu G(lam)`, `G = (lam0^eps - lam^eps)/eps`, social benefit `psi * WTP`, fixed cost `K0/lam`, zero marginal cost. Then
+`lam_M^(1+eps) = 4 K0/(N nubar)`, `lam_S^(1+eps) = 2 K0/(N nubar psi)` and
+
+    lam_M / lam_S = (2 psi)^(1/(1+eps)).
+
+For `k -> infinity`, `delta = 1`: ratio 2 (P8). For the estimated `k = 0.63`: **1.54 at `delta = 1`, 2.07 at `delta = 0.5`, 3.31 at `delta = 0.2`**
+(`k` in 0.51-0.78 changes these only in the third digit). So the heavy tail makes the monopoly distortion milder when developers bear
+all losses, but weak developer liability enlarges it through two channels: lower `WTP` (`delta^eps`) and higher social value (`psi`).
+*Proof.* FOCs: `-N nubar G'(lam)/4 = K'` with `G' = -lam^(eps-1)`; same for the planner with `psi/2`. QED
+
+### What this changes
+- P7 (separation of tool market and liability regime) is exact only in the baseline. With the estimated tail, **developer liability is a
+  complement of tool quality**: it raises the value of better tools (`delta^eps`), and weak liability lowers both quality and verification.
+- The policy claim "put the loss on the developer" is strengthened, not weakened: the baseline saw only the verification channel, the
+  heavy tail adds a quality channel.
+- Illustration numbers use `ell s = 20`, not calibrated; only the interior condition `Z > 1` depends on it. The `k` used is the
+  estimate from the HumanEval+ pilot under random test order, not an estimate of developers' real verification technology.
+
 ## What is proved, checked, conjectured
 | Item | Status |
 |---|---|
@@ -177,6 +218,9 @@ the factor of two is baseline-specific).
 | P7 separation of tool market and liability | Proved (B); fails with the estimated heavy tail (numerical, illustrative stakes) |
 | P8 monopoly quality factor 2 | Proved (uniform types, `K0/lam`); numerically checked |
 | P9 cheapest separating warranty `ln r / r^(1-rho)` | Proved under stated assumptions (two types, log-linear learning); numerically checked |
+| P10 heavy-tail closed forms, `WTP ~ delta^eps` | Proved; numerically checked |
+| P11 `psi = (k+1/delta)/(k+1)`, `L_k ~ lam^eps` | Proved; numerically checked |
+| P12 monopoly ratio `(2 psi)^(1/(1+eps))` | Proved (uniform multiplier, `K0/lam`); numerically checked |
 
 ## Link to the data
 `bootstrap_k.py` estimates `k = 0.63` (95% CI 0.51-0.78; 0.72 without timeouts) from 25,120 LLM samples, i.e. `eps ~ 0.58-0.62`
