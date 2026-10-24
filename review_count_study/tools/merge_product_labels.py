@@ -51,7 +51,9 @@ def main():
     out = Path(a.out_dir)
     A, B, key = load(a.a), load(a.b), pd.read_csv(a.key).set_index("item_id")
     ids = sorted(set(A.index) & set(B.index))
-    assert len(ids) == len(key), f"coders cover {len(ids)} of {len(key)} items"
+    assert set(ids) <= set(key.index), "coded items not in the sample key"
+    key = key.loc[ids]  # allows a sub-sample (e.g. only the first 100 items)
+    print(f"coded items: {len(ids)}")
     print(f"[inter-coder agreement, n={len(ids)}]")
     for c in ("good_type", "motive"):
         report(c, A.loc[ids, c], B.loc[ids, c])
