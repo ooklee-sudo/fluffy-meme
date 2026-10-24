@@ -1,25 +1,33 @@
-# IJRM submission checklist
+# IJRM submission checklist (based on the journal's Guide for Authors you pasted)
 
-Files: `manuscript_ijrm.docx` (anonymized; includes abstract, highlights, keywords), `online_appendix.docx`, `title_page.docx` (upload separately), `cover_letter.docx`. Figures 1 and 2 are placeholders in the text.
+## Files
+| File | Upload as |
+|---|---|
+| `manuscript_ijrm.docx` | Anonymized manuscript (title, abstract, keywords, text, AI declaration, references, tables, and Appendices A and B in one file; page numbers added) |
+| `title_page.docx` | Separate title page (author details, acknowledgments, competing interests, funding, CRediT) |
+| `highlights_ijrm.docx` | Highlights (file name includes "highlights"; 5 bullets, each at most 85 characters) |
+| `cover_letter.docx` | Cover letter (about 300 words) |
+| Figures 1 and 2 | Separate files named Figure_1, Figure_2 (not yet inserted; the text has placeholders) |
+| Code and data archive | Deposit in a repository and give the link (IJRM requires this or a statement of why not) |
 
-## Changes relative to the Management Science version
-- Abstract shortened to about 147 words; five highlights (each at most 85 characters) added.
-- Framing tied to agent-based modeling in marketing (Rand and Rust 2011, an IJRM paper) and to marketing managers; "Managerial Implications" section; IS-specific wording removed. The model, results, tables, and Proposition 1 are unchanged.
-- "E-Companion" renamed "Online Appendix".
-
-## Not verified (I could not open IJRM's Guide for Authors)
-- Abstract length limit, highlights format (Elsevier usually asks for 3–5 bullets, 85 characters each), keyword count, reference style (the INFORMS author-date style used here may need conversion to the journal's style), word or page limits, double-blind file rules, and Elsevier's generative-AI disclosure rules.
-- Check: https://www.sciencedirect.com/journal/international-journal-of-research-in-marketing (Guide for Authors).
+## How this version meets the guide
+- Length: at most 50 pages including everything. My build (double-spaced text, tables single-spaced, no figures) is about 35 pages with appendices; two figures will add a few pages. Check the final Word page count.
+- Abstract about 147 words (limit 250); 6 keywords (limit 6); highlights 3 to 5 bullets within 85 characters.
+- Double anonymized: no author names, acknowledgments, or funding in the manuscript. Make sure the code archive is also anonymized (no names in file properties, README, or commit history).
+- Cover letter: short, no funding, declarations, or reviewer suggestions (the guide says these are requested separately). It states the fit with the journal's aims and the novelty.
+- Equations use exp(...) instead of powers of e and are numbered; tables are editable text with captions and notes below.
+- Inclusive language: gendered pronouns removed.
+- Reference style: IJRM accepts any consistent style at submission and applies APA 7 after acceptance, so the INFORMS-style list was kept. Check that the in-text citations and list match.
+- Generative-AI declaration: a section with the required title is placed before the reference list. I drafted it with Claude (Anthropic) as the tool used to restructure and edit the text; **you must confirm and edit it** to match what you actually did and take responsibility for the content.
 
 ## Authors must complete
-- [ ] Figures 1 and 2 (insert original files)
-- [ ] Author information, funding, competing interests, AI-use declaration on the title page
-- [ ] Prior-submission questions in the system: answer truthfully (any manuscript under review elsewhere must be withdrawn first)
-- [ ] "I/We" in the cover letter
-- [ ] Reviewer suggestions if requested
-- [ ] Check arXiv ids and 2026 preprints in the reference list, copied from the earlier manuscript and not re-verified
+- [ ] Author details, affiliations, corresponding author address, acknowledgments, funding, CRediT statement (title page)
+- [ ] Competing-interests declarations tool and uploaded Word file
+- [ ] Figures 1 and 2 as separate files
+- [ ] Repository link for code and results; dataset citation for SAGraph
+- [ ] Submission-declaration questions (not published, not under consideration elsewhere): answer truthfully
+- [ ] Optional: Associate Editor or ERB suggestions in the cover letter
+- [ ] Verify arXiv ids and 2026 preprints in the reference list (copied from the earlier manuscript, not re-verified)
 
-## Recommended before submitting (likely reviewer concerns at IJRM)
-1. Calibrate at least the daily activity profile with timestamped data, or explain why parameters are illustrative.
-2. State clearly in the abstract and discussion that β is a descriptive scaling relation, not a causal effect.
-3. Add a robustness run with a more realistic audience-size distribution if time allows (the largest simulated account has about 300 followers).
+## Fit risk (read this)
+The Aims and Scope say that "replications and minor methodological or theoretical improvements will generally not be publishable" and that the editors favor research that is novel and path-breaking. The paper is positioned as identifying a new source of error in a fast-growing practice, not as an incremental fix. The likely reviewer objections are the uncalibrated rule-based simulator, the descriptive (non-causal) elasticity, and the small simulated network; the Discussion states these limits, and you should consider adding the recommended robustness checks before submitting.

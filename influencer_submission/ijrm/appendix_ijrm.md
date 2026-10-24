@@ -1,8 +1,5 @@
----
-title: "Online Appendix to \"Do Influencers Pay? Limited Attention, Engagement Elasticity, and Simulation-Based Pre-Tests for Seeding Decisions\""
----
 
-# Online Appendix A. Simulation Settings and Assumptions
+# Appendix A. Simulation Settings and Assumptions
 
 **Table A.1. Simulation Parameters**
 
@@ -26,7 +23,7 @@ title: "Online Appendix to \"Do Influencers Pay? Limited Attention, Engagement E
 
 *Rule-based urge function.* With $h$ the hour of day, $\text{leisure} = 1$ if $h \ge 19$ or $h < 1$, 0.5 if $11 \le h < 14$, and 0 otherwise; $n$ the number of feed items in the last hour on topics with interest weight $\ge 0.10$; $\ell \in \{0, 1, 2\}$ the relevance level of the latest item; $\nu = 1$ for a notification and 0 otherwise; and $e$ an emotion bonus of 0.8 (excited), 0.6 (angry), 0.4 (happy), or $-0.6$ (indifferent), the rating is $I = \text{clip}(1.0 + 1.0\cdot\text{leisure} + 0.4\cdot\min\{n, 3\} + 0.5\cdot\ell + 0.8\cdot\nu + e,\ 0,\ 5)$. For notifications $\ell$ is set to 1.
 
-# Online Appendix B. Validation of the Estimation Procedure on Synthetic Data
+# Appendix B. Validation of the Estimation Procedure on Synthetic Data
 
 To check that the procedure in Section 6 recovers known parameters, we generated synthetic campaign data with the structure of an influencer-campaign dataset with timestamps: 400 authors with follower counts drawn log-uniformly between $10^5$ and $10^7$, assigned to six products, 15 posts per author over 60 days, author and product random effects, post-level noise, log-normal reply delays (median 0.8 h, log-sd 1.2), and interaction times thinned by a known daily profile with an evening peak at 21:30. Table B.1 reports the results for two true values of $\beta$.
 

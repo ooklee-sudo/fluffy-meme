@@ -1,15 +1,19 @@
-# Title Page (not blinded; upload separately)
+# Title Page (upload as a separate file; not anonymized)
 
 **Title:** Do Influencers Pay? Limited Attention, Engagement Elasticity, and Simulation-Based Pre-Tests for Seeding Decisions
 
-**Author(s):** [AUTHOR TO COMPLETE: names, affiliations, e-mail, ORCID]
+**Authors:** [AUTHOR TO COMPLETE: given name(s) and family name(s), in the order used in the submission system]
 
-**Corresponding author:** [AUTHOR TO COMPLETE]
+**Affiliations:** [AUTHOR TO COMPLETE: full name and postal address of each affiliation, with country]
 
-**Funding:** [AUTHOR TO COMPLETE]
+**Corresponding author:** [AUTHOR TO COMPLETE: name, full postal address, e-mail]
 
-**Declaration of competing interest:** [AUTHOR TO COMPLETE]
+**Acknowledgments:** [AUTHOR TO COMPLETE or "None."]
 
-**Data availability:** The simulation code and per-run results are available as an anonymized archive for review; the empirical analysis uses SAGraph (Zhang et al. 2025), CC-BY 4.0. [Add repository link after acceptance.]
+**Declaration of competing interests:** [AUTHOR TO COMPLETE. Also complete the journal's declarations tool and upload the resulting Word document.]
 
-**Declaration of generative AI use:** [AUTHOR TO COMPLETE according to Elsevier's current policy. If an AI assistant was used for writing or coding, state it here.]
+**Funding:** [AUTHOR TO COMPLETE, e.g., "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors."]
+
+**CRediT author statement:** [AUTHOR TO COMPLETE. Roles available: Conceptualization; Data curation; Formal analysis; Funding acquisition; Investigation; Methodology; Project administration; Resources; Software; Supervision; Validation; Visualization; Writing – original draft; Writing – review and editing.]
+
+**Declaration of generative AI use:** The statement also appears in the manuscript before the reference list. [AUTHOR TO CONFIRM; see the manuscript.]

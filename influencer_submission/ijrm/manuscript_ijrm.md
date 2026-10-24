@@ -6,14 +6,6 @@ title: "Do Influencers Pay? Limited Attention, Engagement Elasticity, and Simula
 
 Marketers pre-test influencer campaigns in agent-based simulators before choosing between a few influencers and many ordinary users. We show that the recommendation depends on three modeling choices separate from agent realism: the metric used to compare plans, the mechanism that schedules agent actions, and the assumed relation between an account's audience size and follower attention, summarized as an engagement elasticity β. In an event-driven simulator, concentrated seeding dominated at every hour and quantile under constant attention (β = 0); the scale-versus-speed trade-off implied by time to half of a plan's own adopters was an artifact of normalization. Alternative schedulers roughly doubled absolute differences between plans. The ranking reversed near β = 0.1 for discounted reach and downside risk and near 0.2 to 0.3 for expected reach. On 209,890 Weibo posts, β is 0.66 (95% CI 0.63 to 0.68), above both thresholds, although data biases push it upward.
 
-**Highlights**
-
-- Seeding pre-tests can be misled by the metric, scheduler, and attention model
-- Scale-normalized speed (time to half of own adopters) can create a false trade-off
-- Influencer vs. ordinary-user ranking reverses at a modest engagement elasticity
-- Elasticity on 209,890 Weibo posts is about 0.66, above the reversal thresholds
-- Pre-tests should report dominance and make the attention model estimable
-
 **Keywords:** influencer marketing; seeding; limited attention; agent-based simulation; stochastic dominance; engagement
 
 # 1. Introduction
@@ -22,7 +14,7 @@ How to allocate a seeding budget is one of the most basic decisions in digital m
 
 Most of the discussion of such simulators in marketing, from the guidelines for rigor in agent-based marketing models (Rand and Rust 2011) to the current work on LLM agents, asks whether the simulated agents behave realistically. That question is necessary but not sufficient. A pre-test is useful only if it ranks the options correctly, and the ranking depends on modeling choices that are logically separate from behavioral fidelity: how the simulator summarizes outcomes, how it decides when simulated users act, and what it assumes about the platform environment in which they act. This paper examines three such choices and shows that each can change what a manager is told.
 
-The first is the decision metric. Simulation studies of seeding often report the final number of adopters together with a speed measure such as the time to reach half of the eventual adopters. Such a measure is normalized by the cascade's own size, so a plan that produces a small cascade can appear fast simply because it finishes early. The marketing literature distinguishes the value of accelerating adoption from the value of expanding it (Libai et al. 2013), but a manager with a short attention window does not care when a campaign reaches half of its own total; she cares how many people it has reached by a given time. Decision theory supplies criteria that respect this distinction: discounted value for time preference, certainty equivalents and downside risk measures for risk preference, and stochastic dominance for robustness to both (Markowitz 1952, Hadar and Russell 1969, Rockafellar and Uryasev 2000).
+The first is the decision metric. Simulation studies of seeding often report the final number of adopters together with a speed measure such as the time to reach half of the eventual adopters. Such a measure is normalized by the cascade's own size, so a plan that produces a small cascade can appear fast simply because it finishes early. The marketing literature distinguishes the value of accelerating adoption from the value of expanding it (Libai et al. 2013), but managers with a short attention window do not care when a campaign reaches half of its own total; they care how many people it has reached by a given time. Decision theory supplies criteria that respect this distinction: discounted value for time preference, certainty equivalents and downside risk measures for risk preference, and stochastic dominance for robustness to both (Markowitz 1952, Hadar and Russell 1969, Rockafellar and Uryasev 2000).
 
 The second is the timing mechanism. Many LLM-agent simulators advance in rounds and query agents on a schedule, while some add hourly activation profiles (Yang et al. 2024). Empirical activity is circadian, bursty, and responsive to triggers (Barabási 2005, Malmgren et al. 2008, Crane and Sornette 2008), and concurrent work has begun to gate LLM agents with self-exciting point processes (Miao et al. 2026, Zhang et al. 2026a, 2026b). These studies evaluate whether simulated timing looks realistic. None asks whether the timing assumption changes a managerial decision.
 
@@ -78,13 +70,13 @@ Let $N(t)$ be the cumulative number of adopters $t$ hours after the campaign is 
 
 *Time preference.* If the value of an adopter decays with the time it takes to reach them at rate $\delta$ per hour, the value of a campaign is the discounted reach
 
-$$V(\delta) = \int_0^{48} e^{-\delta t}\, dN(t), \tag{3}$$
+$$V(\delta) = \int_0^{48} \exp(-\delta t)\, dN(t), \tag{3}$$
 
 which equals final reach at $\delta = 0$ and rewards early adoption as $\delta$ grows; $\ln 2/\delta$ is the half-life of attention. A trade-off between scale and speed exists only if the ranking of two plans on $E[V(\delta)]$ changes at some critical $\delta^{*}$.
 
 *Risk preference.* For a decision maker with constant absolute risk aversion $\rho$, the certainty equivalent of a plan is $CE(\rho) = -(1/\rho)\ln E[\exp(-\rho N)]$, computed from the empirical distribution. A risk–return trade-off exists only if the ranking on $CE$ changes at some critical $\rho^{*}$. Because the standard deviation penalizes favorable as well as unfavorable outcomes, we also report the conditional value at risk $CVaR_{0.2}$, the mean of the worst 20% of replications (Rockafellar and Uryasev 2000).
 
-*Robustness.* Plan A first-order stochastically dominates plan B if every quantile of $N$ under A is at least as large as under B, in which case every decision maker who prefers more adopters prefers A, whatever her risk attitude (Hadar and Russell 1969). The analogous pathwise statement for time preference is that $E[N(t)]$ under A exceeds $E[N(t)]$ under B at every $t$, which implies $E[V_A(\delta)] > E[V_B(\delta)]$ for every $\delta$.
+*Robustness.* Plan A first-order stochastically dominates plan B if every quantile of $N$ under A is at least as large as under B, in which case every decision maker who prefers more adopters prefers A, whatever their risk attitude (Hadar and Russell 1969). The analogous pathwise statement for time preference is that $E[N(t)]$ under A exceeds $E[N(t)]$ under B at every $t$, which implies $E[V_A(\delta)] > E[V_B(\delta)]$ for every $\delta$.
 
 *Why scale-normalized speed misleads.* A common speed metric is $t_{50}$, the time at which a run reaches half of its own final count. Because $t_{50}$ is invariant to the scale of $N(\cdot)$, a plan can have a smaller $t_{50}$ and yet have fewer adopters than its competitor at every point in time. Such a plan is faster in shape but slower in reach, and a manager who acts on $t_{50}$ may choose it in exactly the situations, short attention windows, where it is worse. We report $t_{50}$ only to connect with prior practice and to test Conjecture 1.
 
@@ -102,7 +94,7 @@ The preceding arguments lead to three conjectures that we examine in Section 5.
 
 # 4. The Simulator
 
-The simulator is designed so that action times are generated by agent state rather than by the simulation clock, and so that its outputs can be evaluated against decision criteria. Parameters not determined by the design are assumptions of this instantiation and are listed in Online Appendix A.
+The simulator is designed so that action times are generated by agent state rather than by the simulation clock, and so that its outputs can be evaluated against decision criteria. Parameters not determined by the design are assumptions of this instantiation and are listed in Appendix A.
 
 ## 4.1 Platform Environment
 
@@ -130,13 +122,13 @@ Let $c_i(t)$ be a mean-one daily activity profile for agent $i$ with an evening 
 
 $$\lambda_i(t) = \lambda_i^0\, c_i(t) + S_i(t), \tag{4}$$
 
-$$S_i(t) = \min\Big\{S_{\max},\ \sum_j \kappa\, g_i\, I_{ij}\, r_{ij}\, e^{-(t - t_j)/\tau}\Big\}, \tag{5}$$
+$$S_i(t) = \min\Big\{S_{\max},\ \sum_j \kappa\, g_i\, I_{ij}\, r_{ij}\, \exp(-(t - t_j)/\tau)\Big\}, \tag{5}$$
 
 where $t_j$ is the time of the $j$th stimulus (an exposure or a notification), $I_{ij} \in [0, 5]$ is the urge rating returned by the urge function of Section 4.4, $r_{ij} \in \{0.25, 0.50, 0.75\}$ encodes topical relevance, $g_i$ is the persona gain, $\kappa = 0.16$, $\tau = 1$ h, and $S_{\max} = 3$. Notifications enter with relevance 0.50. The cap keeps the additive intensity finite under this exposure rule; without it the process becomes supercritical in the evening. Next event times are drawn by thinning against the dominating rate $\lambda_i^0 \cdot \max c_i + S_i(t)$, which is valid until the next stimulus because $S_i$ decays; when a new stimulus arrives the pending event is redrawn, which is exact because the Poisson process is memoryless.
 
 ## 4.4 The Urge Function
 
-The urge function maps an agent's situation (time of day, emotional state, the number of relevant items seen in the last hour, the relevance of the latest item, and notification status) to a rating in $[0, 5]$ by a fixed rule given in Online Appendix A. The rating scales how strongly a stimulus raises the agent's intensity; it does not determine when the agent acts, which is set entirely by (4) and (5). Using a transparent rule rather than a learned or generative model makes the experiments reproducible at negligible cost and isolates the effects of metrics, timing, and attention from the behavior of the agents. Because the rating enters the model only through $I_{ij}$ in (5), the architecture would in principle allow a different rating mechanism to be substituted, but we have not implemented or tested an alternative, and all results in this paper are conditional on the rule-based function.
+The urge function maps an agent's situation (time of day, emotional state, the number of relevant items seen in the last hour, the relevance of the latest item, and notification status) to a rating in $[0, 5]$ by a fixed rule given in Appendix A. The rating scales how strongly a stimulus raises the agent's intensity; it does not determine when the agent acts, which is set entirely by (4) and (5). Using a transparent rule rather than a learned or generative model makes the experiments reproducible at negligible cost and isolates the effects of metrics, timing, and attention from the behavior of the agents. Because the rating enters the model only through $I_{ij}$ in (5), the architecture would in principle allow a different rating mechanism to be substituted, but we have not implemented or tested an alternative, and all results in this paper are conditional on the rule-based function.
 
 ## 4.5 Alternative Schedulers
 
@@ -251,13 +243,13 @@ The first-generation argument of Section 3.1 accounts for the location of these 
 
 # 6. Estimating the Engagement Elasticity on Platform Data
 
-Section 5.5 locates the decision on the engagement elasticity $\beta$, so the practical question is where real campaigns lie. We answer it with SAGraph (Zhang et al. 2025), a public dataset released under a CC-BY 4.0 license that covers influencer campaigns for six products on Weibo. For each product it contains anonymized profiles with follower counts and, for each posting account, the comments and reposts that its posts received. The public release contains neither post identifiers nor timestamps, so we define a post as a unique pair of author and post text, and we cannot calibrate timing. Posting accounts range from no followers to about 240 million, so the data cover the small accounts that make up distributed seeding as well as large influencers. Online Appendix B validates the estimator on synthetic data with known parameters, and the estimation code is included in the supplementary archive.
+Section 5.5 locates the decision on the engagement elasticity $\beta$, so the practical question is where real campaigns lie. We answer it with SAGraph (Zhang et al. 2025), a public dataset released under a CC-BY 4.0 license that covers influencer campaigns for six products on Weibo. For each product it contains anonymized profiles with follower counts and, for each posting account, the comments and reposts that its posts received. The public release contains neither post identifiers nor timestamps, so we define a post as a unique pair of author and post text, and we cannot calibrate timing. Posting accounts range from no followers to about 240 million, so the data cover the small accounts that make up distributed seeding as well as large influencers. Appendix B validates the estimator on synthetic data with known parameters, and the estimation code is included in the supplementary archive.
 
 *Estimator.* If the expected number of interactions on a post by author $a$ is proportional to $f_a^{1-\beta}$, then interactions per follower scale as $f_a^{-\beta}$, which matches the role of $\beta$ in (1). We estimate
 
 $$E[y_p \mid f_a, \text{product}] = \exp(\alpha_{\text{product}} + \theta \ln f_a), \qquad \hat\beta = 1 - \hat\theta, \tag{6}$$
 
-where $y_p$ is the number of comments and reposts on post $p$, by Poisson pseudo-maximum likelihood (PPML) with product fixed effects and standard errors clustered by author. PPML is consistent under heteroskedasticity (Santos Silva and Tenreyro 2006), whereas ordinary least squares on $\ln(1 + y_p)$ is biased when counts are small; on synthetic data with a true $\beta$ of 0.35 it returned 0.94, against 0.28 [0.20, 0.37] for PPML (Online Appendix B). SAGraph, however, contains only posts that received at least one interaction, so we also estimate (6) as a zero-truncated Poisson (ZTP) model, which conditions on $y_p \ge 1$. The main sample excludes accounts with fewer than 10 followers, consistent with the floor in (1). Equation (6) is a descriptive scaling relation, not a causal effect of audience size; we discuss its interpretation below.
+where $y_p$ is the number of comments and reposts on post $p$, by Poisson pseudo-maximum likelihood (PPML) with product fixed effects and standard errors clustered by author. PPML is consistent under heteroskedasticity (Santos Silva and Tenreyro 2006), whereas ordinary least squares on $\ln(1 + y_p)$ is biased when counts are small; on synthetic data with a true $\beta$ of 0.35 it returned 0.94, against 0.28 [0.20, 0.37] for PPML (Appendix B). SAGraph, however, contains only posts that received at least one interaction, so we also estimate (6) as a zero-truncated Poisson (ZTP) model, which conditions on $y_p \ge 1$. The main sample excludes accounts with fewer than 10 followers, consistent with the floor in (1). Equation (6) is a descriptive scaling relation, not a causal effect of audience size; we discuss its interpretation below.
 
 *Results.* Table 7 reports the estimates. Pooled over the six products, $\hat\beta = 0.66$ (95% CI [0.63, 0.68]). Every product-level estimate lies between 0.52 and 0.75, and every product-level interval excludes 0.3. The estimates were similar under the ZTP model (0.63), when only comments were counted (0.74), and when accounts with fewer than 10 followers were included with $f$ set to 10 (0.72). Estimated by audience size, the elasticity was 0.74 [0.62, 0.86] for accounts with $10^3$ to $10^5$ followers and 0.57 [0.49, 0.65] for accounts with at least $10^5$ followers. Product-level estimates for the largest accounts are imprecise because few such accounts post in some campaigns; for ruby_face_cream, with 135 large accounts, the interval is [0.08, 0.65]. Some accounts appear in several campaigns; merging likely matches across products (identical description and following count and the same order of magnitude of followers) into common clusters left the pooled interval essentially unchanged ([0.63, 0.68]).
 
@@ -311,7 +303,11 @@ The elasticity estimate has limits of its own. It comes from one platform, one c
 
 Simulation-based pre-tests of seeding plans can mislead through the metric used to compare plans, through the mechanism that sets when simulated users act, and through the assumption about how attention scales with audience size. In our synthetic setting, the familiar trade-off between influencer scale and grassroots speed disappeared once speed was measured as reach over time rather than as time to half of a plan's own total; the timing mechanism roughly doubled the absolute differences between plans; and a modest engagement elasticity reversed the ranking, at thresholds that a simple limited-attention argument predicts. On six influencer campaigns on Weibo, the estimated elasticity was about 0.66, well above the point at which the ranking reversed, although the main biases in the data push the estimate upward. Decision support for seeding should therefore report decision-theoretic criteria, test sensitivity to the timing mechanism, and, above all, make explicit and estimate how attention scales with audience size on the platform at hand.
 
-**Data availability.** The simulation code, per-run result files, and analysis scripts are provided as an anonymized supplementary archive for review and will be deposited in a public repository upon acceptance. The empirical analysis uses SAGraph (Zhang et al. 2025), which is publicly available under a CC-BY 4.0 license; the estimation scripts are included in the archive.
+**Data availability.** The empirical analysis uses SAGraph (Zhang et al., 2025), a public dataset released under a CC-BY 4.0 license. The simulation code, per-run result files, and estimation scripts are available as an anonymized archive for review [AUTHOR TO COMPLETE: repository link; the journal requires deposit in a data repository and a link, or a statement of why data cannot be shared].
+
+# Declaration of Generative AI and AI-Assisted Technologies in the Manuscript Preparation Process
+
+[AUTHOR TO CONFIRM AND EDIT BEFORE SUBMISSION. Draft based on how this version was prepared:] During the preparation of this work the author(s) used Claude (Anthropic) to restructure and edit the text for this journal and to draft supporting files. After using this tool, the author(s) reviewed and edited the content as needed and take(s) full responsibility for the content of the published article.
 
 # References
 
