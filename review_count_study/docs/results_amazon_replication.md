@@ -73,3 +73,12 @@ Product metadata (title, categories, features) for all 20,672 sampled products w
 3. H1: the gap effect for search goods stays positive (NB2 M1 IRR 1.22–1.29, p ≤ .005). Point estimates imply a net gap effect for experience goods that is not negative (e.g., 1.30 × 0.95 ≈ 1.23 for Claude/our prompt; 1.35 × 0.80 ≈ 1.08 for Llama/our prompt; products of point estimates, not tested).
 4. ZINB again collapses to NB2 (inspected for Claude/our prompt and Llama/original prompt).
 5. Caveats: LLM labels (kappa .70–.76) contain classification error that biases interactions toward zero; the same family (Claude) produced labels and, in two combinations, ratings; 12 comparisons without multiplicity correction; ~1.3 reviews per product, so product clustering is uninformative here.
+
+## Human validation of the product labels (100 independent products)
+Two coders, blind to LLM labels, after a calibration round on a different 100 products (calibration agreement kappa .27 / .42; those items are not used for validation).
+- Inter-coder agreement (P101-P200, n=100): search/experience 97%, kappa .926 (95% CI .83-1.00); hedonic/utilitarian 94%, kappa .855 (.73-.95); both dimensions identical for 91 products.
+- Nine disagreements resolved jointly by the coders (hair/beard care decided once, as utilitarian).
+- LLM vs consensus: search/experience 92.0%, kappa .820 (95% CI .69-.93); hedonic/utilitarian 90.0%, kappa .758 (.61-.89).
+- Error direction: LLM says experience where humans say search 8x (0x opposite); LLM says hedonic where humans say utilitarian 8x (2x opposite). **Correction:** an earlier message described this direction the other way round.
+- Labels: `validation/product_label_validation_P101-P200.csv` (IDs and labels only; no listing text).
+- Caveats: n=100; decision rules refined after the calibration round and adjudication decided after seeing disagreements; independence of the two coders is assumed, not verified.
