@@ -80,6 +80,39 @@ def em(d, L_prod, pid, se, sp, pi, formula, kind, alpha=None, iters=12, tol=1e-4
     return res
 
 
+def rc_values(L, se, sp, q):
+    """Regression calibration: E[T|L] from sensitivity, specificity and the observed LLM share q (Rogan-Gladen prevalence)."""
+    pi = float(np.clip((q + sp - 1) / (se + sp - 1), 1e-4, 1 - 1e-4))
+    ppv = min(1.0, se * pi / q); npv = min(1.0, sp * (1 - pi) / (1 - q))
+    return np.where(L == 1, ppv, 1 - npv), pi
+
+
+def one_draw_rc(args):
+    """Regression-calibration estimates for one draw of (Se, Sp). Valid for linear models under non-differential
+    misclassification; approximate for the log-linear NB2 model."""
+    seed, alpha, cnt_e, cnt_h, q_e, q_h = args
+    rng = np.random.default_rng(seed)
+    prods = D.drop_duplicates("pid").sort_values("pid")
+    out = {}
+    for tag, cnt, q, col in (("e", cnt_e, q_e, "experience"), ("h", cnt_h, q_h, "hedonic")):
+        tp, fn, tn, fp = cnt
+        se, sp = rng.beta(tp + 1, fn + 1), rng.beta(tn + 1, fp + 1)
+        if se + sp <= 1.0:
+            return None
+        ev, pi = rc_values(prods[col].values.astype(int), se, sp, q)
+        d = D.assign(T=ev[D.pid.values])
+        groups = d.pid.values
+        if tag == "e":
+            f = smf.glm(F_NB, data=d, family=sm.families.NegativeBinomial(alpha=alpha), offset=np.log(d.exposure)).fit(cov_type="cluster", cov_kwds={"groups": groups})
+            c = f.cov_params(); b = f.params
+            out.update(gap=b["gap"], gap_se=f.bse["gap"], inter=b["gap:T"], inter_se=f.bse["gap:T"],
+                       net=b["gap"] + b["gap:T"], net_se=float(np.sqrt(c.loc["gap", "gap"] + c.loc["gap:T", "gap:T"] + 2 * c.loc["gap", "gap:T"])))
+        else:
+            o = smf.ols(F_OLS, data=d).fit(cov_type="cluster", cov_kwds={"groups": groups})
+            out.update(hed=o.params["T"], hed_se=o.bse["T"])
+    return out
+
+
 def one_draw(args):
     seed, alpha, cnt_e, cnt_h, q_e, q_h = args
     rng = np.random.default_rng(seed)
@@ -107,7 +140,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True); ap.add_argument("--validation", required=True)
     ap.add_argument("--draws", type=int, default=80); ap.add_argument("--procs", type=int, default=4)
-    ap.add_argument("--out")
+    ap.add_argument("--out"); ap.add_argument("--method", choices=["em", "rc"], default="em",
+                    help="em: maximum likelihood (uses the outcome); rc: regression calibration (E[T|L], no outcome model)")
     a = ap.parse_args()
     init(a.data)
     v = pd.read_csv(a.validation)
@@ -120,20 +154,26 @@ def main():
     obs_h = smf.ols("gap ~ hedonic + C(star_f) + len_chars + age", data=D).fit(cov_type="cluster", cov_kwds={"groups": g})
     # sanity check: with Se=Sp=1 the EM must reproduce the observed-label fit
     with mp.Pool(a.procs, initializer=init, initargs=(a.data,)) as pool:
-        res = [r for r in pool.map(one_draw, [(s, alpha, cnt_e, cnt_h, q_e, q_h) for s in range(a.draws)]) if r]
+        res = [r for r in pool.map(one_draw_rc if a.method == "rc" else one_draw, [(s, alpha, cnt_e, cnt_h, q_e, q_h) for s in range(a.draws)]) if r]
     R = pd.DataFrame(res)
     if a.out:
         R.to_csv(a.out, index=False)
     pr = lambda x: np.percentile(x, [2.5, 50, 97.5])
     cov = obs.cov_params(); nb = obs.params["gap"] + obs.params["gap:experience"]
     nse = float(np.sqrt(cov.loc["gap", "gap"] + cov.loc["gap:experience", "gap:experience"] + 2 * cov.loc["gap", "gap:experience"]))
-    print(f"draws used: {len(R)} of {a.draws} | experience: Se {R.sens_e.mean():.3f} Sp {R.spec_e.mean():.3f} prevalence {R.prev_e.mean():.3f} (LLM share {q_e:.3f}) | hedonic: Se {R.sens_h.mean():.3f} Sp {R.spec_h.mean():.3f} prevalence {R.prev_h.mean():.3f} (LLM {q_h:.3f})")
+    def rubin(q, se):
+        q, se = np.asarray(q), np.asarray(se); K = len(q)
+        return q.mean(), float(np.sqrt((se ** 2).mean() + (1 + 1 / K) * q.var(ddof=1)))
+    print(f"method {a.method} | draws used: {len(R)} of {a.draws} | LLM shares: experience {q_e:.3f}, hedonic {q_h:.3f}")
     for name, ob, ose, col, ex in (("NB2 gap IRR (search goods)", obs.params["gap"], obs.bse["gap"], "gap", True),
                                    ("NB2 gap x experience IRR", obs.params["gap:experience"], obs.bse["gap:experience"], "inter", True),
                                    ("NB2 net gap IRR (experience goods)", nb, nse, "net", True),
                                    ("Gap ~ hedonic (OLS coef.)", obs_h.params["hedonic"], obs_h.bse["hedonic"], "hed", False)):
         f = np.exp if ex else (lambda x: x); lo, md, hi = pr(R[col])
-        print(f"{name:36s} observed {f(ob):.3f} [{f(ob-1.96*ose):.3f}, {f(ob+1.96*ose):.3f}] | corrected median {f(md):.3f}, range over error-rate draws [{f(lo):.3f}, {f(hi):.3f}]")
+        txt = f"{name:36s} observed {f(ob):.3f} [{f(ob-1.96*ose):.3f}, {f(ob+1.96*ose):.3f}] | corrected median {f(md):.3f}, range over error-rate draws [{f(lo):.3f}, {f(hi):.3f}]"
+        if a.method == "rc":
+            qb, se = rubin(R[col], R[col + "_se"]); txt += f" | pooled (Rubin) {f(qb):.3f} [{f(qb-1.96*se):.3f}, {f(qb+1.96*se):.3f}]"
+        print(txt)
 
 
 if __name__ == "__main__":
