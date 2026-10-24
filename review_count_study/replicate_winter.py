@@ -58,6 +58,8 @@ def main():
                     help="cluster-robust SE unit: parent_asin (product, as in the paper) or group_id (user)")
     ap.add_argument("--out-dir", required=True); ap.add_argument("--model", default="anthropic/claude-haiku-5.5")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--product-labels", help="CSV with parent_asin, good_type (search/experience), motive (hedonic/utilitarian): "
+                    "replaces the category-level experience/hedonic coding by product-level LLM labels; unlabeled products are dropped")
     ap.add_argument("--prompt-file", help="text file with the ORIGINAL system prompt (verbatim); switches to raw review text, tag 'orig'")
     ap.add_argument("--temperature", type=float, default=None, help="default 0 (ours); original study used 0.2")
     a = ap.parse_args()
@@ -87,6 +89,14 @@ def main():
     d = d.dropna(subset=["stars_llm"]).copy()
     d["gap"] = (d["stars"] - d["stars_llm"]).abs()
     d["experience"] = (d["category"] == "experience").astype(int)
+    if a.product_labels:
+        lab = pd.read_csv(a.product_labels)[["parent_asin", "good_type", "motive"]].dropna().drop_duplicates("parent_asin")
+        n0 = len(d)
+        d = d.merge(lab, on="parent_asin", how="inner")
+        d["experience"] = (d["good_type"] == "experience").astype(int)
+        d["hedonic"] = (d["motive"] == "hedonic").astype(int)
+        d["category"] = np.where(d["experience"] == 1, "experience", "search")
+        print(f"[product-level labels] kept {len(d)}/{n0} reviews; experience share {d['experience'].mean():.1%}, hedonic share {d['hedonic'].mean():.1%}")
     d["len_chars"] = d["text"].str.len()
     d["age"] = d["days_since_post"].clip(lower=1)
     d["exposure"] = d["age"]
