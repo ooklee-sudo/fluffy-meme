@@ -23,7 +23,7 @@
 ## Authors must complete
 - [ ] Author details, affiliations, corresponding author address, acknowledgments, funding, CRediT statement (title page)
 - [ ] Competing-interests declarations tool and uploaded Word file
-- [ ] Figures 1 and 2 as separate files
+- [x] Figures 1 and 2 are in `figures/` (PDF and 400-dpi PNG; script `make_figures.py`). Figure 1 shows only the beta = 0 paths from Table 2; the beta = 0.3 hourly paths of the original figure need the simulation output, so the sentence "led at every hour" for beta = 0.3 has no figure
 - [ ] Repository link for code and results; dataset citation for SAGraph
 - [ ] Submission-declaration questions (not published, not under consideration elsewhere): answer truthfully
 - [ ] Optional: Associate Editor or ERB suggestions in the cover letter

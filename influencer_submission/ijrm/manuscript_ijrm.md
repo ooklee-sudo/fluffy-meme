@@ -163,7 +163,7 @@ The decision criteria of Section 3.2 tell a different story. Concentrated seedin
 
 The answer to RQ1 is therefore negative for this configuration, and Conjecture 1 is supported: under any monotone preference over adopters, time, and risk, concentrated seeding is the better plan, and the apparent trade-off is produced by the scale-normalized speed metric. Note also that the two plans were nearly tied after one hour (56 vs. 50). Under constant attention the plans create similar numbers of first-generation exposures, and the advantage of concentration arises downstream.
 
-*[Figure 1 here. Mean Cumulative Adopters After Injection. Notes. (a) Base configuration, 15 paired replications shown for comparability with panel (b). (b) Engagement elasticity $\beta = 0.3$.]*
+*[Insert Figure 1 here. Figure 1. Mean cumulative adopters after injection in the base configuration ($\beta = 0$, equal-link budget, 30 paired replications; values from Table 2).]*
 
 ## 5.3 Does the Timing Mechanism Matter? (RQ2)
 
@@ -218,7 +218,7 @@ Table 5 reports hybrid portfolios under three pricing rules. Under equal-link pr
 
 ## 5.5 Engagement Elasticity and the Reversal of the Ranking (RQ4)
 
-Sections 5.2 to 5.4 assume constant attention. Table 6 and Figure 2 relax this assumption by varying $\beta$ in (1), which applies to all accounts in the network. The ranking reversed, and it did so at different values of $\beta$ for different criteria. On discounted reach at $\delta = 1$ per hour and on $CVaR_{0.2}$, concentrated seeding lost its advantage near $\beta = 0.1$, and distributed seeding was clearly better from $\beta = 0.15$. On expected final reach, concentrated seeding kept a nominal advantage up to $\beta = 0.25$, although the interval included zero from $\beta = 0.15$, and distributed seeding was clearly better from $\beta = 0.3$. At $\beta = 0.3$, distributed seeding produced more adopters (175 vs. 123), led at every hour (Figure 1(b)), and had better worst-case outcomes ($CVaR_{0.2}$ of 136 vs. 67).
+Sections 5.2 to 5.4 assume constant attention. Table 6 and Figure 2 relax this assumption by varying $\beta$ in (1), which applies to all accounts in the network. The ranking reversed, and it did so at different values of $\beta$ for different criteria. On discounted reach at $\delta = 1$ per hour and on $CVaR_{0.2}$, concentrated seeding lost its advantage near $\beta = 0.1$, and distributed seeding was clearly better from $\beta = 0.15$. On expected final reach, concentrated seeding kept a nominal advantage up to $\beta = 0.25$, although the interval included zero from $\beta = 0.15$, and distributed seeding was clearly better from $\beta = 0.3$. At $\beta = 0.3$, distributed seeding produced more adopters (175 vs. 123), led at every hour, and had better worst-case outcomes ($CVaR_{0.2}$ of 136 vs. 67).
 
 **Table 6. Concentrated vs. Distributed Seeding as a Function of the Engagement Elasticity $\beta$ (Equal-Link Budget, 15 Paired Replications)**
 
@@ -235,7 +235,7 @@ Sections 5.2 to 5.4 assume constant attention. Table 6 and Figure 2 relax this a
 
 *Notes.* The $\beta = 0$ row uses the first 15 replications of the base configuration. The nonmonotonic value at $\beta = 0.25$ reflects the heavy right tail of concentrated outcomes with 15 replications.
 
-*[Figure 2 here. Paired Difference (Concentrated Minus Distributed) in Final Adopters and in Discounted Reach at $\delta = 1$ per Hour, by Engagement Elasticity. Note. Bars are 95% bootstrap intervals.]*
+*[Insert Figure 2 here. Figure 2. Paired Difference (Concentrated Minus Distributed) in Final Adopters and in Discounted Reach at $\delta = 1$ per Hour, by Engagement Elasticity. Note. Bars are 95% bootstrap intervals.]*
 
 Two thresholds therefore bound a band, roughly $0.1 < \beta < 0.25$ in this configuration, in which a genuine trade-off exists: concentration offers more adopters in expectation, with a long right tail, while distribution reaches more people early and protects against poor outcomes. Inside this band, and only inside it, the choice depends on the manager's attention half-life and risk aversion, and the critical $\delta^{*}$ and $\rho^{*}$ of Section 3.2 are well defined. Below the band concentration dominates and above it distribution dominates, whatever the manager's preferences. Conjecture 3 is supported.
 
