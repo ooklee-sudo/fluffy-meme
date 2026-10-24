@@ -44,3 +44,32 @@ Original system prompt from the supplementary material (Web Appendix 7, GUIDE-LL
 - Star-by-star gap profile: with our prompt the three-star gap is largest in all LLMs; with the original prompt the one-star gap is 0.17–0.54 and the three-star gap 0.53–0.67 (only GPT-4.1 nano has them equal). **Correction:** an earlier note that the original prompt "reproduces WZH's one-star pattern" was based on GPT-4.1 nano alone and overstated; it does not hold across LLMs.
 - Hedonic coefficient on the gap (original prompt): −.006 (p=.49), −.002 (p=.79), −.005 (p=.61).
 - Original paper's own GPT-5-nano check (Web Appendix 4): gap +6.29 (p=.001) for search goods, interaction −8.46 (p<.001); N=28,867 (15,509 censored), 383 product clusters.
+
+## Update: product-level search/experience and hedonic/utilitarian labels (LLM-assigned)
+Product metadata (title, categories, features) for all 20,672 sampled products was streamed from the Amazon 2023 meta files (`tools/fetch_amazon_meta.py`). Claude Haiku 5.5 labelled every product (`product_labels.py`; definitions after Nelson 1970 / WZH, anchors: smartphone = search & hedonic, printer = search & utilitarian, mascara = experience & hedonic, vacuum cleaner = experience & utilitarian). Llama 3.3 70B labelled a random 3,000 products for a cross-check.
+
+**Agreement (2,999 products):** search/experience 88.8%, kappa .755; hedonic/utilitarian 87.6%, kappa .698; both dimensions 77.6%. Labels are **not human-validated**; agreement between two LLMs does not exclude shared errors, and misclassification attenuates interactions toward zero.
+
+**Category assumption vs product-level labels (share, Claude):** Cell Phones experience 5.4% / hedonic 11.6% (assumed hedonic); Office 15.9% / 11.6%; Beauty 88.5% / 48.3%; Home & Kitchen 33.6% / 29.3% (assumed experience). Analysis sample: 25,781 reviews; experience 37.0%, hedonic 22.5%.
+
+| Prompt | LLM | Labels | Tobit gap (p) | Tobit gap×exp (p) | NB2 gap IRR M1 (p) | NB2 gap IRR M2 (p) | NB2 gap×exp IRR [CI] (p) | Hedonic coef. on gap (p) |
+|---|---|---|---|---|---|---|---|---|
+| ours | Claude | category | 1.28 (.026) | −0.59 (.40) | 1.26 (.001) | 1.25 (.021) | 1.02 [0.79, 1.31] (.88) | −.010 (.25) |
+| ours | Claude | **product** | 1.33 (.012) | −0.82 (.29) | 1.28 (<.001) | 1.30 (.001) | 0.95 [0.73, 1.22] (.67) | **−.029 (.001)** |
+| ours | Llama | category | 1.38 (.025) | −1.06 (.12) | 1.24 (.003) | 1.36 (.003) | 0.82 [0.65, 1.03] (.09) | +.003 (.72) |
+| ours | Llama | **product** | 1.03 (.054) | −0.51 (.44) | 1.25 (.002) | 1.35 (.001) | 0.80 [0.65, 1.00] (.049) | **−.017 (.031)** |
+| ours | GPT-4.1 nano | category | 1.45 (.007) | −1.05 (.13) | 1.22 (.001) | 1.29 (.006) | 0.90 [0.72, 1.14] (.38) | −.004 (.66) |
+| ours | GPT-4.1 nano | **product** | 1.11 (.016) | −0.49 (.47) | 1.23 (.001) | 1.29 (.001) | 0.88 [0.70, 1.11] (.30) | −.017 (.078) |
+| orig | Claude | category | 1.13 (.044) | −0.60 (.46) | 1.21 (.015) | 1.25 (.048) | 0.92 [0.70, 1.22] (.58) | −.006 (.49) |
+| orig | Claude | **product** | 1.05 (.031) | −0.61 (.49) | 1.23 (.005) | 1.31 (.002) | 0.83 [0.64, 1.07] (.15) | **−.026 (.004)** |
+| orig | Llama | category | 1.34 (.026) | −1.01 (.17) | 1.28 (.001) | 1.36 (.002) | 0.89 [0.69, 1.14] (.34) | −.002 (.79) |
+| orig | Llama | **product** | 1.03 (.053) | −0.46 (.52) | 1.29 (.001) | 1.36 (<.001) | 0.87 [0.68, 1.12] (.27) | **−.017 (.032)** |
+| orig | GPT-4.1 nano | category | 0.71 (.16) | −0.54 (.44) | 1.21 (.007) | 1.19 (.097) | 1.03 [0.79, 1.34] (.83) | −.005 (.61) |
+| orig | GPT-4.1 nano | **product** | 0.61 (.17) | −0.39 (.58) | 1.22 (.004) | 1.23 (.016) | 0.98 [0.76, 1.27] (.87) | **−.021 (.025)** |
+
+**Reading:**
+1. H3 (hedonic goods show smaller gaps): not supported with category coding, **supported in direction in all six combinations with product-level coding** (−.017 to −.029; five of six p < .05; WZH −.058). The category assumption (e.g., all Cell Phones hedonic) was the likely reason for the earlier null.
+2. H2 (experience interaction): still not significant. NB2 interaction IRR is below 1 in all six product-level combinations (0.80–0.98; category: four of six), i.e. directionally as in WZH, but p-values are .049–.87 (one borderline value among six, uncorrected). Tobit interaction −0.39 to −0.82 (p .29–.58).
+3. H1: the gap effect for search goods stays positive (NB2 M1 IRR 1.22–1.29, p ≤ .005). Point estimates imply a net gap effect for experience goods that is not negative (e.g., 1.30 × 0.95 ≈ 1.23 for Claude/our prompt; 1.35 × 0.80 ≈ 1.08 for Llama/our prompt; products of point estimates, not tested).
+4. ZINB again collapses to NB2 (inspected for Claude/our prompt and Llama/original prompt).
+5. Caveats: LLM labels (kappa .70–.76) contain classification error that biases interactions toward zero; the same family (Claude) produced labels and, in two combinations, ratings; 12 comparisons without multiplicity correction; ~1.3 reviews per product, so product clustering is uninformative here.
