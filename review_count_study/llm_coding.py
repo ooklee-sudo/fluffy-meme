@@ -60,15 +60,17 @@ class OpenRouterCoder:
         self.headers = {"Content-Type": "application/json"}
         if os.environ.get("OPENROUTER_API_KEY"):
             self.headers["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+        self.temperature = 0
+        self.raw_user = False  # True: send the review text alone as the user message (no wrapper)
         self.usage = {"prompt_tokens": 0, "completion_tokens": 0, "calls": 0}
         import threading
         self._lock = threading.Lock()
 
     def _call(self, text, max_tokens=600):
-        body = {"model": self.model, "temperature": 0, "max_tokens": max_tokens,
+        body = {"model": self.model, "temperature": self.temperature, "max_tokens": max_tokens,
                 "reasoning": {"enabled": False},  # reasoning tokens would eat max_tokens and truncate the JSON
                 "messages": [{"role": "system", "content": self.system},
-                             {"role": "user", "content": prompts.user_message(text)}]}
+                             {"role": "user", "content": text if self.raw_user else prompts.user_message(text)}]}
         r = self.requests.post(self.URL, headers=self.headers, json=body, timeout=self.timeout)
         r.raise_for_status()
         j = r.json()

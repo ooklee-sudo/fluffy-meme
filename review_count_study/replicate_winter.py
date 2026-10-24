@@ -58,6 +58,8 @@ def main():
                     help="cluster-robust SE unit: parent_asin (product, as in the paper) or group_id (user)")
     ap.add_argument("--out-dir", required=True); ap.add_argument("--model", default="anthropic/claude-haiku-5.5")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--prompt-file", help="text file with the ORIGINAL system prompt (verbatim); switches to raw review text, tag 'orig'")
+    ap.add_argument("--temperature", type=float, default=None, help="default 0 (ours); original study used 0.2")
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
 
@@ -74,8 +76,12 @@ def main():
         d = base.merge(content, on="review_id", how="left")
 
     # LLM star inference (cached; failed rows retried on rerun)
-    sc = star_rating.StarCoder(a.model)
-    st = llm_coding.code_reviews(base[["text"]], sc, out / f"stars_cache_{a.model.replace('/', '_')}.jsonl", workers=a.workers)
+    if a.prompt_file:
+        sc = star_rating.StarCoder(a.model, system=Path(a.prompt_file).read_text().strip(), tag="orig",
+                                   temperature=0.2 if a.temperature is None else a.temperature, raw_user=True)
+    else:
+        sc = star_rating.StarCoder(a.model, temperature=0.0 if a.temperature is None else a.temperature)
+    st = llm_coding.code_reviews(base[["text"]], sc, out / (f"stars_cache_{a.model.replace('/', '_')}" + ("" if sc.variant == "stars" else f"_{sc.variant}") + ".jsonl"), workers=a.workers)
     d["stars_llm"] = st["stars_llm"].to_numpy()
     print("[usage]", sc.usage, "| failed star rows:", int(d["stars_llm"].isna().sum()))
     d = d.dropna(subset=["stars_llm"]).copy()
