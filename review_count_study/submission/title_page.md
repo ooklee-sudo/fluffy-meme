@@ -1,10 +1,10 @@
 # Title Page
 
-**Title:** Do disagreements between LLM-inferred and actual star ratings predict review helpfulness? A replication and extension
+**Title:** Does disagreement between LLM-inferred and actual star ratings predict review helpfulness? Evidence from three language models and 26,000 Amazon reviews
 
 **Running title:** LLM–star rating gaps and review helpfulness
 
-**Article type:** Replication Corner
+**Article type:** Regular article
 
 **Author:** Ook Lee¹
 
@@ -13,9 +13,9 @@
 
 **Corresponding author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr. ORCID: [ORCID iD, optional]
 
-**Keywords:** large language models; online reviews; review helpfulness; sentiment analysis; replication; count models
+**Keywords:** large language models; online reviews; review helpfulness; star ratings; count models; replication
 
-**Word count:** about 3,040 words (abstract, text, and references; tables excluded), 3 tables, online appendix about 1,540 words.
+**Word count:** about 3,900 words (abstract, text, and references; tables and table notes excluded; about 4,500 with them), 4 tables, abstract 137 words, online appendix about 1,830 words excluding its tables.
 
 ## Declarations
 

@@ -81,7 +81,61 @@ The product-level labels come from an LLM and contain errors. Against the two-co
 | original | GPT-4.1 nano | −0.020 [−0.038, −0.003] | −0.034 (−0.073 to −0.026) | −0.041 [−0.149, 0.067] |
 
 The corrected interactions lie further below one (medians 0.745–0.971) than the observed ones (0.805–0.979 in these refits), but every pooled interval includes one, and the corrected net gap effect for experience goods stays near or above one (pooled estimates 0.99–1.21, all intervals include one). The corrected hedonic coefficients are 1.6–1.7 times larger than the observed ones (−0.028 to −0.048), which matches the factor of about 1.7 implied by the error rates, but the pooled intervals include zero because the validation sample is small. A likelihood-based (EM) variant, run for one combination (Claude, our prompt, 80 draws), gave similar corrected experience estimates (interaction 0.960, range 0.904–1.045; net gap IRR 1.211) but a hedonic coefficient of −0.083, about three times the observed value and well above what the error rates imply for a linear association. We attribute this to the Gaussian outcome model fitting the discrete, skewed gap poorly and therefore do not use EM for the hedonic coefficient. Overall, the correction moves the interaction in the direction reported by WZH but does not make it detectable, and the validation sample is too small for precise correction.
-
 ## F. Replication package
 
-Planned contents: review IDs of the sampled reviews, the LLM-inferred ratings for each LLM and prompt, product-level labels, and analysis code. Raw review text and metadata are not redistributed (Amazon Reviews 2023 is available from its authors; cite Hou et al. 2024). [AUTHORS TO COMPLETE: anonymized repository link.]
+Contents: review IDs, the authors' ratings and vote counts, the LLM-inferred ratings for each LLM and prompt, product-level labels (including the 100 validation labels), analysis code (including the exploratory analyses in Section G), and a table-by-table reproduction script. Raw review text and product metadata are not redistributed (Amazon Reviews 2023 is available from its authors; cite Hou et al. 2024). [AUTHORS TO COMPLETE: anonymized repository link.]
+
+## G. Rating-level and direction analyses (exploratory)
+
+These analyses were added after the main results were known and are exploratory. The ensemble rating is the mean of the three LLMs' inferred ratings for a review (one prompt at a time), and the ensemble gap is its absolute difference from the author's rating. The signed gap is the ensemble rating minus the author's rating; "text read as more positive" is its positive part (max(signed gap, 0)) and "more negative" its negative part (max(−signed gap, 0)), so both enter one negative binomial regression together with log review length, an image indicator, and rating dummies; log review age is the offset and standard errors are clustered by product. Rows with a single gap estimate use the same controls (without the direction split). Votes were winsorized at the 99.9th percentile (76 votes) in the second row. Star-level rows are separate regressions within each rating (without rating dummies). The ratio row is the ratio of the two directional IRRs, tested with a Wald test. Product labels are those described in Section B.
+
+**Table G1. Our prompt (ensemble of three LLMs); IRR per one-star increase in the gap**
+
+| Specification | N | IRR [95% CI] | p |
+|---|---|---|---|
+| **A. All reviews (ensemble gap)** | | | |
+| Gap, all reviews | 25,750 | 1.29 [1.12, 1.48] | <.001 |
+| Gap, votes winsorized at the 99.9th percentile | 25,750 | 1.24 [1.09, 1.41] | .001 |
+| Gap, search goods (product labels) | 25,750 | 1.39 [1.16, 1.67] | <.001 |
+| Gap × experience (product labels) | 25,750 | 0.86 [0.67, 1.11] | .243 |
+| **B. Within author's star rating** | | | |
+| Gap, 1-star reviews | 3,246 | 1.09 [0.77, 1.54] | .645 |
+| Gap, 2-star reviews | 1,439 | 1.31 [0.72, 2.38] | .378 |
+| Gap, 3-star reviews | 1,791 | 1.34 [1.06, 1.70] | .013 |
+| Gap, 4-star reviews | 2,787 | 1.41 [1.07, 1.85] | .013 |
+| Gap, 5-star reviews | 16,487 | 1.27 [1.05, 1.54] | .012 |
+| **C. Direction of the disagreement (per star)** | | | |
+| Text read as more positive than the rating | 25,750 | 1.00 [0.76, 1.31] | .994 |
+| Text read as more negative than the rating | 25,750 | 1.35 [1.17, 1.56] | <.001 |
+| Ratio more negative / more positive | 25,750 | 1.35 [1.02, 1.79] | .036 |
+| 3-star only: more negative reading | 1,791 | 1.38 [1.09, 1.74] | .007 |
+| 3-star only: more positive reading | 1,791 | 0.87 [0.48, 1.56] | .639 |
+| 4-star only: more negative reading | 2,787 | 1.45 [1.10, 1.90] | .008 |
+| 4-star only: more positive reading | 2,787 | 1.18 [0.61, 2.29] | .626 |
+
+**Table G2. Original (WZH) prompt (ensemble of three LLMs); IRR per one-star increase in the gap**
+
+| Specification | N | IRR [95% CI] | p |
+|---|---|---|---|
+| **A. All reviews (ensemble gap)** | | | |
+| Gap, all reviews | 25,683 | 1.28 [1.08, 1.51] | .004 |
+| Gap, votes winsorized at the 99.9th percentile | 25,683 | 1.22 [1.06, 1.40] | .005 |
+| Gap, search goods (product labels) | 25,683 | 1.39 [1.12, 1.71] | .003 |
+| Gap × experience (product labels) | 25,683 | 0.88 [0.65, 1.18] | .388 |
+| **B. Within author's star rating** | | | |
+| Gap, 1-star reviews | 3,238 | 0.95 [0.63, 1.44] | .816 |
+| Gap, 2-star reviews | 1,434 | 1.28 [0.63, 2.60] | .491 |
+| Gap, 3-star reviews | 1,783 | 1.35 [1.04, 1.76] | .027 |
+| Gap, 4-star reviews | 2,780 | 1.52 [1.12, 2.07] | .007 |
+| Gap, 5-star reviews | 16,448 | 1.27 [1.04, 1.56] | .021 |
+| **C. Direction of the disagreement (per star)** | | | |
+| Text read as more positive than the rating | 25,683 | 0.90 [0.67, 1.23] | .520 |
+| Text read as more negative than the rating | 25,683 | 1.39 [1.17, 1.65] | <.001 |
+| Ratio more negative / more positive | 25,683 | 1.54 [1.12, 2.10] | .007 |
+| 3-star only: more negative reading | 1,783 | 1.43 [1.09, 1.89] | .010 |
+| 3-star only: more positive reading | 1,783 | 0.80 [0.51, 1.24] | .315 |
+| 4-star only: more negative reading | 2,780 | 1.61 [1.18, 2.20] | .003 |
+| 4-star only: more positive reading | 2,780 | 1.16 [0.60, 2.24] | .661 |
+
+Both prompts give the same pattern: the positive association is concentrated in reviews whose text is read as more critical than the star rating, and it is statistically indistinguishable from one for text read as more positive. The ratio test is the only formal comparison of the two directions (our prompt p = .036; original prompt p = .007). No correction for multiple comparisons was applied across the rows of the tables.
+
