@@ -108,6 +108,62 @@ social cost `c e + ell lam s S(e)` is convex in `e`, so a standard `e_bar` impro
 Because the first-best level depends on `lam` and a uniform `e_bar` does not, a single standard over-verifies better tools: a
 quantitative trade-off is left open. (Elementary; no separate numerical check.)
 
+## 7. Vendor stage
+Setting: a continuum of developers (mass `N`) with types `kappa = c/theta` (verification cost per unit of detection speed) and
+common stakes; a vendor chooses quality `lam < lam0` (outside option `lam0`, e.g. coding without the tool) and a price.
+All results below are under baseline B unless stated. Check: `vendor_check.py`.
+
+### P7. Separation of the tool market from the liability regime (baseline)
+(a) Willingness to pay of type `kappa` is `WTP = V(lam0) - V(lam) = kappa ln(lam0/lam)` for every `delta`, `ell`, `s`.
+(b) The social benefit of adoption `W(lam0) - W(lam)` is the same `kappa ln(lam0/lam)`.
+(c) Hence total welfare is additive: *tool-market surplus* (independent of the liability regime) minus `N L(delta)`
+(the P2b loss). A vendor that extracts type-by-type surplus chooses its quality margin independently of the liability regime, and
+the quality FOC is `kappa/lam = -K'(lam)`-type, i.e. the same as the planner's (P2).
+(d) Shifting liability between the vendor and users, holding the developer's share `delta` fixed, changes no behaviour:
+it is a transfer. Only the developer's share matters for welfare (a least-cost-avoider result: the party who controls
+verification should bear the loss).
+*Proof.* From `V(lam) = (c/theta)[ln(A lam s theta/c) + 1]` and `W(lam) = (c/theta)[ln(delta ell lam s theta/c) + 1/delta]` the
+`lam`-differences are `kappa ln(lam0/lam)` and do not contain `A`, `s`, `delta`. QED
+
+**Failure outside the baseline (data-calibrated heavy tail).** With `S(u) = (1 + theta u/k)^-k`, `theta = 206`, `k = 0.63` (the
+all-sample fit, `u` = fraction of the test suite), linear cost, and an illustrative stake `ell s = 20`, the willingness to pay
+for improving `lam` from 1.0 to 0.5 falls with the developer's share:
+
+| delta | 1.0 | 0.7 | 0.4 | 0.2 |
+|---|---|---|---|---|
+| WTP relative to delta = 1 | 1.00 | 0.80 | 0.57 | 0.37 |
+
+So with the estimated tail, weakening the developer's liability lowers the value of tool quality and hence the vendor's
+quality incentive. P7 is a baseline benchmark, not a robust empirical claim. The stake `ell s = 20` is illustrative, not calibrated.
+
+### P8. Monopoly under-provides quality by a factor of two (closed form)
+Take `kappa ~ U[0, kbar]`, a fixed quality cost `K(lam) = K0/lam`, zero marginal cost, one product `(lam, p)`. The monopolist sells to
+`kappa >= p/g`, `g = ln(lam0/lam)`, so `p* = kbar g/2`, profit `N kbar g/4 - K0/lam`, and
+`lam_M = 4 K0/(N kbar)`. The planner (everyone served) maximises `N kbar g/2 - K0/lam`: `lam_S = 2 K0/(N kbar)`.
+**`lam_M = 2 lam_S`.** Welfare loss = quality distortion + exclusion of types `kappa < kbar/2`, the latter `N kbar g(lam_M)/8`.
+Example (`N=1, kbar=1, K0=0.3, lam0=3`): surplus 0.305 at `lam_S`, 0.094 under monopoly (0.208 before the exclusion loss 0.115).
+Under B none of this depends on the liability regime. *Proof.* FOCs as stated. QED (checked numerically.)
+
+### P9. Warranty signalling with two types (baseline; learning enters through rho)
+Types `lam_H < lam_L`, `r = lam_L/lam_H`. A vendor offers a warranty with ratio `w = phi_v/delta'`, where `delta'` is the developer's
+share after the warranty (`delta' = delta0/(1+w)`). Developers pay `kappa ln(lam0/lam_hat)` for the believed type. A developer who
+meets a mimicking L-type with belief H partly learns the truth: effort is set for `lam_hat = lam_H^(1-rho) lam_L^rho`
+(**assumption**: log-linear learning). Then:
+- mimic payout `= kappa w r^(1-rho)`; honest H payout `= kappa w`;
+- L does not mimic iff `w >= ln r / r^(1-rho)`; H prefers separating to being taken for L iff `w <= ln r`.
+- **Cheapest separating warranty `w* = ln r / r^(1-rho)`** (least-cost separating equilibrium, selected by the intuitive
+  criterion - assumption). H's net gain from separating is `kappa ln r (1 - r^-(1-rho))`.
+- `rho = 0`: `w* = ln r / r <= 1/e`; `rho -> 1`: `w* -> ln r` and H's gain `-> 0` (warranties cannot signal; consistent with P3).
+- Cost of separating: the developer's share falls to `delta0/(1+w*)`, so welfare falls by `N_H [L(delta0/(1+w*)) - L(delta0)]`:
+  signalling quality through a warranty destroys verification (a moral-hazard cost).
+*Proof.* Substitute `R = c lam_L/(A' theta lam_hat) = (c/(A' theta)) r^(1-rho)` into the payout `phi_v ell R` and compare with
+`kappa(ln r - ...)`. QED (checked numerically for `rho in {0, .5, .8}`, `r in {1.5, e, 5, 10}`.)
+
+### Not done in the vendor stage
+Price competition and vertical differentiation (several vendors); the continuum-of-types signalling equation; dynamic learning by
+vendors; welfare comparison "warranty signalling vs unravelling" (P5 vs P9); the general-tail extension of P8 (P7's failure means
+the factor of two is baseline-specific).
+
 ## What is proved, checked, conjectured
 | Item | Status |
 |---|---|
@@ -118,6 +174,9 @@ quantitative trade-off is left open. (Elementary; no separate numerical check.)
 | C1 learning gives `rho_hat ~ 0.33` | Simulation only; **Conjecture** |
 | P5 lemons characterisation | Definitions and linearity proved; equilibria numerical; welfare ranking open |
 | P6 verification standard | Elementary; trade-off open |
+| P7 separation of tool market and liability | Proved (B); fails with the estimated heavy tail (numerical, illustrative stakes) |
+| P8 monopoly quality factor 2 | Proved (uniform types, `K0/lam`); numerically checked |
+| P9 cheapest separating warranty `ln r / r^(1-rho)` | Proved under stated assumptions (two types, log-linear learning); numerically checked |
 
 ## Link to the data
 `bootstrap_k.py` estimates `k = 0.63` (95% CI 0.51-0.78; 0.72 without timeouts) from 25,120 LLM samples, i.e. `eps ~ 0.58-0.62`
