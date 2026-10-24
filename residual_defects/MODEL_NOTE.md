@@ -94,3 +94,21 @@ Simulation (n = 40,000; alpha=2, beta0=1, A=35, theta=0.8, c=1):
 - Empirical: calibrate `lam(q)` by model and `theta` from test curves; estimate the cross-sectional slope of
   residual density on tool quality (the elasticity `eps`) and the shape of the detection hazard.
 - Literature check: Peltzman-type offsetting, optimal software release timing, AI tool liability. Verify novelty.
+
+## Literature check (2026-10-24; web-search snippets only, none of these were read in full)
+| Area | Source | Overlap with this model |
+|---|---|---|
+| Optimal release | Okumoto & Goel (1979/1980), many extensions (imperfect repair, testing effort, discount rate) | **Proposition 1 is the classical optimal-release condition re-read**: optimum where failure intensity equals a constant cost ratio, so residual intensity does not depend on `a`. Not new mathematically. |
+| Verification economics of AI | Catalini, "Some Simple Economics of AGI" (arXiv 2602.20946) | Verification as the bottleneck; moral-hazard limit where verification effort vanishes under weak liability; verification as a public good. Closest conceptual neighbour. |
+| Verification capacity | arXiv 2609.38459; 2609.04681 (agentic SDLC cost economics); 2609.26172 (insuring the fallback) | Verification effort / oversight under automation; cost economics of AI code. Need reading. |
+| Security economics | Anderson & Moore; Varian (free-riding, liability) | Liability assignment, moral hazard, lemons for unmeasurable security. Standard background. |
+| Peltzman effect | ISACA, blogs; formal use in a cyber-insurance model (arXiv 1804.00998) | Mostly commentary for AI/security; empirical support for risk compensation is contested. |
+| Warranty signalling | Grossman (1981), Dulleck-Kerschbamer-Sutter (2011) (cited, not checked) | Warranty/credence-goods framework for the vendor stage. |
+| Empirical SE | DORA "verification tax"; AI-assisted code quality studies | Motivation and calibration data, not formal models. |
+
+### What this implies
+- Offsetting itself (Prop. 1) is not a new result; the contribution has to be elsewhere.
+- Candidate contributions: (i) hazard-rate characterisation of offsetting, `eps = a/(a+h)`, with `1/(1+k)` and over-offsetting;
+  (ii) incomplete offsetting from Bayesian shrinkage; (iii) warranty separation depending on learning speed;
+  (iv) calibration of `lam`, `theta`, hazard shape from LLM-generated-code data.
+- No source found modelling AI code generation as a vendor warranty + developer verification game. Absence not proven.
