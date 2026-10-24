@@ -15,12 +15,16 @@ from aidev_versions import pr_models
 HERE = pathlib.Path(__file__).parent
 D = HERE / "data" / "aidev"
 W = 21  # days per window
-OUTS = ["any_human_review", "n_human_reviews", "n_inline_human", "changes_req", "merged", "n_commits"]
+OUTS = ["any_human_review", "n_human_reviews", "n_inline_human", "changes_req", "merged", "n_commits",
+        "log_gross_add", "n_files", "any_test", "test_share"]
 
 
 def load():
     f = pd.read_parquet(D / "pr_features.parquet")
     f = f[f.agent == "Claude_Code"].merge(pr_models(), on="id", how="left")
+    sz = pd.read_parquet(D / "pr_size_tests.parquet", columns=["id", "gross_add", "n_files", "any_test", "test_share"])
+    f = f.merge(sz, on="id", how="left")
+    f["log_gross_add"] = np.log1p(f.gross_add)
     f["date"] = pd.to_datetime(f.created_at, utc=True, errors="coerce").dt.tz_localize(None).dt.normalize()
     f = f.dropna(subset=["date"])
     f["any_human_review"] = (f.n_human_reviews > 0).astype(float)
@@ -37,11 +41,35 @@ def estimate(f, t0, label):
     w = w[w.repo_id.isin(both)]
     rows = []
     for y in OUTS:
-        yw = w[y] - w.groupby("repo_id")[y].transform("mean")
-        xw = w.post - w.groupby("repo_id").post.transform("mean")
-        r = sm.OLS(yw.values, xw.values).fit(cov_type="cluster", cov_kwds={"groups": w.repo_id.values})
+        ok = w[y].notna()
+        wy = w[ok]
+        yw = wy[y] - wy.groupby("repo_id")[y].transform("mean")
+        xw = wy.post - wy.groupby("repo_id").post.transform("mean")
+        r = sm.OLS(yw.values, xw.values).fit(cov_type="cluster", cov_kwds={"groups": wy.repo_id.values})
         rows.append({"window": label, "t0": t0.date(), "outcome": y, "coef": r.params[0], "se": r.bse[0],
-                     "p": r.pvalues[0], "pre_mean": w.loc[w.post == 0, y].mean(), "n_pr": len(w), "n_repo": len(both)})
+                     "p": r.pvalues[0], "pre_mean": wy.loc[wy.post == 0, y].mean(), "n_pr": len(wy),
+                     "n_repo": wy.repo_id.nunique()})
+    return rows
+
+
+def estimate_rd(f, t0, label):
+    """Jump at t0 controlling for separate linear time trends before/after (local linear), repo fixed effects."""
+    w = f[(f.date >= t0 - pd.Timedelta(days=W)) & (f.date < t0 + pd.Timedelta(days=W))].copy()
+    w["post"] = (w.date >= t0).astype(float)
+    w["t"] = (w.date - t0).dt.days / W
+    w["tp"] = w.t * w.post
+    both = set(w[w.post == 0].repo_id) & set(w[w.post == 1].repo_id)
+    w = w[w.repo_id.isin(both)]
+    rows = []
+    for y in OUTS:
+        wy = w[w[y].notna()]
+        Z = wy[["post", "t", "tp"]]
+        Zw = Z - Z.groupby(wy.repo_id.values).transform("mean")
+        yw = wy[y] - wy.groupby("repo_id")[y].transform("mean")
+        r = sm.OLS(yw.values, Zw.values).fit(cov_type="cluster", cov_kwds={"groups": wy.repo_id.values})
+        rows.append({"window": label + "_RD", "t0": t0.date(), "outcome": y, "coef": r.params[0], "se": r.bse[0],
+                     "p": r.pvalues[0], "pre_mean": wy.loc[wy.post == 0, y].mean(), "n_pr": len(wy),
+                     "n_repo": wy.repo_id.nunique()})
     return rows
 
 
@@ -62,6 +90,13 @@ def main():
     rows = estimate(f, t0, "TRUE")
     for shift in (-42, -21, 21):
         rows += estimate(f, t0 + pd.Timedelta(days=shift), f"placebo{shift:+d}d")
+    rd = estimate_rd(f, t0, "TRUE")
+    for shift in (-42, -21, 21):
+        rd += estimate_rd(f, t0 + pd.Timedelta(days=shift), f"placebo{shift:+d}d")
+    rd_df = pd.DataFrame(rd)
+    print("\nLocal-linear jump with separate pre/post trends:")
+    print(rd_df.round(4).to_string(index=False))
+    rows += rd
     out = pd.DataFrame(rows)
     pd.set_option("display.width", 220)
     print("\nRepo fixed effects, post vs pre (%d-day windows), cluster by repo:" % W)
