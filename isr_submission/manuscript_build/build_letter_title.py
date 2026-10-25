@@ -29,7 +29,7 @@ P(d, "[To be completed by the authors. Omit from the blinded manuscript.]", inde
 H2(d, "Funding and competing interests")
 P(d, "[To be completed by the authors.]", indent=False, size=11, spacing=1.3)
 H2(d, "Data and code availability")
-P(d, "All code and derived data tables needed to reproduce the numerical results and figures are provided in the replication package. Raw public data (Public Jira Dataset, SWE-bench Verified, a public collection of coding-agent trajectories, and a public replication package of an AI-coding-assistant adoption study) are available from their original sources; the package contains scripts and instructions to download them. No proprietary or firm-level data are used.", indent=False, size=11, spacing=1.3)
+P(d, "All code and derived data tables needed to reproduce the numerical results and figures are provided in the replication package. Raw public data (Public Jira Dataset, SWE-bench Verified, a public collection of coding-agent trajectories, and a public replication package of an AI-coding-assistant adoption study) are available from their original sources; the package contains scripts and instructions to download them. The replication package is archived on Zenodo (https://doi.org/10.5281/zenodo.23652337). No proprietary or firm-level data are used.", indent=False, size=11, spacing=1.3)
 H2(d, "Use of generative AI tools")
 P(d, "[The authors must describe here any use of generative AI tools in the preparation of the manuscript, code, or analysis, in line with the journal's policy, and confirm that they take responsibility for the content.]", indent=False, size=11, spacing=1.3)
 d.save("../Title_Page.docx")

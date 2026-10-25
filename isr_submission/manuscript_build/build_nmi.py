@@ -96,7 +96,7 @@ P(d, "No human participants, animals or personal data were involved. The complet
 H1(d, "Data availability")
 P(d, "Derived data tables are included in the replication package. The raw public data are available from their original sources, listed in the package README: the Public Jira Dataset (Zenodo, DOI 10.5281/zenodo.5882881), SWE-bench Verified and agent trajectories (Hugging Face), and the replication package of the AI-coding-assistant adoption study (Zenodo, record 18368661).", indent=False)
 H1(d, "Code availability")
-P(d, "All code for the model, figures and public-data analyses is provided in the replication package, with a script that reproduces the key numbers in the text. [Authors: deposit the package in a public repository with a DOI before submission and cite it here.]", indent=False)
+P(d, "All code for the model, figures and public-data analyses is provided in the replication package, with a script that reproduces the key numbers in the text, and is archived on Zenodo (https://doi.org/10.5281/zenodo.23652337).", indent=False)
 H1(d, "Acknowledgements")
 P(d, "[To be completed.]", indent=False)
 H1(d, "Author contributions")
