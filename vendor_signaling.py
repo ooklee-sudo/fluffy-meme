@@ -46,7 +46,7 @@ def usage_profit(p, Ab):
     f = FG
     cL = c0 + p
     S_L = f * (Ab * a) * h(Ab * a * B * b * f / cL)
-    adopt = S_L >= S_H
+    adopt = S_L > S_H + 1e-9                           # strict: ties at zero are not adoption
     T = VM.Tstar(Ab * a, B * b, cL, f)
     return float((adopt * (p - kv) * T * W).sum()), float((adopt * W).sum())
 
