@@ -37,9 +37,22 @@
 | Peng, Kalliamvakou, Cihon, Demirer (2023), arXiv:2302.06590 | authors, title, arXiv ID, headline result (55.8% faster) | Preprint. |
 | Yeverechyahu, Mayya, Oestreicher-Singer (2024), arXiv:2409.08379 | authors, title, arXiv ID | Findings known only from secondary summaries, so the text states only the topic; arXiv date and version vary across sources. |
 
+## Added after the direct search of IS journals
+
+| Reference | Confirmed | Not confirmed / note |
+|---|---|---|
+| Ma and Seidmann (2015), *ISR* 26(2), 360–378 | all (DOI 10.1287/isre.2015.0571) | Abstract level: SaaS per-transaction charges versus off-the-shelf software; market regimes. |
+| Dey, Fan, Zhang (2010), *ISR* 21(1), 93–114 | all (DOI 10.1287/isre.1080.0223) | Abstract level: fixed-price, time-and-materials, quality-level agreement, profit sharing. |
+| Fitoussi and Gurbaxani (2012), *ISR* 23(1), 129–143 | all (DOI 10.1287/isre.1100.0310) | Abstract level: metrics, incentives, multitask concerns. |
+| Asdemir, Kumar, Jacob (2012), *ISR* 23(3), 804–822 | all (DOI 10.1287/isre.1110.0391) | Abstract level: CPM versus CPC in a principal–agent model. |
+| Hu, Shin, Tang (2016), *Management Science* 62(7), 2022–2038 | all, including first names (Yu (Jeffrey) Hu, Jiwoong Shin, Zhulei Tang); DOI 10.1287/mnsc.2015.2223 | Abstract level. An earlier draft of the reference list had an incorrect first initial for Hu. |
+| Dellarocas (2012), *Management Science* 58(6), 1178–1195 | all (DOI 10.1287/mnsc.1110.1474) | Only the abstract-level statement (double marginalization in performance-based advertising; enhancements to pay-per-action) is used. |
+| Ladas, Kavadias, Loch (2022), *Management Science* 68(7), 4964–4982 | authors, title, volume, issue, pages (RePEc), DOI 10.1287/mnsc.2021.4125 | Abstract level; the text says only that the paper compares product selling with pay-per-use service as competing business models. |
+| Susarla, Subramanyam, Karhade (2010) | full author names also confirmed (Anjana Susarla, Ramanath Subramanyam, Prasanna Karhade) | |
+
 ## Searched for but not found (not cited)
-- IS-journal papers on usage-based versus subscription pricing of cloud or SaaS services: the search returned only practitioner blogs.
-- Peer-reviewed analyses of outcome-based pricing of IT services: the search returned only consultancy pages.
+- A general search for usage-based versus subscription pricing of cloud or SaaS services returned only practitioner blogs; the targeted search (restricted to INFORMS, AIS and RePEc domains) found Ma and Seidmann (2015), Ladas et al. (2022), and a JMIS study on perpetual versus subscription licensing that we did not cite because we could not confirm its authors.
+- Peer-reviewed analyses of outcome-based pricing of IT services: the targeted search found the performance-based contract papers listed above (Dey et al. 2010; Fitoussi and Gurbaxani 2012) and the advertising papers (Asdemir et al. 2012; Hu et al. 2016; Dellarocas 2012); we found no IS paper that analyzes per-attempt versus per-result pricing of AI services.
 - Gurbaxani and Whang (1991), *Communications of the ACM* 34(1): the article and the issue were confirmed, but co-authorship and pages were not, so it is omitted.
 
-The manuscript therefore says nothing about the prevalence of outcome-based pricing in practice, and the literature review should be extended by a direct search of ISR, MISQ, and Management Science (for example with the terms "performance-based contract", "pay-per-use", "usage-based pricing") before submission.
+The manuscript says nothing about the prevalence of outcome-based pricing in practice. Before submission, repeat the search in ISR, MISQ, JMIS, and Management Science with further terms (for example "service-level agreement", "gainsharing", "cloud pricing"), and read the full text of every paper cited in Section 2.
