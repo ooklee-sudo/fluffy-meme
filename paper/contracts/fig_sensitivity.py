@@ -8,11 +8,12 @@ for i, kk in enumerate(kv):
         r = stats(a, b, hh, 1.0, kk, J=1500)
         if r['NFB'] >= 1 and r.get('A') and r['A'][1] > 0 and r['B'][1] > 0:
             WA[i, j] = r['WA']/r['SFB']; WB[i, j] = r['WB']/r['SFB']; RS[i, j] = r['rent_share']
-fig, ax = plt.subplots(1, 3, figsize=(15, 4.4), constrained_layout=True)
-for axx, Z, t in zip(ax, [WA, WB, RS], ["Per-attempt monopoly: welfare / first best", "Success-fee monopoly: welfare / first best", "Incentive rent / surplus at first-best depth"]):
+plt.rcParams.update({"font.size": 8.5, "font.family": "serif"})
+fig, ax = plt.subplots(3, 1, figsize=(6.3, 8.2), constrained_layout=True, sharex=True)
+for k_, (axx, Z, t) in enumerate(zip(ax, [WA, WB, RS], ["(a) Per-attempt monopoly: welfare / first best", "(b) Success-fee monopoly: welfare / first best", "(c) Incentive rent / surplus at first-best depth"])):
     im = axx.pcolormesh(np.log10(hv), np.log10(kv), Z, vmin=0, vmax=1, cmap="viridis", shading="auto")
-    axx.set_xlabel("log10 (H / v)  [human repair cost / firm cost per attempt]"); axx.set_ylabel("log10 (k / v)  [vendor cost / firm cost per attempt]"); axx.set_title(t, fontsize=10)
-    fig.colorbar(im, ax=axx, shrink=.85)
-fig.suptitle("Sensitivity to cost ratios (a = 0.12, b = 0.39). Blank cells: AI repair not worth using", fontsize=11)
-fig.savefig("fig_sensitivity.png", dpi=140)
+    axx.set_ylabel("log10 (k / v)"); axx.set_title(t, fontsize=9, loc="left")
+    if k_ == 2: axx.set_xlabel("log10 (H / v)   (human repair cost / firm cost per attempt)")
+    fig.colorbar(im, ax=axx, shrink=.9, pad=.02)
+fig.savefig("fig_sensitivity.png", dpi=200)
 print("saved")

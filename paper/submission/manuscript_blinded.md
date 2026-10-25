@@ -190,9 +190,7 @@ With close substitutes (σ = 1) one rival suffices; with strongly differentiated
 
 *Findings.* (i) The vendor's preference for the success fee is robust: its profit is at least as high in 100% of the points in every regime. (ii) The welfare advantage of the success fee is strong where an attempt is cheap relative to human repair (automated verification: 97–100% of points; agentic repair: 76–95%) and weak when manual triage makes each attempt expensive (22–57%), because the efficient depth is then small (median 2–6) and a per-attempt monopolist that stops the firm after one or two attempts loses little. (iii) The incentive rent is large where depth is valuable, about nine-tenths of the surplus under automated verification and 37–44% for agents, so vendors undersample in 61–100% of points. (iv) Figure 1 shows the pattern in the cost ratios: when H/v is below about 30 the efficient depth is one or two attempts and both contract forms are near-efficient; above it, per-attempt monopoly welfare falls to 0.4–0.6 of first best while the success fee stays near 0.85–0.9. The conclusions of Sections 4–5 therefore apply to the regimes with H/v of about 30 or more, which covers automated verification and agentic repair and excludes cheap fixes with expensive per-attempt human review.
 
-![](/home/user/fluffy-meme/paper/contracts/fig_sensitivity.png){width=6.3in}
-
-**Figure 1.** Welfare (share of first best) under per-attempt and success-fee monopoly, and incentive rent as a share of surplus at the first-best depth, as functions of H/v and k/v (a = 0.12, b = 0.39); blank cells are combinations in which AI repair is not worth using (the replication package (anonymized for review)).
+![**Figure 1.** Welfare (share of first best) under per-attempt and success-fee monopoly, and the incentive rent as a share of surplus at the first-best depth, as functions of H/v and k/v (a = 0.12, b = 0.39). Blank cells are combinations in which AI repair is not worth using.](/home/user/fluffy-meme/paper/contracts/fig_sensitivity.png){width=5.2in}
 
 ---
 

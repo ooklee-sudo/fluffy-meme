@@ -10,8 +10,7 @@ s = re.sub(r"^---\n.*?\n---\n", "", s, count=1, flags=re.S)                     
 s = re.sub(r"\*\*Authors:\*\*.*\n\n", "", s)                                        # double-anonymous review: remove author line
 s = s.replace("\\_", "_")                                                          # markdown escapes not needed in docx build
 s = re.sub(r"`paper/[^`]*`", "the replication package (anonymized for review)", s)
-s = s.replace("(`paper/contracts/fig_sensitivity.png`)", "")
-s = s.replace("**Figure 1.**", f"![]({os.path.abspath(FIG)}){{width=6.3in}}\n\n**Figure 1.**")
+s = s.replace("(contracts/fig_sensitivity.png){width=70%}", f"({os.path.abspath(FIG)}){{width=5.2in}}")
 open("manuscript_blinded.md", "w").write(s)
 subprocess.run(["pandoc", "--print-default-data-file", "reference.docx"], stdout=open("ref.docx", "wb"), check=True)
 d = Document("ref.docx")
@@ -34,5 +33,5 @@ subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "manuscript_blin
 from pypdf import PdfReader
 r = PdfReader("manuscript_blinded.pdf"); n = len(r.pages)
 txt = " ".join(p.extract_text() for p in r.pages)
-refs_page = next((i+1 for i, p in enumerate(r.pages) if "References" in p.extract_text() and "Agrawal" in p.extract_text()), None)
+refs_page = next((i+1 for i, p in enumerate(r.pages) if "Agrawal, A." in p.extract_text()), None)
 print(f"Total pages: {n} (limit 38 incl. references/appendices/tables/figures); reference list starts on page {refs_page}; text pages before references ~ {refs_page-1 if refs_page else '?'} (limit 32)")
