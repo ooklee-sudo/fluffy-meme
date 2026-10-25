@@ -13,7 +13,7 @@ status: Draft v2 — analytical model + public-data calibration; field data NOT 
 
 ## Abstract
 
-Firms increasingly buy AI-based defect repair as a service: a large language model (LLM) proposes patches, the firm verifies them, and unresolved defects are escalated to human engineers. Two design choices govern the economics of this arrangement. The firm chooses an *escalation rule*, i.e., how many AI attempts to allow before handing the defect to a person; the vendor chooses a *pricing rule*, i.e., whether to charge per attempt or per verified fix. We study the interaction as a Stackelberg game in which defects are heterogeneous in how easily they are repaired, so that each failed attempt is informative about whether the next one will succeed. We show that (i) the firm's optimal escalation rule is a reservation rule with closed-form threshold N\* = ⌈a·H/c − a − b⌉, where *H* is the cost of human repair, *c* the firm's effective cost per attempt, and (*a*, *b*) describe the heterogeneity of repair difficulty; (ii) per-attempt pricing above marginal cost produces a double-marginalization distortion, since the firm stops the AI too early; (iii) a success fee equal to the share k/(k+v) of the human cost implements the jointly optimal attempt budget and gives the vendor that share of the surplus; and (iv) a profit-maximizing vendor nevertheless sets a higher fee, so equilibrium sampling is again too shallow, but total surplus is far closer to the optimum than under per-attempt pricing. In a parameter sweep calibrated to public repair data, the success-fee contract raises vendor profit in 99% of draws and total surplus in all of them (median 91% vs. 65% of the first-best surplus), though the firm itself is better off in only two-thirds of draws, which identifies the conditions under which a side payment or two-part tariff is needed. We test the model's behavioural premises on open data: on RepairBench (574 bugs, 45 LLMs, 10 samples per bug) a heterogeneous-difficulty model beats a homogeneous one in all 84 model–dataset combinations, and an escalation threshold fitted on half the bugs attains within 0.4–1.7% of the best cap in hindsight on the other half. A new 40-sample experiment on HumanEvalFix shows that a fit to the first ten samples predicts coverage at forty within 2.6 points, but that the rule oversamples when only a small share of defects is unsolvable and history is short. We discuss implications for IT service contracting and for the governance of AI-augmented maintenance.
+Firms increasingly buy AI-based defect repair as a service: a large language model (LLM) proposes patches, the firm verifies them, and unresolved defects are escalated to human engineers. Two design choices govern the economics of this arrangement. The firm chooses an *escalation rule*, i.e., how many AI attempts to allow before handing the defect to a person; the vendor chooses a *pricing rule*, i.e., whether to charge per attempt or per verified fix. We study the interaction as a Stackelberg game in which defects are heterogeneous in how easily they are repaired, so that each failed attempt is informative about whether the next one will succeed. We show that (i) the firm's optimal escalation rule is a reservation rule with closed-form threshold N\* = ⌈a·H/c − a − b⌉, where *H* is the cost of human repair, *c* the firm's effective cost per attempt, and (*a*, *b*) describe the heterogeneity of repair difficulty; (ii) per-attempt pricing above marginal cost produces a double-marginalization distortion, since the firm stops the AI too early; (iii) a success fee equal to the share k/(k+v) of the human cost implements the jointly optimal attempt budget and gives the vendor that share of the surplus; and (iv) a profit-maximizing vendor nevertheless sets a higher fee, so equilibrium sampling is again too shallow, but total surplus is far closer to the optimum than under per-attempt pricing. In a parameter sweep calibrated to public repair data, the success-fee contract raises vendor profit in 99% of draws and total surplus in all of them (median 91% vs. 65% of the first-best surplus), though the firm itself is better off in only two-thirds of draws, which identifies the conditions under which a side payment or two-part tariff is needed. (v) When the vendor privately knows its quality, per-attempt pricing rewards the worse vendor at any given sampling depth whereas a success fee rewards the better one, so only a success fee can signal quality; in a sweep a high-quality vendor separates by lowering its fee in 77% of draws, which makes the firm sample deeper and raises total surplus and the firm's saving in about three-quarters of those draws. We test the model's behavioural premises on open data: on RepairBench (574 bugs, 45 LLMs, 10 samples per bug) a heterogeneous-difficulty model beats a homogeneous one in all 84 model–dataset combinations, and an escalation threshold fitted on half the bugs attains within 0.4–1.7% of the best cap in hindsight on the other half. A new 40-sample experiment on HumanEvalFix shows that a fit to the first ten samples predicts coverage at forty within 2.6 points, but that the rule oversamples when only a small share of defects is unsolvable and history is short. We discuss implications for IT service contracting and for the governance of AI-augmented maintenance.
 
 ---
 
@@ -31,7 +31,7 @@ RQ2. How does the vendor's contract (per-attempt vs. success fee) distort or res
 RQ3. Which contract does a profit-maximizing vendor choose, and what does it imply for the firm and for total surplus?
 RQ4. Are the model's behavioural premises (heterogeneity, learning from failure) borne out in real repair data?
 
-**Contributions.** (1) We formulate AI–human task allocation in maintenance as a sequential search problem with an outside option and embed it in a vendor–buyer Stackelberg game, linking the AI-delegation literature to the IT contracting literature. (2) We obtain a closed-form escalation threshold and show that per-attempt pricing creates a double-marginalization inefficiency. (3) We show that a success fee of Hk/(k+v) restores the efficient attempt budget, and that the vendor's optimal fee exceeds it. (4) We quantify the comparison in a calibrated sweep and identify when the firm loses from outcome-based pricing. (5) We test the premises on three open data sources (RepairBench, SWE-bench submissions, and a new multi-sample HumanEvalFix experiment).
+**Contributions.** (1) We formulate AI–human task allocation in maintenance as a sequential search problem with an outside option and embed it in a vendor–buyer Stackelberg game, linking the AI-delegation literature to the IT contracting literature. (2) We obtain a closed-form escalation threshold and show that per-attempt pricing creates a double-marginalization inefficiency. (3) We show that a success fee of Hk/(k+v) restores the efficient attempt budget, and that the vendor's optimal fee exceeds it. (4) We quantify the comparison in a calibrated sweep and identify when the firm loses from outcome-based pricing. (5) We show that private vendor quality reverses the order of profits across contract types, so that only outcome-based pricing can signal quality, and that signaling lowers the equilibrium fee. (6) We test the premises on three open data sources (RepairBench, SWE-bench submissions, and a new multi-sample HumanEvalFix experiment).
 
 ---
 
@@ -110,7 +110,21 @@ Both are decreasing in the respective price. The jointly optimal budget is N^FB 
 
 *Remark (two-part tariffs).* If the vendor could also charge a lump sum, it would set *w* = *k* and a fixed fee equal to the firm's surplus, implementing N^FB and capturing all of W(N^FB). We treat such contracts as a benchmark rather than as an equilibrium prediction, because a lump sum requires the vendor to know the firm's surplus (that is, (a, b) and H) and requires the firm to commit before observing performance. When these are private, the linear contracts above are the relevant ones.
 
-**Numerical results for the equilibria.** Closed forms for the vendor's optimal *w* and *f* are not available because the attempt budget is an integer-valued step function. Section 5 therefore computes the Stackelberg equilibria numerically over a grid and a random parameter sweep.
+### 4.5 Private information about vendor quality
+
+Suppose the vendor knows its quality and the firm does not. There are two vendor types θ ∈ {H, L} (high, low), with repair-difficulty parameters (a\_H, b) and (a\_L, b), a\_H > a\_L, and the firm's prior is μ = P(θ = H). Types differ only in how often attempts succeed; they share *k*. The firm observes the contract, forms beliefs about θ, and chooses its attempt budget by the reservation rule of Proposition 1, using the posterior predictive success probability of the mixture implied by its beliefs and the failures observed so far. Let S\_θ(j), E\_θ(N), and P\_θ(N) be the survival function, expected attempts, and success probability of type θ.
+
+**Proposition 5 (Profit-order reversal).** For any common attempt budget *N* ≥ 1,
+(a) under per-attempt pricing, the low-quality vendor earns weakly more: (w−k)E\_L(N) ≥ (w−k)E\_H(N);
+(b) under a success fee, the high-quality vendor earns strictly more when f > 0 and N ≥ 1: f P\_H(N) − k E\_H(N) > f P\_L(N) − k E\_L(N).
+
+*Proof.* P(T > j | a) = E[(1−p)^j] with p ~ Beta(a, b). The Beta family is ordered by likelihood ratio in *a*, so a larger *a* first-order dominates in *p*, and E[(1−p)^j] is decreasing in *a*. Hence S\_H(j) ≤ S\_L(j) for all *j*, with strict inequality for j ≥ 1. It follows that E\_H(N) ≤ E\_L(N) and P\_H(N) ≥ P\_L(N) (strictly for N ≥ 1). (a) follows from the first inequality since w ≥ k. For (b), f P\_H − k E\_H ≥ f P\_L − k E\_L because the success term rises and the cost term falls, strictly when f > 0 and N ≥ 1. ∎
+
+*Interpretation.* A per-attempt vendor is paid for failures, so at a given sampling depth the worse vendor earns more, and a per-attempt contract cannot credibly signal quality: any per-attempt contract that attracts the high type at depth *N* is at least as attractive to the low type. A success fee reverses the order, because the vendor is paid only when it delivers. The success fee is therefore the natural instrument for a vendor that wants to convince the buyer of its quality, and the per-attempt price creates an adverse-incentive problem (moral hazard in the sense of Holmström 1979) that the success fee removes.
+
+**Separating contracts.** In a separating equilibrium, type H offers a contract that type L does not want to mimic, the firm infers θ = H from it, and L offers its full-information optimum (any other contract is believed to come from L). Type L does not mimic if its profit from the high type's contract at the depth the firm chooses for a believed-H vendor is no larger than its own full-information profit; type H must prefer its contract to being treated as L. The high type's problem is to maximize its profit subject to these two constraints. The constraints cannot be solved in closed form because of the integer attempt budget, so we characterize them numerically in Section 5.5.
+
+**Numerical results for the equilibria.** Closed forms for the vendor's optimal *w* and *f* are not available because the attempt budget is an integer-valued step function. Section 5 therefore computes the Stackelberg equilibria numerically over a grid and a random parameter sweep (Sections 5.1–5.4 under symmetric information, Section 5.5 under private vendor quality).
 
 ---
 
@@ -160,6 +174,36 @@ Suppose the firm sets its attempt budget on the belief a = 0.25 while the true d
 | 0.05 | 9.02 | 7.83 |
 
 The loss is about 13% smaller under the success fee because the firm pays for fewer of the wasted attempts, but the protection is modest: the firm still bears its own cost *v* of verifying every failed patch. Outcome-based pricing transfers the vendor's compute cost of failure, not the buyer's verification cost, which matters for how much risk the contract actually shifts.
+
+### 5.5 Private vendor quality: signaling by generosity
+
+Code: `paper/contracts/asymmetric.py`, `asym_sweep.py`. Types differ in the Beta parameter *a*; the firm's prior is μ = 0.5.
+
+**A representative case** (a\_H = 0.25, a\_L = 0.08, b = 0.35, H = 100, v = 1, k = 0.2). Profit order (Proposition 5) for a common budget, with per-attempt w = $10 and success fee f = $50:
+
+| Budget N | Per-attempt: low / high | Success fee: low / high |
+|---|---|---|
+| 1 | 9.8 / 9.8 | 9.1 / 20.6 |
+| 3 | 25.3 / 20.3 | 12.3 / 27.3 |
+| 10 | 73.8 / 46.5 | 14.8 / 32.6 |
+| 30 | 199.4 / 101.9 | 15.1 / 35.4 |
+
+The low type's profit from per-attempt pricing grows steeply with depth (it is paid for every failed attempt), while its profit under a success fee is nearly flat. Under full information both types prefer a success fee: the high type earns $49.5 (f = $85.3, N = 4) and the low type $18.6 (f = $81.9, N = 2). If the firm believed the high type to be low, the high type would earn $41.3. In this case the low type would mimic the high type's full-information contract (it would earn $22.7 > $18.6), and no linear contract is both unmimicable and better for the high type than being taken for low. The outcome is pooling at about f = $82.6 and N = 3 (profits $45.4 high, $20.7 low; the firm's saving is $7.6 with a high and $1.9 with a low vendor). Information asymmetry here costs the high type about 8% of its profit ($45.4 vs. $49.5) and does not hurt the low type, whose pooled profit ($20.7) exceeds its full-information profit ($18.6).
+
+**Sweep (60 draws;** a\_L ∈ [0.03, 0.20], a\_H − a\_L ∈ [0.08, 0.35], b log-uniform on [0.15, 2], H ∈ [50, 300], v/H ∈ [0.003, 0.02], k/v ∈ [0.2, 2]**).**
+
+| Outcome | Result |
+|---|---|
+| Low type would mimic the high type's full-information contract | 98% of draws |
+| A separating linear contract exists | 46 of 60 draws (77%) |
+| Form of the separating contract | success fee in all 46 cases; never per-attempt |
+| High-type profit lost to separation, median (IQR) | 11.0% (7.1–16.8%) |
+| High-type profit gained by separating vs. being taken for low, median | 3.6% |
+| Attempt budget under separation ≥ that under full information | 76% of separating draws |
+| Total surplus under separation vs. full information (high type), median | 1.07 (higher in 74% of draws) |
+| Firm's saving higher under separation than under full information | 74% of separating draws (median +9.7) |
+
+**Signaling by generosity.** To keep the low type from mimicking, the high-quality vendor lowers its success fee relative to the full-information monopoly fee. A lower fee makes the firm sample deeper, which raises the low type's cost of mimicry (it incurs more compute for few successes) while costing the high type only a fraction of its profit. Because the full-information monopoly fee over-prices (Proposition 4) and thus under-samples, the distortion needed for signaling partly *corrects* the monopoly distortion: total surplus and the firm's saving are higher under separation than under full information in about three-quarters of the draws. In the other quarter or so of draws the high type cannot separate by any linear contract and pools with the low type, which is the representative case above. We interpret this as evidence that private information about quality can push the vendor toward more buyer-favorable terms, provided quality is credibly separable by contract form, and that the success fee is the only contract form with that property.
 
 ---
 
@@ -255,7 +299,7 @@ For Gemma and Llama the fitted rule is within about 1% of the hindsight-optimal 
 2. **Human–AI complementarity.** If failed attempts reduce the human cost (logs, localization), *H* falls with *n*, lowering the threshold.
 3. **Latency and waiting costs.** Waiting costs add to *v* and lower the threshold for urgent defects, which suggests tiered escalation rules by severity.
 4. **Heterogeneous defect classes.** Observable defect types with their own (a\_s, b\_s) imply type-specific thresholds. For the same fit, type-contingent thresholds lower expected cost relative to the best common cap (6.2% in the synthetic three-type example of `paper/sim_types.py`).
-5. **Vendor quality uncertainty and signaling.** If the vendor knows its own *a* and the firm does not, a success fee may serve as a credible signal of quality, since only a high-*a* vendor profits at a given fee. We have not analyzed the resulting signaling game and leave it for future work; Section 5.4 provides only a first measure of the firm's exposure.
+5. **Richer private information.** Section 4.5 analyzes two vendor types and linear contracts. Continuous types, menus of contracts (screening), and learning about the vendor's type from failures across defects are left for future work; Section 5.4 provides a first measure of the firm's exposure to misjudged quality.
 6. **Competition.** With multiple vendors, the vendor's markup in Propositions 2 and 4 shrinks; the extent to which competition restores efficiency depends on whether vendors differ in (a, b) and in *k*.
 7. **Budget constraints and portfolios.** A firm-wide budget on attempts adds a shadow price to *c* in (4), generating a cross-team allocation rule.
 
@@ -273,7 +317,7 @@ For Gemma and Llama the fitted rule is within about 1% of the hindsight-optimal 
 **Limitations.**
 1. *No field data.* H, k, and v are illustrative. The empirical sections use public benchmarks, not firm records, and benchmark bugs (single functions with complete tests) are easier to verify than industrial defects.
 2. *Independence of attempts.* Conditional independence given *p* is an approximation; samples from the same prompt and model are positively correlated, which would make failure even more informative and lower the threshold.
-3. *Monopoly vendor and complete information about (a, b).* Competition and asymmetric information (Section 7) are not analyzed.
+3. *Monopoly vendor and two vendor types.* Competition is not analyzed; private information is analyzed only for two types, linear contracts, a one-shot game, and equilibrium refinements chosen by us (off-path beliefs assign any other contract to the low type); the separation results are numerical.
 4. *Static game.* We do not model repeated interaction, learning of (a, b) over time, or reputation.
 5. *Single dimension of quality.* Patch quality is binary (passes tests or not); maintainability and security of accepted patches are not modeled.
 6. *Threshold estimation error.* In the 40-sample experiment, the fitted threshold was 19–40% costlier than the best cap for one model whose residual of unsolved bugs was small (Section 6.4); the rule is only as good as the estimate of the tail.
@@ -302,6 +346,7 @@ An AI repair service creates two linked decisions: how long the buyer lets the A
 - Chow, Y. S., Robbins, H., and Siegmund, D. (1971). *Great Expectations: The Theory of Optimal Stopping.* Houghton Mifflin.
 - Fügener, A., Grahl, J., Gupta, A., and Ketter, W. (2022). Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Information Systems Research*, 33(2), 678–696.
 - Gopal, A., Sivaramakrishnan, K., Krishnan, M. S., and Mukhopadhyay, T. (2003). Contracts in offshore software development: An empirical analysis. *Management Science*, 49(12), 1671–1683.
+- Holmström, B. (1979). Moral hazard and observability. *Bell Journal of Economics*, 10(1), 74–91.
 - Jimenez, C. E., et al. (2024). SWE-bench: Can language models resolve real-world GitHub issues? *ICLR 2024.*
 - Kemerer, C. F., and Slaughter, S. (1999). An empirical approach to studying software evolution. *IEEE Transactions on Software Engineering*, 25(4), 493–509.
 - Le Goues, C., Nguyen, T., Forrest, S., and Weimer, W. (2012). GenProg: A generic method for automatic software repair. *IEEE Transactions on Software Engineering*, 38(1), 54–72.
@@ -328,7 +373,7 @@ With counts (n samples, *k* successes) per defect, the Beta-binomial likelihood 
 
 ## Appendix C. Reproducibility
 
-- Contracts: `cd paper/contracts && python3 contracts.py && python3 robustness.py`.
+- Contracts: `cd paper/contracts && python3 contracts.py && python3 robustness.py`; private quality: `python3 asymmetric.py && python3 asym_sweep.py`.
 - RepairBench: `cd paper/empirical && python3 load_repairbench.py <repairbench>/results && python3 analyze.py`.
 - SWE-bench: `cd paper/empirical && python3 swebench_repo_level.py <experiments>/evaluation`.
 - HumanEvalFix: `cd paper/empirical/sampling && python3 sample_humanevalfix.py <model> 40 && python3 analyze_hef.py`.
