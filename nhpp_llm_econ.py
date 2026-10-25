@@ -64,35 +64,43 @@ def build(cx, proj, llm, Y, t, negbin):
 
 
 # ------------------------------------------------------------------ economics
-def t_star(a, b, ct):
-    """Minimise C(T)=ct*T + C_F*a*exp(-bT)  ->  T*=max(0, ln(a b C_F/ct)/b)."""
-    return np.maximum(0.0, np.log(a * b * C_F / ct) / b)
+# Residual faults after testing T: (N - a) unreachable + a*exp(-bT) reachable, N = system fault pool.
+# C(T) = ct*T + cf*[(N - a) + a*exp(-bT)].  N is common to both arms and cancels in any
+# comparison, so we report cost net of cf*N:  ct*T + cf*a*(exp(-bT) - 1).
+def t_star(a, b, ct, cf=C_F):
+    """Minimise C(T)  ->  T*=max(0, ln(a b cf/ct)/b)   (reach term does not affect T*)."""
+    return np.maximum(0.0, np.log(a * b * cf / ct) / b)
 
 
-def cost(T, a, b, ct):
-    return ct * T + C_F * a * np.exp(-b * T)
+def cost(T, a, b, ct, cf=C_F):
+    return ct * T + cf * a * (np.exp(-b * T) - 1.0)
 
 
-def economics(post, cx0=0.0):
-    """Posterior of T*, minimal cost, and value of LLM adoption for a project with complexity cx0."""
-    s = post.to_dataset().stack(s=("chain", "draw"))
-    g = lambda k: s[k].values
-    a = {L: np.exp(g("b0") + g("b_llm") * L + (g("b_cx") + g("b_int") * L) * cx0) for L in (0, 1)}
-    b = {L: np.exp(g("g0") + g("g_llm") * L + g("g_cx") * cx0) for L in (0, 1)}
-    Ts = {L: t_star(a[L], b[L], C_T[L]) for L in (0, 1)}
-    Cs = {L: cost(Ts[L], a[L], b[L], C_T[L]) for L in (0, 1)}
+def params(draws, cx0):
+    """(a, b) per arm from a dict-like of parameter draws (or true values)."""
+    a = {L: np.exp(draws["b0"] + draws["b_llm"] * L + (draws["b_cx"] + draws["b_int"] * L) * cx0) for L in (0, 1)}
+    b = {L: np.exp(draws["g0"] + draws["g_llm"] * L + draws["g_cx"] * cx0) for L in (0, 1)}
+    return a, b
+
+
+def evaluate(a, b, cf=C_F, ct=C_T):
+    Ts = {L: t_star(a[L], b[L], ct[L], cf) for L in (0, 1)}
+    Cs = {L: cost(Ts[L], a[L], b[L], ct[L], cf) for L in (0, 1)}
     # regret of planning an LLM campaign with human-campaign parameters
-    T_wrong = t_star(a[0], b[0], C_T[1])
-    regret = cost(T_wrong, a[1], b[1], C_T[1]) - Cs[1]
+    T_wrong = t_star(a[0], b[0], ct[1], cf)
+    regret = cost(T_wrong, a[1], b[1], ct[1], cf) - Cs[1]
     return Ts, Cs, regret
 
 
-def truth(cx0=0.0):
-    a = {L: np.exp(TRUE["b0"] + TRUE["b_llm"] * L + (TRUE["b_cx"] + TRUE["b_int"] * L) * cx0) for L in (0, 1)}
-    b = {L: np.exp(TRUE["g0"] + TRUE["g_llm"] * L + TRUE["g_cx"] * cx0) for L in (0, 1)}
-    Ts = {L: t_star(a[L], b[L], C_T[L]) for L in (0, 1)}
-    Cs = {L: cost(Ts[L], a[L], b[L], C_T[L]) for L in (0, 1)}
-    return Ts, Cs
+def economics(post, cx0=0.0, cf=C_F, ct=C_T):
+    """Posterior of T*, minimal cost, and value of LLM adoption for a project with complexity cx0."""
+    s = post.to_dataset().stack(s=("chain", "draw"))
+    draws = {k: s[k].values for k in ("b0", "b_llm", "b_cx", "b_int", "g0", "g_llm", "g_cx")}
+    return evaluate(*params(draws, cx0), cf=cf, ct=ct)
+
+
+def truth(cx0=0.0, cf=C_F, ct=C_T):
+    return evaluate(*params(TRUE, cx0), cf=cf, ct=ct)[:2]
 
 
 def summ(x):
