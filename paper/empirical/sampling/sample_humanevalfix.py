@@ -18,7 +18,9 @@ def call(r):
     body = json.dumps({"model": MODEL, "messages": [{"role": "user", "content": prompt(r)}], "temperature": 1.0, "max_tokens": 1500, "usage": {"include": True}}).encode()
     for attempt in range(5):
         try:
-            req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", body, {"Content-Type": "application/json"})
+            headers = {"Content-Type": "application/json"}
+            if os.environ.get("OPENROUTER_API_KEY"): headers["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+            req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", body, headers)
             return json.load(urllib.request.urlopen(req, timeout=120))
         except Exception as e:
             time.sleep(2 ** attempt)

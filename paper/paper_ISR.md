@@ -1,6 +1,6 @@
 ---
 journal: Information Systems Research (INFORMS) — manuscript
-status: Draft v5 — prose revised; analytical model with costs calibrated from public wage, price and annotation data; no field data (Appendix D). Behavioral extensions and the experiment design are in paper_ISR_long.md and are not part of this manuscript.
+status: Draft v5 — prose revised; analytical model with costs calibrated from public wage, price and annotation data; no field data. Behavioral extensions and the experiment design are in paper_ISR_long.md and are not part of this manuscript.
 ---
 
 # Who Pays for the Next Attempt? Contract Design and Escalation Rules for AI-Assisted Software Maintenance
@@ -113,7 +113,7 @@ In the running example, a per-attempt price of $5 makes the firm stop after two 
 
 **Proposition 4 (The monopoly fee exceeds the efficient fee).** Let N^FB ≥ 1 and Π(f) = f·P(N\_B(f)) − k·E(N\_B(f)). Because N\_B is an integer-valued step function of f, (a) Π is strictly increasing within each step, and for every f′ ≤ f^e there exists f > f^e with Π(f) > Π(f′); and (b) the budget at the vendor's optimum satisfies n̂ ≤ N^FB, with strict inequality unless the best fee lies in the same step as f^e, in which case the vendor raises the fee without changing the firm's depth.
 
-*Proof sketch (full proof in Appendix E).* The firm's budget equals n exactly for f ∈ [φ\_n, φ\_{n−1}), where φ\_n = H − v/q\_n. Let L(n) be the vendor's profit at the lower end of this step and R(n) the supremum of its profit within the step. Then R(n) − L(n−1) = S(n−1)[q\_{n−1}H − (k+v)], which is negative if and only if attempt n is inefficient. For n > N^FB we therefore have R(n) ≤ L(n−1) < R(n−1), so R is strictly decreasing beyond N^FB. ∎
+*Proof sketch (full proof in Appendix D).* The firm's budget equals n exactly for f ∈ [φ\_n, φ\_{n−1}), where φ\_n = H − v/q\_n. Let L(n) be the vendor's profit at the lower end of this step and R(n) the supremum of its profit within the step. Then R(n) − L(n−1) = S(n−1)[q\_{n−1}H − (k+v)], which is negative if and only if attempt n is inefficient. For n > N^FB we therefore have R(n) ≤ L(n−1) < R(n−1), so R is strictly decreasing beyond N^FB. ∎
 
 Numerically, the vendor's best step lies strictly below N^FB in 289 of 293 random parameter draws. In the other four draws the vendor raises the fee within the efficient step.
 
@@ -127,7 +127,7 @@ G\_min(N) = v·[P(N)/q\_{N−1} − E(N)] = v·Σ\_{j<N} S(j)·(q\_j/q\_{N−1} 
 (c) R(N) is approached only by the pure success fee (w = 0, f ↑ φ\_{N−1}), and a positive per-attempt component strictly lowers profit whenever N ≥ 2 and difficulty is heterogeneous.
 (d) The vendor's optimal depth maximizes R(N), and R(N+1) − R(N) = S(N)[q\_N H − (k+v)] − v·P(N)·(1/q\_N − 1/q\_{N−1}), so n̂ ≤ N^FB. For the Beta family the last factor equals 1/a.
 
-*Proof sketch (full proof in Appendix E).* The firm chooses depth N only if q\_{N−1}(H−f) > w + v, that is, only if f < φ\_{N−1} − w/q\_{N−1}. Substituting this bound into Π = (w−k)E + fP gives Π < R(N) − w[P/q\_{N−1} − E]. Participation holds at the corner (0, φ\_{N−1}) because P ≥ q\_{N−1}E. ∎
+*Proof sketch (full proof in Appendix D).* The firm chooses depth N only if q\_{N−1}(H−f) > w + v, that is, only if f < φ\_{N−1} − w/q\_{N−1}. Substituting this bound into Π = (w−k)E + fP gives Π < R(N) − w[P/q\_{N−1} − E]. Participation holds at the corner (0, φ\_{N−1}) because P ≥ q\_{N−1}E. ∎
 
 To make the firm willing to try the N-th attempt, whose probability of success is low, the vendor must price the marginal success at φ\_{N−1} = H − v/q\_{N−1}. Every earlier attempt succeeded more often than the marginal one, so the firm keeps an infra-marginal gain on those attempts, and this gain is G\_min(N). It is zero when difficulty is homogeneous and grows with the dispersion of success probabilities. Because the vendor's profit is the surplus net of this rent, the vendor samples too little. The pure success fee delivers any depth at the lowest cost because a per-attempt fee collects revenue from attempts on which the firm's marginal gain is smallest.
 
@@ -218,7 +218,7 @@ The cost parameters are calibrated from public sources accessed on 25 October 20
 
 *Firm cost per attempt v.* If verification is an automated test run, v is the cost of continuous integration, about $0.01–0.50. If an engineer spends two to ten minutes triaging each candidate patch, v is about $3–15 at $91 per hour. This is the least well-grounded input, because it is a judgement based on the loaded wage and not a measured quantity.
 
-*Sensitivity.* We evaluate all combinations on a grid within each regime for three heterogeneity profiles: the RepairBench-like fit, the SWE-Verified-like calibration, and a HumanEvalFix-Llama-like fit with a = 0.50 and b = 0.58. The monopoly equilibria are computed exactly, using the profit at the top of each budget step (Appendix E). Table 5 summarizes the results across the three profiles for the points at which AI repair is worth using (N^FB ≥ 1).
+*Sensitivity.* We evaluate all combinations on a grid within each regime for three heterogeneity profiles: the RepairBench-like fit, the SWE-Verified-like calibration, and a HumanEvalFix-Llama-like fit with a = 0.50 and b = 0.58. The monopoly equilibria are computed exactly, using the profit at the top of each budget step (Appendix D). Table 5 summarizes the results across the three profiles for the points at which AI repair is worth using (N^FB ≥ 1).
 
 **Table 5. Sensitivity of the main conclusions across calibrated ranges.** Entries are ranges across the three heterogeneity profiles, with 100–180 grid points per profile.
 
@@ -266,13 +266,11 @@ The analysis has limitations. First, H, v, and k are calibrated from public stat
 
 Several extensions would change the results in predictable directions. Correlated attempts would lower the thresholds. Imperfect verification replaces H with H − eL, where e is the share of accepted patches that are wrong and L is their downstream cost, and so would also lower them. Learning about (a, b) by the firm and the vendor over time would allow the firm to refine its rule and the vendor its contract. Multi-sourcing would give the firm a second price to compare and so act like competition. An improving vendor, whose model raises a over time, lies outside our one-shot model.
 
-The analytical results do not depend on field data, but the contract predictions, outcome-based pricing under market power and per-attempt pricing among close substitutes, and the cost parameters would be tested directly in a study with a partner firm (Appendix D).
-
 ---
 
 ## 9. Conclusion
 
-An AI repair service creates two linked decisions: how long the buyer lets the AI keep trying, and how the vendor charges for trying. When defects differ in difficulty, the buyer's optimal rule is a threshold that rises with the cost of human repair and falls with the price and difficulty of attempts. Charging per attempt above cost makes the buyer give up too early. A pure success fee is the vendor's best pay-per-use contract, but because inducing deep sampling requires leaving the buyer an incentive rent, even a success fee leads to too little sampling. A lump sum would remove every distortion, and competition does so only among close substitutes. Public repair data support the premises of heterogeneous difficulty and informative failures, and a threshold fitted to past defects usually performs close to the best cap, although it can oversample when the unsolvable share is small and poorly identified. The next step is to test the contract predictions on a firm's repair and billing records.
+An AI repair service creates two linked decisions: how long the buyer lets the AI keep trying, and how the vendor charges for trying. When defects differ in difficulty, the buyer's optimal rule is a threshold that rises with the cost of human repair and falls with the price and difficulty of attempts. Charging per attempt above cost makes the buyer give up too early. A pure success fee is the vendor's best pay-per-use contract, but because inducing deep sampling requires leaving the buyer an incentive rent, even a success fee leads to too little sampling. A lump sum would remove every distortion, and competition does so only among close substitutes. Public repair data support the premises of heterogeneous difficulty and informative failures, and a threshold fitted to past defects usually performs close to the best cap, although it can oversample when the unsolvable share is small and poorly identified.
 
 ---
 
@@ -335,11 +333,7 @@ With counts (n samples, k successes) per defect, the Beta-binomial likelihood is
 
 The replication package contains the code for the contract equilibria (`contracts.py`, `robustness.py`), private quality (`asymmetric.py`, `asym_sweep.py`), competition (`diff_bertrand.py`, `diff_sweep.py`), proof checks (`verify_proofs.py`) and distribution-free checks of Propositions 1, 5, and 6 (`general_theory.py`); the empirical analyses of RepairBench (`load_repairbench.py`, `analyze.py`), the SWE-bench logs (`swebench_repo_level.py`) and the HumanEvalFix sampling and analysis (`sample_humanevalfix.py`, `analyze_hef.py`); and the cost calibration and sensitivity analysis (`calibration.py`, `sensitivity.py`, `fig_sensitivity.py`).
 
-## Appendix D. Field-Data Request and Design (Not Executed)
-
-For each defect, a partner firm would provide an identifier and type; timestamps of arrival, each AI attempt, verification, escalation, and closure; for each attempt, the test outcome, token counts, the compute cost billed by the vendor, and the verifier's effort; the escalation outcome; the engineering hours and fully loaded cost of human repair; later defects traced to AI patches; and the contract terms. The design would randomize the attempt cap within strata defined by defect type and severity for at least a quarter, estimate (a, b) by stratum from the first part of the sample, and compare the realized cost per resolved defect under the reservation rule with that under the firm's existing cap. If the vendor offers both contract forms, the contract could be randomized across teams. Attempt-level outcomes and costs suffice, so neither source code nor defect text is needed.
-
-## Appendix E. Proofs
+## Appendix D. Proofs
 
 **Lemma A (steps).** Under contract B, N\_B(f) = n ≥ 1 if and only if q\_n(H−f) ≤ v < q\_{n−1}(H−f), that is, f ∈ [φ\_n, φ\_{n−1}) with φ\_n = H − v/q\_n. For the Beta family φ\_n = H − v(n+a+b)/a, so the steps have equal width v/a. Also N\_B(f) = 0 if and only if f ≥ φ\_0. At f = φ\_n the firm is indifferent about attempt n+1 and stops.
 
