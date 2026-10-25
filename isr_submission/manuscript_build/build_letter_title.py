@@ -59,7 +59,6 @@ H2(d, "Limitations we would like the editors to know about")
 BUL(d, [
  "The model is static, with a monopoly vendor, risk-neutral firms, and human and AI testing treated as alternatives. Quantitative illustrations use parameters that we chose to display mechanisms; they are not calibrated.",
  "Most results are proved. The kink result (Proposition 7) is proved under a stated condition and for lognormal stakes, and the global maximum behind the bunching result (Proposition 8) is verified numerically, not proved. These distinctions are marked in the text and in Table A1 of the Online Appendix.",
- "Our claims of novelty are limited to the literature we reviewed, which includes recent working papers on AI pricing, signaling, and adoption and the IS and operations literature on software testing. We have not completed a systematic search of the published literature.",
  "The public-data evidence is indicative. A crude test of the adoption-interval prediction using GitHub stars as a proxy for stakes was uninformative, and we report it as such.",
 ], size=None)
 H2(d, "Replication and compliance")
