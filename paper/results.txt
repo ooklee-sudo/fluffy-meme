@@ -1,0 +1,26 @@
+Theory: n* = ceil(aH/c - a - b) = 37
+brute-force optimal k: 36
+homogeneous p_hat=0.032, p_hat*H=3.15 > c -> 'never stop'
+human only (k=0)                           100.0
+fixed k=1                                  89.26
+fixed k=3                                  77.01
+fixed k=5                                  70.08
+fixed k=10                                 61.06
+fixed k=20                                 54.64
+fixed k=40                                 52.56
+fixed k=80                                 56.43
+fixed k=160                                68.09
+optimal stopping n*=37                     52.54
+homogeneous-p policy (k=CAP)               87.65
+estimated prior, N=50 (mean±sd)            53.42 ± 1.69
+estimated prior, N=200 (mean±sd)           52.56 ± 0.22
+estimated prior, N=1000 (mean±sd)          52.41 ± 0.05
+P(solve by LLM | n*) = 0.659
+comparative statics n*(H): {10: 1, 50: 17, 100: 37, 200: 77, 500: 197}
+value of heterogeneity: n* with homog. p=a/(a+b) known per-bug = never stops if pH>c
+EXACT expected cost: k=36 52.639  k=37 52.634  k=0 100.0
+exact argmin: 37  P(solve)= 0.658
+savings vs human-only: 47.4%  vs best fixed k=10: 13.8%
+type-specific N*: {'easy': 58, 'medium': 27, 'hard': 1}
+type-specific cost 56.81 | best common cap k=23 cost 60.54 | human-only 100 | k=10: 63.96
+gain from type-specific stopping: 6.2%
