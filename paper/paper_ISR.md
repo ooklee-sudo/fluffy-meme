@@ -13,7 +13,7 @@ status: Draft v1 — simulation-based; no empirical data yet
 
 ## Abstract
 
-Large language models (LLMs) can repair software defects by sampling candidate patches, but each sample consumes compute, verification effort, and time, and success probabilities vary widely across defects. Practitioners set the number of attempts by convention (e.g., pass@k with k = 5 or 10) rather than by economic reasoning. We model LLM-based repair as a sequential search problem in the tradition of McCall (1970) and Weitzman (1979). A maintainer faces a defect whose per-attempt success probability is unknown and heterogeneous across defects (Beta-distributed). Each attempt costs *c*; if the LLM fails to produce a verified patch, the defect is escalated to a human engineer at cost *H*, which plays the role of the outside option. Because failed attempts are informative, the posterior expected success probability declines with the number of failures. We show that (i) the optimal policy is a reservation rule with closed-form threshold N\* = ⌈aH/c − a − b⌉; (ii) the one-step-look-ahead rule is globally optimal; (iii) the threshold is increasing in the human cost and decreasing in the attempt cost, and heterogeneity (low a, high b) lowers it; (iv) ignoring heterogeneity (a homogeneous-success-probability model) implies "never stop," an error that is costly; and (v) conditioning the threshold on observable defect types yields further savings. In a synthetic calibration, optimal stopping reduces the expected repair cost by 47.4% relative to human-only repair and by 13.8% relative to a conventional k = 10 cap, and a prior estimated from only 200 historical defects attains within 0.3% of the oracle cost. We discuss implications for IT governance, pricing of LLM repair services, and the design of agentic maintenance pipelines.
+Large language models (LLMs) can repair software defects by sampling candidate patches, but each sample consumes compute, verification effort, and time, and success probabilities vary widely across defects. Practitioners set the number of attempts by convention (e.g., pass@k with k = 5 or 10) rather than by economic reasoning. We model LLM-based repair as a sequential search problem in the tradition of McCall (1970) and Weitzman (1979). A maintainer faces a defect whose per-attempt success probability is unknown and heterogeneous across defects (Beta-distributed). Each attempt costs *c*; if the LLM fails to produce a verified patch, the defect is escalated to a human engineer at cost *H*, which plays the role of the outside option. Because failed attempts are informative, the posterior expected success probability declines with the number of failures. We show that (i) the optimal policy is a reservation rule with closed-form threshold N\* = ⌈aH/c − a − b⌉; (ii) the one-step-look-ahead rule is globally optimal; (iii) the threshold is increasing in the human cost and decreasing in the attempt cost, and heterogeneity (low a, high b) lowers it; (iv) ignoring heterogeneity (a homogeneous-success-probability model) implies "never stop," an error that is costly; and (v) conditioning the threshold on observable defect types yields further savings. On open RepairBench logs (574 bugs, 45 LLMs, ten samples per bug), a Beta-binomial heterogeneity model beats a homogeneous model in all 84 model-dataset combinations, and the reservation rule fitted on half the bugs is within 2% of the hindsight-optimal cap out of sample; conventional caps of ten samples cost more than human-only repair when H/c ≤ 10. In a synthetic calibration, optimal stopping reduces the expected repair cost by 47.4% relative to human-only repair and by 13.8% relative to a conventional k = 10 cap, and a prior estimated from only 200 historical defects attains within 0.3% of the oracle cost. We discuss implications for IT governance, pricing of LLM repair services, and the design of agentic maintenance pipelines.
 
 ---
 
@@ -29,7 +29,7 @@ RQ2. How do the human-escalation cost, attempt cost, and defect heterogeneity sh
 RQ3. What is the economic loss from the practitioner heuristics (fixed k; homogeneous-probability planning)?
 RQ4. How much historical data does a firm need to implement the rule, and how much do observable defect types add?
 
-**Contributions.** (1) We formalize LLM repair budgeting as a sequential search problem with an outside option, importing search theory into the software-maintenance literature. (2) We derive a closed-form reservation threshold and comparative statics. (3) We show that the "obvious" homogeneous model prescribes never stopping and quantify the loss. (4) We give an estimation procedure (Beta-geometric maximum likelihood with right censoring) and show its data requirements. (5) We provide managerial guidance for IT governance.
+**Contributions.** (1) We formalize LLM repair budgeting as a sequential search problem with an outside option, importing search theory into the software-maintenance literature. (2) We derive a closed-form reservation threshold and comparative statics. (3) We show that the "obvious" homogeneous model prescribes never stopping and quantify the loss. (4) We give an estimation procedure (Beta-geometric maximum likelihood with right censoring) and show its data requirements. (5) We validate the heterogeneity assumption and the policy out of sample on open RepairBench data. (6) We provide managerial guidance for IT governance.
 
 ---
 
@@ -53,7 +53,7 @@ RQ4. How much historical data does a firm need to implement the rule, and how mu
 
 **Heterogeneity (prior).** *p* ~ Beta(*a*, *b*) across defects, with *a*, *b* > 0. Small *a* with large *b* describes a portfolio dominated by hard defects. The mean is *a*/(*a*+*b*).
 
-**Outside option.** If the maintainer stops without a validated patch, the defect is escalated to a human engineer at cost *H* > 0 (fully loaded, including context-transfer). Without loss of generality the human fix delivers the same value as a validated LLM patch, so the problem is cost minimization. (Section 6 relaxes this.)
+**Outside option.** If the maintainer stops without a validated patch, the defect is escalated to a human engineer at cost *H* > 0 (fully loaded, including context-transfer). Without loss of generality the human fix delivers the same value as a validated LLM patch, so the problem is cost minimization. (Section 7 relaxes this.)
 
 **Payoff.** Total cost = *c*·(attempts made) + *H*·1{no validated patch}. The maintainer chooses a stopping time τ adapted to the history of outcomes to minimize expected cost.
 
@@ -100,9 +100,9 @@ with *B* the beta function and *T* the number of attempts until the first succes
 
 ---
 
-## 5. Numerical Study (Synthetic Calibration)
+## 5. Numerical Illustration (Synthetic Calibration)
 
-> **Note.** All parameter values below are *synthetic* and chosen to illustrate the mechanism. They are **not** estimated from real repair logs. Section 7 describes the empirical validation required before the magnitudes are used for decisions. Code: `paper/sim.py`, `paper/sim_types.py`; raw output: `paper/results.txt`.
+> **Note.** All parameter values in this section are *synthetic* and chosen to illustrate the mechanism. Section 6 tests the model's assumptions and predictions on real repair logs; the magnitudes there differ materially from this illustration. Code: `paper/sim.py`, `paper/sim_types.py`; raw output: `paper/results.txt`.
 
 **Setup.** Baseline: *a* = 0.4, *b* = 3.0 (mean success probability 0.118, strongly right-skewed), *H* = 100, *c* = 1 (cost units normalized to one LLM attempt). Monte Carlo with 400,000 simulated defects; exact expected costs from (3).
 
@@ -159,7 +159,42 @@ Type-contingent stopping reduces cost by 6.2% relative to the best common cap an
 
 ---
 
-## 6. Extensions
+## 6. Empirical Validation on RepairBench
+
+**Data.** We use the open RepairBench results (Silva and Monperrus 2025; github.com/ASSERT-KTH/repairbench), which record, for each of 574 single-function Java bugs (484 Defects4J v2, 90 GitBug-Java), *n* = 10 independently sampled patches (temperature 1.0) from each of 45 LLMs, and whether each patch passes the full test suite ("plausible"). Success is defined as a test-passing patch. After excluding bug-model records with fewer than 10 samples and model-dataset combinations with fewer than 80 bugs, we have 84 model × dataset combinations (22,856 bug-model records). Code and raw output: `paper/empirical/` (`load_repairbench.py`, `analyze.py`, `results_empirical.txt`). Because only counts k ∈ {0,…,10} per bug are used, we fit the Beta-binomial likelihood B(k+a, 10−k+b)/B(a,b) × C(10,k); the Beta-geometric of Section 3 is the same mixing distribution observed through first success.
+
+### 6.1 Is success probability heterogeneous?
+Yes, overwhelmingly. The Beta-binomial beats the homogeneous binomial in **84/84** combinations by AIC and by held-out log-likelihood (bugs split 50/50 by a hash of the bug identifier). The median fraction of bugs with 0 of 10 successes is 0.59, against a median mean success rate of 0.22; the median fitted parameters are *a* = 0.12 and *b* = 0.39. With both *a* and *b* below one, the Beta is U-shaped: bugs are mostly either solved nearly every time or almost never. This confirms the premise of Proposition 4, since a homogeneous model fitted to the same data would imply p̄ ≈ 0.22 and, for any realistic H/c, a "never stop" prescription.
+
+A zero-inflated Beta-binomial (mass π at p = 0, "unsolvable" bugs) improves AIC in only 13/84 combinations and held-out likelihood in 36/84, so the data do not clearly favor a separate unsolvable class over a Beta with small *a*. With only ten samples per bug, p = 0 and p ≈ 0.01 are not distinguishable, which matters for extrapolation (below).
+
+### 6.2 Implied reservation thresholds
+Because N\* ≈ aH/c and *a* is small (0.12 at the median), the empirical thresholds are far lower than in the synthetic illustration:
+
+| H/c | 5 | 10 | 30 | 100 | 300 |
+|---|---|---|---|---|---|
+| Median N\* (Beta-binomial) | 1 | 1 | 3 | 11 | 34 |
+| Median N\* (zero-inflated) | 1 | 1 | 3 | 10 | 26 |
+| Beta-binomial IQR across combinations | [0,1] | [1,1] | [2,5] | [8,16] | [24,48] |
+
+Selected fits (all bugs): *o4-mini (high)* on Defects4J: a = 0.25, b = 0.23, N\*(H/c = 100) = 25; *DeepSeek-V3*: a = 0.09, b = 0.13, N\*(100) = 9; *Qwen2.5-Coder-32B*: a = 0.14, b = 0.40, N\*(100) = 14. GitBug-Java, whose bugs postdate typical training cutoffs, has uniformly lower *a* and higher unsolved shares (mean success 0.14–0.31 vs. 0.23–0.54 on Defects4J for the six models we tabulated), and therefore lower N\*, consistent with Proposition 3(c) and with a data-leakage reading of the Defects4J numbers.
+
+### 6.3 Out-of-sample policy comparison
+For caps within the observed range (0–10), expected cost can be computed *exactly* from real outcomes: for a bug with *k* successes among 10 exchangeable samples, P(no success in first *j*) = C(10−k, j)/C(10, j). We fit on half the bugs and evaluate on the other half, averaging over the 84 combinations (cost in units of *c*; human-only = H/c):
+
+| H/c | Human only | Fixed k = 1 | Fixed k = 5 | Fixed k = 10 | Reservation rule (Beta-binomial, train fit) | Best fixed in hindsight |
+|---|---|---|---|---|---|---|
+| 3 | 3.00 | 3.34 | 5.87 | 8.95 | **2.96** | 2.95 |
+| 5 | 5.00 | 4.91 | 7.20 | 10.19 | **4.77** | 4.69 |
+| 8 | 8.00 | 7.25 | 9.19 | 12.05 | **7.21** | 7.15 |
+| 10 | 10.00 | 8.81 | 10.51 | 13.28 | **8.78** | 8.73 |
+
+Three results stand out. (i) The reservation rule estimated on half the bugs is within 0.4–1.7% of the hindsight-optimal cap in every case and always at least as good as any conventional fixed cap; it beats k = 10 by 34–67% in this range. (ii) The conventional practice of sampling up to ten patches is **cost-increasing relative to human-only repair** when H/c ≤ 10 (cost 13.3 vs. 10.0 at H/c = 10), because most hard bugs never resolve. (iii) The zero-inflated variant yields virtually identical costs (differences below 0.02 units), so the simpler Beta-binomial suffices. As expected for a single homogeneous portfolio (Proposition 5), the best fixed cap and the reservation rule coincide; the latter's advantage is that it prescribes the cap from (a, b, H, c) without an exhaustive search.
+
+### 6.4 What the data cannot tell us
+(1) **Extrapolation.** With *n* = 10, the data are informative about caps up to 10. For H/c ≥ 100, N\* exceeds 10 and depends on the Beta's left tail near p = 0, which ten samples identify poorly; the Beta-binomial and zero-inflated thresholds differ by 8 attempts at H/c = 300. These values are model-based extrapolations, not observations. (2) **Cost parameters.** The data do not contain H or a reliable c: token usage is recorded for only some models (e.g., o4-mini averages ≈ 10,400 completion tokens per attempt versus ≈ 640–810 for DeepSeek-V3 and Qwen2.5-Coder, a 13–16× difference), so a reasoning model's higher success probability must be weighed against a much higher c, which Equation (2) makes explicit: o4-mini's N\* is about 2.8× DeepSeek-V3's at equal H and c, but its c may be an order of magnitude larger. (3) **Scope.** Single-function Java bugs with strong test suites; patch correctness is judged by tests only.
+
+## 7. Extensions
 
 1. **Value of delay.** Add a waiting cost *w* per attempt (queueing, developer blocked): replace *c* with *c* + *w* in (2). Time-critical defects (production incidents) therefore have a lower N\*.
 2. **Imperfect verification.** If a passing patch is wrong with probability *e* (test overfitting), then successful attempts incur an expected downstream cost *e*·*L* (rework, incidents). The net benefit of success becomes *H* − *eL*, and N\* uses *H′* = *H* − *eL* in (2). Weak test suites thus shorten the economically justified search.
@@ -170,7 +205,7 @@ Type-contingent stopping reduces cost by 6.2% relative to the best common cap an
 
 ---
 
-## 7. Discussion
+## 8. Discussion
 
 **Theoretical implications.** The framework imports the logic of search theory into software maintenance and shows that learning from failure, not only the cost parameters, determines the budget. The result that a homogeneous model prescribes "never stop" is a cautionary example of how ignoring unobserved heterogeneity produces qualitatively wrong policies, not just quantitatively inaccurate ones.
 
@@ -181,19 +216,19 @@ Type-contingent stopping reduces cost by 6.2% relative to the best common cap an
 - **Monitor the cost curve, not the success rate.** Because the cost curve is flat near its minimum but steep in the tails, being roughly right matters more than being exactly right.
 
 **Limitations.**
-1. All numerical results are synthetic; magnitudes will differ with real data.
+1. The Section 5 illustration is synthetic; the empirical Section 6 is limited to ten samples per bug, single-function Java bugs, and H/c scenarios rather than measured H and c.
 2. We assume conditional independence of attempts given *p*. Real samples from the same model and prompt are positively correlated (mode collapse), and sampling temperature or prompt changes may restore diversity. This effectively makes *p* decay faster than the Beta model implies, which would favor *lower* N\*. A prompt-diversification extension can be modeled by a decaying within-defect success probability.
 3. We treat *a*, *b* as fixed; model upgrades shift the prior.
 4. The human outside option is treated as deterministic.
 5. Patch correctness is measured by tests; semantic correctness is not guaranteed.
 
-**Empirical validation plan (future work).** (i) Collect attempt-level logs from repair benchmarks (e.g., Defects4J, SWE-bench subsets) and from an industrial partner, recording the outcome of each sample, token cost, and test time; (ii) fit the Beta-geometric model and compare with alternative mixtures (e.g., finite mixture of point masses, zero-inflated); (iii) perform out-of-sample evaluation of the reservation rule against fixed caps using time-based splits to avoid training-data leakage; (iv) conduct a field experiment randomizing the cap across issues to estimate realized savings.
+**Remaining empirical work.** (i) Larger sample counts per bug (e.g., 50–200) to identify the left tail of the success distribution and validate N\* for H/c ≥ 100; (ii) measured per-attempt costs (tokens, test execution time, review effort) and measured human repair costs from an industrial partner; (iii) SWE-bench-style repository-level tasks and other languages; (iv) time-based splits to separate leakage from difficulty; (v) a field experiment randomizing the cap across issues to estimate realized savings.
 
 ---
 
-## 8. Conclusion
+## 9. Conclusion
 
-We show that the question "how many patches should we sample?" has a clean economic answer: continue while the posterior-expected avoided human cost of one more attempt exceeds its cost, which yields a closed-form threshold N\* = ⌈aH/c − a − b⌉. The threshold rises with human cost, falls with attempt cost and defect difficulty, and cannot be recovered from a homogeneous success-rate model. In a synthetic calibration, the rule halves the cost of repair relative to human-only handling and beats a conventional k = 10 cap by about 14%, while requiring only a few hundred historical defects to implement. We hope the framework helps move AI-assisted maintenance from capability metrics (pass@k) toward decision-grade economic metrics.
+We show that the question "how many patches should we sample?" has a clean economic answer: continue while the posterior-expected avoided human cost of one more attempt exceeds its cost, which yields a closed-form threshold N\* = ⌈aH/c − a − b⌉. The threshold rises with human cost, falls with attempt cost and defect difficulty, and cannot be recovered from a homogeneous success-rate model. In a synthetic illustration the rule halves the cost of repair relative to human-only handling and beats a conventional k = 10 cap by about 14%, while requiring only a few hundred historical defects to implement. We hope the framework helps move AI-assisted maintenance from capability metrics (pass@k) toward decision-grade economic metrics.
 
 ---
 
@@ -210,6 +245,7 @@ We show that the question "how many patches should we sample?" has a clean econo
 - Stigler, G. J. (1961). The economics of information. *Journal of Political Economy*, 69(3), 213–225.
 - Wald, A. (1945). Sequential tests of statistical hypotheses. *Annals of Mathematical Statistics*, 16(2), 117–186.
 - Weitzman, M. L. (1979). Optimal search for the best alternative. *Econometrica*, 47(3), 641–654.
+- Silva, A., and Monperrus, M. (2025). RepairBench: Leaderboard of frontier models for program repair. *LLM4Code Workshop (ICSE 2025).* arXiv:2409.18952. Data: github.com/ASSERT-KTH/repairbench.
 - Xia, C. S., and Zhang, L. (2023). Automated program repair in the era of large pre-trained language models. *ICSE 2023.*
 
 ---
@@ -228,4 +264,4 @@ For defects solved at attempt *t\_i* ≤ *K*: log-likelihood contribution log B(
 
 ## Appendix C. Reproducibility
 
-`python3 paper/sim.py` reproduces Tables 5.1–5.3 (seed 42); `python3 paper/sim_types.py` reproduces Table 5.4.
+`cd paper/empirical && python3 load_repairbench.py <repairbench>/results && python3 analyze.py` reproduces Section 6 (data from github.com/ASSERT-KTH/repairbench). `python3 paper/sim.py` reproduces Tables 5.1–5.3 (seed 42); `python3 paper/sim_types.py` reproduces Table 5.4.
