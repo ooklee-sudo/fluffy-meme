@@ -1,0 +1,15 @@
+== (A) Calibration from published coverage points (aggregate; SWE-bench Verified=500 tasks unless noted) ==
+source                                   pass@1  pass@k   k     a      b     N*(H/c=30) N*(100) N*(300) N*(1000)
+DeepSWE-Preview (Qwen3-32B), Verified     0.422  0.710   16  0.249   0.341        7      25      75     249
+    implied coverage: @1=0.42, @2=0.51, @4=0.59, @8=0.66, @16=0.71, @32=0.76, @64=0.79, @128=0.83, @250=0.85
+Cortexa o3, Verified (pass@7=75%)         (pass@1 not stated in repo README; skipped)
+Large Language Monkeys, Lite, DS-Coder-V2  0.159  0.560  250  0.122   0.645        3      12      36     122
+    implied coverage: @1=0.16, @2=0.22, @4=0.28, @8=0.33, @16=0.39, @32=0.43, @64=0.48, @128=0.52, @250=0.56
+
+== (B) Cross-submission instance heterogeneity (proxy; systems differ, not iid samples) ==
+lite: 84 submissions; instances resolved by >=1 submission: 265/300; never resolved: 35 (11.7%)
+   share-of-systems resolving an instance (resolved-by-some instances) percentiles 10/25/50/75/90: [0.01 0.07 0.36 0.63 0.82]
+   Beta fit across systems: a=0.44, b=0.97 (U-shaped if both<1), mean=0.31
+verified: 135 submissions; instances resolved by >=1 submission: 471/500; never resolved: 29 (5.8%)
+   share-of-systems resolving an instance (resolved-by-some instances) percentiles 10/25/50/75/90: [0.07 0.31 0.61 0.81 0.91]
+   Beta fit across systems: a=0.69, b=0.77 (U-shaped if both<1), mean=0.47

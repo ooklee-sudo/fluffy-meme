@@ -192,7 +192,25 @@ For caps within the observed range (0–10), expected cost can be computed *exac
 Three results stand out. (i) The reservation rule estimated on half the bugs is within 0.4–1.7% of the hindsight-optimal cap in every case and always at least as good as any conventional fixed cap; it beats k = 10 by 34–67% in this range. (ii) The conventional practice of sampling up to ten patches is **cost-increasing relative to human-only repair** when H/c ≤ 10 (cost 13.3 vs. 10.0 at H/c = 10), because most hard bugs never resolve. (iii) The zero-inflated variant yields virtually identical costs (differences below 0.02 units), so the simpler Beta-binomial suffices. As expected for a single homogeneous portfolio (Proposition 5), the best fixed cap and the reservation rule coincide; the latter's advantage is that it prescribes the cap from (a, b, H, c) without an exhaustive search.
 
 ### 6.4 What the data cannot tell us
-(1) **Extrapolation.** With *n* = 10, the data are informative about caps up to 10. For H/c ≥ 100, N\* exceeds 10 and depends on the Beta's left tail near p = 0, which ten samples identify poorly; the Beta-binomial and zero-inflated thresholds differ by 8 attempts at H/c = 300. These values are model-based extrapolations, not observations. (2) **Cost parameters.** The data do not contain H or a reliable c: token usage is recorded for only some models (e.g., o4-mini averages ≈ 10,400 completion tokens per attempt versus ≈ 640–810 for DeepSeek-V3 and Qwen2.5-Coder, a 13–16× difference), so a reasoning model's higher success probability must be weighed against a much higher c, which Equation (2) makes explicit: o4-mini's N\* is about 2.8× DeepSeek-V3's at equal H and c, but its c may be an order of magnitude larger. (3) **Scope.** Single-function Java bugs with strong test suites; patch correctness is judged by tests only.
+(1) **Extrapolation.** With *n* = 10, the data are informative about caps up to 10. For H/c ≥ 100, N\* exceeds 10 and depends on the Beta's left tail near p = 0, which ten samples identify poorly; the Beta-binomial and zero-inflated thresholds differ by 8 attempts at H/c = 300. These values are model-based extrapolations, not observations. (2) **Cost parameters.** The data do not contain H or a reliable c: token usage is recorded for only some models (e.g., o4-mini averages ≈ 10,400 completion tokens per attempt versus ≈ 640–810 for DeepSeek-V3 and Qwen2.5-Coder, a 13–16× difference), so a reasoning model's higher success probability must be weighed against a much higher c, which Equation (2) makes explicit: o4-mini's N\* is about 2.8× DeepSeek-V3's at equal H and c, but its c may be an order of magnitude larger. (3) **Scope.** Sections 6.1–6.4 cover single-function Java bugs with strong test suites; patch correctness is judged by tests only.
+
+### 6.5 Extension to repository-level repair (SWE-bench)
+**What the open logs contain.** The official SWE-bench submission repository (github.com/SWE-bench/experiments) contains, per submission, the single selected patch per task and the resulting resolved list. By the repository's own checklist every one of the 111 submission READMEs we examined declares itself a pass@1 submission ("does not attempt the same task instance more than once"); none releases per-sample outcomes. Attempt-level data of the kind used in Sections 6.1–6.3 therefore **do not exist in these logs**. Only aggregate coverage claims appear in a few READMEs: DeepSWE-Preview (Qwen3-32B) reports pass@1 = 42.2% and pass@16 = 71.0% on SWE-bench Verified (500 tasks), and a verifier-based selection reaches 59.2%; Cortexa (o3) reports pass@7 = 75%, with a selected-patch rate of 68.4%. Large Language Monkeys (Brown et al. 2024) report 15.9% at one sample and 56% at 250 samples for DeepSeek-Coder-V2-Instruct on SWE-bench Lite (300 tasks). Code and output: `paper/empirical/swebench_repo_level.py`, `results_swebench.txt`.
+
+**Calibration from coverage curves.** Under the Beta-geometric model, pass@1 = a/(a+b) and pass@k = 1 − B(a, b+k)/B(a, b). Two published points identify (a, b) exactly, so this step *calibrates* but cannot *test* the model.
+
+| Source (task set) | pass@1 | pass@k | a | b | N\* at H/c = 30 | 100 | 300 | 1,000 |
+|---|---|---|---|---|---|---|---|---|
+| DeepSWE-Preview, Verified (k = 16) | 0.422 | 0.710 | 0.25 | 0.34 | 7 | 25 | 75 | 249 |
+| DeepSeek-Coder-V2, Lite (k = 250) | 0.159 | 0.560 | 0.12 | 0.65 | 3 | 12 | 36 | 122 |
+
+The calibrated parameters again place *a* well below one, in line with the RepairBench fits (median 0.12). The Lite calibration (a = 0.12, b = 0.65) is close to the RepairBench Beta-binomial fits in *a*; the implied curve is concave in log k, qualitatively matching the near log-linear coverage growth reported by Brown et al. (2024) over the range they study. Thresholds at a given H/c are larger for the stronger Verified agent (a = 0.25). Because repository-level attempts consume many agent steps, c is also substantially larger than for single-function repair, so H/c, not the absolute cost, should be compared across settings.
+
+**Cross-submission heterogeneity (proxy only).** Across 135 Verified and 84 Lite submissions, 5.8% (29/500) and 11.7% (35/300) of tasks are resolved by no submission, and the share of systems resolving a task is widely dispersed (Verified percentiles 10/50/90: 0.07/0.61/0.91; Lite: 0.01/0.36/0.82). A Beta-binomial across systems gives (a, b) = (0.69, 0.77) on Verified and (0.44, 0.97) on Lite: U-shaped or nearly so. Systems are not exchangeable samples from one model and improved over time, so these figures document that task difficulty is heterogeneous at repository level, not that the attempt-level parameters equal these values.
+
+**Observability of success.** At repository level the maintainer usually lacks hidden tests, so "success" must be judged by a verifier. DeepSWE-Preview's coverage at 16 samples (71.0%) exceeds its verifier-selected rate (59.2%) by 11.8 points; Cortexa's pass@7 (75%) exceeds its selected rate (68.4%) by 6.6 points. This is the imperfect-verification case of Section 7 (item 2): the stopping rule should use the *observable* success probability, and the value of sampling beyond N\* depends on verifier quality as much as on the success distribution.
+
+**Implication.** The empirical case for the heterogeneity premise extends to repository-level tasks, but a direct out-of-sample test of the stopping rule requires per-sample outcomes that current public leaderboards do not release. We recommend that repair leaderboards publish per-sample pass/fail and token cost, which would turn the calibration above into a testable prediction.
 
 ## 7. Extensions
 
@@ -222,7 +240,7 @@ Three results stand out. (i) The reservation rule estimated on half the bugs is 
 4. The human outside option is treated as deterministic.
 5. Patch correctness is measured by tests; semantic correctness is not guaranteed.
 
-**Remaining empirical work.** (i) Larger sample counts per bug (e.g., 50–200) to identify the left tail of the success distribution and validate N\* for H/c ≥ 100; (ii) measured per-attempt costs (tokens, test execution time, review effort) and measured human repair costs from an industrial partner; (iii) SWE-bench-style repository-level tasks and other languages; (iv) time-based splits to separate leakage from difficulty; (v) a field experiment randomizing the cap across issues to estimate realized savings.
+**Remaining empirical work.** (i) Larger sample counts per bug (e.g., 50–200) to identify the left tail of the success distribution and validate N\* for H/c ≥ 100; (ii) measured per-attempt costs (tokens, test execution time, review effort) and measured human repair costs from an industrial partner; (iii) per-sample outcome logs for repository-level tasks (the public SWE-bench submission logs are pass@1 only, Section 6.5) and other languages; (iv) time-based splits to separate leakage from difficulty; (v) a field experiment randomizing the cap across issues to estimate realized savings.
 
 ---
 
@@ -236,6 +254,7 @@ We show that the question "how many patches should we sample?" has a clean econo
 
 *(Verify details against the originals before submission.)*
 
+- Brown, B., et al. (2024). Large language monkeys: Scaling inference compute with repeated sampling. arXiv:2407.21787.
 - Chen, M., et al. (2021). Evaluating large language models trained on code. arXiv:2107.03374.
 - Chow, Y. S., Robbins, H., and Siegmund, D. (1971). *Great Expectations: The Theory of Optimal Stopping.* Houghton Mifflin.
 - Dixit, A. K., and Pindyck, R. S. (1994). *Investment under Uncertainty.* Princeton University Press.
