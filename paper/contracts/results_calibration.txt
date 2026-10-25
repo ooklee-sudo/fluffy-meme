@@ -1,0 +1,19 @@
+Loaded hourly cost of a software developer: $64.44/h x 1.418 = $91/h
+SWE-bench Verified expected hands-on time (annotated, familiar engineer): 0.52 h => H = $48; unfamiliar-engineer multiplier 2x-4x => H = $96-$191
+Bucket values: <15min => $15; 15-60min => $46; 1-4h => $183-$366
+
+Per-attempt vendor cost k for function-level repair (price list x observed tokens):
+  function-level, non-reasoning (RepairBench: ~1,700 in / ~800 out)
+     Gemma-3-4B (small)       k = $0.00011
+     Qwen3-Coder-30B-A3B      k = $0.00034
+     Qwen3-Coder              k = $0.00131
+     Claude Sonnet 5.5        k = $0.01140
+     o4-mini (reasoning)      k = $0.00539
+  function-level, reasoning (RepairBench o4-mini: ~1,400 in / ~10,400 out)
+     Gemma-3-4B (small)       k = $0.00058
+     Qwen3-Coder-30B-A3B      k = $0.00301
+     Qwen3-Coder              k = $0.01083
+     Claude Sonnet 5.5        k = $0.10692
+     o4-mini (reasoning)      k = $0.04736
+Repository-level agentic repair: published cost per task $0.60-$0.84 (one trajectory or one multi-sample pipeline)
+Verification cost v per attempt: automated tests only (CI run) ~ $0.01-$0.50; with 2-10 min of manual triage ~ $3-$15 (at $91/h)

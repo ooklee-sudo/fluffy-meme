@@ -1,6 +1,6 @@
 ---
 journal: Information Systems Research (INFORMS) — compact manuscript
-status: Draft v3 — analytical model with public-data calibration; no field data and no human-subject experiment yet (see Section 8 and Appendix D). The extended version with all robustness analyses is paper_ISR_long.md.
+status: Draft v4 — analytical model; costs calibrated from public wage, price and annotation data; no field data (Appendix D). Behavioral extensions and the experiment design are in paper_ISR_long.md and paper/experiment/ and are not part of this manuscript.
 ---
 
 # Who Pays for the Next Attempt? Contract Design and Escalation Rules for AI-Assisted Software Maintenance
@@ -13,7 +13,7 @@ status: Draft v3 — analytical model with public-data calibration; no field dat
 
 ## Abstract
 
-Firms increasingly buy AI-based defect repair as a pay-per-use service: a large language model proposes patches, the firm verifies them, and unresolved defects are escalated to human engineers. We study how the vendor's pricing (per attempt or per verified fix) and the firm's escalation rule interact when defects differ in how easily they are repaired, so that every failed attempt is informative about the next. The firm's optimal rule is a reservation threshold, N\* = ⌈aH/c − a − b⌉ under Beta-distributed difficulty, and the threshold structure holds for any heterogeneity distribution. Per-attempt prices above cost make the firm stop too early (double marginalization). A success fee of Hk/(k+v) restores the efficient depth, but a monopolist sets a higher fee. Deeper sampling requires leaving the firm an *incentive rent of sequential search*, 78–82% of surplus in our calibrations, so the vendor samples too little. Among linear pay-per-use contracts the pure success fee is optimal for the vendor, and a lump-sum fee would remove every distortion. When vendors privately know their quality, only success fees can signal it, and a high-quality vendor separates by lowering its fee, which raises welfare. In a differentiated-Bertrand game, competition removes the distortion only when vendors are close substitutes. On open repair data (RepairBench: 574 bugs, 45 models; a new 40-sample HumanEvalFix experiment) difficulty is heterogeneous in all 84 model–dataset combinations, and a threshold fitted on half the bugs performs within 0.4–1.7% of the best cap in hindsight. Cost parameters are illustrative; we provide a field-validation design.
+Firms increasingly buy AI-based defect repair as a pay-per-use service: a large language model proposes patches, the firm verifies them, and unresolved defects are escalated to human engineers. We study how the vendor's pricing (per attempt or per verified fix) and the firm's escalation rule interact when defects differ in how easily they are repaired, so that every failed attempt is informative about the next. The firm's optimal rule is a reservation threshold, N\* = ⌈aH/c − a − b⌉ under Beta-distributed difficulty, and the threshold structure holds for any heterogeneity distribution. Per-attempt prices above cost make the firm stop too early (double marginalization). A success fee of Hk/(k+v) restores the efficient depth, but a monopolist sets a higher fee. Deeper sampling requires leaving the firm an *incentive rent of sequential search*, 78–82% of surplus in our calibrations, so the vendor samples too little. Among linear pay-per-use contracts the pure success fee is optimal for the vendor, and a lump-sum fee would remove every distortion. When vendors privately know their quality, only success fees can signal it, and a high-quality vendor separates by lowering its fee, which raises welfare. In a differentiated-Bertrand game, competition removes the distortion only when vendors are close substitutes. On open repair data (RepairBench: 574 bugs, 45 models; a new 40-sample HumanEvalFix experiment) difficulty is heterogeneous in all 84 model–dataset combinations, and a threshold fitted on half the bugs performs within 0.4–1.7% of the best cap in hindsight. Calibrating costs to public wage statistics, task-time annotations, and API price lists shows that the conclusions are strongest when verification is cheap relative to human repair; a field-validation design is provided.
 
 ---
 
@@ -137,7 +137,7 @@ Differentiation, more than the number of vendors, determines whether competition
 
 ## 5. Numerical Equilibria
 
-Code in `paper/contracts/`. The shape parameters (a, b) come from the empirical fits in Section 6; the costs H, v, k are **illustrative** since no cost data are public. Integer budgets rule out closed forms for the vendor's optimal price, so equilibria are computed on price grids.
+Code in `paper/contracts/`. The shape parameters (a, b) come from the empirical fits in Section 6. Tables 1–3 use H = 100, v = 1, k = 0.2 (dollars), which lie inside the ranges calibrated from public sources in Section 5.4 (H) or between its function-level and agentic ranges (k); Section 5.4 shows how the conclusions change across those ranges. Integer budgets rule out closed forms for the vendor's optimal price, so equilibria are computed on price grids or by exact enumeration of budget steps.
 
 ### 5.1 Monopoly: per-attempt versus success fee
 
@@ -172,6 +172,30 @@ For a\_H = 0.25, a\_L = 0.08, b = 0.35, H = 100, v = 1, k = 0.2, the profit-orde
 
 With close substitutes (σ = 1) one rival suffices; with strongly differentiated vendors (σ = 30) the per-attempt equilibrium stays at the monopoly budget of one attempt even with ten vendors, and entry only widens coverage (from 50% to 91% of firms), as Proposition 8(b) predicts. The bound of Proposition 8(b) is conservative: the monopoly budget is reached at σ = 100. In 240 cells of a random sweep, the per-attempt equilibrium is not deviation-proof (a vendor gains by switching to a success fee) in 71% and the success-fee equilibrium is deviation-proof in 76%; vendors prefer the success fee in 55–100% of cells, while the firm's saving is higher under per-attempt pricing in 68–98%. Vendors thus pick the contract form that raises surplus but that firms often like less.
 
+### 5.4 Calibration of the cost parameters and sensitivity
+
+**Sources** (accessed 25 October 2026; code `paper/contracts/calibration.py`, `sensitivity.py`).
+
+*Human repair cost H.* The US Bureau of Labor Statistics (Occupational Outlook Handbook) reports a median hourly wage of $64.44 for software developers in May 2025. Employer Costs for Employee Compensation (private industry, June 2022, the latest release we retrieved) put benefits at 29.5% of total compensation, so a loaded cost is $64.44 / (1 − 0.295) ≈ $91 per hour. The annotated time to fix for SWE-bench Verified (Epoch AI's summary of the annotation) is under 15 minutes for 39% of tasks, 15 minutes to 1 hour for 52%, 1–4 hours for 8%, and above 4 hours for 3 tasks; with bucket midpoints the expected hands-on time is 0.52 hours, hence H ≈ $48 for an engineer familiar with the code. METR's check found these estimates likely optimistic (its sample was only six tasks), so we allow 2–4 times that time for an unfamiliar engineer: **H ranges from about $15 (a 10-minute fix) through $50 to $200, up to $400 or more for multi-hour fixes**, before any context-transfer overhead.
+
+*Vendor cost per attempt k.* We multiply observed token usage by the OpenRouter price list. For function-level repair in RepairBench, a non-reasoning attempt uses about 1,700 input and 800 output tokens, and a reasoning model such as o4-mini about 1,400 input and 10,400 output tokens. At list prices the cost k is $0.0001–0.0013 for small and mid-sized open models, $0.011 for a frontier model at 800 output tokens, and $0.0006–0.11 with reasoning-length outputs of 10,400 tokens borrowed from the o4-mini case ($0.047 for o4-mini itself). For repository-level agents, SWE-bench submission READMEs report $0.60 (Bracket), $0.64 (Moatless with Claude 4 Sonnet) and $0.84 (Cortexa) per task. **k ranges from $0.0003 to about $0.1 at function level and about $0.6–3 for agents.** (Our own HumanEvalFix runs billed $0.00002–0.00004 per attempt for 3–8B models.)
+
+*Firm cost per attempt v.* If verification is an automated test run, v is the CI cost, about $0.01–0.50. If an engineer spends 2–10 minutes triaging each candidate patch, v is about $3–15 at $91 per hour. This is the least well-grounded input; it is a judgement based on the loaded wage and not a measured quantity.
+
+**Sensitivity.** We evaluate all combinations on a grid within each regime and three heterogeneity profiles (the RepairBench-like fit, the SWE-Verified-like calibration, and a HumanEvalFix-Llama-like fit with a = 0.50, b = 0.58), computing the monopoly equilibria exactly (profit at the top of each budget step; Appendix E). Table 4 summarizes, across the three profiles, the points at which AI repair is worth using (N^FB ≥ 1).
+
+**Table 4. Sensitivity of the main conclusions across calibrated ranges** (ranges across the three heterogeneity profiles; grids: 100–180 points per profile).
+
+| Regime (H, v, k grids) | AI repair worth using | Welfare: success fee > per-attempt | Vendor profit: success fee ≥ per-attempt | Firm saving: success fee > per-attempt | Median welfare / first best: per-attempt; success fee | Vendor's depth below N^FB | Median rent share of W(N^FB) |
+|---|---|---|---|---|---|---|---|
+| Function-level, automated verification (H $15–400; v $0.01–0.5; k $0.0003–0.1) | 100% | 97–100% | 100% | 97–100% | 0.48–0.54; 0.87–0.93 | 100% | 90–91% |
+| Function-level, manual triage (H $15–400; v $3–15; k $0.0003–0.1) | 75–88% | 22–57% | 100% | 22–57% | 0.72–0.91; 0.87–0.91 | 61–86% | 67–95% |
+| Repository-level agents (H $50–800; v $0.1–5; k $0.6–3) | 100% | 76–95% | 100% | 76–95% | 0.56–0.67; 0.92–0.93 | 92–100% | 37–44% |
+
+*Findings.* (i) The vendor's preference for the success fee is robust: its profit is at least as high in 100% of the points in every regime. (ii) The welfare advantage of the success fee is strong where an attempt is cheap relative to human repair (automated verification: 97–100% of points; agentic repair: 76–95%) and weak when manual triage makes each attempt expensive (22–57%), because the efficient depth is then small (median 2–6) and a per-attempt monopolist that stops the firm after one or two attempts loses little. (iii) The incentive rent is large where depth is valuable, about nine-tenths of the surplus under automated verification and 37–44% for agents, so vendors undersample in 61–100% of points. (iv) Figure 1 shows the pattern in the cost ratios: when H/v is below about 30 the efficient depth is one or two attempts and both contract forms are near-efficient; above it, per-attempt monopoly welfare falls to 0.4–0.6 of first best while the success fee stays near 0.85–0.9. The conclusions of Sections 4–5 therefore apply to the regimes with H/v of about 30 or more, which covers automated verification and agentic repair and excludes cheap fixes with expensive per-attempt human review.
+
+**Figure 1.** Welfare (share of first best) under per-attempt and success-fee monopoly, and incentive rent as a share of surplus at the first-best depth, as functions of H/v and k/v (a = 0.12, b = 0.39); blank cells are combinations in which AI repair is not worth using (`paper/contracts/fig_sensitivity.png`).
+
 ---
 
 ## 6. Evidence on the Model's Premises
@@ -190,9 +214,7 @@ The model rests on (P1) heterogeneous difficulty, (P2) informative failures, and
 
 **Imperfect verification.** If a passing patch is wrong with probability e at downstream cost L, the benefit H in the thresholds becomes H − eL; weaker tests shorten the justified search, and in contract B disputes over what counts as a verified fix become a cost.
 
-**Behavioral biases.** Suppose the firm's decision utility departs from the planner's in two ways. *Loss aversion on payments* (Λ ≥ 1; Kahneman and Tversky 1979; Prelec and Loewenstein 1998) makes a per-attempt fee feel like Λw, whereas a success fee is netted against the avoided human cost. The *sunk-cost fallacy* (γ ∈ [0, 1); Arkes and Blumer 1985) discounts the perceived marginal cost of attempts after the first by (1−γ). Then loss aversion lowers the budget under A only, and shifts surplus from the vendor to the firm one-for-one when the vendor induces a single attempt (the vendor's price falls to (q₀H − v)/Λ); the sunk-cost fallacy raises the budget under both forms; and under per-attempt Bertrand pricing the two cancel exactly when Λ = [(k+v)/(1−γ) − v]/k (first-best depth in 397 of 398 simulated draws). Depth is therefore an unreliable signal of rational escalation. Formal statements, simulations, and an incentivized experiment design to identify Λ and γ are in the extended version and `paper/experiment/`; the experiment has not been run.
-
-**Further directions.** Latency and severity-contingent thresholds, defect classes with their own (a, b), continuous vendor types and contract menus, multi-sourcing, and dynamic learning of (a, b) across defects.
+**Further directions.** Latency and severity-contingent thresholds, defect classes with their own (a, b), continuous vendor types and contract menus, multi-sourcing, dynamic learning of (a, b) across defects, and behavioral frictions on the buyer's side (for example loss aversion toward per-attempt payments or sunk-cost effects), which require experimental evidence to parameterize and are not modeled here.
 
 ---
 
@@ -202,9 +224,9 @@ The model rests on (P1) heterogeneous difficulty, (P2) informative failures, and
 
 **Managerial implications.** *Buyers* should estimate (a, b) from their own repair logs, compute the threshold from H and the full cost per attempt (including verification), validate it on held-out defects, and negotiate a success fee near Hk/(k+v) in return for volume. *Vendors* gain from outcome-based pricing, including under competition, but should recognize that in commodity markets with close substitutes per-attempt pricing near cost is efficient. *Platforms and governance bodies* should publish per-sample outcomes and per-attempt costs, which determine the contracts' inputs and are invisible in current leaderboards.
 
-**Limitations.** (1) Costs H, v, k are illustrative; benchmark bugs (single functions with complete tests) are easier to verify than industrial defects. (2) Attempts are conditionally independent given p; correlation across samples would make failure more informative. (3) Vendors are symmetric, with logit competition and a one-shot game; private information is analyzed for two types and linear contracts, and the separation and competition results are numerical. (4) Patch quality is binary. (5) Public benchmarks may overlap with training data. (6) The behavioral parameters are not estimated.
+**Limitations.** (1) H, v, and k are calibrated from public statistics and price lists (Section 5.4) but not measured on a firm, and v is the least well grounded; benchmark bugs (single functions with complete tests) are easier to verify than industrial defects. (2) Attempts are conditionally independent given p; correlation across samples would make failure more informative. (3) Vendors are symmetric, with logit competition and a one-shot game; private information is analyzed for two types and linear contracts, and the separation and competition results are numerical. (4) Patch quality is binary. (5) Public benchmarks may overlap with training data.
 
-**Does the paper need a human-subject experiment?** The analytical results do not depend on one; the experiment would identify behavioral parameters and is an extension. A field study with a partner firm (Appendix D) would test the contract predictions directly and is the most valuable next step.
+**Field validation.** The analytical results do not depend on field data, but the contract predictions (outcome-based pricing under market power, per-attempt pricing among close substitutes) and the cost parameters would be tested directly by a study with a partner firm (Appendix D).
 
 ---
 
@@ -219,7 +241,6 @@ An AI repair service creates two linked decisions: how long the buyer lets the A
 *(Verify details against the originals before submission.)*
 
 - Agrawal, A., Gans, J., and Goldfarb, A. (2018). *Prediction Machines.* Harvard Business Review Press.
-- Arkes, H. R., and Blumer, C. (1985). The psychology of sunk cost. *Organizational Behavior and Human Decision Processes*, 35(1), 124–140.
 - Bajari, P., and Tadelis, S. (2001). Incentives versus transaction costs: A theory of procurement contracts. *RAND Journal of Economics*, 32(3), 387–407.
 - Banker, R. D., and Slaughter, S. A. (2000). The moderating effects of structure on volatility and complexity in software enhancement. *Information Systems Research*, 11(3), 219–240.
 - Brown, B., et al. (2024). Large language monkeys: Scaling inference compute with repeated sampling. arXiv:2407.21787.
@@ -229,12 +250,10 @@ An AI repair service creates two linked decisions: how long the buyer lets the A
 - Fügener, A., Grahl, J., Gupta, A., and Ketter, W. (2022). Cognitive challenges in human–artificial intelligence collaboration. *Information Systems Research*, 33(2), 678–696.
 - Gopal, A., Sivaramakrishnan, K., Krishnan, M. S., and Mukhopadhyay, T. (2003). Contracts in offshore software development. *Management Science*, 49(12), 1671–1683.
 - Jimenez, C. E., et al. (2024). SWE-bench. *ICLR 2024.*
-- Kahneman, D., and Tversky, A. (1979). Prospect theory. *Econometrica*, 47(2), 263–291.
 - Kemerer, C. F., and Slaughter, S. (1999). An empirical approach to studying software evolution. *IEEE Transactions on Software Engineering*, 25(4), 493–509.
 - Le Goues, C., Nguyen, T., Forrest, S., and Weimer, W. (2012). GenProg. *IEEE Transactions on Software Engineering*, 38(1), 54–72.
 - Lientz, B. P., and Swanson, E. B. (1980). *Software Maintenance Management.* Addison-Wesley.
 - McCall, J. J. (1970). Economics of information and job search. *Quarterly Journal of Economics*, 84(1), 113–126.
-- Prelec, D., and Loewenstein, G. (1998). The red and the black. *Marketing Science*, 17(1), 4–28.
 - Raisch, S., and Krakowski, S. (2021). Artificial intelligence and management. *Academy of Management Review*, 46(1), 192–210.
 - Silva, A., and Monperrus, M. (2025). RepairBench. *LLM4Code Workshop (ICSE 2025).* arXiv:2409.18952.
 - Spengler, J. J. (1950). Vertical integration and antitrust policy. *Journal of Political Economy*, 58(4), 347–352.
@@ -256,9 +275,9 @@ With counts (n samples, k successes) per defect the Beta-binomial likelihood is 
 
 ## Appendix C. Reproducibility
 
-- Contracts and equilibria: `cd paper/contracts && python3 contracts.py && python3 robustness.py`; private quality: `asymmetric.py`, `asym_sweep.py`; competition: `diff_bertrand.py`, `diff_sweep.py`; proof checks: `verify_proofs.py`; distribution-free checks (Propositions 1, 5, 6): `general_theory.py`; behavioral: `behavioral.py`, `behavioral_sweep.py`.
+- Contracts and equilibria: `cd paper/contracts && python3 contracts.py && python3 robustness.py`; private quality: `asymmetric.py`, `asym_sweep.py`; competition: `diff_bertrand.py`, `diff_sweep.py`; proof checks: `verify_proofs.py`; distribution-free checks (Propositions 1, 5, 6): `general_theory.py`.
 - RepairBench: `cd paper/empirical && python3 load_repairbench.py <repairbench>/results && python3 analyze.py`; SWE-bench: `python3 swebench_repo_level.py <experiments>/evaluation`; HumanEvalFix: `cd paper/empirical/sampling && python3 sample_humanevalfix.py <model> 40 && python3 analyze_hef.py`.
-- Experiment simulation: `cd paper/experiment && python3 simulate_experiment.py`.
+- Cost calibration and sensitivity: `cd paper/contracts && python3 calibration.py && python3 sensitivity.py && python3 fig_sensitivity.py`.
 
 ## Appendix D. Field-Data Request and Design (Not Executed)
 

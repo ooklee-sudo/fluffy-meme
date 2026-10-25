@@ -1,0 +1,18 @@
+
+=== Function-level, automated verification:  H in [15, 30, 50, 100, 200, 400], v in [0.01, 0.03, 0.1, 0.3, 0.5], k in [0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
+profile | grid pts | AI worth using (N^FB>=1) | among those: welfare success fee > per-attempt | vendor profit B>=A | firm saving B>A | median W/FB: A, B | median N^FB, n_hat(B) | n_hat(B)<N^FB | rent share of W(N^FB): median [min-max]
+RepairBench-like (0.12,0.39)         | 180 | 100% |  97% | 100% |  97% | 0.48, 0.87 | 80, 13 | 100% | 90% [9-100%]
+SWE-Verified-like (0.25,0.34)        | 180 | 100% | 100% | 100% | 100% | 0.54, 0.90 | 166, 18 | 100% | 91% [9-100%]
+HumanEvalFix-Llama-like (0.50,0.58)  | 180 | 100% | 100% | 100% | 100% | 0.50, 0.93 | 330, 26 | 100% | 91% [9-100%]
+
+=== Function-level, manual triage per attempt:  H in [15, 30, 50, 100, 200, 400], v in [3, 5, 8, 15], k in [0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
+profile | grid pts | AI worth using (N^FB>=1) | among those: welfare success fee > per-attempt | vendor profit B>=A | firm saving B>A | median W/FB: A, B | median N^FB, n_hat(B) | n_hat(B)<N^FB | rent share of W(N^FB): median [min-max]
+RepairBench-like (0.12,0.39)         | 144 |  75% |  22% | 100% |  22% | 0.91, 0.91 | 2, 1 |  61% | 67% [0-99%]
+SWE-Verified-like (0.25,0.34)        | 144 |  88% |  33% | 100% |  33% | 0.86, 0.87 | 3, 1 |  71% | 82% [0-100%]
+HumanEvalFix-Llama-like (0.50,0.58)  | 144 |  88% |  57% | 100% |  57% | 0.72, 0.88 | 6, 2 |  86% | 95% [0-99%]
+
+=== Repository-level agentic:  H in [50, 100, 200, 400, 800], v in [0.1, 0.5, 2, 5], k in [0.6, 0.64, 0.84, 1.5, 3.0]
+profile | grid pts | AI worth using (N^FB>=1) | among those: welfare success fee > per-attempt | vendor profit B>=A | firm saving B>A | median W/FB: A, B | median N^FB, n_hat(B) | n_hat(B)<N^FB | rent share of W(N^FB): median [min-max]
+RepairBench-like (0.12,0.39)         | 100 | 100% |  76% | 100% |  76% | 0.67, 0.92 | 9, 4 |  92% | 37% [0-89%]
+SWE-Verified-like (0.25,0.34)        | 100 | 100% |  85% | 100% |  85% | 0.66, 0.92 | 19, 6 |  99% | 43% [0-89%]
+HumanEvalFix-Llama-like (0.50,0.58)  | 100 | 100% |  95% | 100% |  95% | 0.56, 0.93 | 37, 9 | 100% | 44% [3-89%]
