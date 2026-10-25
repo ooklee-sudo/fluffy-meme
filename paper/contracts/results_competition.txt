@@ -1,0 +1,37 @@
+RepairBench-like (0.12,0.39)  H=100 v=1 k=0.2 | first-best N=10 S^FB=33.9 | efficient fee f^e=16.67 | zero-profit (Bertrand) fee f0=3.70
+   n   | per-attempt: w     N   welfare%FB  firm saving  vendor | success fee: f     N   welfare%FB  firm saving  vendor
+     1 |             22.50    1     66.0         0.03    22.30 |           79.05    3     88.6         4.44    25.57
+     2 |             11.35    1     66.0        11.18    11.15 |           41.38    7     98.8        18.12    15.34
+     3 |              7.63    1     66.0        14.89     7.43 |           28.82    9     99.9        23.17    10.66
+     5 |              4.66    2     81.2        19.62     7.87 |           18.77   10    100.0        27.33     6.53
+    10 |              2.43    3     88.6        24.50     5.51 |           11.24   11     99.9        30.51     3.32
+  1000 |              0.22   10    100.0        33.71     0.15 |            3.78   12     99.6        33.69     0.04
+
+SWE-Verified-like (0.25,0.34)  H=100 v=1 k=0.2 | first-best N=21 S^FB=63.5 | efficient fee f^e=16.67 | zero-profit (Bertrand) fee f0=2.38
+   n   | per-attempt: w     N   welfare%FB  firm saving  vendor | success fee: f     N   welfare%FB  firm saving  vendor
+     1 |             41.35    1     64.8         0.03    41.15 |           85.59    4     88.4         6.03    50.15
+     2 |             20.77    1     64.8        20.60    20.57 |           43.98   14     99.2        33.37    29.68
+     3 |             13.92    2     78.0        27.92    21.62 |           30.11   17     99.8        43.21    20.20
+     5 |              8.43    3     84.4        36.68    16.97 |           19.02   20    100.0        51.23    12.30
+    10 |              4.31    5     91.1        45.94    11.97 |           10.70   22    100.0        57.31     6.21
+  1000 |              0.24   20    100.0        63.21     0.32 |            2.46   24     99.9        63.39     0.07
+
+Synthetic (0.40,3.0)  H=100 v=1 k=0.2 | first-best N=30 S^FB=43.9 | efficient fee f^e=16.67 | zero-profit (Bertrand) fee f0=5.48
+   n   | per-attempt: w     N   welfare%FB  firm saving  vendor | success fee: f     N   welfare%FB  firm saving  vendor
+     1 |              4.39    5     66.5        11.89    17.30 |           68.98   10     85.4         7.15    30.35
+     2 |              2.30    9     82.8        22.56    13.82 |           37.23   22     98.6        24.02    19.28
+     3 |              1.60   12     89.5        27.81    11.47 |           26.64   26     99.7        30.38    13.39
+     5 |              1.04   17     95.6        33.09     8.92 |           18.18   30    100.0        35.65     8.27
+    10 |              0.62   22     98.6        37.93     5.37 |           11.83   32    100.0        39.68     4.22
+  1000 |              0.20   30    100.0        43.85     0.07 |            5.54   35     99.7        43.74     0.06
+
+Random sweep (200 draws): welfare as share of first-best, median [IQR]
+   n  | per-attempt            | success fee            | firm saving higher under per-attempt
+     1 | 0.64 [0.54-0.76]   | 0.91 [0.88-0.94]   | 32%
+     2 | 0.73 [0.62-0.81]   | 1.00 [0.99-1.00]   | 6%
+     3 | 0.80 [0.71-0.87]   | 1.00 [0.99-1.00]   | 4%
+     5 | 0.87 [0.80-0.92]   | 1.00 [0.99-1.00]   | 4%
+    10 | 0.94 [0.89-0.97]   | 1.00 [0.98-1.00]   | 9%
+  1000 | 1.00 [1.00-1.00]   | 0.99 [0.98-1.00]   | 61%
+Under Bertrand success fees the firm samples N_B(f0)/N^FB = 1.35x the first-best depth (median)
+Smallest n at which per-attempt welfare >= success-fee welfare: median n=1000; share of draws where it happens by n=3: 5%, by n=10: 19% (of 200 draws, 15 never)
