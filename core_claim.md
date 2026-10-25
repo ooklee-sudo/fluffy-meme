@@ -63,3 +63,10 @@
 > *"We show that the value of an AI testing tool changes qualitatively at the point where its reach matches the human baseline: below it, adoption is confined to a bounded range of failure costs and the highest-stakes firms stay with human testing under any pricing scheme with bounded transfers, any liability rule short of full indemnity, and any degree of price competition; above it, adoption extends to all sufficiently high stakes."*
 
 (번역: 도달이 사람 기준선에 미치지 못하면 도입은 유한한 장애 비용 구간에 한정되고, 위험이 가장 큰 기업은 순이전이 유계인 어떤 가격 구조, 전액 보상에 못 미치는 어떤 책임 규칙, 어떤 가격 경쟁 아래서도 사람 테스트에 머문다. 기준선을 넘으면 도입이 충분히 큰 위험까지 확장된다.)
+
+
+---
+
+## 7. 추가: 내생적 도달 (`ai_vendor_investment.md`)
+
+벤더가 도달을 선택하는 모형에서 중심 주장은 *투자 선택의 불연속*으로 강화된다: 이윤 함수는 연속이나 동등 지점(A=1) 직전에서 매우 가파르고(최대 기울기 A=0.98), 그 결과 벤더의 최적 도달은 비용 θ̂≈46에서 0.5에서 1.0으로 **점프**하며 [28, 46] 구간에서는 정확히 동등 지점에서 멈춘다. 사회적 문턱(61.5)은 벤더의 것보다 높아 과소투자 구간이 있고, 연구개발 보조금은 문턱적(25%에서 닫힘)이다. 책임 의무화는 문턱을 바꾸지 못하며(부분 투자만 줄임) 경쟁은 유인을 약 10% 약화한다. 모두 설명용 모수의 수치 결과이다.

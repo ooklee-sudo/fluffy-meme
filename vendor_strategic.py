@@ -46,10 +46,11 @@ def indexed_warranty(A, phiDelta, kv, ps=np.linspace(0.12, 3.0, 200)):
     top = FG > np.exp(VM.MU + 1.2816 * VM.SIG)
     for p in ps:
         cL = c0 + p
-        SL = FG * (A * a) * h(A * a * B * b * FG / cL) + (1 - A) * phiDelta * FG          # expected warranty transfer added
+        fail = max(0.0, 1.0 - A)                                         # failure probability cannot be negative when A>1
+        SL = FG * (A * a) * h(A * a * B * b * FG / cL) + fail * phiDelta * FG            # expected warranty transfer added
         adopt = SL > S_H + 1e-9
         T = VM.Tstar(A * a, B * b, cL, FG)
-        prof = float((adopt * ((p - kv) * T - (1 - A) * phiDelta * FG) * W).sum())      # vendor pays the expected damages
+        prof = float((adopt * ((p - kv) * T - fail * phiDelta * FG) * W).sum())         # vendor pays the expected damages
         if prof > best[0]:
             best = (prof, p, float((adopt * W).sum()), float((adopt[top] * W[top]).sum() / W[top].sum()))
     return best
