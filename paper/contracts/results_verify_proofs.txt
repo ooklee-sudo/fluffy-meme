@@ -1,0 +1,15 @@
+== Proposition 4 (integer budget): verification ==
+293 draws with N^FB >= 1
+identity R(n) - L(n-1) = S(n-1)(phi_(n-1) q_(n-1) - k): violations 0
+sign(R(n) - L(n-1)) = sign(phi_(n-1) - f^e): violations 0
+chain R(n) < R(N^FB) for all n > N^FB: violations 0
+vendor's best step n_hat = argmax R(n): strictly below N^FB in 289 draws, equal to N^FB in 4 draws; argmax/brute-force mismatches 0
+
+== Proposition 6(b): convergence in sigma (RepairBench-like, H=100, v=1, k=0.2, n=5) ==
+G_bar <= S^FB = 33.9;  rho = exp(G_bar/sigma) - 1;  coverage limit n/(n+1) = 0.833
+ sigma | rho  | bound (1-rho)/(1+rho) | A: Pi(p_hat)/Pi_m  N  coverage | B: Pi(p_hat)/Pi_m  N  coverage | monopoly N_A N_B
+     30 |  2.09 |  0.000               | 1.000          1   0.834    | 0.952          4   0.864    |   1   3
+    100 |  0.40 |  0.426               | 1.000          1   0.834    | 1.000          3   0.839    |   1   3
+    300 |  0.12 |  0.787               | 1.000          1   0.833    | 1.000          3   0.835    |   1   3
+   1000 |  0.03 |  0.933               | 1.000          1   0.833    | 1.000          3   0.834    |   1   3
+   3000 |  0.01 |  0.978               | 1.000          1   0.833    | 1.000          3   0.834    |   1   3
