@@ -43,7 +43,7 @@ for r in range(R):
 
 df = pd.DataFrame(rows)
 df.to_csv("coverage_results.csv", index=False)
-print("\n=== Coverage of nominal 89% intervals (R=%d) ===" % R)
+print(f"\n=== Coverage of nominal 89% intervals (R={R}) ===")
 for c in [c for c in df.columns if c.endswith("_cov")]:
     print(f"{c[:-4]:8s} {df[c].mean():.2f}")
 print("\n=== Rank-uniformity (KS p-value vs U(0,1)); small p => miscalibrated ===")
