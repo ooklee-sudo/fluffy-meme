@@ -6,6 +6,7 @@ the share carrying any label, and the share carrying a bug-like label.
 Needs a GitHub token in $GITHUB_TOKEN (read-only public access is enough).
 Usage: python3 collect_issue_labels.py pilot_pass_repos.csv issue_labels.csv [max_repos]
 Resumable: repos already present in the output CSV are skipped.
+To redo repos whose first run hit the 1,500-issue cap: delete their rows from the CSV (or write to a new file) and rerun.
 """
 import csv
 import os
@@ -57,7 +58,31 @@ def month_index(ts):
     return d.year * 12 + d.month - 1
 
 
+def fetch(repo, since, direction, a, store):
+    """Page through issues (no PRs); fill store[number] = (month, labeled, bug). Returns (hit_cap, month_reached)."""
+    reached = None
+    for page in range(1, MAX_PAGES + 1):
+        items, _ = get(f"{API}/repos/{repo}/issues?state=all&per_page=100&page={page}"
+                       f"&since={since}&sort=created&direction={direction}")
+        if not items:
+            return False, reached
+        for it in items:
+            if "pull_request" in it:
+                continue
+            m = month_index(it["created_at"])
+            reached = m
+            if direction == "desc" and m < a - 12:
+                return False, reached              # newest-first pass is past the window start
+            if a - 12 <= m <= a + 12:
+                names = [l["name"] for l in it.get("labels", [])]
+                store[it["number"]] = (m, bool(names), any(BUG.search(n) for n in names))
+        if len(items) < 100:
+            return False, reached
+    return True, reached
+
+
 def collect(repo, adopt):
+    """Oldest-first pass; if it hits the page cap, also newest-first so the post-adoption months are not lost."""
     a = month_index(adopt)
     row = dict(repo_name=repo, adopt=adopt, status="ok", n_issues=0, n_labeled=0, n_bug=0,
                pre_issues=0, post_issues=0, pre_bug=0, post_bug=0, n_label_defs=0, truncated=0)
@@ -66,26 +91,16 @@ def collect(repo, adopt):
         row["status"] = f"unavailable_http{LAST_ERROR['code']}"; return row
     row["n_label_defs"] = len(defs)
     since = f"{(a - 12) // 12}-{(a - 12) % 12 + 1:02d}-01T00:00:00Z"        # 12 months before adoption
-    for page in range(1, MAX_PAGES + 1):
-        items, _ = get(f"{API}/repos/{repo}/issues?state=all&per_page=100&page={page}"
-                       f"&since={since}&sort=created&direction=asc")
-        if not items:
-            break
-        for it in items:
-            if "pull_request" in it:
-                continue
-            m = month_index(it["created_at"])
-            if not (a - 12 <= m <= a + 12):
-                continue
-            names = [l["name"] for l in it.get("labels", [])]
-            bug = any(BUG.search(n) for n in names)
-            row["n_issues"] += 1; row["n_labeled"] += bool(names); row["n_bug"] += bug
-            side = "post" if m >= a else "pre"
-            row[f"{side}_issues"] += 1; row[f"{side}_bug"] += bug
-        if len(items) < 100:
-            break
-    else:
-        row["truncated"] = 1
+    store = {}
+    capped, asc_reached = fetch(repo, since, "asc", a, store)
+    if capped:
+        capped2, desc_reached = fetch(repo, since, "desc", a, store)
+        # both passes capped and they did not meet in the middle -> a gap remains
+        row["truncated"] = int(capped2 and not (desc_reached is not None and asc_reached is not None and desc_reached <= asc_reached))
+    for m, lab, bug in store.values():
+        row["n_issues"] += 1; row["n_labeled"] += lab; row["n_bug"] += bug
+        side = "post" if m >= a else "pre"
+        row[f"{side}_issues"] += 1; row[f"{side}_bug"] += bug
     return row
 
 
