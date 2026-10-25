@@ -10,7 +10,8 @@ s = re.sub(r"^---\n.*?\n---\n", "", s, count=1, flags=re.S)                     
 s = re.sub(r"\*\*Authors:\*\*.*\n\n", "", s)                                        # double-anonymous review: remove author line
 s = s.replace("\\_", "_")                                                          # markdown escapes not needed in docx build
 s = re.sub(r"`paper/[^`]*`", "the replication package (anonymized for review)", s)
-s = s.replace("(contracts/fig_sensitivity.png){width=70%}", f"({os.path.abspath(FIG)}){{width=5.2in}}")
+for name, w in [("fig_sensitivity", "5.2in"), ("fig_intuition", "5.8in")]:
+    s = re.sub(rf"\(contracts/{name}\.png\)\{{width=\d+%\}}", lambda m: f"({os.path.abspath('../contracts/' + name + '.png')}){{width={w}}}", s)
 open("manuscript_blinded.md", "w").write(s)
 subprocess.run(["pandoc", "--print-default-data-file", "reference.docx"], stdout=open("ref.docx", "wb"), check=True)
 d = Document("ref.docx")

@@ -23,6 +23,8 @@ Pricing matters because it sets the cost of an additional attempt as the firm se
 
 **Article type and audience.** This is a theory article in the ISR sense: it applies and extends search theory and vertical-contracting theory to a new IS phenomenon (pay-per-use AI services), derives propositions, and illustrates the model with open repair data. The intended audience is academics working on the economics of information systems, IT sourcing and governance, and human–AI work design, and practitioners who procure or price AI-assisted software services (chief information officers, engineering and procurement managers, and AI vendors).
 
+**Roadmap.** Section 3 sets up the model and a running example. Section 4 derives the firm's escalation rule, the monopoly contracts, the incentive rent, and the effects of private vendor quality and competition. Section 5 reports numerical equilibria and a sensitivity analysis with costs calibrated from public sources. Section 6 tests the model's premises on open repair data. Sections 7–9 discuss extensions, implications, and limits.
+
 ---
 
 ## 2. Related Literature and Theoretical Positioning
@@ -57,6 +59,24 @@ W(N) = H·P(N) − (k + v)·E(N),
 
 independent of the transfer. N^FB maximizes W. We call (A) and (B) *pay-per-use* contracts, since payments depend only on realized attempts and outcomes.
 
+### 3.1 A running example
+
+To fix ideas we use one configuration throughout; it is also the base case of the tables below. Repair difficulty has a = 0.12 and b = 0.39 (the median fit to RepairBench in Section 6), a human repair costs H = $100, an attempt costs the firm v = $1 (tests and triage) and the vendor k = $0.20 (compute). Under this distribution the average first attempt succeeds with probability 23.5%, but the distribution is U-shaped: 47% of defects have a per-attempt success probability below 1%, while 22% have one above 50%. Failure is therefore informative. After ten failures the probability that the next attempt succeeds has fallen from 23.5% to 1.1%, because ten failures are strong evidence that the defect belongs to the nearly unsolvable group. In dollars, the first attempt is worth q₀H = $23.5 to the firm, the second $7.9, the third $4.8, and the tenth $1.26, against a social cost per attempt of k + v = $1.20; the eleventh attempt is worth $1.14. The efficient depth is therefore N^FB = 10 (Figure 1a).
+
+![**Figure 1.** The running example (a = 0.12, b = 0.39, H = 100, v = 1, k = 0.2). (a) The marginal value of the next attempt, q_n H, falls steeply with the number of failures n and crosses the efficient cost k + v after ten attempts. (b) For each depth N, the bar shows the total surplus W(N) split into the most a vendor can keep, R(N), and the incentive rent the firm must keep, G_min(N) (Section 4.3).](/home/user/fluffy-meme/paper/contracts/fig_intuition.png){width=5.8in}
+
+**Table 1. Running example: surplus and its split by attempt budget N** (dollars per defect; P(N) is the probability that the AI repairs the defect within N attempts, E(N) the expected number of attempts, W(N) the surplus relative to human-only repair, G_min(N) the rent the firm must keep to be willing to go N attempts deep, and R(N) = W(N) − G_min(N) the most the vendor can keep; Section 4.3).
+
+| N | P(N) | E(N) | W(N) | G_min(N) | R(N) |
+|---|---|---|---|---|---|
+| 1 | 0.235 | 1.00 | 22.33 | 0.00 | 22.33 |
+| 2 | 0.296 | 1.76 | 27.49 | 1.96 | 25.53 |
+| 3 | 0.330 | 2.47 | 30.01 | 4.43 | 25.58 |
+| 5 | 0.370 | 3.79 | 32.44 | 10.11 | 22.33 |
+| 10 | 0.420 | 6.82 | 33.86 | 26.50 | 7.36 |
+
+Deeper sampling raises the surplus from $22.3 to $33.9 per defect, but the share that a vendor can keep falls from all of it at N = 1 to 22% at N = 10. The vendor's maximum, $25.6, is reached at N = 3. These numbers explain the equilibria in Sections 4 and 5.
+
 ---
 
 ## 4. Results
@@ -71,6 +91,8 @@ and N^FB = max{0, ⌈aH/(k+v) − a − b⌉}.
 
 The threshold rises with the cost of human repair, falls with the price of an attempt, and falls with difficulty (low *a*, high *b*). A homogeneous model (constant p) would prescribe never stopping or never starting; heterogeneity is what makes the rule interior.
 
+*Intuition and example.* The rule says to keep going while one more attempt is worth more than it costs. What makes it informative is that the worth of an attempt falls as failures accumulate. In the running example a firm that used the average success rate would value every attempt at $23.5 and never stop; the true value of the third attempt is $4.8 and of the tenth $1.26. At an effective cost of $1.20 per attempt the firm stops after ten, and at $6 per attempt (a price of $5 plus its own $1) after ⌈12/6 − 0.51⌉ = 2.
+
 ### 4.2 Pay-per-use contracts under monopoly
 
 **Proposition 2 (Double marginalization).** Under A with w > k, N_A(w) ≤ N^FB, and surplus is below its first-best level whenever w lowers the budget.
@@ -80,6 +102,8 @@ The threshold rises with the cost of human repair, falls with the price of an at
 **Proposition 3 (Efficient success fee).** Under B with f^e = Hk/(k+v), N_B(f^e) = N^FB; the vendor earns k/(k+v) of the first-best surplus.
 
 *Proof.* (H − f^e)/v = H/(k+v), so the thresholds coincide. Vendor profit is f^e P − kE = (k/(k+v))[HP − (k+v)E]. ∎
+
+*Example.* In the running example, a per-attempt price of $5 makes the firm stop after two attempts, and the surplus falls from $33.9 to $27.5 per defect (Table 1). A success fee of f^e = 100 × 0.2/1.2 = $16.67 leaves the firm $83.3 per success; since q₉ × 83.3 = 1.05 exceeds v = 1 and q₁₀ × 83.3 = 0.95 does not, the firm again stops after ten attempts, and the vendor keeps one-sixth of the $33.9, or $5.6.
 
 **Proposition 4 (The monopoly fee exceeds the efficient fee).** Let N^FB ≥ 1 and Π(f) = f·P(N_B(f)) − k·E(N_B(f)). Because N_B is an integer step function of f: (a) Π is strictly increasing within each step, and for every f′ ≤ f^e there is f > f^e with Π(f) > Π(f′); (b) the budget at the vendor's optimum satisfies n̂ ≤ N^FB, strictly unless the best fee lies in the same step as f^e, in which case the vendor raises the fee without changing the firm's depth.
 
@@ -101,13 +125,17 @@ G_min(N) = v·[P(N)/q_{N−1} − E(N)] = v·Σ_{j<N} S(j)·(q_j/q_{N−1} − 1
 
 *Interpretation.* To make the firm willing to try the N-th attempt, whose success probability is low, the vendor must price the marginal success at φ_{N−1} = H − v/q_{N−1}. Every earlier attempt succeeded more often than the marginal one, so the firm keeps an infra-marginal gain, G_min(N). It is zero when difficulty is homogeneous and grows with dispersion. The vendor's profit is surplus net of this rent, so it samples too little, and the pure success fee delivers any depth most cheaply because a per-attempt fee collects revenue from attempts where the firm's marginal gain is smallest.
 
+*Example.* To make the firm go three attempts deep, the vendor can charge at most φ₂ = H − v/q₂ = 100 − 1/0.0478 = $79.1 per verified fix, which leaves the firm $20.9 on each success, exactly its break-even cost v/q₂ of buying a success with the third attempt. The first two attempts succeed more often, so the firm has gained on them, and its total gain is G_min(3) = $4.43. To induce ten attempts the vendor must cut the fee to φ₉ = $20.8, and the rent grows to $26.5 of the $33.9 surplus (Table 1).
+
+*A backlog of 1,000 defects (illustrative).* Human-only repair costs $100,000. A monopolist charging per attempt sets w = q₀H − v = $22.5, so the firm tries once per defect and the AI repairs 235; the vendor earns $22.3 thousand and the firm saves almost nothing, so the AI looks cheap per call yet adds little for its buyer. A monopolist charging per verified fix sets $79.1; the firm tries up to three times, the AI repairs 330 defects, the vendor earns $25.6 thousand, and the firm saves $4.4 thousand. The efficient policy samples up to ten times and repairs 420 defects, with a joint surplus of $33.9 thousand, of which the per-attempt price leaves $22.3 thousand and the success fee $30.0 thousand.
+
 **Proposition 6 (Lump-sum neutralization).** If the vendor may also charge a fee T₀ independent of attempts and outcomes, then (w, f, T₀) = (k, 0, W(N^FB)) implements N^FB and gives the vendor the entire surplus; for any (w, f), T₀ can recapture G_min without changing the firm's budget.
 
 *Proof.* T₀ is a constant in the firm's cost and does not enter any one-step comparison of Proposition 1. ∎
 
 The distortions in this paper therefore stem from pay-per-use pricing. A lump sum is unattractive when the firm cannot judge quality before using the service, when procurement is per defect, or when prepayment is costly.
 
-**Table 1. The incentive rent (H = 100, v = 1, k = 0.2).**
+**Table 2. The incentive rent (H = 100, v = 1, k = 0.2).**
 
 | Heterogeneity (a, b) | N^FB | W(N^FB) | G_min(N^FB) | Vendor's maximum at N^FB, R(N^FB) | Rent / W(N^FB) | Vendor's optimal depth n̂, R(n̂) |
 |---|---|---|---|---|---|---|
@@ -125,7 +153,7 @@ A vendor that wanted the efficient depth would leave the firm about four-fifths 
 
 *Proof.* The Beta family is ordered by likelihood ratio in *a*, so S(j) = E[(1−p)^j] is decreasing in a: S_H ≤ S_L, hence E_H ≤ E_L and P_H ≥ P_L, strictly for N ≥ 1 in P. ∎
 
-Per-attempt pricing pays for failures, so it rewards the worse vendor at any depth, and a per-attempt contract cannot credibly signal quality; a success fee can. Numerically (Section 5.2), a high-quality vendor usually separates by *lowering* its fee below the full-information monopoly fee, which makes the firm sample deeper and partly corrects the monopoly under-sampling.
+Per-attempt pricing pays for failures, so it rewards the worse vendor at any depth, and a per-attempt contract cannot credibly signal quality; a success fee can. The intuition is that a less capable vendor needs more attempts to deliver the same fix: when it is paid per attempt it bills those attempts, and when it is paid per fix it absorbs their cost. Numerically (Section 5.2), a high-quality vendor usually separates by *lowering* its fee below the full-information monopoly fee, which makes the firm sample deeper and partly corrects the monopoly under-sampling.
 
 **Competition among differentiated vendors.** A unit mass of firms chooses among *n* symmetric vendors (same *a*, *b*, *k*) and human-only repair; firm *i*'s value from vendor *j* is G_j + σε_ij with Gumbel ε, where G_j is its saving at its optimal budget under j's contract and σ measures differentiation. Shares are logit, and vendors choose the price of their contract form in a symmetric Bertrand–Nash equilibrium.
 
@@ -135,15 +163,17 @@ Per-attempt pricing pays for failures, so it rewards the worse vendor at any dep
 
 Differentiation, more than the number of vendors, determines whether competition removes the distortion; intermediate cases are solved numerically in Section 5.3.
 
+*Intuition.* With logit demand, a vendor's share responds to its price in proportion to how much the price changes the firm's saving relative to the dispersion σ of firms' idiosyncratic preferences. When σ is small, firms barely prefer one vendor to another, a small price cut attracts everyone, and competition drives prices toward cost. When σ is large relative to the surplus, a price cut moves few firms, so each vendor acts as a monopolist over its own customers and entry mostly divides the market: in Section 5.3, moving from one to ten vendors with σ = 30 raises coverage from 50% to 91% of firms, but the per-attempt budget stays at one attempt.
+
 ---
 
 ## 5. Numerical Equilibria
 
-Code in the replication package (anonymized for review). The shape parameters (a, b) come from the empirical fits in Section 6. Tables 1–3 use H = 100, v = 1, k = 0.2 (dollars), which lie inside the ranges calibrated from public sources in Section 5.4 (H) or between its function-level and agentic ranges (k); Section 5.4 shows how the conclusions change across those ranges. Integer budgets rule out closed forms for the vendor's optimal price, so equilibria are computed on price grids or by exact enumeration of budget steps.
+Code in the replication package (anonymized for review). The shape parameters (a, b) come from the empirical fits in Section 6. Tables 2–4 use H = 100, v = 1, k = 0.2 (dollars), which lie inside the ranges calibrated from public sources in Section 5.4 (H) or between its function-level and agentic ranges (k); Section 5.4 shows how the conclusions change across those ranges. Integer budgets rule out closed forms for the vendor's optimal price, so equilibria are computed on price grids or by exact enumeration of budget steps.
 
 ### 5.1 Monopoly: per-attempt versus success fee
 
-**Table 2. Monopoly equilibria (H = 100, v = 1, k = 0.2).** Entries: optimal price, firm's budget N, vendor profit, firm's saving, and welfare as a share of first-best.
+**Table 3. Monopoly equilibria (H = 100, v = 1, k = 0.2).** Entries: optimal price, firm's budget N, vendor profit, firm's saving, and welfare as a share of first-best.
 
 | Heterogeneity (a, b) | Per-attempt | Success fee |
 |---|---|---|
@@ -161,7 +191,7 @@ For a_H = 0.25, a_L = 0.08, b = 0.35, H = 100, v = 1, k = 0.2, the profit-order 
 
 ### 5.3 Competition
 
-**Table 3. Differentiated-Bertrand equilibria, RepairBench-like case (first-best N = 10).** Entries: budget N, welfare as a share of first-best welfare for the same n and σ.
+**Table 4. Differentiated-Bertrand equilibria, RepairBench-like case (first-best N = 10).** Entries: budget N, welfare as a share of first-best welfare for the same n and σ.
 
 | σ | Vendors n | Per-attempt: N, welfare | Success fee: N, welfare |
 |---|---|---|---|
@@ -184,9 +214,9 @@ With close substitutes (σ = 1) one rival suffices; with strongly differentiated
 
 *Firm cost per attempt v.* If verification is an automated test run, v is the CI cost, about $0.01–0.50. If an engineer spends 2–10 minutes triaging each candidate patch, v is about $3–15 at $91 per hour. This is the least well-grounded input; it is a judgement based on the loaded wage and not a measured quantity.
 
-**Sensitivity.** We evaluate all combinations on a grid within each regime and three heterogeneity profiles (the RepairBench-like fit, the SWE-Verified-like calibration, and a HumanEvalFix-Llama-like fit with a = 0.50, b = 0.58), computing the monopoly equilibria exactly (profit at the top of each budget step; Appendix E). Table 4 summarizes, across the three profiles, the points at which AI repair is worth using (N^FB ≥ 1).
+**Sensitivity.** We evaluate all combinations on a grid within each regime and three heterogeneity profiles (the RepairBench-like fit, the SWE-Verified-like calibration, and a HumanEvalFix-Llama-like fit with a = 0.50, b = 0.58), computing the monopoly equilibria exactly (profit at the top of each budget step; Appendix E). Table 5 summarizes, across the three profiles, the points at which AI repair is worth using (N^FB ≥ 1).
 
-**Table 4. Sensitivity of the main conclusions across calibrated ranges** (ranges across the three heterogeneity profiles; grids: 100–180 points per profile).
+**Table 5. Sensitivity of the main conclusions across calibrated ranges** (ranges across the three heterogeneity profiles; grids: 100–180 points per profile).
 
 | Regime (H, v, k grids) | AI repair worth using | Welfare: success fee > per-attempt | Vendor profit: success fee ≥ per-attempt | Firm saving: success fee > per-attempt | Median welfare / first best: per-attempt; success fee | Vendor's depth below N^FB | Median rent share of W(N^FB) |
 |---|---|---|---|---|---|---|---|
@@ -194,9 +224,9 @@ With close substitutes (σ = 1) one rival suffices; with strongly differentiated
 | Function-level, manual triage (H $15–400; v $3–15; k $0.0003–0.1) | 75–88% | 22–57% | 100% | 22–57% | 0.72–0.91; 0.87–0.91 | 61–86% | 67–95% |
 | Repository-level agents (H $50–800; v $0.1–5; k $0.6–3) | 100% | 76–95% | 100% | 76–95% | 0.56–0.67; 0.92–0.93 | 92–100% | 37–44% |
 
-*Findings.* (i) The vendor's preference for the success fee is robust: its profit is at least as high in 100% of the points in every regime. (ii) The welfare advantage of the success fee is strong where an attempt is cheap relative to human repair (automated verification: 97–100% of points; agentic repair: 76–95%) and weak when manual triage makes each attempt expensive (22–57%), because the efficient depth is then small (median 2–6) and a per-attempt monopolist that stops the firm after one or two attempts loses little. (iii) The incentive rent is large where depth is valuable, about nine-tenths of the surplus under automated verification and 37–44% for agents, so vendors undersample in 61–100% of points. (iv) Figure 1 shows the pattern in the cost ratios: when H/v is below about 30 the efficient depth is one or two attempts and both contract forms are near-efficient; above it, per-attempt monopoly welfare falls to 0.4–0.6 of first best while the success fee stays near 0.85–0.9. The conclusions of Sections 4–5 therefore apply to the regimes with H/v of about 30 or more, which covers automated verification and agentic repair and excludes cheap fixes with expensive per-attempt human review.
+*Findings.* (i) The vendor's preference for the success fee is robust: its profit is at least as high in 100% of the points in every regime. (ii) The welfare advantage of the success fee is strong where an attempt is cheap relative to human repair (automated verification: 97–100% of points; agentic repair: 76–95%) and weak when manual triage makes each attempt expensive (22–57%), because the efficient depth is then small (median 2–6) and a per-attempt monopolist that stops the firm after one or two attempts loses little. (iii) The incentive rent is large where depth is valuable, about nine-tenths of the surplus under automated verification and 37–44% for agents, so vendors undersample in 61–100% of points. (iv) Figure 2 shows the pattern in the cost ratios: when H/v is below about 30 the efficient depth is one or two attempts and both contract forms are near-efficient; above it, per-attempt monopoly welfare falls to 0.4–0.6 of first best while the success fee stays near 0.85–0.9. The conclusions of Sections 4–5 therefore apply to the regimes with H/v of about 30 or more, which covers automated verification and agentic repair and excludes cheap fixes with expensive per-attempt human review.
 
-![**Figure 1.** Welfare (share of first best) under per-attempt and success-fee monopoly, and the incentive rent as a share of surplus at the first-best depth, as functions of H/v and k/v (a = 0.12, b = 0.39). Blank cells are combinations in which AI repair is not worth using.](/home/user/fluffy-meme/paper/contracts/fig_sensitivity.png){width=5.2in}
+![**Figure 2.** Welfare (share of first best) under per-attempt and success-fee monopoly, and the incentive rent as a share of surplus at the first-best depth, as functions of H/v and k/v (a = 0.12, b = 0.39). Blank cells are combinations in which AI repair is not worth using.](/home/user/fluffy-meme/paper/contracts/fig_sensitivity.png){width=5.2in}
 
 ---
 
@@ -224,9 +254,13 @@ The model rests on (P1) heterogeneous difficulty, (P2) informative failures, and
 
 **Theory.** (1) The economically relevant decision is whether to continue after a failure, not the pass@k capability. (2) A seller's markup distorts per-attempt contracts, and competition removes it only if vendors are close substitutes. (3) The underlying force is an incentive rent of sequential search, which explains why vendors prefer pure success fees, why they sample too little, and why a lump sum would restore efficiency. (4) Outcome-based pricing raises surplus, but not necessarily the buyer's share.
 
+**A buyer's procedure.** (1) Sample each of a few hundred historical defects several times (ten samples per defect suffice) and record pass or fail. (2) Fit the Beta-binomial distribution of the counts to obtain (a, b). (3) Compute the cost per attempt c as the vendor's price plus the firm's own verification cost, and the threshold N\* = ⌈aH/c − a − b⌉; with the running example (a = 0.12, b = 0.39, H = $100), c = $1.2 gives 10 attempts and c = $6 gives 2. (4) Check the threshold against a sweep of caps on held-out defects, as the HumanEvalFix experiment shows that a fit can oversample when the share of unsolvable defects is small (Section 6). (5) Recompute when the vendor's price or the cost of human repair changes. If a vendor quotes a price per fix, the same rule applies with the net value H − f in place of H and v as the cost of an attempt.
+
 **Managerial implications.** *Buyers* should estimate (a, b) from their own repair logs, compute the threshold from H and the full cost per attempt (including verification), validate it on held-out defects, and negotiate a success fee near Hk/(k+v) in return for volume. *Vendors* gain from outcome-based pricing, including under competition, but should recognize that in commodity markets with close substitutes per-attempt pricing near cost is efficient. *Platforms and governance bodies* should publish per-sample outcomes and per-attempt costs, which determine the contracts' inputs and are invisible in current leaderboards.
 
 **Limitations.** (1) H, v, and k are calibrated from public statistics and price lists (Section 5.4) but not measured on a firm, and v is the least well grounded; benchmark bugs (single functions with complete tests) are easier to verify than industrial defects. (2) Attempts are conditionally independent given p; correlation across samples would make failure more informative. (3) Vendors are symmetric, with logit competition and a one-shot game; private information is analyzed for two types and linear contracts, and the separation and competition results are numerical. (4) Patch quality is binary: a success fee pays for passing the tests, so a vendor paid per verified fix may neglect quality dimensions the tests do not measure (the multitask problem of Holmström and Milgrom 1991), which we do not model. (5) Public benchmarks may overlap with training data.
+
+**What would change the results.** *Correlated attempts* (samples from the same prompt and model) would make failures more informative and lower the thresholds. *Imperfect verification* replaces H by H − eL in the thresholds, where e is the share of accepted patches that are wrong and L their downstream cost, and so also lowers them. *Learning about (a, b)* by the firm and the vendor over time would let the firm refine its rule and the vendor its contract. *Multi-sourcing* would give the firm a second price to compare, which acts like competition. *Vendor improvement* (a model that raises a over time) is outside the one-shot model.
 
 **Field validation.** The analytical results do not depend on field data, but the contract predictions (outcome-based pricing under market power, per-attempt pricing among close substitutes) and the cost parameters would be tested directly by a study with a partner firm (Appendix D).
 
