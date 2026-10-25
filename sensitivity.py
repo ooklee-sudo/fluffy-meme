@@ -58,15 +58,16 @@ for cx0 in CX:
     print("True V")
     print(sub.pivot(index="prem", columns="cf", values="V_true").round(1))
 
-print("\n##### Break-even c_f (posterior-mean V crosses 0), fine grid")
+print("\n##### Range of c_f where posterior-mean V>0 (fine grid); '-' = never")
 fine = np.linspace(0.3, 40, 400)
 for cx0 in CX:
     for prem in PREM:
-        vals = []
-        for cf in fine:
-            _, Cs, _ = M.economics(idata.posterior, cx0, cf=cf, ct={0: 1.0, 1: prem})
-            vals.append((Cs[0] - Cs[1]).mean())
-        vals = np.array(vals)
-        pos = np.where(vals > 0)[0]
-        be = fine[pos[0]] if len(pos) else float("nan")
-        print(f"cx={cx0:+.0f} premium={prem:.1f}: break-even c_f ~ {be:.1f}")
+        vals = np.array([(lambda Cs: (Cs[0] - Cs[1]).mean())(
+            M.economics(idata.posterior, cx0, cf=cf, ct={0: 1.0, 1: prem})[1]) for cf in fine])
+        pos = fine[vals > 0]
+        rng = f"[{pos.min():.1f}, {pos.max():.1f}]" if len(pos) else "-"
+        tvals = np.array([(lambda Cs: Cs[0] - Cs[1])(
+            M.truth(cx0, cf=cf, ct={0: 1.0, 1: prem})[1]) for cf in fine])
+        tpos = fine[tvals > 0]
+        trng = f"[{tpos.min():.1f}, {tpos.max():.1f}]" if len(tpos) else "-"
+        print(f"cx={cx0:+.0f} premium={prem:.1f}: posterior V>0 on c_f in {rng:14s} true V>0 on {trng}")
