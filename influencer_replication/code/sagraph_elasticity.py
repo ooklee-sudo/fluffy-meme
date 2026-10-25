@@ -11,6 +11,7 @@ Poisson pseudo-maximum likelihood (PPML) and by a zero-truncated Poisson (ZTP); 
 import argparse, json, os
 import numpy as np, pandas as pd
 import statsmodels.api as sm
+from scipy.stats import norm
 from statsmodels.discrete.truncated_model import TruncatedLFPoisson
 
 PRODUCTS = ["abc_reading", "electric_toothbrush", "intelligent_floor_scrubber",
@@ -59,7 +60,7 @@ def fit_ppml(df, ycol="y", fcol="f", cluster="author"):
     res = sm.GLM(df[ycol].to_numpy(), X, family=sm.families.Poisson()).fit(
         cov_type="cluster", cov_kwds={"groups": groups})
     th, se = res.params["lnf"], res.bse["lnf"]
-    return 1 - th, (1 - th - 1.96 * se, 1 - th + 1.96 * se)
+    return 1 - th, (1 - th - 1.96 * se, 1 - th + 1.96 * se), se, float(2 * norm.sf(abs((1 - th) / se)))
 
 
 def fit_ztp(df, ycol="y", fcol="f", cluster="author"):
@@ -71,7 +72,7 @@ def fit_ztp(df, ycol="y", fcol="f", cluster="author"):
     res = TruncatedLFPoisson(d[ycol].to_numpy(), X, truncation=0).fit(
         start_params=start, method="bfgs", disp=0, maxiter=500, cov_type="cluster", cov_kwds={"groups": groups})
     th, se = res.params["lnf"], res.bse["lnf"]
-    return 1 - th, (1 - th - 1.96 * se, 1 - th + 1.96 * se)
+    return 1 - th, (1 - th - 1.96 * se, 1 - th + 1.96 * se), se, float(2 * norm.sf(abs((1 - th) / se)))
 
 
 def main():
@@ -87,11 +88,11 @@ def main():
     rows = []
 
     def add(name, d, ycol="y", fcol="f", ztp=True, cluster="author"):
-        b, ci = fit_ppml(d, ycol, fcol, cluster)
-        row = dict(sample=name, posts=len(d), authors=d[['product','author']].drop_duplicates().shape[0], beta_ppml=b, lo=ci[0], hi=ci[1])
+        b, ci, se, p = fit_ppml(d, ycol, fcol, cluster)
+        row = dict(sample=name, posts=len(d), authors=d[['product','author']].drop_duplicates().shape[0], beta_ppml=b, se=se, p_beta_zero=p, lo=ci[0], hi=ci[1])
         if ztp:
-            bz, cz = fit_ztp(d, ycol, fcol, cluster)
-            row.update(beta_ztp=bz, lo_ztp=cz[0], hi_ztp=cz[1])
+            bz, cz, sez, pz = fit_ztp(d, ycol, fcol, cluster)
+            row.update(beta_ztp=bz, se_ztp=sez, lo_ztp=cz[0], hi_ztp=cz[1])
         rows.append(row)
         print(row, flush=True)
 

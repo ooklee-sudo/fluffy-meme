@@ -58,6 +58,18 @@ def fmt_ci(m, ci, d=0):
     return f"{m:.{d}f} [{ci[0]:.{d}f}, {ci[1]:.{d}f}]"
 
 
+def boot_se(d, n=4000):
+    """Bootstrap standard error of the mean of a paired difference."""
+    d = np.asarray(d, float)
+    idx = rng.integers(0, len(d), size=(n, len(d)))
+    return float(d[idx].mean(axis=1).std(ddof=1))
+
+
+def fmt_se(m, se, ci, d=0):
+    """est (SE) [lo, hi]"""
+    return f"{m:.{d}f} ({se:.{d if d else 1}f}) [{ci[0]:.{d}f}, {ci[1]:.{d}f}]"
+
+
 def paired(C, D, fn):
     x = np.array([fn(c) for c in C]); y = np.array([fn(d) for d in D])
     diff = x - y
@@ -117,7 +129,7 @@ def main():
     # ------------------------------------------------------------------ Table 3 (schedulers)
     sch = load(R, "schedulers")
     md.append("## Table 3. Concentrated minus distributed under alternative schedulers (beta = 0, 18:00 injection)\n")
-    md.append("| Scheduler | Adopters (C / D) | Ratio C/D | Delta adopters [95% CI] | Delta t50, h [95% CI] | CVaR_0.2 (C / D) |\n|---|---|---|---|---|---|")
+    md.append("| Scheduler | Adopters (C / D) | Ratio C/D | Delta adopters (SE) [95% CI] | Delta t50, h (SE) [95% CI] | CVaR_0.2 (C / D) |\n|---|---|---|---|---|---|")
     rows = [("Event-driven IPP (proposed)", base)] + [(n, sch[f"sched_{k}"]) for n, k in
             (("Circadian-only IPP", "circadian"), ("Homogeneous Poisson", "hpp"), ("Fixed-period polling", "polling"))]
     sched_sum = {}
@@ -125,8 +137,9 @@ def main():
         reps_, C_, D_ = stats(cell, None)
         fc_ = [len(c) for c in C_]; fd_ = [len(d) for d in D_]
         _, _, dd = paired(C_, D_, len); _, _, dtt = paired(C_, D_, t50)
-        md.append(f"| {name} | {np.mean(fc_):.0f} / {np.mean(fd_):.0f} | {np.mean(fc_)/np.mean(fd_):.2f} | {fmt_ci(dd.mean(), boot_ci(dd))} | "
-                  f"{fmt_ci(np.nanmean(dtt), boot_ci(dtt[~np.isnan(dtt)]), 2)} | {cvar(fc_):.0f} / {cvar(fd_):.0f} |")
+        dtn = dtt[~np.isnan(dtt)]
+        md.append(f"| {name} | {np.mean(fc_):.0f} / {np.mean(fd_):.0f} | {np.mean(fc_)/np.mean(fd_):.2f} | {fmt_se(dd.mean(), boot_se(dd), boot_ci(dd))} | "
+                  f"{fmt_se(np.nanmean(dtt), boot_se(dtn), boot_ci(dtn), 2)} | {cvar(fc_):.0f} / {cvar(fd_):.0f} |")
         sched_sum[name] = dict(diff=float(dd.mean()), ratio=float(np.mean(fc_) / np.mean(fd_)), C=float(np.mean(fc_)))
     summary["schedulers"] = sched_sum
     try:
@@ -137,7 +150,7 @@ def main():
     # ------------------------------------------------------------------ Table 4 (injection time)
     inj = load(R, "injection")
     md.append("## Table 4. Effect of injection time\n")
-    md.append("| Injection | Scheduler | Adopters (C / D) | Delta adopters [95% CI] | t50, h (C / D) |\n|---|---|---|---|---|")
+    md.append("| Injection | Scheduler | Adopters (C / D) | Delta adopters (SE) [95% CI] | t50, h (C / D) |\n|---|---|---|---|---|")
     for hour in (3, 9, 18):
         for s, label in (("event", "Event-driven IPP"), ("circadian", "Circadian-only")):
             if hour == 18:
@@ -147,7 +160,7 @@ def main():
             else:
                 reps_, C_, D_ = stats(inj[f"inj{hour:02d}_{s}"], None)
             _, _, dd = paired(C_, D_, len)
-            md.append(f"| {hour:02d}:00 | {label} | {np.mean([len(c) for c in C_]):.0f} / {np.mean([len(d) for d in D_]):.0f} | {fmt_ci(dd.mean(), boot_ci(dd))} | "
+            md.append(f"| {hour:02d}:00 | {label} | {np.mean([len(c) for c in C_]):.0f} / {np.mean([len(d) for d in D_]):.0f} | {fmt_se(dd.mean(), boot_se(dd), boot_ci(dd))} | "
                       f"{np.nanmean([t50(c) for c in C_]):.2f} / {np.nanmean([t50(d) for d in D_]):.2f} |")
     md.append("")
 
@@ -172,7 +185,7 @@ def main():
     if os.path.exists(os.path.join(R, "runs", "beta_fine.json.gz")):
         bt.update(load(R, "beta_fine"))
     md.append("## Table 6. Concentrated vs. distributed seeding by engagement elasticity beta (equal-link budget)\n")
-    md.append("| beta | Adopters (C / D) | Delta adopters [95% CI] | P(C > D) | Delta V(delta=1/h) [95% CI] | CVaR_0.2 (C / D) | Adopters at 1 h (C / D) |\n|---|---|---|---|---|---|---|")
+    md.append("| beta | Replications | Adopters (C / D) | Delta adopters (SE) [95% CI] | P(C > D) | Delta V(delta=1/h) (SE) [95% CI] | CVaR_0.2 (C / D) | Adopters at 1 h (C / D) |\n|---|---|---|---|---|---|---|---|")
     betas = sorted(float(k.split("_")[1]) for k in bt)
     fig = dict(beta=[], d=[], lo=[], hi=[], dv=[], vlo=[], vhi=[])
     beta_sum = {}
@@ -181,7 +194,7 @@ def main():
         fc_ = [len(c) for c in C_]; fd_ = [len(d) for d in D_]
         _, _, dd = paired(C_, D_, len); _, _, dv = paired(C_, D_, lambda z: V(z, 1.0))
         cid, civ = boot_ci(dd), boot_ci(dv)
-        md.append(f"| {b:.2f} | {np.mean(fc_):.0f} / {np.mean(fd_):.0f} | {fmt_ci(dd.mean(), cid)} | {np.mean(dd > 0):.2f} | {fmt_ci(dv.mean(), civ, 1)} | "
+        md.append(f"| {b:.2f} | {len(reps_)} | {np.mean(fc_):.0f} / {np.mean(fd_):.0f} | {fmt_se(dd.mean(), boot_se(dd), cid)} | {np.mean(dd > 0):.2f} | {fmt_se(dv.mean(), boot_se(dv), civ, 1)} | "
                   f"{cvar(fc_):.0f} / {cvar(fd_):.0f} | {np.mean([N_at(c,1) for c in C_]):.0f} / {np.mean([N_at(d,1) for d in D_]):.0f} |")
         for k_, v_ in zip(("beta", "d", "lo", "hi", "dv", "vlo", "vhi"), (b, dd.mean(), cid[0], cid[1], dv.mean(), civ[0], civ[1])):
             fig[k_].append(v_)
@@ -201,27 +214,30 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams.update({"font.family": "serif", "font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
+    plt.rcParams.update({"font.family": "sans-serif", "font.sans-serif": ["Arial", "Liberation Sans", "DejaVu Sans"], "font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
     grid = np.arange(0, 49)
+    DARK, MID = "0.2", "0.6"  # grayscale levels between 20% and 80%
     fig1, axs = plt.subplots(1, 2, figsize=(8.5, 3.4), sharey=False)
-    for ax, (cell, title) in zip(axs, ((base, "(a) No engagement decay ($\\beta=0$)"), (bt["beta_0.30"], "(b) Engagement decay $\\beta=0.3$"))):
+    for ax, (cell, title) in zip(axs, ((base, "(a) No engagement decay (\u03b2 = 0)"), (bt["beta_0.30"], "(b) Engagement decay (\u03b2 = 0.3)"))):
         reps_, C_, D_ = stats(cell, None)
-        reps_ = reps_[:15]; C_, D_ = C_[:15], D_[:15]
-        ax.plot(grid, np.mean([[N_at(c, h) for h in grid] for c in C_], axis=0), "k-", label="Concentrated (3 influencers)")
-        ax.plot(grid, np.mean([[N_at(d, h) for h in grid] for d in D_], axis=0), "k--", label="Distributed (ordinary users)")
-        ax.set_title(title, fontsize=9); ax.set_xlabel("Hours after injection"); ax.set_ylabel("Mean cumulative adopters")
+        C_, D_ = C_[:15], D_[:15]
+        ax.plot(grid, np.mean([[N_at(c, h) for h in grid] for c in C_], axis=0), "-", color=DARK, lw=2, label="Concentrated (3 influencers)")
+        ax.plot(grid, np.mean([[N_at(d, h) for h in grid] for d in D_], axis=0), "--", color=MID, lw=2, label="Distributed (ordinary users)")
+        ax.set_title(title, fontsize=9); ax.set_xlabel("Hours After Injection"); ax.set_ylabel("Mean Cumulative Adopters")
+        ax.tick_params(direction="out")
     axs[0].legend(frameon=False, fontsize=8, loc="lower right")
     fig1.tight_layout()
     for ext, kw in (("pdf", {}), ("png", {"dpi": 400})):
         fig1.savefig(os.path.join(R, "figures", f"Figure_1.{ext}"), **kw)
-    fig2, ax = plt.subplots(figsize=(5.5, 3.8))
+    fig2, ax = plt.subplots(figsize=(5.8, 3.8))
     b_, d_ = np.array(fig["beta"]), np.array(fig["d"])
-    ax.errorbar(b_, d_, yerr=[d_ - np.array(fig["lo"]), np.array(fig["hi"]) - d_], fmt="k-o", ms=4, capsize=3, label="Final adopters (48 h)")
+    ax.errorbar(b_, d_, yerr=[d_ - np.array(fig["lo"]), np.array(fig["hi"]) - d_], fmt="-o", color=DARK, ms=4, capsize=3, label="Final adopters (48 hours)")
     dv_ = np.array(fig["dv"])
-    ax.errorbar(b_ + 0.006, dv_, yerr=[dv_ - np.array(fig["vlo"]), np.array(fig["vhi"]) - dv_], fmt="--s", color="0.45", ms=4, capsize=3,
-                label=r"Discounted reach $V(\delta=1/\mathrm{h})$")
-    ax.axhline(0, color="k", lw=0.8)
-    ax.set_xlabel(r"Engagement elasticity $\beta$"); ax.set_ylabel("Concentrated minus distributed"); ax.legend(frameon=False)
+    ax.errorbar(b_ + 0.006, dv_, yerr=[dv_ - np.array(fig["vlo"]), np.array(fig["vhi"]) - dv_], fmt="--s", color=MID, ms=4, capsize=3,
+                label="Discounted reach (\u03b4 = 1 per hour)")
+    ax.axhline(0, color="0.5", lw=0.8)
+    ax.set_xlabel("Engagement Elasticity (\u03b2)"); ax.set_ylabel("Concentrated Minus Distributed"); ax.legend(frameon=False, fontsize=8)
+    ax.tick_params(direction="out")
     fig2.tight_layout()
     for ext, kw in (("pdf", {}), ("png", {"dpi": 400})):
         fig2.savefig(os.path.join(R, "figures", f"Figure_2.{ext}"), **kw)
