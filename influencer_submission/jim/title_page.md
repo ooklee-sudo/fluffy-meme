@@ -6,7 +6,7 @@
 
 **Author's note:** [AUTHOR TO COMPLETE or delete]
 
-**Acknowledgments:** [AUTHOR TO COMPLETE: persons who do not meet the criteria for authorship, if any.] Generative AI disclosure: Claude (Anthropic) was used to write and run the simulation and analysis code and to draft and edit the manuscript text. [AUTHOR TO CONFIRM that this matches your actual use; you remain responsible for the code, results, and text.]
+**Acknowledgments:** [AUTHOR TO COMPLETE: persons who do not meet the criteria for authorship, if any.] Generative AI disclosure: the authors used Claude (Anthropic), accessed through the Claude Code coding assistant, to (1) write, from the authors' written model specification, the Python code for the simulator, the experiments, the statistical analysis, and the SAGraph estimation, run the experiments, and generate tables and figures from the stored outputs; (2) look up bibliographic records in Crossref and arXiv and reformat the reference list; and (3) edit and restructure the manuscript text, web appendix, and cover letter for the journal's format. The simulator itself contains no language model. [AUTHOR TO CONFIRM that this matches your actual use, to state which parts of the original text you drafted yourself, and to describe what you checked; you remain responsible for the code, results, and text.]
 
 ## Statements and Declarations
 

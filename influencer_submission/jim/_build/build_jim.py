@@ -244,7 +244,7 @@ assert "Insert Figure" not in body
 
 # ------------------------------------------------------------------ generative-AI disclosure (AMA: in the main document and on the title page)
 body = body.replace("Code and per-run results are provided as an anonymized supplementary archive.",
-                    "Code and per-run results are provided as an anonymized supplementary archive. Generative AI (Claude, Anthropic) was used to write and run the simulation and analysis code and to draft and edit the manuscript text; the authors specified the model and take responsibility for the code, the results, and the text.")
+                    "Code and per-run results are provided as an anonymized supplementary archive. Generative AI disclosure: the authors used Claude (Anthropic), accessed through the Claude Code coding assistant, in three ways. First, Claude wrote the Python code for the simulator, the experiments, the statistical analysis, and the SAGraph estimation from the authors' written model specification, ran the experiments, and generated the tables and figures from the stored outputs. Second, Claude looked up bibliographic records (Crossref, arXiv) to complete the reference list and reformat it. Third, Claude edited and restructured the manuscript text, web appendix, and cover letter to fit the journal's format. The simulator itself contains no language model, and no AI tool generated or altered data, images, or results other than through the code described. The authors reviewed the output and take full responsibility for the content.")
 
 # ------------------------------------------------------------------ assemble
 refs = json.load(open(REFS, encoding="utf-8"))
