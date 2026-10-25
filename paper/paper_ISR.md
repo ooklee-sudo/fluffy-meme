@@ -27,6 +27,8 @@ Pricing matters because it sets the cost of an additional attempt as the firm se
 
 **Contributions.** (1) We model AI–human escalation as a sequential search problem with an outside option inside a vendor–buyer game, linking the AI-delegation and IT-contracting literatures. (2) We show that per-attempt pricing above cost causes double marginalization, that a success fee of Hk/(k+v) restores efficiency, and that a monopolist nevertheless sets a higher fee and samples too little (Propositions 2–4). (3) We identify the underlying force, an *incentive rent of sequential search*, and prove, for any heterogeneity distribution, that the vendor's optimal pay-per-use contract is a pure success fee and that a lump-sum fee removes all distortions (Propositions 5–6). (4) We show that private vendor quality reverses profit order across contract forms so that only success fees can signal quality (Proposition 7), and that competition removes the distortion only among close substitutes (Proposition 8). (5) We test the model's premises on open repair data and report numerical equilibria calibrated to them.
 
+**Article type and audience.** This is a theory article in the ISR sense: it applies and extends search theory and vertical-contracting theory to a new IS phenomenon (pay-per-use AI services), derives propositions, and illustrates the model with open repair data. The intended audience is academics working on the economics of information systems, IT sourcing and governance, and human–AI work design, and practitioners who procure or price AI-assisted software services (chief information officers, engineering and procurement managers, and AI vendors).
+
 ---
 
 ## 2. Related Literature
