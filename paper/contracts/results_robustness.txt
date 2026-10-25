@@ -1,0 +1,18 @@
+Random sweep: 296 parameter draws (a~U(.05,.6), b log-U(.1,4), H log-U(30,500), v/H log-U(.001,.03), k/v log-U(.1,3))
+Vendor profit: success-fee >= per-attempt in 99% of draws
+Firm saving:   success-fee >= per-attempt in 67% of draws
+Welfare/FB:    per-attempt median 0.65 [IQR 0.55-0.77];  success-fee median 0.91 [IQR 0.88-0.93]
+Success-fee welfare > per-attempt welfare in 100% of draws
+Median attempts: first-best 28, per-attempt monopoly 1, success-fee monopoly 6
+Efficient-fee vendor share of surplus equals k/(k+v): max abs diff 0.000
+
+Regret from over-estimating vendor quality (H=100, v=1, k=0.2, b=0.39): firm saving vs human-only when it sets N from believed 'a' but true 'a' is lower
+a_true   contract         saving(correct belief a=0.25 vs true)   saving(believed a=0.25)   loss
+ 0.25    per-attempt w=2.0         50.71      50.71      0.00   (N_believed=8, N_true=8)
+ 0.25    success fee f=Hk/(k+v)    50.92      50.92      0.00   (N_believed=21, N_true=21)
+ 0.15    per-attempt w=2.0         32.48      31.38      1.10   (N_believed=8, N_true=5)
+ 0.15    success fee f=Hk/(k+v)    34.54      33.59      0.95   (N_believed=21, N_true=12)
+ 0.10    per-attempt w=2.0         21.12      17.63      3.49   (N_believed=8, N_true=3)
+ 0.10    success fee f=Hk/(k+v)    23.60      20.60      3.00   (N_believed=21, N_true=8)
+ 0.05    per-attempt w=2.0          8.78      -0.24      9.02   (N_believed=8, N_true=2)
+ 0.05    success fee f=Hk/(k+v)    10.93       3.10      7.83   (N_believed=21, N_true=4)
