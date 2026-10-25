@@ -36,9 +36,11 @@ def get(url):
                     time.sleep(max(0, reset - time.time()) + 5)
                 return json.load(r), r.headers.get("Link", "")
         except urllib.error.HTTPError as e:
-            if e.code in (403, 429):
+            if e.code in (403, 429) and e.headers.get("X-RateLimit-Remaining") == "0":
                 reset = int(e.headers.get("X-RateLimit-Reset", "0"))
                 time.sleep(min(max(0, reset - time.time()) + 5, 3600))
+            elif e.code == 403:                      # access denied, not a rate limit: do not retry
+                return None, ""
             elif e.code in (404, 451, 410):
                 return None, ""
             else:
