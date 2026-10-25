@@ -55,12 +55,14 @@ def prepare(row, workdir):
 
 
 def extract_patch(text):
+    """Collect fenced diff blocks (or <patch> body); accept any unified diff with ---/+++ headers."""
     m = re.search(r"<patch>\s*(.*?)</patch>", text, re.S)
     body = m.group(1) if m else text
-    m2 = re.search(r"```(?:diff|patch)?\n(.*?)```", body, re.S)
-    body = m2.group(1) if m2 else body
-    body = body.strip("\n") + "\n"
-    return body if "diff --git" in body else None
+    blocks = re.findall(r"```(?:diff|patch)?\n(.*?)```", body, re.S)
+    body = "\n".join(blocks) if blocks else body
+    if not re.search(r"^--- .+\n\+\+\+ .+", body, re.M):
+        return None
+    return body.strip("\n") + "\n"
 
 
 def chat(model, prompt, max_tokens=4000):
@@ -75,47 +77,81 @@ def chat(model, prompt, max_tokens=4000):
     return j["choices"][0]["message"]["content"], j.get("usage", {})
 
 
-STATUS = re.compile(r"^(?P<name>.+?) \.\.\. (?P<st>ok|FAIL|ERROR|skipped.*|expected failure|unexpected success)\s*$")
+LINE = re.compile(r"(\S+ \([\w.]+\)) \.\.\. (ok|FAIL|ERROR|skipped.*|expected failure|unexpected success)\s*$")
+HEAD = re.compile(r"^(ERROR|FAIL): (\S+ \([\w.]+\))")
+SUSPECT = ("ImportError", "ModuleNotFoundError", "SyntaxError", "IndentationError", "NameError")
 
 
 def run_tests(wt, venv, modules):
-    """Run Django's runner on the given test modules; return {test line: status}."""
+    """Run Django's runner on the given test modules.
+    Returns {test: (status, exception_line)}. Subtest failures break the one-line status, so failures are read
+    from the summary section as well."""
     env = dict(os.environ, PYTHONPATH=wt)
     rc, out = sh(f"{venv}/bin/python tests/runtests.py --settings=test_sqlite -v 2 --parallel 1 {' '.join(modules)}", cwd=wt, env=env, timeout=900)
-    res, pending = {}, ""
+    res = {}
     for line in out.splitlines():
-        m = STATUS.match(line)
+        m = LINE.search(line)
         if m:
-            res[(pending + m['name']).strip()] = m['st']; pending = ""
-        elif line.startswith("test") and "..." not in line:
-            pending = line + " "
-        elif line.startswith("test"):
-            pending = ""
+            res[m.group(1)] = (m.group(2), "")
+    blocks = re.split(r"(?m)^={70}\n", out)
+    for blk in blocks[1:]:
+        m = HEAD.match(blk)
+        if not m:
+            continue
+        body = blk.split("-" * 70)[1] if blk.count("-" * 70) >= 1 else blk
+        lines = [l for l in body.strip().splitlines() if l.strip() and not l.startswith(" ")]
+        exc = lines[-1] if lines else ""
+        res[m.group(2)] = (m.group(1), exc)
     return res, out
+
+
+def apply_model_patch(wt, patch, tag):
+    """Apply a model-written unified diff. New files (--- /dev/null) are written directly; edits use GNU patch
+    with fuzz, since model-written hunk line counts are often off. Returns (ok, message)."""
+    sections = re.split(r"(?m)^(?=--- )", patch)
+    for sec in sections:
+        m = re.match(r"--- (\S+)[^\n]*\n\+\+\+ (\S+)", sec)
+        if not m:
+            continue
+        old, new = m.group(1), m.group(2)
+        path = re.sub(r"^[ab]/", "", new)
+        if old == "/dev/null":
+            lines = [l[1:] for l in sec.splitlines()[2:] if l.startswith("+") ]
+            full = os.path.join(wt, path); os.makedirs(os.path.dirname(full), exist_ok=True)
+            open(full, "w").write("\n".join(lines) + "\n")
+        else:
+            pf = os.path.join(wt, f".{tag}.sec.diff"); open(pf, "w").write(sec)
+            rc, o = sh(f"patch -p1 -l --fuzz=3 --no-backup-if-mismatch < {pf}", cwd=wt)
+            os.remove(pf)
+            if rc != 0:
+                return False, o[:300]
+    return True, ""
 
 
 def touched_modules(patch):
     mods = []
-    for f in re.findall(r"^diff --git a/(\S+) b/\S+", patch, re.M):
+    for f in re.findall(r"^\+\+\+ (?:b/|a/)?(\S+)", patch, re.M):
         if f.startswith("tests/") and f.endswith(".py"):
             mods.append(f[len("tests/"):-3].replace("/", "."))
     return sorted(set(mods))
 
 
-def run_instance(row, model, workdir, rep=0):
+def run_instance(row, model, workdir, rep=0, gold_test=False):
     t0 = time.time()
     wt, venv = prepare(row, workdir)
     out = dict(instance_id=row.instance_id, model=model, rep=rep, detected=False, reason="", cost_tokens=None)
-    text, usage = chat(model, row.text)
+    if gold_test:   # harness validation: use the dataset's own test patch instead of a model
+        text, usage = "```diff\n" + row.test_patch.rstrip("\n") + "\n```", {}
+    else:
+        text, usage = chat(model, row.text)
     out["cost_tokens"] = usage
     patch = extract_patch(text)
     open(os.path.join(workdir, f"{row.instance_id}.{rep}.model_patch.diff"), "w").write(patch or text)
     if not patch:
         out["reason"] = "no_patch"; return out
     sh("git checkout -q -- . && git clean -fdq", cwd=wt)
-    pf = os.path.join(workdir, f"{row.instance_id}.{rep}.model_patch.diff")
-    rc, o = sh(f"git apply --whitespace=nowarn {pf}", cwd=wt)
-    if rc != 0:
+    ok, o = apply_model_patch(wt, patch, f"m{rep}")
+    if not ok:
         out["reason"] = "patch_does_not_apply: " + o[:200]; return out
     mods = touched_modules(patch)
     if not mods:
@@ -126,11 +162,13 @@ def run_instance(row, model, workdir, rep=0):
     rc, o = sh(f"git apply --whitespace=nowarn {gf}", cwd=wt)
     assert rc == 0, "gold patch failed: " + o[:300]
     after, log_a = run_tests(wt, venv, mods)
-    f2p = [t for t, s in before.items() if s == "FAIL" and after.get(t) == "ok"]
-    err = [t for t, s in before.items() if s == "ERROR"]
-    out.update(detected=bool(f2p), f2p=f2p[:5], n_before_fail=sum(s == "FAIL" for s in before.values()),
-               n_before_error=len(err), n_tests=len(before), seconds=round(time.time() - t0, 1))
-    out["reason"] = "ok" if f2p else ("tests_error_not_fail" if err and not any(s == 'FAIL' for s in before.values()) else "no_fail_to_pass")
+    f2p, suspect = [], []
+    for t, (st, exc) in before.items():
+        if st in ("FAIL", "ERROR") and after.get(t, ("", ""))[0] == "ok":
+            (suspect if exc.startswith(SUSPECT) else f2p).append((t, st, exc[:120]))
+    out.update(detected=bool(f2p), f2p=f2p[:3], suspect_only=bool(suspect) and not f2p, n_tests=len(before),
+               n_before_fail=sum(v[0] in ("FAIL", "ERROR") for v in before.values()), seconds=round(time.time() - t0, 1))
+    out["reason"] = "ok" if f2p else ("only_import_or_name_errors" if suspect else "no_fail_to_pass")
     sh("git checkout -q -- . && git clean -fdq", cwd=wt)
     return out
 
@@ -139,11 +177,12 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("instance"); ap.add_argument("model")
     ap.add_argument("--repeat", type=int, default=1)
+    ap.add_argument("--gold", action="store_true", help="validate the harness with the gold test patch (no model call)")
     ap.add_argument("--workdir", default=os.path.join(HERE, "work"))
     a = ap.parse_args()
     os.makedirs(a.workdir, exist_ok=True)
     df = load(a.workdir)
     row = next(df[df.instance_id == a.instance].itertuples())
     for r in range(a.repeat):
-        res = run_instance(row, a.model, a.workdir, r)
+        res = run_instance(row, a.model, a.workdir, r, gold_test=a.gold)
         print(json.dumps(res, default=str))
