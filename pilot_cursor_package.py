@@ -32,3 +32,9 @@ m = pd.read_csv(f"{data}/matching.csv", usecols=["repo_name", "group", "n_releas
 t = m[m.group == "treatment"].drop_duplicates("repo_name")
 print(f"\nreleases (matching snapshot), treated n={len(t)}: "
       f">=1 {(t.n_releases >= 1).mean():.0%}, >=3 {(t.n_releases >= 3).mean():.0%}, >=5 {(t.n_releases >= 5).mean():.0%}")
+
+# Repos passing the main filter (k=6 months pre/post, >=10 pre-adoption issues) for label collection
+ok = (agg.pre_m >= 6) & (agg.post_m >= 6) & (agg.pre_issues >= 10)
+out = agg[ok].join(first).reset_index()[["repo_name", "adopt", "pre_m", "post_m", "pre_issues"]]
+out.to_csv("pilot_pass_repos.csv", index=False)
+print(f"\nwrote pilot_pass_repos.csv ({len(out)} repos)")
