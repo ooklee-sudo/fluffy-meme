@@ -75,3 +75,13 @@ members 0.72-0.78, redwood height 1.49-1.69.
   statistically significant at p < 0.05), Spearman correlation of predicted and observed log odds of click across variants, and calibration slope of
   predicted on observed effect.
 - Prediction (P7): agreement > 0.5, with exact binomial CI lower bound > 0.5 in at least 3 of 5 models; calibration slope > 1 (twins overstate effects).
+
+## Notes added after registration, before any C1 output was generated (2026-10-26)
+
+- The registered text (Q4) lists two persona architectures, but P6 (naming the phenomenon in the prompt) requires a theory-explicit arm.
+  C1 therefore includes three architectures: demographics only, persona summary, and demographics plus a research note naming the phenomena.
+  This is reported in the paper as a clarification of the registered design. P6 is evaluated only on the theory-explicit versus demographics-only contrast.
+- C1 uses one booklet per respondent containing all nine items (framing, two anchoring items, two defaults, three attraction scenarios, fairness) with
+  independent random condition assignment per item (seed 2026), instead of separate respondents per phenomenon. The per-cell sample is the same 600.
+- Attraction uses the binary versus decoy contrast only (the compromise condition is not run).
+- Code: pilot/run_c1.py. Analysis code for C1 will be committed before outputs are analyzed.
