@@ -353,10 +353,14 @@ def run_seed(seed, args):
             tokens = sc.train(m, params, ex, args.full_epochs, args.full_lr, args.full_bs, rng)
             model_eval = m
         fit = float(sc.correct(model_eval, [item(k, truth_s) for k in drifted]).mean()) if drifted else float("nan")
+        unchanged = [k for k in dyn_keys if truth_s[k] == truth0[k]]
+        acc_u = float(sc.correct(model_eval, [item(k, truth_s) for k in unchanged]).mean()) if unchanged else float("nan")
+        acc_s = 1 - sta_after / 100
+        locality = (acc_u * len(unchanged) + acc_s * len(sta_keys)) / (len(unchanged) + len(sta_keys))
         n_train = n_params(params)
         dyn_after = 100 * (1 - sc.correct(model_eval, [item(k, truth_s) for k in dyn_keys]).mean())
         sta_after = 100 * (1 - sc.correct(model_eval, [item(k, truth0) for k in sta_keys]).mean())
-        return dict(fit_logged=fit, n_logged=len(drifted), dyn_after=float(dyn_after), static_after=float(sta_after), n_train=n_train,
+        return dict(fit_logged=fit, locality=float(locality), n_logged=len(drifted), dyn_after=float(dyn_after), static_after=float(sta_after), n_train=n_train,
                     tokens=int(tokens), cost_trainable=float(6 * n_train * tokens),
                     cost_forward_inclusive=float(2 * tokens * (n_all + n_back + n_train)))
 
