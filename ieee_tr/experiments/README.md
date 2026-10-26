@@ -14,3 +14,21 @@
   about 92% on the dynamic suite after 40 epochs. Choose the settings on a pilot seed
   and keep them fixed for all reported seeds.
 * This is a re-implementation from the manuscript's description, not the original code.
+
+## Settings used for the reported run (fixed on held-out pilot seed 100)
+
+Selection rule, fixed before looking at round 3: for each mechanism take the cheapest
+setting (fewest processed tokens) whose mean fit on the facts it was trained on is >= 0.9
+and, for the edit, whose locality (accuracy on untouched dynamic and static facts) is
+>= 0.95. Pilot results are in `pilot_round1/`, `pilot_round2/`, `pilot_round3/`.
+
+| mechanism | setting |
+| --- | --- |
+| deployed checkpoint | lr 1e-3 with linear decay to 10%, up to 200 epochs, target 95% |
+| localized edit | MLP of layer 3, lr 5e-4, 15 epochs, 10 replayed unchanged facts per edited fact |
+| LoRA | rank 16, no replay, lr 2e-3, 15 epochs |
+| full fine-tune | lr 3e-4, 8 epochs on all current facts |
+
+Pilot round 1 used no replay for the edit; the edit then overwrote unchanged dynamic
+facts and raised total error. Reporting should say that the edit needs a locality
+constraint (replay) to behave as a localized edit.
