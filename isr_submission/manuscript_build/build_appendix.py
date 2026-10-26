@@ -17,6 +17,9 @@ P(d, "*Other regions.* If *ρ* ≤ 1 and *A* < 1, the adoption set is empty (Pro
 H2(d, "A.2 Proposition 3 (general exclusion)")
 P(d, "The proof is in the main text. Two remarks. First, the bound uses only that the firm's gross benefit under AI cannot exceed *fAa*, which holds whatever the mechanism. The threshold is therefore a sufficient condition, and the true exclusion boundary under a given mechanism is lower. Second, for the linear usage price, *S*_{L} = *fAa h*(*ρκ*) = *fAa* − *c*_{L}(1 + ln(*ρκ*))/(*Bb*), which is *fAa* − *O*(ln *f*) whenever *c*_{L} = *c*_{0} + *p* > 0, and likewise *S*_{H} = *fa* − *O*(ln *f*), so *V*/(*fa*) → *A* − 1.")
 
+P(d, "**Corollary 3.1 (tightness).** For 0 < *A* < 1, let κ̄(*A*) solve *h*(κ̄) = *A*; this is the τ = 0 threshold of Proposition 3 in terms of the stakes index. Then the upper end κ* of the adoption window under a linear usage price satisfies κ* < κ̄(*A*) for every finite ρ, and κ* ↑ κ̄(*A*) as ρ → ∞ (for example as the speed ratio *B* → ∞ at a fixed nonnegative price).", indent=False)
+PROOF(d, "At κ*, *h*(κ*) = *A h*(ρκ*) < *A* because *h* < 1, and *h* is increasing above 1, so κ* < κ̄. For any κ < κ̄ we have *h*(κ) < *A*, while *A h*(ρκ) → *A* as ρ → ∞, so Φ(κ) > 0 for large ρ and hence κ* > κ. Therefore κ* → κ̄. Substituting κ = *abf* gives (1 − *A*)κ̄ = 1 + ln κ̄, the equation of Proposition 3 with τ = 0. ∎")
+P(d, "Proposition 3 with τ = 0 is therefore the exact exclusion boundary in the limit of an arbitrarily cheap or fast tool, and an upper bound on the boundary otherwise.", indent=False)
 H2(d, "A.3 Proposition 4 (scaling of stakes)")
 P(d, "The proof is in the main text. The factor *λ*^{*} depends on the adoption set only through the geometric mean √(*κ*^{*}/*ρ*) of its endpoints. At the illustrative parameters and *A* = 0.9, *λ*^{*} = 0.485 and the adopting share at the peak is 77 percent (Figure 4 of the main text).")
 
