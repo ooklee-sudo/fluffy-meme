@@ -87,7 +87,7 @@ P(d, f"*Construct validity.* Mutation reach is relative to the existing tests an
 H1(d, "7 Conclusion")
 P(d, "LLM-written unit tests reach or exceed parity with existing tests on mutants within one or two attempts but reveal about one real fault in seven, because most of their failures come from wrong expectations. Mutation scores overstate their fault-finding reach, and evaluations of generated tests should measure reach on real faults.", indent=False)
 H1(d, "Data availability")
-P(d, "Code, prompts, per-bug and per-module results and analysis scripts are available at https://doi.org/10.5281/zenodo.23652337 [to be updated with this version]. BugsInPy and the studied libraries are public.", indent=False)
+P(d, "Code, prompts, per-bug and per-module results and analysis scripts are available on Zenodo, version 2 of the replication package (https://doi.org/10.5281/zenodo.23674752). BugsInPy and the studied libraries are public.", indent=False)
 H1(d, "Declarations")
 P(d, "*Funding* Not applicable. *Competing interests* The author declares no competing interests. *Ethics* No human participants were involved. *Author contributions* O.L. conceived the study, built the pipeline, ran the analyses and wrote the manuscript. *Use of generative AI* The studied tests were written by the three LLMs named above. An AI coding assistant (Claude Code) was used to write and run the analysis code and to draft and edit the manuscript text; the author reviewed the results and takes responsibility for the content.", indent=False)
 PB(d)
