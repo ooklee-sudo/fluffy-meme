@@ -1,4 +1,4 @@
-# Replication package: "Reach Before Price"
+# Replication package: "Reach Before Price" (version 2)
 
 Code and derived data for the manuscript and Online Appendix. All numerical results in the paper are illustrations
 at the parameters of Table 2 of the manuscript (a=20, b=0.12, B=1.6, c0=0.8, k=0.1, A0=0.5, ln kappa ~ N(ln 4.8, 0.9^2)).
@@ -44,3 +44,23 @@ The derived results (`data/*.csv`) are included so that the paper's tables can b
 - Grid-based calculations (vendor_menu*.py, vendor_dynamics.py) are sensitive to grid size; magnitudes move by a few percent, orderings do not.
 - The global maximum behind Proposition 8 and theta_low = 27.58 are numerical.
 - Social threshold theta_s = 65.09 depends on the reach cap 1.3 chosen in make_figures.py.
+
+## Version 2: empirical reach of LLM-written unit tests (EMSE manuscript)
+Folder `empirical/` (added in version 2). Needs network access to the model gateway (OpenRouter; set `OPENROUTER_API_KEY`), git, and
+Python 3.8-3.13 virtual environments created by the scripts. No GPU.
+
+| Part | Scripts | Results |
+|---|---|---|
+| Mutation study (11 modules of toolz, boltons, humanize, cachetools, more-itertools; 7 with >= 30 mutants analysed) | `empirical/mutation/mutation_study.py` (operators in `mutation_pilot.py`, targets in `targets.json`) | `empirical/mutation/results/*.json` (per module: human kill vector, and per model and attempt the number of passing tests and the kill vector) |
+| Harness check and fix | `check_ids.py` (finds truncated test ids), `recompute_kills.py` (recomputes kill vectors from the stored generated tests, no new LLM calls) | see Note below |
+| Real faults (BugsInPy) | `empirical/bugsinpy/bip_lib.py`, `bip_validate.py`, `bip_study.py`, `bip_calibrate.py` | `empirical/bugsinpy/results/*.json` (per bug and model: six attempts with test counts, failures on the faulty version and detection), `valid_bugs.json` |
+| Tables and figure of the EMSE manuscript | `empirical/emse_analysis.py` | `empirical/emse_results.json`, `emse_mutation_modules.csv`, `emse_fig_reach.png` |
+
+Run order: `python3 bip_validate.py --projects ...` then `python3 bip_study.py run --models <comma list> --k 6 [--shard i/n]`, then
+`python3 emse_analysis.py`. The mutation study: `python3 mutation_study.py run --models <comma list> --k 8 --max-mutants 150`.
+
+Note (harness correction). The first harness read the names of passing tests from pytest's console output. Names containing
+spaces were truncated, and one project forces coloured output; in both cases the follow-up run failed to collect the test and every
+mutant was counted as killed (or, with colour, every generated test was discarded). This affected humanize (both modules) and 5 of
+24 attempts on boltons/strutils. The harness now reads exact test ids from JUnit XML; the affected kill vectors were recomputed from
+the stored generated tests with `recompute_kills.py`. All other modules were unaffected (`check_ids.py`).

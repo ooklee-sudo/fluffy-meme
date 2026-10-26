@@ -9,7 +9,7 @@ python3 mutation_study.py run --models anthropic/claude-haiku-5.5,deepseek/deeps
 python3 mutation_study.py report
 Resumable: finished (module, model, attempt) triples are skipped. Spend is logged in work/spend.json.
 """
-import argparse, json, os, re, shutil, sys, subprocess, random, urllib.request, time
+import argparse, json, os, re, shutil, shlex, sys, subprocess, random, urllib.request, time
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mut"))
 from mutation_pilot import make_mutants, clean_code          # operators and code extraction are shared with the pilot
@@ -69,7 +69,7 @@ class Runner:
     def pytest(self, cwd, args, timeout=60):
         try:
             env = dict(os.environ, PYTHONPATH=f"{cwd}/src:{cwd}")   # src-layout repos must import the mutated copy, not the editable install
-            r = subprocess.run(f"{self.py} -m pytest -x -q --no-header -p no:cacheprovider {args}", shell=True, cwd=cwd,
+            r = subprocess.run(f"{self.py} -m pytest -x -q --no-header --color=no -p no:cacheprovider {args}", shell=True, cwd=cwd,
                                capture_output=True, text=True, timeout=timeout, env=env); return r.returncode
         except subprocess.TimeoutExpired:
             return 124
@@ -89,13 +89,23 @@ class Runner:
             open(f"{p}/{self.tdir}/{fn}", "w").write(code)
 
     def passing_ids(self, fn):
-        env = dict(os.environ, PYTHONPATH=f"{self.base}/src:{self.base}")
+        """Exact node ids of tests that pass on the original module, read from JUnit XML (ids may contain spaces)."""
+        import xml.etree.ElementTree as ET
+        env = dict(os.environ, PYTHONPATH=f"{self.base}/src:{self.base}"); x = f"{self.d}/junit_{os.getpid()}.xml"
         try:
-            r = subprocess.run(f"{self.py} -m pytest -q --no-header -p no:cacheprovider -rA --tb=no {self.tdir}/{fn}", shell=True,
+            r = subprocess.run(f"{self.py} -m pytest -q --no-header --color=no -p no:cacheprovider --tb=no --junitxml={x} {self.tdir}/{fn}", shell=True,
                                cwd=self.base, capture_output=True, text=True, timeout=300, env=env)
         except subprocess.TimeoutExpired:      # a generated test hangs (e.g. an infinite generator): the attempt counts as having no usable tests
             return [], "timeout"
-        return re.findall(r"(?m)^PASSED (\S+)", r.stdout), r.stdout[-300:]
+        ids = []
+        try:
+            for tc in ET.parse(x).getroot().iter("testcase"):
+                if not any(c.tag in ("failure", "error", "skipped") for c in tc):
+                    cls = tc.get("classname", ""); parts = cls.split(".")
+                    path = f"{self.tdir}/{fn}"; inner = [p for p in parts if p and p not in (self.tdir.replace("/", ".").split(".") + [fn[:-3]])]
+                    ids.append("::".join([path] + inner + [tc.get("name")]))
+        except Exception: pass
+        return ids, r.stdout[-300:]
 
 
 def key(name, mod): return f"{name}__{mod.replace('/', '_')}"
@@ -133,7 +143,7 @@ def run(a):
                     code = clean_code(text) if text else ""
                     R.add_test_file(fn, code)
                     ids, tail = R.passing_ids(fn) if code else ([], "")
-                    killed = R.kills(ms, " ".join(f"'{i}'" for i in ids)) if ids else [False] * len(ms)
+                    killed = R.kills(ms, " ".join(shlex.quote(i) for i in ids)) if ids else [False] * len(ms)
                     M["attempts"].append({"n_pass": len(ids), "killed": killed})
                     json.dump(st, open(path, "w"))
                     print(f"  {model} k={k}: {len(ids)} tests pass, kill {sum(killed)/len(ms):.3f}; spend ${spend():.2f}", flush=True)
