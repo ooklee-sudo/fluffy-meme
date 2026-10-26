@@ -1,0 +1,37 @@
+10 seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+Deployed checkpoint
+  acc_dynamic                0.968 (SD 0.012; 95% CI 0.959 to 0.976)
+  acc_static                 0.982 (SD 0.017; 95% CI 0.970 to 0.994)
+  acc_note                   1.000 (SD 0.000; 95% CI 1.000 to 1.000)
+  follow_conflicting_note    0.987 (SD 0.006; 95% CI 0.983 to 0.991)
+  epochs to converge          127.0 (SD 38.7; 95% CI 99.3 to 154.7)
+
+Staleness growth over the horizon (pp per day)
+  no retrieval   slope 0.525 (SD 0.030; 95% CI 0.503 to 0.547)  mean R2 0.990
+  with retrieval slope 0.213 (SD 0.033; 95% CI 0.190 to 0.237)  mean R2 0.984
+  absorbed share alpha/gamma = 1 - slope ratio: 0.593 (SD 0.063; 95% CI 0.547 to 0.638)
+  H0: share = coverage 0.60:  t = -0.36, p = 0.729 (n = 10)
+  predicted interval lengthening sqrt(gamma/(gamma-alpha)): 1.58 (SD 0.13; 95% CI 1.49 to 1.67)
+  predicted threshold factor sqrt(1-alpha/gamma):          0.64 (SD 0.05; 95% CI 0.60 to 0.67)
+
+Parametric mechanisms (average of the interventions at the maintenance days, per seed)
+  Localized edit
+    error before -> after (pp): 16.7 -> 11.7  (after: 11.7 (SD 5.4; 95% CI 7.8 to 15.5))
+    retention change (pp):      -1.1 (SD 1.5; 95% CI -2.2 to -0.0)
+    cost, trainable accounting: 37.2 (SD 3.0; 95% CI 35.0 to 39.4)   forward-inclusive: 636.5 (SD 51.9; 95% CI 599.4 to 673.6)
+    share of interventions that raise total error (dominated by no action): 40%
+  LoRA, rank 16, no replay
+    error before -> after (pp): 16.7 -> 94.5  (after: 94.5 (SD 14.0; 95% CI 84.5 to 104.5))
+    retention change (pp):      36.0 (SD 11.6; 95% CI 27.7 to 44.3)
+    cost, trainable accounting: 1.4 (SD 0.2; 95% CI 1.3 to 1.6)   forward-inclusive: 71.2 (SD 8.9; 95% CI 64.8 to 77.5)
+    share of interventions that raise total error (dominated by no action): 100%
+  Full fine-tune
+    error before -> after (pp): 16.7 -> 4.4  (after: 4.4 (SD 4.6; 95% CI 1.1 to 7.7))
+    retention change (pp):      -1.4 (SD 1.8; 95% CI -2.7 to -0.2)
+    cost, trainable accounting: 1000.0 (SD 0.0; 95% CI 1000.0 to 1000.0)   forward-inclusive: 1000.0 (SD 0.0; 95% CI 1000.0 to 1000.0)
+    share of interventions that raise total error (dominated by no action): 5%
+
+  seeds in which full fine-tune is both more effective and more expensive than the edit: 100%
+
+wrote /workspace/out/figs_seeds/table_mechanisms.tex, fig4_seeds.png, fig5_seeds.png
