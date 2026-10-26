@@ -17,3 +17,29 @@ def http(url, data=None, headers=None, timeout=60, tries=3, binary=False):
     return None
 
 def words(t): return len(t.split())
+
+import threading
+_lock = threading.Lock()
+LEDGER = os.path.join(DATA, "spend.json")
+def add_spend(x, tag):
+    with _lock:
+        d = json.load(open(LEDGER)) if os.path.exists(LEDGER) else {"total": 0.0, "by": {}}
+        d["total"] += x; d["by"][tag] = d["by"].get(tag, 0.0) + x; json.dump(d, open(LEDGER, "w"), indent=1)
+def spend(): return json.load(open(LEDGER))["total"] if os.path.exists(LEDGER) else 0.0
+
+def chat(model, messages, max_tokens=4000, temperature=0.7, cap=100.0, reasoning_low=False, timeout=600):
+    """OpenRouter chat call. Authentication is injected by the sandbox proxy, or set OPENROUTER_API_KEY. Returns (text, cost)."""
+    body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
+    if reasoning_low: body["reasoning"] = {"effort": "low"}
+    hdr = {"Content-Type": "application/json"}
+    if os.environ.get("OPENROUTER_API_KEY"): hdr["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+    for i in range(4):
+        if spend() >= cap: raise SystemExit(f"spend cap reached: ${spend():.2f}")
+        try:
+            j = json.loads(http("https://openrouter.ai/api/v1/chat/completions", data=json.dumps(body).encode(), headers=hdr, timeout=timeout, tries=1) or "null")
+        except Exception: j = None
+        if not j or "choices" not in j: time.sleep(5 * (i + 1)); continue
+        cost = (j.get("usage") or {}).get("cost") or 0.0; add_spend(cost, model)
+        t = j["choices"][0]["message"].get("content")
+        if t: return t, cost
+    return "", 0.0
