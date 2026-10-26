@@ -151,7 +151,7 @@ P(d, "AUCs compare evaluation humans with the attacked papers of one generator; 
 H2(d, "Reporting")
 P(d, "No human participants were involved. All analyses used published papers and machine-generated text.", indent=False)
 H1(d, "Data availability")
-P(d, "Machine-generated papers, features, scores and result tables are in the replication package on Zenodo (https://doi.org/10.5281/zenodo.23664508; to be updated with this version). Human papers are public (PubMed Central open access, arXiv) and are re-collected with the identifier lists in the package.", indent=False)
+P(d, "Machine-generated papers, features, per-document scores and result tables are in version 2 of the replication package on Zenodo (concept DOI https://doi.org/10.5281/zenodo.23664508; version DOI to be added). Human papers are public (PubMed Central open access, arXiv) and are re-collected with the identifier lists in the package.", indent=False)
 H1(d, "Code availability")
 P(d, "All code is in the replication package on Zenodo (https://doi.org/10.5281/zenodo.23664508), released under the MIT licence.", indent=False)
 H1(d, "Author contributions")
