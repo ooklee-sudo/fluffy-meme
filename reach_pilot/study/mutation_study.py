@@ -90,8 +90,11 @@ class Runner:
 
     def passing_ids(self, fn):
         env = dict(os.environ, PYTHONPATH=f"{self.base}/src:{self.base}")
-        r = subprocess.run(f"{self.py} -m pytest -q --no-header -p no:cacheprovider -rA --tb=no {self.tdir}/{fn}", shell=True,
-                           cwd=self.base, capture_output=True, text=True, timeout=300, env=env)
+        try:
+            r = subprocess.run(f"{self.py} -m pytest -q --no-header -p no:cacheprovider -rA --tb=no {self.tdir}/{fn}", shell=True,
+                               cwd=self.base, capture_output=True, text=True, timeout=300, env=env)
+        except subprocess.TimeoutExpired:      # a generated test hangs (e.g. an infinite generator): the attempt counts as having no usable tests
+            return [], "timeout"
         return re.findall(r"(?m)^PASSED (\S+)", r.stdout), r.stdout[-300:]
 
 
