@@ -17,7 +17,7 @@ def sh(c, cwd=None, t=900, env=None):
 def info(project, bug):
     d = f"{BIP}/{project}/bugs/{bug}"; kv = {}
     for l in open(f"{d}/bug.info"):
-        if "=" in l: k, v = l.strip().split("=", 1); kv[k] = v.strip('"')
+        if "=" in l: k, v = l.strip().split("=", 1); kv[k.strip()] = v.strip().strip('"')
     kv["run_test"] = open(f"{d}/run_test.sh").read().strip(); kv["dir"] = d
     kv["project_url"] = re.search(r'github_url="(.+?)"', open(f"{BIP}/{project}/project.info").read()).group(1).rstrip("/")
     return kv
