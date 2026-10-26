@@ -68,7 +68,7 @@ members 0.72-0.78, redwood height 1.49-1.69.
 ## 5. Confirmatory study C2 (field test)
 
 - Data: the Upworthy Research Archive (Matias, Munger, Aubin Le Quere, Ebersole 2021). Use only tests flagged as not at risk of randomization imbalance;
-  use the confirmatory-package split as the test set and never inspect twin performance on the exploratory package before registration.
+  develop the prompt and the scoring pipeline on the archive's exploratory package only; the test set is the archive's confirmatory package, on which twin performance is evaluated once, after registration. The holdout and undeployed packages are not used.
 - Task: for each test, the twin sees the headline variants (and, if available, the lede) as an experimental choice (which would you click?) and returns
   a click propensity for each variant. Unit of analysis is the test; sample of 1,000 tests drawn at random with seed 2026.
 - Outcomes: pairwise winner agreement (twin-predicted best variant vs observed best variant, restricted to tests where the observed difference is
