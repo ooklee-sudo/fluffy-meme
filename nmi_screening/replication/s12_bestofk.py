@@ -4,7 +4,7 @@ This step writes the candidates (data/bestofk_cands.jsonl); select_bestofk() in 
 python3 s12_bestofk.py --k 6 [--gens gpt4o claude llama] [--workers 16] [--cap-usd 120]
 """
 import argparse, json, random
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 from common import *
 from s7_attacks import REWRITE
@@ -37,8 +37,9 @@ if __name__ == "__main__":
     jobs = [(r, pools["pmc" if str(r["source"]).startswith("PMC") else "arxiv"], a.k, a.cap_usd, 500 + j) for j, r in enumerate(orig) if r["id"] not in done]
     print(len(done), "papers done;", len(jobs), "to do", flush=True)
     with ThreadPoolExecutor(a.workers) as ex, open(out, "a") as f:
-        for j, rows in enumerate(ex.map(job, jobs)):
-            for x in rows: f.write(json.dumps(x) + "\n")
+        futs = [ex.submit(job, j) for j in jobs]
+        for n, fu in enumerate(as_completed(futs)):
+            for x in fu.result(): f.write(json.dumps(x) + "\n")
             f.flush()
-            if j % 10 == 0: print(j, "/", len(jobs), f"spend ${spend():.2f}", flush=True)
+            if n % 10 == 0: print(n, "/", len(jobs), f"spend ${spend():.2f}", flush=True)
     print("done")
