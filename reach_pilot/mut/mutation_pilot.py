@@ -160,7 +160,7 @@ def chat(model, prompt, tries=3):
     for _ in range(tries):
         req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
             data=json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 16000,
-                             "temperature": 0.8}).encode(),
+                             "reasoning": {"effort": "low"}, "temperature": 0.8}).encode(),
             headers={"Content-Type": "application/json",
                      **({"Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"]} if os.environ.get("OPENROUTER_API_KEY") else {})})
         j = json.load(urllib.request.urlopen(req, timeout=600))
@@ -172,19 +172,31 @@ def chat(model, prompt, tries=3):
     return "", cost
 
 
+def clean_code(text):
+    """Strip markdown fences; if the reply was cut off, drop trailing lines until the file parses."""
+    m = re.search(r"```(?:python)?\n(.*?)(?:```|$)", text, re.S)
+    code = (m.group(1) if m else text).rstrip() + "\n"
+    lines = code.splitlines()
+    while lines:
+        try:
+            ast.parse("\n".join(lines)); break
+        except SyntaxError:
+            lines.pop()
+    return "\n".join(lines) + "\n"
+
+
 def step_llm(a):
     c = cfg(); ms = json.load(open(os.path.join(W, "mutants.json")))
     base = os.path.join(W, "repo"); src = open(os.path.join(base, c["module"])).read()
     modname = c["module"][:-3].replace("/", "."); tdir = os.path.dirname(c["tests"])
     prompt = (f"Below is the source of the Python module `{modname}`. Write a thorough pytest test file for it. Test the "
-              f"behaviour of its public functions, including edge cases. Import from `{modname}`. Output only one python code block.\n\n"
+              f"behaviour of its public functions, including edge cases. Import from `{modname}`. Keep it under 250 lines. Output only one python code block.\n\n"
               f"```python\n{src}\n```")
     cost, per_attempt = 0.0, []
     for k in range(a.k):
         text, cst = chat(a.model, prompt); cost += cst
-        m = re.findall(r"```python\n(.*?)```", text, re.S)
         fn = f"test_llm_attempt{k}.py"
-        open(os.path.join(base, tdir, fn), "w").write(m[0] if m else text)
+        open(os.path.join(base, tdir, fn), "w").write(clean_code(text))
         r = subprocess.run(f"{W}/venv/bin/python -m pytest -q --no-header -p no:cacheprovider -rA --tb=no {tdir}/{fn}",
                            shell=True, cwd=base, capture_output=True, text=True, timeout=300)
         ids = re.findall(r"(?m)^PASSED (\S+)", r.stdout)       # keep only tests that pass on the original
