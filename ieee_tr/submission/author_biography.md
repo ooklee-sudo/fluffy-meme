@@ -4,7 +4,7 @@ IEEE Transactions on Reliability asks for a short biography and a photo at the
 accepted-manuscript stage. Typical content (about 100-150 words, third person):
 
 **Ook Lee** received the [degree] from [university] in [year]. He is currently
-[position] with the Department of Information Systems, Hanyang University, Seoul,
+[position] with the Department of Information System, Hanyang University, Seoul,
 Republic of Korea. His research interests include [fill in]. He has published [n]
 papers in [venues, if any].
 

@@ -555,7 +555,7 @@ def fnp(t, it=False):
 
 
 foot = ('<w:footnote w:id="1">' + fnp("Manuscript received XX XX, 2026; revised XX XX, 2026. This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors. (Corresponding author: Ook Lee.)")
-        + fnp("The author is with the Department of Information Systems, Hanyang University, Seoul 04763, Republic of Korea (e-mail: ooklee@hanyang.ac.kr).") + "</w:footnote>")
+        + fnp("The author is with the Department of Information System, Hanyang University, Seoul 04763, Republic of Korea (e-mail: ooklee@hanyang.ac.kr).") + "</w:footnote>")
 fn = fn[:fi] + foot + fn[fj:]
 open(os.path.join(work, "word/footnotes.xml"), "w", encoding="utf8").write(fn)
 
