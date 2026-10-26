@@ -11,6 +11,11 @@ rd = lambda f: [json.loads(l) for l in open(os.path.join(DATA, f))]
 
 def ds_attacks(a):
     docs = [d for d in rd("machine_deepseek.jsonl") if len(d["text"].split()) >= 2400]; random.Random(11).shuffle(docs); docs = docs[:100]
+    p1, p2 = os.path.join(DATA, "attacked_ds.jsonl"), os.path.join(DATA, "attacked2_ds.jsonl")
+    done = {json.loads(l)["id"] for l in open(p2)} if os.path.exists(p2) else set()           # resumable: papers whose second file is complete
+    if os.path.exists(p1):                                                                      # drop partial rows of papers not finished
+        keep = [l for l in open(p1) if json.loads(l)["id"] in done]; open(p1, "w").write("".join(keep))
+    docs = [d for d in docs if d["id"] not in done]; print(len(done), "done;", len(docs), "to do", flush=True)
     samp = pd.read_csv(os.path.join(DATA, "judge_sample.csv")); neg = set(samp[samp.generator == "human"].id); pools = S9.human_pool(neg)
     out1, out2 = os.path.join(DATA, "attacked_ds.jsonl"), os.path.join(DATA, "attacked2_ds.jsonl")
     def one(args):
@@ -18,7 +23,7 @@ def ds_attacks(a):
         orig = next(r for r in rows if r["cond"] == "orig"); orig.update(source=d["source"])
         rows2 = S9.job((orig, rw, pools["pmc" if str(d["source"]).startswith("PMC") else "arxiv"], a.cap_usd, 1300 + k))
         return rows, rows2
-    with ThreadPoolExecutor(a.workers) as ex, open(out1, "w") as f1, open(out2, "w") as f2:
+    with ThreadPoolExecutor(a.workers) as ex, open(out1, "a") as f1, open(out2, "a") as f2:
         for i, (r1, r2) in enumerate(ex.map(one, list(enumerate(docs)))):
             for r in r1: f1.write(json.dumps(r) + "\n")
             for r in r2: f2.write(json.dumps(r) + "\n")
