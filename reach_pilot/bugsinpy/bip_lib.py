@@ -50,6 +50,8 @@ def prepare(project, bug):
                 if rc1 != 0: sh(f"uv pip install -q --python {py} {name}", t=600)
         sh(f"uv pip install -q --python {py} pytest", t=600)
         rc, o = sh(f"uv pip install -q --python {py} -e {wt} --no-deps", t=900)
+    if not os.path.exists(f"{venv}/.setup_fixed"):   # old pytest + new setuptools (vendored typeguard) break: use a period-appropriate setuptools
+        sh(f"uv pip install -q --python {py} 'setuptools<60' wheel", t=600); open(f"{venv}/.setup_fixed", "w").write("1")
     return wt, py, kv
 
 
@@ -57,9 +59,18 @@ def dev_test_files(kv):
     return [f.strip() for f in kv["test_file"].split(";") if f.strip()]
 
 
+def patch_text(kv):
+    b = open(f"{kv['dir']}/bug_patch.txt", "rb").read()
+    for enc in ("utf-8", "utf-16"):
+        try: return b.decode(enc)
+        except UnicodeDecodeError: pass
+    return b.decode("latin-1")
+
+
 def apply_fix(wt, kv, tag):
-    """Apply the source fix (bug_patch.txt) to the working tree."""
-    rc, o = sh(f"git apply --whitespace=nowarn {kv['dir']}/bug_patch.txt", cwd=wt); return rc == 0, o[:200]
+    """Apply the source fix (bug_patch.txt, re-encoded to UTF-8 when needed) to the working tree."""
+    p = f"{wt}/.fix.diff"; open(p, "w", encoding="utf-8", newline="").write(patch_text(kv))
+    rc, o = sh(f"git apply --whitespace=nowarn {p}", cwd=wt); os.remove(p); return rc == 0, o[:200]
 
 
 def revert(wt):
