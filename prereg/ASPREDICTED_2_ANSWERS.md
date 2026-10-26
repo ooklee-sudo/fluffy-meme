@@ -1,0 +1,12 @@
+# AsPredicted #320124 (overlapping with #320110): Amendment, field test of LLM click prediction on Upworthy headline A/B tests
+
+Title: Amendment to #320110: Field test of LLM click prediction on Upworthy headline A/B tests. Type of study: observational/archival. Data source: Upworthy Research Archive (OSF jd64p) plus LLM-simulated respondents.
+
+1. Data collection already? Yes, partly: development run on the exploratory package only (150 tests, seed 11, five LLMs, persona and no-persona arms) showed weak accuracy overall, a no-persona advantage, no advantage for cue-contrast tests, and raw calibration slopes well below 1. The confirmatory package file was downloaded but no twin output was generated for it and no observed outcome was analyzed.
+2. Hypotheses: P7a excess winner agreement over test-specific chance is higher in cue-contrast tests than in non-cue tests; P7b disattenuated calibration slope above 1 in cue-contrast tests; P7c no-persona arm does at least as well as persona arm; P7d pooled no-persona excess agreement exceeds zero.
+3. DVs: observed CTR per arm; twin mean predicted click probability per arm over five draws; winner agreement among tests with arms differing at p < .05 (chi-square); excess agreement; Spearman; calibration slope (predicted on observed log-odds differences; primary disattenuated; raw also reported).
+4. Conditions: cue-contrast vs non-cue (digit, question mark, negative/loss lexicon, second-person pronoun; fixed rule in pilot/analyze_c2.py); arm persona vs no-persona; five models (claude-haiku-5.5, gpt-5.6-luna, gemini-3.7-flash, grok-4.3, llama-4-maverick).
+5. Analyses: per model and pooled; test-level bootstrap (1,000); exact binomial CI; supported if sign in >= 4 of 5 models and pooled CI excludes zero (for P7b, 1); partly supported if sign in >= 4 of 5 but CI includes the null; otherwise not supported; Benjamini-Hochberg across P7a-P7d.
+6. Exclusions: invalid or incomplete responses (counted per model); tests created 2013-06-25 to 2014-01-10; fewer than 2 or more than 6 arms; duplicate headlines; any arm below 1,000 impressions or with zero clicks.
+7. Sample: 1,000 tests from the confirmatory package (seed 2026; all eligible if fewer); five draws per test per model per arm; temperature 0.7; reasoning effort low; about 50,000 calls; budget cap 100 USD.
+8. Other: pooled over models; prompts, outputs, and code deposited publicly; deviations reported; amends only the C2 part of #320110.

@@ -1,5 +1,8 @@
 # Amendment 1 to pre-registration #320110 (written 2026-10-26, before any C2 confirmatory output was generated)
 
+Registered as AsPredicted #320124 (type: observational/archival; bundled as overlapping with #320110; confirmation email received 2026-10-26).
+The registered answers are in prereg/ASPREDICTED_2_ANSWERS.md.
+
 Reason: a literature check after registration found that (i) several groups already evaluate LLM click prediction on the Upworthy Research Archive, with weak
 accuracy and a finding that persona conditioning does not help (arXiv 2609.25010; Spotify Engineering 2026; arXiv 2606.17165), and (ii) prior work on reasoning
 and bias is mixed and does not vary reasoning effort as a dial. The field test is therefore redesigned to test a theory-derived moderator and to include a
