@@ -89,7 +89,9 @@ if __name__ == "__main__":
             if d["id"] in ids: docs.append(d)
     print(len(docs), "machine papers", flush=True)
     out = os.path.join(DATA, "attacked.jsonl"); n_rw = 0
-    with ThreadPoolExecutor(a.workers) as ex, open(out, "w") as f:
+    done = {json.loads(l)["id"] for l in open(out)} if os.path.exists(out) else set()      # resumable: keep finished papers
+    docs = [d for d in docs if d["id"] not in done]; print(len(done), "papers already attacked;", len(docs), "to do", flush=True)
+    with ThreadPoolExecutor(a.workers) as ex, open(out, "a") as f:
         for i, rows in enumerate(ex.map(job, [(d, a.cap_usd, 100 + k) for k, d in enumerate(docs)])):
             n_rw += any(r["cond"] == "rewrite" for r in rows)
             for r in rows: f.write(json.dumps(r) + "\n")
