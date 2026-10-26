@@ -62,7 +62,7 @@ class Runner:
         self.py = f"{self.d}/venv/bin/python"; self.orig = open(f"{self.base}/{mod}").read()
         self.copies = []
         for w in range(workers):
-            p = f"{self.d}/copy{w}"
+            p = f"{self.d}/copy_{os.getpid()}_{w}"
             if os.path.exists(p): shutil.rmtree(p)
             shutil.copytree(self.base, p); self.copies.append(p)
 
@@ -98,11 +98,14 @@ def key(name, mod): return f"{name}__{mod.replace('/', '_')}"
 
 def run(a):
     models = a.models.split(",")
-    for tg in json.load(open(a.targets)):
-        for mod, test in tg["modules"]:
+    si, sn = (int(x) for x in a.shard.split("/"))
+    flat = [(tg, m) for tg in json.load(open(a.targets)) for m in tg["modules"]]
+    for idx, (tg, (mod, test)) in enumerate(flat):
+        if True:
+            if idx % sn != si: continue
             if a.only and a.only != mod: continue
             if not os.path.exists(f"{W}/{tg['name']}/venv"):
-                print("skip (not set up):", tg["name"]); break
+                print("skip (not set up):", tg["name"]); continue
             k_ = key(tg["name"], mod); path = f"{RES}/{k_}.json"
             st = json.load(open(path)) if os.path.exists(path) else {"module": mod, "repo": tg["name"], "models": {}}
             R = Runner(tg["name"], mod, test)
@@ -121,7 +124,7 @@ def run(a):
                 M = st["models"].setdefault(model, {"attempts": []})
                 for k in range(len(M["attempts"]), a.k):
                     text = chat(model, prompt, a.cap_usd)
-                    fn = f"test_llm_{re.sub(r'[^a-z0-9]', '', model.split('/')[-1])}_{k}.py"
+                    fn = f"test_llm_{re.sub(r'[^a-z0-9]', '', mod.lower())}_{re.sub(r'[^a-z0-9]', '', model.split('/')[-1])}_{k}.py"
                     code = clean_code(text) if text else ""
                     R.add_test_file(fn, code)
                     ids, tail = R.passing_ids(fn) if code else ([], "")
@@ -169,6 +172,6 @@ if __name__ == "__main__":
     r = sp.add_parser("run"); r.add_argument("--targets", default=os.path.join(HERE, "targets.json"))
     r.add_argument("--models", default="anthropic/claude-haiku-5.5"); r.add_argument("--k", type=int, default=8)
     r.add_argument("--max-mutants", type=int, default=150); r.add_argument("--cap-usd", type=float, default=150.0)
-    r.add_argument("--only", default="")
+    r.add_argument("--only", default=""); r.add_argument("--shard", default="0/1", help="i/n: run every n-th module")
     p = sp.add_parser("report"); p.add_argument("--k", type=int, default=8)
     a = ap.parse_args(); {"run": run, "report": report}[a.cmd](a)
