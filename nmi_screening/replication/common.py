@@ -18,14 +18,19 @@ def http(url, data=None, headers=None, timeout=60, tries=3, binary=False):
 
 def words(t): return len(t.split())
 
-import threading
+import threading, fcntl
 _lock = threading.Lock()
 LEDGER = os.path.join(DATA, "spend.json")
+def _read():
+    try: return json.load(open(LEDGER))
+    except Exception: return {"total": 0.0, "by": {}}
 def add_spend(x, tag):
-    with _lock:
-        d = json.load(open(LEDGER)) if os.path.exists(LEDGER) else {"total": 0.0, "by": {}}
-        d["total"] += x; d["by"][tag] = d["by"].get(tag, 0.0) + x; json.dump(d, open(LEDGER, "w"), indent=1)
-def spend(): return json.load(open(LEDGER))["total"] if os.path.exists(LEDGER) else 0.0
+    """Several processes share the ledger: serialize with a file lock and replace the file atomically."""
+    with _lock, open(LEDGER + ".lock", "w") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        d = _read(); d["total"] += x; d["by"][tag] = d["by"].get(tag, 0.0) + x
+        tmp = LEDGER + f".{os.getpid()}.tmp"; json.dump(d, open(tmp, "w"), indent=1); os.replace(tmp, LEDGER)
+def spend(): return _read()["total"]
 
 def chat(model, messages, max_tokens=4000, temperature=0.7, cap=100.0, reasoning_low=False, timeout=600):
     """OpenRouter chat call. Authentication is injected by the sandbox proxy, or set OPENROUTER_API_KEY. Returns (text, cost)."""
