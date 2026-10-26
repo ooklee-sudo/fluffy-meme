@@ -1,4 +1,4 @@
-# AsPredicted answers (copy into the form; question wording may differ slightly on the live form)
+# AsPredicted pre-registration #320110: answers as submitted (2026-10-26) (copy into the form; question wording may differ slightly on the live form)
 
 ## 1. Data collection: Have any data been collected for this study already?
 Yes, partly. Exploratory twin simulations (five LLMs, 772 participants of the Twin-2K-500 mega-study, plus a reasoning-effort x temperature pilot) were run and seen before registration; propositions were formulated after seeing them. The confirmatory twin simulations (new respondents, new prompt template) and the field analysis on the Upworthy confirmatory package have NOT been run. Human benchmark effect sizes come from public data and are fixed in the registered document.

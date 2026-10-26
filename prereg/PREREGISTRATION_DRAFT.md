@@ -1,7 +1,7 @@
 # Pre-registration draft: When are synthetic agents valid? Boundary conditions for LLM digital twins
 
-Status: DRAFT. Not yet registered. Do not run the confirmatory study until this file has been registered (OSF or AsPredicted)
-and the registration link has been added at the top of this file. The git commit time of the registered version is the time stamp of record.
+Status: REGISTERED on AsPredicted, pre-registration #320110 (confirmation email received 2026-10-26). The registered text is prereg/ASPREDICTED_ANSWERS.md;
+this file is the longer working version. The confirmatory runs (C1, C2) start only after this commit. Deviations will be listed in the paper.
 
 ## 0. What is exploratory and what is confirmatory
 
