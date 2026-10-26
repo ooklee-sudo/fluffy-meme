@@ -16,7 +16,7 @@
 
 \begin{document}
 
-\title{Condition-Based Maintenance of Large Language Models\\ Under Knowledge Drift and Imperfect Repair}
+\title{Condition-Based Maintenance of Large Language Models Under Knowledge Drift and Imperfect Repair}
 
 \author{Ook Lee%
 \thanks{Manuscript received XX XX, 2026; revised XX XX, 2026. (\emph{Corresponding author: Ook Lee.})}%
@@ -93,7 +93,7 @@ Table~\ref{tab:gap} summarizes the mapping. Continual learning tells the maintai
 \caption{Literature Strands and the Questions They Leave Open}\label{tab:gap}
 \centering
 \footnotesize
-\begin{tabular}{p{0.20\columnwidth}p{0.26\columnwidth}p{0.20\columnwidth}p{0.22\columnwidth}}
+\setlength{\tabcolsep}{3pt}\begin{tabular}{p{0.19\columnwidth}p{0.25\columnwidth}p{0.20\columnwidth}p{0.22\columnwidth}}
 \toprule
 Strand & Representative work & Question answered & Left open\\
 \midrule
@@ -242,7 +242,7 @@ J(\eta;F)=\frac{(K+c_F F)\,\gamma}{\eta-F}+\frac{c_L(\eta+F)}{2}.
 \end{equation}
 Writing $\eta=F+\delta$ and minimizing in $\delta$ gives
 \begin{equation}
-\delta^\ast=\sqrt{\frac{2(K+c_F F)\gamma}{c_L}},\quad t^\ast=\frac{\delta^\ast}{\gamma},\quad J^\ast=\sqrt{2c_L\gamma\,(K+c_F F)}+c_L F.
+\begin{gathered}\delta^\ast=\sqrt{\frac{2(K+c_F F)\gamma}{c_L}},\qquad t^\ast=\frac{\delta^\ast}{\gamma},\\ J^\ast=\sqrt{2c_L\gamma\,(K+c_F F)}+c_L F.\end{gathered}
 \end{equation}
 The optimal cost rate therefore rises through two channels: the effective one-off cost inflates from $K$ to $K+c_F F$, and a permanent flow $c_L F$ remains that no cadence can remove. Holding $K$ fixed, a mechanism with smaller $F$ has a smaller effective one-off cost and therefore a smaller $\delta^\ast$ and a shorter optimal interval. \emph{Safer repairs should be used more often, not less.} When mechanisms differ in both $K$ and $F$ they must be compared through the minimized $J^\ast$, not through $K$ or $F$ alone: a cheap mechanism with large residual damage can lose to an expensive perfect repair because of the permanent term. This comparative static runs opposite to the drift-intensity effect in Section~\ref{sec:shock} and is the second closed-form prediction of the paper. Fig.~\ref{fig:cost} shows the resulting U-shaped cost-rate curves and the rightward shift of the minimizer as residual damage grows.
 
@@ -256,7 +256,7 @@ The optimal cost rate therefore rises through two channels: the effective one-of
 \subsection{State, Action, and Transition}
 Time is discretized into decision epochs. The state is $x=(d,r)$, where $d$ is the discretized degradation index and $r$ is a coarse estimate of the current drift-hazard regime (for example, an indicator of whether the time since the last shock is in a decreasing- or increasing-mean-residual-life phase). The regime evolves as an exogenous Markov chain, independent of $d$ and of the action. At each epoch the maintainer chooses a parametric action
 \begin{equation}
-a\in\mathcal A=\{\text{no-op, knowledge edit, parameter-efficient fine-tune, full retrain}\},
+\begin{gathered}a\in\mathcal A=\{\text{no-op, knowledge edit,}\\ \text{parameter-efficient fine-tune, full retrain}\},\end{gathered}
 \end{equation}
 with cost $K(a)$, forgetting increment $F(a)$, and degradation-reduction fraction $\rho(a)\in[0,1]$, so that
 \begin{equation}
@@ -367,7 +367,7 @@ Over 60 days without parametric maintenance, OLS yields a slope of 0.525 percent
 \caption{Measured Cost, Error Reduction, and Forgetting of Three Parametric Mechanisms on Pythia-70M (Ten Seeds)}\label{tab:mech}
 \centering
 \footnotesize
-\begin{tabular}{llccccc}
+\setlength{\tabcolsep}{4pt}\begin{tabular}{llccccc}
 \toprule
 Mechanism & Trainable subset & Cost, $K'$ & Cost, $K$ & Error before $\to$ after (pp) & Retention change (pp) & Raises error (\%)\\
 \midrule
