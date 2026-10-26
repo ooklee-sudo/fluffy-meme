@@ -5,7 +5,7 @@
 | `manuscript.pdf` | Main manuscript (IEEEtran journal format, 12 pages as compiled here) |
 | `manuscript_IEEE_TR.docx` | The same manuscript in the IEEE Word template (built by `../word/build_docx.py`) |
 | `source/manuscript.tex`, `source/figs/` | LaTeX source and figures (upload if the system asks for source files) |
-| `cover_letter.pdf`, `cover_letter.tex` | Cover letter; fill in the date |
+| `cover_letter.docx`, `cover_letter.pdf`, `cover_letter.tex` | Cover letter (Word, PDF, LaTeX); fill in the date |
 | `supplementary.zip` | Code, per-seed results, pilot results, figures for the measurement study |
 | `author_biography.md` | Template; the author must complete it |
 | `suggested_reviewers.md` | Candidates only; verify before use |
