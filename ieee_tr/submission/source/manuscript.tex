@@ -43,6 +43,8 @@ Condition-based maintenance, imperfect maintenance, large language models, Marko
 
 The cost structure of the decision is, however, a familiar one. Drift raises an operating-loss rate. Each intervention carries a direct cost that scales with model size and data volume. And unlike a part replacement that returns a machine to a known state, a gradient update can damage competence the organization has already certified. Reliability engineering has a mature vocabulary for exactly this situation: a degradation index, a menu of imperfect repairs, a control-limit policy, and a long-run average-cost criterion \cite{wang2002,jardine2006,vannoortwijk2009,pham1996}. This paper transfers that vocabulary to deployed language models and derives the qualitative shape of the optimal policy.
 
+Maintaining something other than a physical machine is not new to this journal. Imperfect maintenance has been analyzed here since the late 1980s \cite{nakagawa1987}, and later work covers selective maintenance of multi-state systems under imperfect maintenance \cite{liu2010} and condition-based maintenance of repairable systems that deteriorate and are also hit by shocks \cite{rafiee2015}. Software is already treated as a maintained asset: aging by resource depletion and its remedy by rejuvenation have been modeled through workload-based and measurement-based analyses \cite{bao2005,grottke2006}, and rejuvenation policies with two granularities have been optimized \cite{ning2016}. A deployed language model sits between these two literatures. Like software, it degrades without any hardware wear. Unlike a rejuvenated process, however, its repair is a parameter update whose damage depends on what the model has learned, and the drift that causes the degradation arrives from outside the system.
+
 The transfer is not merely a relabeling. Three features of LLM upkeep have no exact counterpart in classical equipment maintenance, and each has to be modeled explicitly. First, the degradation shock is an external drift event whose magnitude is a mark on a point process, not a physical wear increment. Second, the damage inflicted by a repair is anisotropic in parameter space: moving along directions of high Fisher information on the pre-update task is far more costly, in forgotten accuracy, than moving along unused directions. Third, retrieval-augmented generation supplies a compensator that lowers observed staleness without touching the plant, and therefore without incurring the imperfect-repair penalty.
 
 \subsection{Research Questions}
@@ -453,7 +455,7 @@ $R,\ \alpha,\ S_{\mathrm{eff}}$ & Retrieval reduction; absorbed drift rate; effe
 \end{table}
 
 \section*{Acknowledgment}
-This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors. The author used an AI assistant (Claude, Anthropic) to edit and restructure the language of the manuscript and to write and run the experiment and analysis code, including runs on a rented cloud GPU. The author reviewed and edited all AI-generated content and takes full responsibility for the content of this article.
 
 \section*{CRediT Authorship Contribution Statement}
 Ook Lee: Conceptualization, Methodology, Formal analysis, Investigation, Writing -- original draft, Writing -- review and editing.
@@ -465,37 +467,43 @@ The author declares that he has no known competing financial interests or person
 The measurement study uses the public EleutherAI Pythia-70M checkpoint. The code that generates the synthetic world and runs the training, drift simulation, and scoring, the per-seed result files for all ten reported seeds, and the pilot results used to fix the repair settings will be deposited in a public archive, and the DOI will be inserted before publication. No proprietary organizational telemetry is used.
 
 \begin{thebibliography}{99}
-\bibitem{arts2025} J. Arts, R. N. Boute, S. Loeys, and H. E. van Staden, ``Fifty years of maintenance optimization: Reflections and perspectives,'' \emph{Eur. J. Oper. Res.}, vol. 322, no. 3, pp. 725--739, 2025.
-\bibitem{barlow1965} R. E. Barlow and F. Proschan, \emph{Mathematical Theory of Reliability}. New York, NY, USA: Wiley, 1965.
-\bibitem{bertsekas2017} D. P. Bertsekas, \emph{Dynamic Programming and Optimal Control}, 4th ed., vol. I. Belmont, MA, USA: Athena Scientific, 2017.
-\bibitem{beytur2025} H. B. Beytur, G. de Veciana, H. Vikalo, and K. S. Chan, ``Optimal resource allocation for ML model training and deployment under concept drift,'' 2025, arXiv:2512.12816.
-\bibitem{biderman2023} S. Biderman \emph{et al.}, ``Pythia: A suite for analyzing large language models across training and scaling,'' in \emph{Proc. 40th Int. Conf. Mach. Learn.}, 2023, pp. 2397--2430.
-\bibitem{dejonge2020} B. de Jonge and P. A. Scarf, ``A review on maintenance optimization,'' \emph{Eur. J. Oper. Res.}, vol. 285, no. 3, pp. 805--824, 2020.
-\bibitem{dekker1996} R. Dekker, ``Applications of maintenance optimization models: A review and analysis,'' \emph{Rel. Eng. Syst. Saf.}, vol. 51, no. 3, pp. 229--240, 1996.
-\bibitem{dekker1997} R. Dekker, R. E. Wildeman, and F. A. van der Duyn Schouten, ``A review of multi-component maintenance models with economic dependence,'' \emph{Math. Methods Oper. Res.}, vol. 45, no. 3, pp. 411--435, 1997.
-\bibitem{gao2023} Y. Gao \emph{et al.}, ``Retrieval-augmented generation for large language models: A survey,'' 2023, arXiv:2312.10997.
-\bibitem{hoffmann2022} J. Hoffmann \emph{et al.}, ``Training compute-optimal large language models,'' 2022, arXiv:2203.15556.
-\bibitem{hu2022} E. J. Hu \emph{et al.}, ``LoRA: Low-rank adaptation of large language models,'' in \emph{Proc. Int. Conf. Learn. Represent.}, 2022.
-\bibitem{huszar2018} F. Huszár, ``Note on the quadratic penalties in elastic weight consolidation,'' \emph{Proc. Natl. Acad. Sci. U.S.A.}, vol. 115, no. 11, pp. E2496--E2497, 2018.
-\bibitem{jardine2006} A. K. S. Jardine, D. Lin, and D. Banjevic, ``A review on machinery diagnostics and prognostics implementing condition-based maintenance,'' \emph{Mech. Syst. Signal Process.}, vol. 20, no. 7, pp. 1483--1510, 2006.
-\bibitem{kaplan2020} J. Kaplan \emph{et al.}, ``Scaling laws for neural language models,'' 2020, arXiv:2001.08361.
-\bibitem{kirkpatrick2017} J. Kirkpatrick \emph{et al.}, ``Overcoming catastrophic forgetting in neural networks,'' \emph{Proc. Natl. Acad. Sci. U.S.A.}, vol. 114, no. 13, pp. 3521--3526, 2017.
-\bibitem{kunstner2019} F. Kunstner, L. Balles, and P. Hennig, ``Limitations of the empirical Fisher approximation for natural gradient descent,'' in \emph{Adv. Neural Inf. Process. Syst.}, vol. 32, 2019.
-\bibitem{lu2019} J. Lu, A. Liu, F. Dong, F. Gu, J. Gama, and G. Zhang, ``Learning under concept drift: A review,'' \emph{IEEE Trans. Knowl. Data Eng.}, vol. 31, no. 12, pp. 2346--2363, Dec. 2019.
-\bibitem{luo2023} Y. Luo, Z. Yang, F. Meng, Y. Li, J. Zhou, and Y. Zhang, ``An empirical study of catastrophic forgetting in large language models during continual fine-tuning,'' 2023, arXiv:2308.08747.
-\bibitem{mahadevan2023} A. Mahadevan and M. Mathioudakis, ``Cost-effective retraining of machine learning models,'' 2023, arXiv:2310.04216.
-\bibitem{ouyang2022} L. Ouyang \emph{et al.}, ``Training language models to follow instructions with human feedback,'' in \emph{Adv. Neural Inf. Process. Syst.}, vol. 35, 2022.
-\bibitem{pham1996} H. Pham and H. Wang, ``Imperfect maintenance,'' \emph{Eur. J. Oper. Res.}, vol. 94, no. 3, pp. 425--438, 1996.
-\bibitem{puterman1994} M. L. Puterman, \emph{Markov Decision Processes: Discrete Stochastic Dynamic Programming}. New York, NY, USA: Wiley, 1994.
-\bibitem{ross1996} S. M. Ross, \emph{Stochastic Processes}, 2nd ed. New York, NY, USA: Wiley, 1996.
-\bibitem{shi2024} H. Shi \emph{et al.}, ``Continual learning of large language models: A comprehensive survey,'' 2024, arXiv:2404.16789.
-\bibitem{shumailov2024} I. Shumailov, Z. Shumaylov, Y. Zhao, N. Papernot, R. Anderson, and Y. Gal, ``AI models collapse when trained on recursively generated data,'' \emph{Nature}, vol. 631, pp. 755--759, 2024.
-\bibitem{topkis1998} D. M. Topkis, \emph{Supermodularity and Complementarity}. Princeton, NJ, USA: Princeton Univ. Press, 1998.
-\bibitem{vannoortwijk2009} J. M. van Noortwijk, ``A survey of the application of gamma processes in maintenance,'' \emph{Rel. Eng. Syst. Saf.}, vol. 94, no. 1, pp. 2--21, 2009.
 \bibitem{wang2002} H. Wang, ``A survey of maintenance policies of deteriorating systems,'' \emph{Eur. J. Oper. Res.}, vol. 139, no. 3, pp. 469--489, 2002.
-\bibitem{wang2024} S. Wang, Y. Zhu, H. Liu, Z. Zheng, C. Chen, and J. Li, ``Knowledge editing for large language models: A survey,'' \emph{ACM Comput. Surv.}, vol. 57, no. 3, 2024.
+\bibitem{jardine2006} A. K. S. Jardine, D. Lin, and D. Banjevic, ``A review on machinery diagnostics and prognostics implementing condition-based maintenance,'' \emph{Mech. Syst. Signal Process.}, vol. 20, no. 7, pp. 1483--1510, 2006.
+\bibitem{vannoortwijk2009} J. M. van Noortwijk, ``A survey of the application of gamma processes in maintenance,'' \emph{Rel. Eng. Syst. Saf.}, vol. 94, no. 1, pp. 2--21, 2009.
+\bibitem{pham1996} H. Pham and H. Wang, ``Imperfect maintenance,'' \emph{Eur. J. Oper. Res.}, vol. 94, no. 3, pp. 425--438, 1996.
+\bibitem{nakagawa1987} T. Nakagawa and K. Yasui, ``Optimum policies for a system with imperfect maintenance,'' \emph{IEEE Trans. Rel.}, vol. R-36, no. 5, pp. 631--633, Dec. 1987.
+\bibitem{liu2010} Y. Liu and H.-Z. Huang, ``Optimal selective maintenance strategy for multi-state systems under imperfect maintenance,'' \emph{IEEE Trans. Rel.}, vol. 59, no. 2, pp. 356--367, Jun. 2010.
+\bibitem{rafiee2015} K. Rafiee, Q. Feng, and D. W. Coit, ``Condition-based maintenance for repairable deteriorating systems subject to a generalized mixed shock model,'' \emph{IEEE Trans. Rel.}, vol. 64, no. 4, pp. 1164--1174, Dec. 2015.
+\bibitem{bao2005} Y. Bao, X. Sun, and K. S. Trivedi, ``A workload-based analysis of software aging, and rejuvenation,'' \emph{IEEE Trans. Rel.}, vol. 54, no. 3, pp. 541--548, Sep. 2005.
+\bibitem{grottke2006} M. Grottke, L. Li, K. Vaidyanathan, and K. S. Trivedi, ``Analysis of software aging in a web server,'' \emph{IEEE Trans. Rel.}, vol. 55, no. 3, pp. 411--420, Sep. 2006.
+\bibitem{ning2016} G. Ning \emph{et al.}, ``Optimization of two-granularity software rejuvenation policy based on the Markov regenerative process,'' \emph{IEEE Trans. Rel.}, vol. 65, no. 4, pp. 1630--1646, Dec. 2016.
+\bibitem{kirkpatrick2017} J. Kirkpatrick \emph{et al.}, ``Overcoming catastrophic forgetting in neural networks,'' \emph{Proc. Natl. Acad. Sci. U.S.A.}, vol. 114, no. 13, pp. 3521--3526, 2017.
+\bibitem{barlow1965} R. E. Barlow and F. Proschan, \emph{Mathematical Theory of Reliability}. New York, NY, USA: Wiley, 1965.
+\bibitem{biderman2023} S. Biderman \emph{et al.}, ``Pythia: A suite for analyzing large language models across training and scaling,'' in \emph{Proc. 40th Int. Conf. Mach. Learn.}, 2023, pp. 2397--2430.
+\bibitem{dekker1996} R. Dekker, ``Applications of maintenance optimization models: A review and analysis,'' \emph{Rel. Eng. Syst. Saf.}, vol. 51, no. 3, pp. 229--240, 1996.
+\bibitem{dejonge2020} B. de Jonge and P. A. Scarf, ``A review on maintenance optimization,'' \emph{Eur. J. Oper. Res.}, vol. 285, no. 3, pp. 805--824, 2020.
+\bibitem{arts2025} J. Arts, R. N. Boute, S. Loeys, and H. E. van Staden, ``Fifty years of maintenance optimization: Reflections and perspectives,'' \emph{Eur. J. Oper. Res.}, vol. 322, no. 3, pp. 725--739, 2025.
+\bibitem{lu2019} J. Lu, A. Liu, F. Dong, F. Gu, J. Gama, and G. Zhang, ``Learning under concept drift: A review,'' \emph{IEEE Trans. Knowl. Data Eng.}, vol. 31, no. 12, pp. 2346--2363, Dec. 2019.
+\bibitem{mahadevan2023} A. Mahadevan and M. Mathioudakis, ``Cost-effective retraining of machine learning models,'' 2023, arXiv:2310.04216.
+\bibitem{beytur2025} H. B. Beytur, G. de Veciana, H. Vikalo, and K. S. Chan, ``Optimal resource allocation for ML model training and deployment under concept drift,'' 2025, arXiv:2512.12816.
 \bibitem{williams2026} E. Williams, T. Sinha, M. Lyttle, and Y. Kanagasingam, ``Optimising retraining frequency for a paediatric emergency department admission prediction model,'' \emph{Emerg. Med. Australas.}, vol. 38, no. 3, 2026.
+\bibitem{shi2024} H. Shi \emph{et al.}, ``Continual learning of large language models: A comprehensive survey,'' 2024, arXiv:2404.16789.
+\bibitem{luo2023} Y. Luo, Z. Yang, F. Meng, Y. Li, J. Zhou, and Y. Zhang, ``An empirical study of catastrophic forgetting in large language models during continual fine-tuning,'' 2023, arXiv:2308.08747.
+\bibitem{huszar2018} F. Huszár, ``Note on the quadratic penalties in elastic weight consolidation,'' \emph{Proc. Natl. Acad. Sci. U.S.A.}, vol. 115, no. 11, pp. E2496--E2497, 2018.
+\bibitem{kunstner2019} F. Kunstner, L. Balles, and P. Hennig, ``Limitations of the empirical Fisher approximation for natural gradient descent,'' in \emph{Adv. Neural Inf. Process. Syst.}, vol. 32, 2019.
+\bibitem{wang2024} S. Wang, Y. Zhu, H. Liu, Z. Zheng, C. Chen, and J. Li, ``Knowledge editing for large language models: A survey,'' \emph{ACM Comput. Surv.}, vol. 57, no. 3, 2024.
 \bibitem{zhang2024} N. Zhang \emph{et al.}, ``A comprehensive study of knowledge editing for large language models,'' 2024, arXiv:2401.01286.
+\bibitem{hu2022} E. J. Hu \emph{et al.}, ``LoRA: Low-rank adaptation of large language models,'' in \emph{Proc. Int. Conf. Learn. Represent.}, 2022.
+\bibitem{gao2023} Y. Gao \emph{et al.}, ``Retrieval-augmented generation for large language models: A survey,'' 2023, arXiv:2312.10997.
+\bibitem{kaplan2020} J. Kaplan \emph{et al.}, ``Scaling laws for neural language models,'' 2020, arXiv:2001.08361.
+\bibitem{hoffmann2022} J. Hoffmann \emph{et al.}, ``Training compute-optimal large language models,'' 2022, arXiv:2203.15556.
+\bibitem{ouyang2022} L. Ouyang \emph{et al.}, ``Training language models to follow instructions with human feedback,'' in \emph{Adv. Neural Inf. Process. Syst.}, vol. 35, 2022.
+\bibitem{ross1996} S. M. Ross, \emph{Stochastic Processes}, 2nd ed. New York, NY, USA: Wiley, 1996.
+\bibitem{puterman1994} M. L. Puterman, \emph{Markov Decision Processes: Discrete Stochastic Dynamic Programming}. New York, NY, USA: Wiley, 1994.
+\bibitem{bertsekas2017} D. P. Bertsekas, \emph{Dynamic Programming and Optimal Control}, 4th ed., vol. I. Belmont, MA, USA: Athena Scientific, 2017.
+\bibitem{topkis1998} D. M. Topkis, \emph{Supermodularity and Complementarity}. Princeton, NJ, USA: Princeton Univ. Press, 1998.
+\bibitem{dekker1997} R. Dekker, R. E. Wildeman, and F. A. van der Duyn Schouten, ``A review of multi-component maintenance models with economic dependence,'' \emph{Math. Methods Oper. Res.}, vol. 45, no. 3, pp. 411--435, 1997.
+\bibitem{shumailov2024} I. Shumailov, Z. Shumaylov, Y. Zhao, N. Papernot, R. Anderson, and Y. Gal, ``AI models collapse when trained on recursively generated data,'' \emph{Nature}, vol. 631, pp. 755--759, 2024.
 \end{thebibliography}
 
 % \begin{IEEEbiographynophoto}{Ook Lee}
