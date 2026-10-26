@@ -329,10 +329,11 @@ def run_seed(seed, args):
             n_back = n_all
             tokens = sc.train(m, params, ex, args.full_epochs, args.full_lr, args.full_bs, rng)
             model_eval = m
+        fit = float(sc.correct(model_eval, [item(k, truth_s) for k in drifted]).mean()) if drifted else float("nan")
         n_train = n_params(params)
         dyn_after = 100 * (1 - sc.correct(model_eval, [item(k, truth_s) for k in dyn_keys]).mean())
         sta_after = 100 * (1 - sc.correct(model_eval, [item(k, truth0) for k in sta_keys]).mean())
-        return dict(dyn_after=float(dyn_after), static_after=float(sta_after), n_train=n_train,
+        return dict(fit_logged=fit, n_logged=len(drifted), dyn_after=float(dyn_after), static_after=float(sta_after), n_train=n_train,
                     tokens=int(tokens), cost_trainable=float(6 * n_train * tokens),
                     cost_forward_inclusive=float(2 * tokens * (n_all + n_back + n_train)))
 
