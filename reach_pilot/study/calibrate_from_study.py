@@ -14,6 +14,7 @@ import argparse, glob, json, os
 import numpy as np
 from scipy.optimize import brentq
 
+MIN_MUT = 30          # modules with fewer mutants give unstable ratios and are excluded from the main estimate
 HERE = os.path.dirname(os.path.abspath(__file__)); RES = os.path.join(HERE, "work", "results")
 h = lambda x: 0.0 if x <= 1 else 1 - (1 + np.log(x)) / x
 
@@ -42,7 +43,7 @@ def load(K, either):
         H, T = [], []
         for d in data:
             at = d["models"].get(m, {}).get("attempts", [])
-            if len(at) < K or "human" not in d: continue
+            if len(at) < K or "human" not in d or len(d["human"]) < MIN_MUT: continue
             H.append(np.array(d["human"], bool)); T.append(np.any([np.array(x["killed"], bool) for x in at[:K]], axis=0))
         if H: out[m] = (H, T)
     return out
