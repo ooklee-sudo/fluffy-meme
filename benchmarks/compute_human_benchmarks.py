@@ -66,3 +66,26 @@ t['y'] = t.sel.str.extract(r'^(\d)')[0].astype(float)
 a, b = t[t.targeted].y, t[~t.targeted].y
 sd = np.sqrt(((len(a)-1)*a.var() + (len(b)-1)*b.var())/(len(a)+len(b)-2))
 print(f'Fairness: targeted {a.mean():.2f} (n={len(a)}) vs broad {b.mean():.2f} (n={len(b)}), d={(a.mean()-b.mean())/sd:.2f}, p={stats.ttest_ind(a,b).pvalue:.2g}')
+
+# ---- Twin-2K-500 classic paradigms (optional second argument: dir with wave*_response_label.csv) ----
+if len(sys.argv) > 2:
+    E = sys.argv[2]
+    def cohen(a, b):
+        a, b = a.dropna(), b.dropna()
+        sd = np.sqrt(((len(a)-1)*a.var() + (len(b)-1)*b.var())/(len(a)+len(b)-2)); d = (a.mean()-b.mean())/sd
+        se = np.sqrt((len(a)+len(b))/(len(a)*len(b)) + d**2/(2*(len(a)+len(b))))
+        return d, d-1.96*se, d+1.96*se, len(a), len(b), stats.ttest_ind(a, b, equal_var=False).pvalue
+    scale = {'I strongly favor program A': 1, 'I favor program A': 2, 'I slightly favor program A': 3,
+             'I slightly favor program B': 4, 'I favor program B': 5, 'I strongly favor program B': 6}
+    for wave in ['wave1_3', 'wave4']:
+        w = pd.read_csv(f'{E}/{wave}_response_label.csv', low_memory=False)
+        # Framing (Asian disease): higher = prefers risky program B; loss frame (QID158) vs gain frame (QID157)
+        loss, gain = w['QID158'].map(scale), w['QID157'].map(scale)
+        d, lo, hi, n1, n0, p = cohen(loss, gain)
+        print(f'[{wave}] Framing: loss mean {loss.mean():.2f} (n={n1}) gain mean {gain.mean():.2f} (n={n0}) d={d:.2f} [{lo:.2f},{hi:.2f}] p={p:.2g}')
+        # Anchoring: high vs low anchor, log10 of numeric estimates
+        for lab, hi_c, lo_c in [('African countries (65 vs 12)', 'QID166_TEXT', 'QID164_TEXT'),
+                                ('Redwood height (1000 vs 85 ft)', 'QID170_TEXT', 'QID168_TEXT')]:
+            h = np.log10(pd.to_numeric(w[hi_c], errors='coerce').clip(lower=1)); l = np.log10(pd.to_numeric(w[lo_c], errors='coerce').clip(lower=1))
+            d, lo, hi, n1, n0, p = cohen(h, l)
+            print(f'[{wave}] Anchoring {lab}: medians {10**h.median():.0f} vs {10**l.median():.0f} (n={n1},{n0}) d(log)={d:.2f} [{lo:.2f},{hi:.2f}] p={p:.2g}')
