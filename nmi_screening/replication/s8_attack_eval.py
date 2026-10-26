@@ -19,7 +19,8 @@ from s5_judges import PROMPT, excerpt, parse
 EV = ["paren", "bracket", "semicolon", "quote", "marker", "passive", "nominal"]
 CLUST = [f"rate_{e}" for e in EV] + [f"fano_mean_{e}" for e in EV] + [f"fano_slope_{e}" for e in EV]
 RATES_DISP = [f"rate_{e}" for e in EV] + [f"disp_{e}" for e in EV]
-att = lambda: [json.loads(l) for l in open(os.path.join(DATA, "attacked.jsonl"))]
+ATT = os.environ.get("ATT", "attacked")      # which attack file to score: attacked (Step 7) or attacked2 (Step 9)
+att = lambda: [json.loads(l) for l in open(os.path.join(DATA, ATT + ".jsonl"))]
 samp = lambda: pd.read_csv(os.path.join(DATA, "judge_sample.csv"))
 
 def local(a):
@@ -29,7 +30,7 @@ def local(a):
     for r in A:
         f = features(r["text"])
         if f: rows.append(dict(id=r["id"], cond=r["cond"], generator=r["generator"], **f))
-    af = pd.DataFrame(rows); af.to_csv(os.path.join(DATA, "attacked_features.csv"), index=False)
+    af = pd.DataFrame(rows); af.to_csv(os.path.join(DATA, ATT + "_features.csv"), index=False)
     out = []
     for g in ("gpt4o", "claude", "llama"):
         train_gens = [x for x in ("gpt4o", "claude") if x != g]               # Llama (the rewriter) and the target are excluded
@@ -42,7 +43,7 @@ def local(a):
                 s = np.concatenate([m.predict_proba(te_h[cols].values)[:, 1], m.predict_proba(grp[cols].values)[:, 1]])
                 y = np.concatenate([np.zeros(len(te_h)), np.ones(len(grp))])
                 out.append(dict(detector=name, generator=g, cond=cond, auc=roc_auc_score(y, s), n=len(grp)))
-    pd.DataFrame(out).to_csv(os.path.join(DATA, "attack_local_results.csv"), index=False); print(pd.DataFrame(out).pivot_table(index=["detector", "generator"], columns="cond", values="auc").round(3))
+    pd.DataFrame(out).to_csv(os.path.join(DATA, ("attack_local_results.csv" if ATT == "attacked" else ATT + "_local_results.csv")), index=False); print(pd.DataFrame(out).pivot_table(index=["detector", "generator"], columns="cond", values="auc").round(3))
 
 def judge(a):
     A = [r for r in att() if r["cond"] in ("orig", "edit1.0", "rewrite", "hybrid1.0")]; out = os.path.join(DATA, "attack_judge_scores.csv")
@@ -63,7 +64,7 @@ def pod_docs(a):
         d = json.loads(l)
         if d["id"] in hum: rows.append(dict(id=d["id"] + "|clean", cond="clean", source=d["source"], label=0, generator="human", text=d["text"]))
     for r in att(): rows.append(dict(id=r["id"] + "|" + r["cond"], cond=r["cond"], source=r["source"], label=1, generator=r["generator"], text=excerpt(r["text"])))
-    with open(os.path.join(DATA, "attacked_docs.jsonl"), "w") as f:
+    with open(os.path.join(DATA, ATT + "_docs.jsonl"), "w") as f:
         for r in rows: f.write(json.dumps(r) + "\n")
     print(len(rows), "documents for the pod")
 
