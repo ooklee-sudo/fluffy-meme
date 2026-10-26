@@ -324,6 +324,12 @@ def run_seed(seed, args):
             for p in params:
                 p.requires_grad_(True)
             ex = [(sc.prompt(companies[k[0]], k[1]), truth_s[k]) for k in drifted]
+            # locality constraint: replay unchanged facts so that the edit does not overwrite them
+            others = [k for k in dyn_keys + sta_keys if k not in set(drifted)]
+            if ex and args.edit_replay > 0:
+                pick = rng.permutation(len(others))[:int(round(args.edit_replay * len(drifted)))]
+                ex += [(sc.prompt(companies[others[j][0]], others[j][1]),
+                        truth_s.get(others[j], truth0.get(others[j]))) for j in pick]
             n_back = n_params([p for l in m.gpt_neox.layers[edit_L:] for p in l.parameters()]) \
                 + n_params(m.gpt_neox.final_layer_norm.parameters()) + n_params(getattr(m, "embed_out", getattr(m, "lm_head", None)).parameters())
             tokens = sc.train(m, params, ex, args.edit_epochs, args.edit_lr, args.edit_bs, rng) if ex else 0
@@ -417,6 +423,7 @@ def main():
     ap.add_argument("--edit-layer", type=int, default=3)
     ap.add_argument("--edit-epochs", type=int, default=15)
     ap.add_argument("--edit-lr", type=float, default=5e-4)
+    ap.add_argument("--edit-replay", type=float, default=1.0, help="unchanged facts replayed per drifted fact")
     ap.add_argument("--edit-bs", type=int, default=8)
     ap.add_argument("--lora-rank", type=int, default=16)
     ap.add_argument("--lora-epochs", type=int, default=15)
