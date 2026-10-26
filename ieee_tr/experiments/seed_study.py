@@ -389,7 +389,7 @@ def main():
     ap.add_argument("--coverage", type=float, default=0.6, help="share of dynamic facts in the store")
     ap.add_argument("--maint-days", type=int, nargs="+", default=[10, 30])
     # deployed checkpoint
-    ap.add_argument("--base-lr", type=float, default=3e-4)
+    ap.add_argument("--base-lr", type=float, default=1e-3)
     ap.add_argument("--base-bs", type=int, default=32)
     ap.add_argument("--base-target", type=float, default=0.95)
     ap.add_argument("--base-check-every", type=int, default=4)
