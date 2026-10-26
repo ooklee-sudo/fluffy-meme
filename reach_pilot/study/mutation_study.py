@@ -68,8 +68,9 @@ class Runner:
 
     def pytest(self, cwd, args, timeout=60):
         try:
+            env = dict(os.environ, PYTHONPATH=f"{cwd}/src:{cwd}")   # src-layout repos must import the mutated copy, not the editable install
             r = subprocess.run(f"{self.py} -m pytest -x -q --no-header -p no:cacheprovider {args}", shell=True, cwd=cwd,
-                               capture_output=True, text=True, timeout=timeout); return r.returncode
+                               capture_output=True, text=True, timeout=timeout, env=env); return r.returncode
         except subprocess.TimeoutExpired:
             return 124
 
@@ -88,8 +89,9 @@ class Runner:
             open(f"{p}/{self.tdir}/{fn}", "w").write(code)
 
     def passing_ids(self, fn):
+        env = dict(os.environ, PYTHONPATH=f"{self.base}/src:{self.base}")
         r = subprocess.run(f"{self.py} -m pytest -q --no-header -p no:cacheprovider -rA --tb=no {self.tdir}/{fn}", shell=True,
-                           cwd=self.base, capture_output=True, text=True, timeout=300)
+                           cwd=self.base, capture_output=True, text=True, timeout=300, env=env)
         return re.findall(r"(?m)^PASSED (\S+)", r.stdout), r.stdout[-300:]
 
 
