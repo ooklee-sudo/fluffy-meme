@@ -1,0 +1,50 @@
+{('anthropic/claude-haiku-4.5', 'B'): '13/200 excl', ('anthropic/claude-haiku-4.5', 'A'): '97/200 excl'}
+
+Validity level by effect and template (share of models at level 2 / 1 / 0):
+anch_africa    A: 0.08 / 0.92 / 0.00  (n models 13)
+anch_africa    B: 0.15 / 0.85 / 0.00  (n models 13)
+anch_redwood   A: 0.15 / 0.85 / 0.00  (n models 13)
+anch_redwood   B: 0.15 / 0.85 / 0.00  (n models 13)
+attraction     A: 0.08 / 0.85 / 0.08  (n models 13)
+attraction     B: 0.15 / 0.62 / 0.23  (n models 13)
+default_green  A: 0.08 / 0.08 / 0.85  (n models 13)
+default_green  B: 0.00 / 0.15 / 0.85  (n models 13)
+default_organ  A: 0.15 / 0.00 / 0.85  (n models 13)
+default_organ  B: 0.15 / 0.00 / 0.85  (n models 13)
+fair           A: 0.23 / 0.54 / 0.23  (n models 13)
+fair           B: 0.31 / 0.46 / 0.23  (n models 13)
+frame          A: 0.08 / 0.85 / 0.08  (n models 13)
+frame          B: 0.08 / 0.85 / 0.08  (n models 13)
+
+Template stability: classification agreement A vs B = 0.86 (kappa 0.75); correlation of z-scored discrepancies = 0.87 (n = 91 model-effect pairs)
+Generation stability (same template; share of effects with identical level and correlation of z-scored D across consecutive generations):
+  gemini-flash   A gemini-3.5-flash -> gemini-3.6-flash: level agreement 0.71, corr(z) 0.64
+  gemini-flash   A gemini-3.6-flash -> gemini-3.7-flash: level agreement 0.71, corr(z) 0.70
+  gemini-flash   B gemini-3.5-flash -> gemini-3.6-flash: level agreement 0.71, corr(z) 0.65
+  gemini-flash   B gemini-3.6-flash -> gemini-3.7-flash: level agreement 0.43, corr(z) 0.48
+  grok           A grok-4.3 -> grok-4.5: level agreement 0.71, corr(z) 0.29
+  grok           A grok-4.5 -> grok-4.7: level agreement 0.71, corr(z) -0.06
+  grok           B grok-4.3 -> grok-4.5: level agreement 0.57, corr(z) 0.46
+  grok           B grok-4.5 -> grok-4.7: level agreement 0.43, corr(z) 0.39
+  claude-haiku   A claude-haiku-4.5 -> claude-haiku-5.5: level agreement 0.57, corr(z) 0.07
+  claude-haiku   B claude-haiku-4.5 -> claude-haiku-5.5: level agreement 0.71, corr(z) 0.50
+  claude-sonnet  A claude-sonnet-5 -> claude-sonnet-5.5: level agreement 0.57, corr(z) -0.73
+  claude-sonnet  B claude-sonnet-5 -> claude-sonnet-5.5: level agreement 0.71, corr(z) 0.06
+  gpt            A gpt-5.2 -> gpt-5.4: level agreement 0.71, corr(z) 0.55
+  gpt            A gpt-5.4 -> gpt-5.5: level agreement 1.00, corr(z) 0.67
+  gpt            B gpt-5.2 -> gpt-5.4: level agreement 0.71, corr(z) 0.55
+  gpt            B gpt-5.4 -> gpt-5.5: level agreement 1.00, corr(z) 0.84
+
+Variance decomposition of z-scored discrepancies (share of total sum of squares):
+  model                0.25
+  effect               0.00
+  template             0.00
+  model x effect       0.68
+  model x template     0.01
+  effect x template    0.01
+  residual (3-way)     0.05
+  model main effect splits into family 0.78 and generation-within-family 0.22
+
+real	0m22.670s
+user	0m22.691s
+sys	0m0.241s
