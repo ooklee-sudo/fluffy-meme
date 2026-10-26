@@ -1,0 +1,195 @@
+0 done; 152 to do
+claude:PMC5002421 3383 words $0.093 total $1.62
+claude:PMC4319267 3402 words $0.090 total $1.62
+Traceback (most recent call last):
+  File "/home/user/fluffy-meme/nmi_screening/replication/s2_generate.py", line 49, in <module>
+    for r in ex.map(one, todo):
+             ~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/_base.py", line 625, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/_base.py", line 318, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/_base.py", line 453, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/concurrent/futures/_base.py", line 402, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/user/fluffy-meme/nmi_screening/replication/s2_generate.py", line 30, in one
+    t, c = chat(MODELS[gen], [{"role": "user", "content": prompt(level, h["title"], h["abstract"], sec)}], max_tokens=3000,
+           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                temperature=0.7, cap=cap, reasoning_low=(gen == "claude"))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/fluffy-meme/nmi_screening/replication/common.py", line 37, in chat
+    if spend() >= cap: raise SystemExit(f"spend cap reached: ${spend():.2f}")
+       ~~~~~^^
+  File "/home/user/fluffy-meme/nmi_screening/replication/common.py", line 28, in spend
+    def spend(): return json.load(open(LEDGER))["total"] if os.path.exists(LEDGER) else 0.0
+                        ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2 done; 150 to do
+claude:arXiv:1702.04242 3796 words $0.082 total $4.65
+claude:arXiv:1908.07110 3422 words $0.081 total $4.65
+claude:PMC6516191 3492 words $0.087 total $4.65
+claude:arXiv:1703.04723 3661 words $0.082 total $4.65
+claude:arXiv:1808.00733 3502 words $0.081 total $4.65
+claude:arXiv:1809.04942 3787 words $0.076 total $4.65
+claude:PMC6394476 3426 words $0.084 total $5.78
+claude:PMC6651818 3309 words $0.093 total $6.03
+claude:arXiv:1601.07036 3618 words $0.078 total $6.03
+claude:PMC6350145 3565 words $0.086 total $6.03
+claude:arXiv:1806.02291 3639 words $0.077 total $6.03
+claude:arXiv:1811.05134 3562 words $0.076 total $6.03
+claude:PMC5175490 3099 words $0.082 total $6.93
+claude:arXiv:1511.04466 3698 words $0.082 total $7.25
+claude:PMC4428766 3440 words $0.085 total $7.25
+claude:arXiv:1504.03115 3567 words $0.075 total $7.25
+claude:PMC5068491 3339 words $0.086 total $7.25
+claude:arXiv:1701.01875 3525 words $0.078 total $7.30
+claude:arXiv:1504.06681 3489 words $0.077 total $8.16
+claude:PMC6448976 3509 words $0.093 total $8.45
+claude:arXiv:1906.04356 3534 words $0.079 total $8.45
+claude:PMC4610966 3272 words $0.087 total $8.57
+claude:arXiv:1706.06246 3732 words $0.080 total $8.71
+claude:arXiv:1707.00524 3639 words $0.076 total $8.71
+claude:PMC5074311 3341 words $0.093 total $9.80
+claude:arXiv:1809.02302 3479 words $0.074 total $9.80
+claude:PMC4603034 3312 words $0.083 total $9.80
+claude:PMC6322643 3418 words $0.085 total $9.94
+claude:PMC6195122 3368 words $0.083 total $10.15
+claude:arXiv:1807.03486 3798 words $0.082 total $10.15
+claude:PMC5627442 3592 words $0.083 total $11.15
+claude:PMC4752678 3420 words $0.076 total $11.15
+claude:arXiv:1711.04611 3404 words $0.076 total $11.18
+claude:PMC4715342 3457 words $0.088 total $11.42
+claude:PMC5792446 3422 words $0.082 total $11.52
+claude:PMC6178638 3108 words $0.080 total $11.52
+claude:PMC5312590 3253 words $0.079 total $12.34
+claude:PMC4641285 3404 words $0.082 total $12.47
+claude:PMC6065460 3666 words $0.081 total $12.65
+claude:arXiv:1712.03332 3666 words $0.079 total $12.73
+claude:PMC5183782 3277 words $0.087 total $12.75
+claude:PMC6038222 3423 words $0.083 total $12.83
+claude:PMC5898886 3448 words $0.094 total $13.85
+claude:PMC5740082 3280 words $0.094 total $13.89
+claude:arXiv:1811.01461 3812 words $0.078 total $14.04
+claude:arXiv:1508.06333 3927 words $0.086 total $14.35
+claude:arXiv:1902.08684 3608 words $0.074 total $14.35
+claude:PMC6136633 3480 words $0.083 total $14.35
+claude:arXiv:1706.04479 3534 words $0.092 total $15.42
+claude:PMC6497376 3537 words $0.087 total $15.42
+claude:PMC5217634 3574 words $0.095 total $15.50
+claude:PMC4735535 3146 words $0.078 total $15.50
+claude:arXiv:1504.06833 3670 words $0.076 total $15.56
+claude:PMC5713030 3737 words $0.086 total $15.75
+claude:arXiv:1601.05569 3345 words $0.072 total $16.48
+claude:PMC5223398 3541 words $0.089 total $16.67
+claude:PMC4302285 3301 words $0.079 total $16.67
+claude:arXiv:1707.06299 3474 words $0.068 total $16.69
+claude:arXiv:1909.04377 3402 words $0.069 total $16.78
+claude:PMC6250099 3301 words $0.085 total $17.06
+claude:PMC4588467 3348 words $0.083 total $17.87
+claude:arXiv:1709.02274 3769 words $0.084 total $17.99
+claude:arXiv:1704.02262 3517 words $0.079 total $18.07
+claude:arXiv:1804.02510 3566 words $0.085 total $18.19
+claude:arXiv:1905.04349 3738 words $0.079 total $18.21
+claude:PMC6006153 3283 words $0.080 total $18.38
+claude:PMC6570848 3269 words $0.084 total $19.28
+claude:PMC6434336 3301 words $0.081 total $19.28
+claude:PMC5961615 3608 words $0.087 total $19.62
+claude:PMC6390067 3019 words $0.080 total $19.62
+claude:PMC5937785 3485 words $0.082 total $19.62
+claude:PMC5912368 3508 words $0.090 total $20.07
+claude:PMC5515432 3467 words $0.093 total $20.72
+claude:PMC4651408 3367 words $0.091 total $20.72
+claude:PMC6291425 3101 words $0.095 total $20.77
+claude:arXiv:1705.07143 3666 words $0.086 total $20.85
+claude:PMC6019878 3221 words $0.095 total $20.85
+claude:arXiv:1902.03949 3622 words $0.082 total $21.01
+claude:PMC4459033 3382 words $0.076 total $21.16
+claude:PMC6067719 3314 words $0.077 total $21.24
+claude:PMC5114192 3488 words $0.092 total $21.33
+claude:arXiv:1708.01465 3546 words $0.077 total $21.33
+claude:PMC4946676 3619 words $0.082 total $21.35
+claude:arXiv:1809.01583 3684 words $0.090 total $21.56
+claude:PMC6533552 3689 words $0.085 total $21.67
+claude:arXiv:1801.07985 3617 words $0.080 total $21.78
+claude:PMC5479424 3255 words $0.094 total $21.85
+claude:PMC4830160 3314 words $0.088 total $21.85
+claude:arXiv:1712.06316 3542 words $0.077 total $21.89
+claude:PMC6287139 3303 words $0.084 total $21.99
+claude:PMC4958360 3181 words $0.089 total $22.21
+claude:PMC4549775 3338 words $0.078 total $22.27
+claude:PMC4393625 3466 words $0.082 total $22.33
+claude:arXiv:1708.02300 3448 words $0.082 total $22.35
+claude:arXiv:1905.04770 3691 words $0.080 total $22.43
+claude:arXiv:1511.02586 3609 words $0.083 total $22.51
+claude:PMC5540414 3250 words $0.080 total $22.64
+claude:PMC4421805 3360 words $0.082 total $22.83
+claude:PMC5601759 3252 words $0.083 total $22.83
+claude:arXiv:1905.06774 3469 words $0.082 total $22.85
+claude:PMC5475325 3663 words $0.086 total $22.96
+claude:arXiv:1908.07599 3512 words $0.085 total $23.02
+claude:PMC4495446 3221 words $0.085 total $23.13
+claude:PMC5142438 3370 words $0.088 total $23.31
+claude:arXiv:1907.05014 3771 words $0.086 total $23.39
+claude:PMC5333425 3369 words $0.082 total $23.39
+claude:arXiv:1807.04734 3776 words $0.089 total $23.53
+claude:PMC4963569 3412 words $0.083 total $23.53
+claude:arXiv:1805.08801 3229 words $0.076 total $23.58
+claude:PMC4917940 3610 words $0.083 total $23.82
+claude:PMC5830467 3219 words $0.084 total $23.86
+claude:PMC5966461 3450 words $0.084 total $23.90
+claude:PMC4486499 3624 words $0.088 total $24.04
+claude:PMC4351932 3554 words $0.079 total $24.04
+claude:arXiv:1501.03196 3672 words $0.083 total $24.08
+claude:PMC5799346 3466 words $0.073 total $24.32
+claude:arXiv:1810.03163 3560 words $0.080 total $24.41
+claude:PMC4778950 3548 words $0.098 total $24.45
+claude:arXiv:1704.07335 3666 words $0.083 total $24.53
+claude:PMC6045585 3325 words $0.084 total $24.53
+claude:PMC5570074 3523 words $0.078 total $24.59
+claude:arXiv:1904.05681 3584 words $0.077 total $24.83
+claude:PMC4773240 3372 words $0.092 total $24.92
+claude:PMC4597444 3451 words $0.090 total $24.96
+claude:PMC4564689 3373 words $0.082 total $25.04
+claude:PMC4794892 3237 words $0.085 total $25.04
+claude:PMC5541818 3644 words $0.083 total $25.13
+claude:arXiv:1607.00476 3810 words $0.084 total $25.39
+claude:PMC5727259 3184 words $0.082 total $25.43
+claude:PMC5333397 3476 words $0.079 total $25.45
+claude:PMC4864355 3555 words $0.087 total $25.47
+claude:PMC4779476 3349 words $0.091 total $25.53
+claude:PMC4642856 3386 words $0.084 total $25.70
+claude:arXiv:1702.02808 3539 words $0.072 total $25.89
+claude:PMC6662821 3264 words $0.075 total $25.89
+claude:PMC5843299 3406 words $0.089 total $25.91
+claude:PMC5749972 3436 words $0.073 total $26.03
+claude:PMC5074521 3070 words $0.083 total $26.03
+claude:PMC5885316 3620 words $0.081 total $26.19
+claude:PMC5885613 3390 words $0.084 total $26.25
+claude:arXiv:1804.08850 3397 words $0.076 total $26.36
+claude:arXiv:1711.02181 3666 words $0.080 total $26.44
+claude:arXiv:1706.05086 3488 words $0.079 total $26.49
+claude:arXiv:1701.03529 3590 words $0.078 total $26.53
+claude:PMC5155549 3588 words $0.085 total $26.65
+claude:PMC5588998 3588 words $0.080 total $26.74
+claude:PMC6481349 3202 words $0.090 total $26.78
+claude:PMC5811893 3591 words $0.082 total $26.83
+claude:PMC5796485 3609 words $0.085 total $26.85
