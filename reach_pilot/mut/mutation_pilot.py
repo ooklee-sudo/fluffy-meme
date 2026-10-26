@@ -154,14 +154,22 @@ def step_human(a):
     print(f"human (existing tests) kill share: {sum(killed)}/{len(killed)} = {sum(killed)/len(killed):.3f}")
 
 
-def chat(model, prompt):
-    req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
-        data=json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 8000,
-                         "temperature": 0.8}).encode(),
-        headers={"Content-Type": "application/json",
-                 **({"Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"]} if os.environ.get("OPENROUTER_API_KEY") else {})})
-    j = json.load(urllib.request.urlopen(req, timeout=300))
-    return j["choices"][0]["message"]["content"], (j.get("usage", {}).get("cost") or 0.0)
+def chat(model, prompt, tries=3):
+    """Returns (text, cost). Reasoning models can spend the whole budget thinking and return no content: retry."""
+    cost = 0.0
+    for _ in range(tries):
+        req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
+            data=json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 16000,
+                             "temperature": 0.8}).encode(),
+            headers={"Content-Type": "application/json",
+                     **({"Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"]} if os.environ.get("OPENROUTER_API_KEY") else {})})
+        j = json.load(urllib.request.urlopen(req, timeout=600))
+        cost += j.get("usage", {}).get("cost") or 0.0
+        text = j["choices"][0]["message"].get("content")
+        if text:
+            return text, cost
+        print("  empty content (finish_reason=%s); retrying" % j["choices"][0].get("finish_reason"))
+    return "", cost
 
 
 def step_llm(a):
