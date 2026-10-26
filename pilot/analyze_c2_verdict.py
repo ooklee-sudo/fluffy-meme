@@ -47,6 +47,6 @@ for k in pt:
     v = 'supported' if (nmod >= 4 and lo > null) else ('partly supported' if nmod >= 4 else 'not supported')
     rows_out.append(dict(test=k, pooled=pooled, ci_lo=lo, ci_hi=hi, models_above_null=f'{nmod}/{len(per)}', p_boot=p, verdict_unadjusted=v, **{f'm_{models[i].split("/")[1]}': per[i] for i in range(len(models))}))
 V = pd.DataFrame(rows_out); reg = ~V.test.str.startswith('robustness'); pv = V.loc[reg, 'p_boot'].values; o = np.argsort(pv); q = np.empty(len(pv)); prev = 1.0
-for rank, i in reversed(list(enumerate(o, 1))): prev = min(prev, pv[i - 1] * len(pv) / rank); q[i - 1] = prev
+for rank, i in reversed(list(enumerate(o, 1))): prev = min(prev, pv[i] * len(pv) / rank); q[i] = prev   # i = original index of the rank-th smallest p
 V.loc[reg, 'q_BH'] = q; V.to_csv(f'{PRE}_verdicts.csv', index=False)
 pd.set_option('display.width', 250, 'display.max_columns', 30, 'display.max_colwidth', 70); print(V.round(3).to_string(index=False))

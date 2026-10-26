@@ -121,5 +121,5 @@ for name, (fun, archs, pos) in tests.items():
 R = pd.DataFrame(out)
 # Benjamini-Hochberg over the registered (non-robustness) tests
 m_ = ~R.test.str.contains('robustness'); pv = R.loc[m_, 'p_boot'].values; o = np.argsort(pv); q = np.empty(len(pv)); prev = 1.0
-for rank, i in reversed(list(enumerate(o, 1))): prev = min(prev, pv[i - 1] * len(pv) / rank); q[i - 1] = prev
+for rank, i in reversed(list(enumerate(o, 1))): prev = min(prev, pv[i] * len(pv) / rank); q[i] = prev   # i = original index of the rank-th smallest p
 R.loc[m_, 'q_BH'] = q; R.to_csv(f'{PRE}_propositions.csv', index=False); print('\n' + R.round(3).to_string(index=False))
