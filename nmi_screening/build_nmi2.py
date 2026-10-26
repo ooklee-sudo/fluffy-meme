@@ -109,7 +109,7 @@ P(d, "All code is in the replication package on Zenodo (https://doi.org/10.5281/
 H1(d, "Author contributions")
 P(d, "O.L. conceived and designed the study, built the corpus and the analysis pipeline, interpreted the results and wrote the manuscript.", indent=False)
 H1(d, "Competing interests")
-P(d, "[Author to confirm: the author declares no competing interests.] Generative AI disclosure: the machine-written papers studied here were produced by GPT-4o, Claude Sonnet 5.5 and Llama 3.3 70B Instruct, and Gemini 2.5 Pro served as a judge. An AI coding assistant (Claude Code) was used to write and run the analysis code and to draft and edit the manuscript text; the author reviewed the results and takes responsibility for the content.", indent=False)
+P(d, "The author declares no competing interests. Generative AI disclosure: the machine-written papers studied here were produced by GPT-4o, Claude Sonnet 5.5 and Llama 3.3 70B Instruct, and Gemini 2.5 Pro served as a judge. An AI coding assistant (Claude Code) was used to write and run the analysis code and to draft and edit the manuscript text; the author reviewed the results and takes responsibility for the content.", indent=False)
 PB(d)
 H1(d, "References")
 REFS = ["Mitchell, E., Lee, Y., Khazatsky, A., Manning, C. D. & Finn, C. DetectGPT: zero-shot machine-generated text detection using probability curvature. In *Proc. 40th Int. Conf. Machine Learning* (PMLR, 2023).",
