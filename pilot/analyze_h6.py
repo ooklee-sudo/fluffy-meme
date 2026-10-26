@@ -9,11 +9,11 @@ TARGET = {'TV': 'HD-558', 'Printer': '1000AX', 'Cell': 'X-3A'}; DECOY = {'Hal-B'
 HUMAN = dict(green_pp=24.7, attraction=0.37, fair_d=-0.54)   # from compute_human_benchmarks.py
 
 def blocks(text):
-    parts = re.split(r'\nQ(\d+):\n', '\n' + text); return {int(parts[i]): parts[i + 1] for i in range(1, len(parts) - 1, 2)}
+    parts = re.split(r'\nQ(\d+):\s*', '\n' + text); return {int(parts[i]): parts[i + 1] for i in range(1, len(parts) - 1, 2)}
 def opts(b):
     m = re.search(r'Options:\n((?:\s+\d+ - .*\n?)+)', b)
     return {int(a): t.strip() for a, t in re.findall(r'\s+(\d+) - (.*)', m.group(1))} if m else {}
-def classify(study, b):
+def classify(study, b, full=''):
     ot = list(opts(b).values())
     if study == 'default_eric':
         if 'electric' in b: return 'green', ('optout' if ot[0].startswith('Stay with GreenGrid') else 'optin')
@@ -22,7 +22,7 @@ def classify(study, b):
         for k, w in [('TV', 'Scenario: Television'), ('Printer', 'Scenario: Printer'), ('Cell', 'Scenario: Cellphone')]:
             if w in b: return k, ('binary' if len(ot) == 2 else ('attraction' if set(ot) & DECOY else 'compromise'))
     if study == 'targeting_fairness' and 'How fair is this advertising plan' in b:
-        return 'fair', ('targeted' if 'advertise the snacks to women directly' in b else 'broad')
+        return 'fair', ('targeted' if 'advertise the snacks to women directly' in (full or b) else 'broad')
     return None, None
 def outcome(item, b, pos):
     txt = opts(b).get(pos)
@@ -53,7 +53,7 @@ for l in open(RAW):
     else:
         bl = blocks(texts[x['task']][x['pid']])
         for k, b in bl.items():
-            item, cond = classify(x['task'], b)
+            item, cond = classify(x['task'], b, texts[x['task']][x['pid']])
             try: pos = int((p.get(f'Q{k}') or {}).get('Answers', {}).get('SelectedByPosition'))
             except Exception: continue
             if item: bias.append(dict(cell=cell, pid=x['pid'], item=item, cond=cond, y=outcome(item, b, pos)))

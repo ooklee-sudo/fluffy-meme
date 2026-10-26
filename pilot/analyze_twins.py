@@ -10,14 +10,14 @@ TARGET = {'TV': 'HD-558', 'Printer': '1000AX', 'Cell': 'X-3A'}
 DECOY = {'Hal-B', 'L22', '5C-S'}
 
 def blocks(text):
-    parts = re.split(r'\nQ(\d+):\n', '\n' + text)
+    parts = re.split(r'\nQ(\d+):\s*', '\n' + text)
     return {int(parts[i]): parts[i + 1] for i in range(1, len(parts) - 1, 2)}
 
 def opts(b):
     m = re.search(r'Options:\n((?:\s+\d+ - .*\n?)+)', b)
     return {int(a): t.strip() for a, t in re.findall(r'\s+(\d+) - (.*)', m.group(1))} if m else {}
 
-def classify(study, b):
+def classify(study, b, full=''):
     """Return (item, condition) for a question block."""
     o = opts(b); ot = list(o.values())
     if study == 'default_eric':
@@ -29,7 +29,7 @@ def classify(study, b):
                 if len(ot) == 2: return k, 'binary'
                 return k, ('attraction' if set(ot) & DECOY else 'compromise')
     if study == 'targeting_fairness' and 'How fair is this advertising plan' in b:
-        return 'fair', ('targeted' if 'advertise the snacks to women directly' in b else 'broad')
+        return 'fair', ('targeted' if 'advertise the snacks to women directly' in (full or b) else 'broad')
     return None, None
 
 def outcome(item, b, sel_pos, sel_text):
@@ -58,7 +58,7 @@ for st in ['default_eric', 'context_effects', 'targeting_fairness']:
                 for v in o: walk(v)
         walk(j['Elements'])
         for (k, b), a in zip(sorted(bl.items()), ans):
-            item, cond = classify(st, b)
+            item, cond = classify(st, b, r['survey_text'])
             if item: H.append(dict(source='human', study=st, pid=r['PID'], item=item, cond=cond, y=outcome(item, b, a.get('SelectedByPosition'), a.get('SelectedText'))))
 human = pd.DataFrame(H)
 
@@ -73,7 +73,7 @@ for l in open(RAW):
     except Exception: bad += 1; continue
     bl = blocks(texts[x['study']][x['pid']])
     for k, b in bl.items():
-        item, cond = classify(x['study'], b); a = (p.get(f'Q{k}') or {}).get('Answers', {})
+        item, cond = classify(x['study'], b, texts[x['study']][x['pid']]); a = (p.get(f'Q{k}') or {}).get('Answers', {})
         if item and a: T.append(dict(source=f"{x['model']}|{x['arch']}", study=x['study'], pid=x['pid'], rep=x['rep'], item=item, cond=cond,
                                     y=outcome(item, b, a.get('SelectedByPosition'), a.get('SelectedText'))))
 twin = pd.DataFrame(T); print('unparsed responses', bad, 'twin rows', len(twin), 'human rows', len(human))
