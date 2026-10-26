@@ -1,6 +1,6 @@
 # Study 4: public-data comparison for the Poisson-SNS manuscript
 
-Re-implementation of the Study 1 scheduler comparison (IPP / HPP / polling) from the manuscript specification, compared
+Implementation of the Study 1 scheduler comparison (IPP / HPP / polling) from the manuscript specification, compared
 with public activity data.
 
 | File | Purpose |
