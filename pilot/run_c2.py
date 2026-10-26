@@ -7,6 +7,7 @@ import pandas as pd, requests
 D, CSV, OUT, NT, SEED = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
 K = int(sys.argv[6]) if len(sys.argv) > 6 else 5
 STOP = float(sys.argv[7]) if len(sys.argv) > 7 else 40.0
+ARMS = (sys.argv[8] if len(sys.argv) > 8 else 'persona,nopersona').split(',')
 MODELS = ['anthropic/claude-haiku-5.5', 'openai/gpt-5.6-luna', 'google/gemini-3.7-flash', 'x-ai/grok-4.3', 'meta-llama/llama-4-maverick']
 os.makedirs(OUT, exist_ok=True); RAW = f'{OUT}/raw.jsonl'
 
@@ -26,7 +27,10 @@ demo = pd.read_csv(f'{D}/wave1_3_response_label.csv', low_memory=False, usecols=
 LAB = ['Region', 'Sex assigned at birth', 'Age group', 'Education', 'Race or origin', 'US citizen', 'Marital status', 'Religion', 'Religious service attendance', 'Party identification', 'Family income', 'Political views', 'Household size', 'Employment']
 demo['PID'] = 'pid_' + demo['pid'].astype(str); demo = demo.set_index('PID'); allp = sorted(demo.index)
 HEAD = 'Role-play the real person described below and stay in character. Respond the way this individual realistically would, without commenting as an AI.\n\nPerson:\n'
-def system(pid): r = demo.loc[pid]; return HEAD + '\n'.join(f'- {l}: {r[f"QID{11+i}"]}' for i, l in enumerate(LAB))
+NOPERSONA = 'You are a typical adult in the United States who uses social media.'
+def system(pid, arm): 
+    if arm == 'nopersona': return NOPERSONA
+    r = demo.loc[pid]; return HEAD + '\n'.join(f'- {l}: {r[f"QID{11+i}"]}' for i, l in enumerate(LAB))
 def prompt(g, rng):
     order = list(range(len(g))); rng.shuffle(order); labels = 'ABCDEF'[:len(g)]
     items = '\n'.join(f'{labels[k]}. {g.headline[i]}' + (f'\n   ({g.excerpt[i]})' if isinstance(g.excerpt[i], str) and g.excerpt[i].strip() else '') for k, i in enumerate(order))
@@ -36,22 +40,22 @@ def prompt(g, rng):
 done = set()
 if os.path.exists(RAW):
     for l in open(RAW):
-        try: x = json.loads(l); done.add((x['test'], x['model'], x['k']))
+        try: x = json.loads(l); done.add((x['test'], x['model'], x['k'], x.get('arm', 'persona')))
         except Exception: pass
-jobs = [(t, m, k) for t in tests for m in MODELS for k in range(K) if (t, m, k) not in done]
+jobs = [(t, m, k, a) for t in tests for m in MODELS for k in range(K) for a in ARMS if (t, m, k, a) not in done]
 random.Random(3).shuffle(jobs); print('jobs', len(jobs), flush=True)
 lock = threading.Lock(); spent = [0.0]; halt = threading.Event(); cnt = [0]
 def call(job):
     if halt.is_set(): return
-    t, m, k = job; g = tests[t]; rng = random.Random(f'{SEED}-{t}-{k}'); pid = rng.choice(allp); order, p = prompt(g, rng)
-    body = dict(model=m, temperature=0.7, max_tokens=1500, usage={'include': True}, reasoning={'effort': 'low'}, messages=[{'role': 'system', 'content': system(pid)}, {'role': 'user', 'content': p}])
+    t, m, k, arm = job; g = tests[t]; rng = random.Random(f'{SEED}-{t}-{k}'); pid = rng.choice(allp); order, p = prompt(g, rng)
+    body = dict(model=m, temperature=0.7, max_tokens=1500, usage={'include': True}, reasoning={'effort': 'low'}, messages=[{'role': 'system', 'content': system(pid, arm)}, {'role': 'user', 'content': p}])
     err = None
     for a in range(5):
         try:
             r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=240)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
-                rec = dict(test=t, model=m, k=k, pid=pid, order=order, content=x['choices'][0]['message'].get('content'), cost=u.get('cost') or 0)
+                rec = dict(test=t, model=m, k=k, arm=arm, pid=pid, order=order, content=x['choices'][0]['message'].get('content'), cost=u.get('cost') or 0)
                 with lock:
                     open(RAW, 'a').write(json.dumps(rec) + '\n'); spent[0] += rec['cost']; cnt[0] += 1
                     if cnt[0] % 500 == 0: print(f'done {cnt[0]} spent ${spent[0]:.2f}', flush=True)
