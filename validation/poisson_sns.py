@@ -1,4 +1,4 @@
-"""Reimplementation of the Poisson-SNS scheduler comparison (Study 1) from the manuscript specification.
+"""Implementation of the Poisson-SNS scheduler comparison (Study 1) from the manuscript specification.
 
 Only the pieces needed for Study 1 are included: platform, personas, IPP / HPP / polling schedulers, and a
 deterministic surrogate intensity oracle. The surrogate's functional form is not given in the manuscript; it is a
