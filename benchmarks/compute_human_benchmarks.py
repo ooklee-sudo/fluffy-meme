@@ -89,3 +89,19 @@ if len(sys.argv) > 2:
             h = np.log10(pd.to_numeric(w[hi_c], errors='coerce').clip(lower=1)); l = np.log10(pd.to_numeric(w[lo_c], errors='coerce').clip(lower=1))
             d, lo, hi, n1, n0, p = cohen(h, l)
             print(f'[{wave}] Anchoring {lab}: medians {10**h.median():.0f} vs {10**l.median():.0f} (n={n1},{n0}) d(log)={d:.2f} [{lo:.2f},{hi:.2f}] p={p:.2g}')
+
+# ---- Twin effects (optional third argument: dir of twin CSVs, 'responses_llm_imputed_label_formatted.csv' per spec) ----
+# Formatted columns Q157/Q158 (framing), Q166/Q164 (African countries, high/low), Q170/Q168 (redwood, high/low);
+# the first data row of each file holds the question text and is dropped.
+if len(sys.argv) > 3:
+    import glob, os
+    for path in sorted(glob.glob(f'{sys.argv[3]}/*.csv')):
+        t = pd.read_csv(path, low_memory=False).iloc[1:]
+        name = os.path.basename(path)[:-4]
+        loss, gain = t['Q158'].map(scale), t['Q157'].map(scale)
+        d, lo, hi, n1, n0, p = cohen(loss, gain)
+        print(f'[twin {name}] Framing: loss {loss.mean():.2f} gain {gain.mean():.2f} (n={n1},{n0}) d={d:.2f} [{lo:.2f},{hi:.2f}]')
+        for lab, hc, lc in [('African countries', 'Q166', 'Q164'), ('Redwood height', 'Q170', 'Q168')]:
+            h = np.log10(pd.to_numeric(t[hc], errors='coerce').clip(lower=1)); l = np.log10(pd.to_numeric(t[lc], errors='coerce').clip(lower=1))
+            d, lo, hi, n1, n0, p = cohen(h, l)
+            print(f'[twin {name}] Anchoring {lab}: medians {10**h.median():.0f} vs {10**l.median():.0f} d(log)={d:.2f} [{lo:.2f},{hi:.2f}]')
