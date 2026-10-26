@@ -1,11 +1,5 @@
 # Does disagreement between LLM-inferred and actual star ratings predict review helpfulness? Evidence from three language models and 26,000 Amazon reviews
 
-## Abstract
-
-Large language models (LLMs) can infer the star rating a reviewer gave from the review text alone. Winter, Zacharias, and Hartwig (2026) report that the gap between this inference and the actual rating predicts lower helpfulness, especially for experience goods. We test this claim with 25,783 Amazon reviews, three LLMs run with two prompts (one from the original study), count models, and product-level goods labels validated by two human coders. Inferred ratings track authors' ratings closely (r = .89–.92). Larger gaps go with more, not fewer, helpful votes (incidence rate ratios 1.19–1.36), and the interaction with experience goods is not significant. The association holds within rating levels and arises when the text is more critical than the rating, not when it is more positive. Hedonic goods show smaller gaps once goods are classified at the product level.
-
-**Keywords:** large language models, online reviews, review helpfulness, sentiment analysis, count models, goods classification
-
 ## 1. Introduction
 
 Helpful votes are one of the main devices platforms use to sort the enormous volume of consumer reviews. Because only a small share of readers vote, helpful reviews can quickly lose visibility, so ranking helpful reviews first, and anticipating helpfulness soon after a review is posted, is valuable (Ceylan, Diehl, and Proserpio 2024). Research on what makes a review helpful has examined length, rating extremity, depth, images, and emotional content (Mudambi and Schuff 2010; Cao, Duan, and Gan 2011; Yin, Bond, and Zhang 2014; Ceylan et al. 2024).

@@ -13,17 +13,25 @@
 
 **Corresponding author:** Ook Lee, Department of Information System, Hanyang University, Seoul, Korea. E-mail: ooklee@hanyang.ac.kr. ORCID: [ORCID iD, optional]
 
-**Keywords:** large language models; online reviews; review helpfulness; star ratings; count models; replication
+**Word count:** about 4,800 words (main text and references, tables and table notes excluded; abstract 137 words, now on this title page), 4 tables, online appendix about 1,980 words including its tables.
 
-**Word count:** about 4,950 words including abstract, text, references, tables, and table notes, 4 tables, abstract 137 words, online appendix about 1,980 words including its tables.
+## Abstract
+
+Large language models (LLMs) can infer the star rating a reviewer gave from the review text alone. Winter, Zacharias, and Hartwig (2026) report that the gap between this inference and the actual rating predicts lower helpfulness, especially for experience goods. We test this claim with 25,783 Amazon reviews, three LLMs run with two prompts (one from the original study), count models, and product-level goods labels validated by two human coders. Inferred ratings track authors' ratings closely (r = .89–.92). Larger gaps go with more, not fewer, helpful votes (incidence rate ratios 1.19–1.36), and the interaction with experience goods is not significant. The association holds within rating levels and arises when the text is more critical than the rating, not when it is more positive. Hedonic goods show smaller gaps once goods are classified at the product level.
+
+**Keywords:** large language models, online reviews, review helpfulness, sentiment analysis, count models, goods classification
+
+## Compliance with Ethical Standards
+
+**Conflict of interest:** [AUTHOR TO COMPLETE: e.g., "The author declares that there is no conflict of interest." State any relationship that could be seen as a conflict.]
+
+**Funding:** [AUTHOR TO COMPLETE: funding sources, or "Not applicable" if no funding was received.]
+
+**Ethical approval:** Not applicable. The study uses publicly released product reviews and product listings (Amazon Reviews 2023) and labels assigned by two research coders to product listings; no personal data were collected and no human participants were studied. [AUTHOR TO CONFIRM against your institution's rules (IRB exemption or approval number).]
+
+**Informed consent:** Not applicable.
 
 ## Declarations
-
-**Funding.** [AUTHOR TO COMPLETE: funding sources or "No funding was received for this work."]
-
-**Conflicts of interest.** [AUTHOR TO COMPLETE: e.g., "The authors have no competing interests to declare."]
-
-**Ethics approval.** The study uses publicly released product reviews and product listings (Amazon Reviews 2023) and the labels of two research coders on product listings; no personal data were collected. [AUTHOR TO CONFIRM against institutional rules (IRB exemption or approval number).]
 
 **Data availability.** The study uses the Amazon Reviews 2023 data (Hou et al. 2024), available from its authors. Raw review text and product metadata are not redistributed. The replication package contains review and product identifiers, the LLM-inferred ratings and product labels, the human validation labels, and analysis code: [anonymized link at submission; permanent link after acceptance].
 
