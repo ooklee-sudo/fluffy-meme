@@ -32,11 +32,11 @@ def pmc_try(pmcid):
     if words(text) < 1500 or not title or not abstract: return None
     return dict(id=f"PMC{pmcid}", source="pmc", year=yr, title=title, abstract=abstract, text=text)
 
-def arxiv_try(aid):
+def arxiv_try(aid, field="(cs."):
     page = http(f"https://arxiv.org/abs/{aid}", timeout=30, tries=2)
     if not page: return None
     m = re.search(r'primary-subject">([^<]*)', page)
-    if not m or "(cs." not in m.group(1): return None
+    if not m or field not in m.group(1): return None
     t = re.search(r'<h1 class="title[^>]*>\s*<span[^>]*>[^<]*</span>(.*?)</h1>', page, re.S)
     a = re.search(r'<blockquote class="abstract[^>]*>\s*<span[^>]*>[^<]*</span>(.*?)</blockquote>', page, re.S)
     if not t or not a: return None

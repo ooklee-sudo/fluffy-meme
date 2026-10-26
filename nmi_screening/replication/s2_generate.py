@@ -8,7 +8,7 @@ import argparse, json, os, random
 from concurrent.futures import ThreadPoolExecutor
 from common import *
 
-MODELS = {"gpt4o": "openai/gpt-4o-2024-11-20", "claude": "anthropic/claude-sonnet-5.5", "llama": "meta-llama/llama-3.3-70b-instruct"}
+MODELS = {"gpt4o": "openai/gpt-4o-2024-11-20", "claude": "anthropic/claude-sonnet-5.5", "llama": "meta-llama/llama-3.3-70b-instruct", "deepseek": "deepseek/deepseek-v4.1-flash"}
 SECTIONS = [("introduction", "Introduction"), ("methods", "Methods"), ("results", "Results"), ("discussion", "Discussion and Conclusion")]
 def prompt(level, title, abstract, sec):
     base = f"Title: {title}\n\nAbstract: {abstract}\n\n"
@@ -28,7 +28,7 @@ def one(args):
     out = []; cost = 0.0
     for key, sec in SECTIONS:
         t, c = chat(MODELS[gen], [{"role": "user", "content": prompt(level, h["title"], h["abstract"], sec)}], max_tokens=3000,
-                    temperature=0.7, cap=cap, reasoning_low=(gen == "claude"))
+                    temperature=0.7, cap=cap, reasoning_low=(gen in ("claude", "deepseek")))
         cost += c
         if not t: return None
         out.append(t.strip())
@@ -36,11 +36,11 @@ def one(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--gen", choices=list(MODELS), required=True); ap.add_argument("--n", type=int, required=True)
-    ap.add_argument("--workers", type=int, default=12); ap.add_argument("--cap-usd", type=float, default=80.0); ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--workers", type=int, default=12); ap.add_argument("--cap-usd", type=float, default=80.0); ap.add_argument("--seed", type=int, default=7); ap.add_argument("--human", default="human.jsonl"); ap.add_argument("--tag", default="")
     a = ap.parse_args()
-    human = [json.loads(l) for l in open(os.path.join(DATA, "human.jsonl"))]
+    human = [json.loads(l) for l in open(os.path.join(DATA, a.human))]
     rng = random.Random(a.seed); rng.shuffle(human)
-    out = os.path.join(DATA, f"machine_{a.gen}.jsonl")
+    out = os.path.join(DATA, f"machine_{a.tag}{a.gen}.jsonl")
     done = {json.loads(l)["source"] for l in open(out)} if os.path.exists(out) else set()
     todo = [(h, a.gen, rng.choice([1, 2, 3]), a.cap_usd) for h in human[: a.n] if h["id"] not in done]
     print(len(done), "done;", len(todo), "to do", flush=True)
