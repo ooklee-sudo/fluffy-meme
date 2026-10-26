@@ -36,6 +36,7 @@ def chat(model, messages, max_tokens=4000, temperature=0.7, cap=100.0, reasoning
     """OpenRouter chat call. Authentication is injected by the sandbox proxy, or set OPENROUTER_API_KEY. Returns (text, cost)."""
     body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
     if reasoning_low: body["reasoning"] = {"effort": "low"}
+    if os.environ.get("OR_SORT"): body["provider"] = {"sort": os.environ["OR_SORT"]}
     hdr = {"Content-Type": "application/json"}
     if os.environ.get("OPENROUTER_API_KEY"): hdr["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
     for i in range(4):

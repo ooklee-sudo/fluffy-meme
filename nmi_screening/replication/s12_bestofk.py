@@ -19,11 +19,10 @@ def rw_candidate(text, k, cap):
     t = " ".join(out); return t if len(t.split()) >= 2000 else None
 
 def job(args):
-    r, pool, K, cap, seed = args; rows = []
-    for k in range(K):
-        t = rw_candidate(r["text"], k, cap)
-        if t: rows.append(dict(id=r["id"], kind="rw", k=k, text=t))
-        rows.append(dict(id=r["id"], kind="mix", k=k, text=mix(r["text"], 0.5, pool, random.Random(seed * 100 + k))))
+    r, pool, k, cap, seed = args; rows = []
+    t = rw_candidate(r["text"], k, cap)
+    if t: rows.append(dict(id=r["id"], kind="rw", k=k, text=t))
+    rows.append(dict(id=r["id"], kind="mix", k=k, text=mix(r["text"], 0.5, pool, random.Random(seed * 100 + k))))
     for x in rows: x.update(generator=r["generator"], source=r["source"], label=1)
     return rows
 
@@ -33,13 +32,13 @@ if __name__ == "__main__":
     samp = pd.read_csv(os.path.join(DATA, "judge_sample.csv")); neg = set(samp[samp.generator == "human"].id); pools = human_pool(neg)
     orig = [json.loads(l) for l in open(os.path.join(DATA, a.src))]; orig = [r for r in orig if r["cond"] == "orig"]
     if a.limit: orig = orig[:a.limit]
-    out = os.path.join(DATA, a.out); done = {json.loads(l)["id"] for l in open(out)} if os.path.exists(out) else set()
-    jobs = [(r, pools["pmc" if str(r["source"]).startswith("PMC") else "arxiv"], a.k, a.cap_usd, 500 + j) for j, r in enumerate(orig) if r["id"] not in done]
-    print(len(done), "papers done;", len(jobs), "to do", flush=True)
+    out = os.path.join(DATA, a.out); done = {(x["id"], x["k"]) for x in map(json.loads, open(out))} if os.path.exists(out) else set()
+    jobs = [(r, pools["pmc" if str(r["source"]).startswith("PMC") else "arxiv"], k, a.cap_usd, 500 + j) for j, r in enumerate(orig) for k in range(a.k) if (r["id"], k) not in done]
+    print(len(done), "candidate pairs done;", len(jobs), "to do", flush=True)
     with ThreadPoolExecutor(a.workers) as ex, open(out, "a") as f:
         futs = [ex.submit(job, j) for j in jobs]
         for n, fu in enumerate(as_completed(futs)):
             for x in fu.result(): f.write(json.dumps(x) + "\n")
             f.flush()
-            if n % 10 == 0: print(n, "/", len(jobs), f"spend ${spend():.2f}", flush=True)
+            if n % 20 == 0: print(n, "/", len(jobs), f"spend ${spend():.2f}", flush=True)
     print("done")
