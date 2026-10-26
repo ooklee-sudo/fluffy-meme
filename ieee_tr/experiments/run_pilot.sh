@@ -9,7 +9,7 @@ nvidia-smi > /workspace/out/gpu.txt
 i=0
 for cfg in "5e-4 2e-3" "1e-4 5e-4" "3e-5 2e-4" "1e-5 1e-4"; do
   set -- $cfg
-  python seed_study.py --seeds 100 --edit-lr $1 --lora-lr $2 --out /workspace/out/pilot_$i >> /workspace/out/log.txt 2>&1
+  python seed_study.py --seeds 100 --edit-lr $1 --lora-lr $2 --base-cache /workspace/out/base_cache --out /workspace/out/pilot_$i >> /workspace/out/log.txt 2>&1
   i=$((i+1))
 done
 touch /workspace/out/DONE

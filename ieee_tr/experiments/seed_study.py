@@ -147,9 +147,10 @@ class Scorer:
             lab[k, st:len(s)] = torch.tensor(s[st:])
         return ids.to(self.device), att.to(self.device), lab.to(self.device)
 
-    def train(self, model, params, examples, epochs, lr, bs, rng):
+    def train(self, model, params, examples, epochs, lr, bs, rng, opt=None):
         """Answer-token cross-entropy; returns the number of processed tokens."""
-        opt = torch.optim.AdamW(params, lr=lr, weight_decay=0.0)
+        if opt is None:
+            opt = torch.optim.AdamW(params, lr=lr, weight_decay=0.0)
         model.train()
         tokens = 0
         for _ in range(epochs):
@@ -224,16 +225,32 @@ def run_seed(seed, args):
         a3 = sc.correct(model, [item(k, truth0, note=True) for k in dyn_keys]).mean()
         return a1, a2, a3
 
-    epochs_done = 0
-    while True:
-        sc.train(model, allp, base_ex, args.base_check_every, args.base_lr, args.base_bs, rng)
-        epochs_done += args.base_check_every
-        a_dyn, a_sta, a_note = deployed_ok()
-        print(f"  [seed {seed}] deploy ep {epochs_done}: dyn {a_dyn:.3f} static {a_sta:.3f} note {a_note:.3f}", flush=True)
-        if min(a_dyn, a_sta, a_note) >= args.base_target or epochs_done >= args.base_max_epochs:
-            break
-    deployed = dict(epochs=epochs_done, acc_dynamic=float(a_dyn), acc_static=float(a_sta), acc_note=float(a_note))
+    cache_path = os.path.join(args.base_cache, f"seed_{seed}.pt") if args.base_cache else None
+    if cache_path and os.path.exists(cache_path):
+        blob = torch.load(cache_path, map_location=dev)
+        model.load_state_dict(blob["sd"])
+        deployed = blob["deployed"]
+        print(f"  [seed {seed}] loaded cached deployed checkpoint", flush=True)
+    else:
+        opt = torch.optim.AdamW(allp, lr=args.base_lr, weight_decay=0.0)
+        epochs_done = 0
+        while True:
+            frac = min(1.0, epochs_done / args.base_max_epochs)
+            for g in opt.param_groups:   # linear decay to 10% of the initial rate
+                g["lr"] = args.base_lr * (1 - 0.9 * frac)
+            sc.train(model, allp, base_ex, args.base_check_every, args.base_lr, args.base_bs, rng, opt=opt)
+            epochs_done += args.base_check_every
+            a_dyn, a_sta, a_note = deployed_ok()
+            print(f"  [seed {seed}] deploy ep {epochs_done}: dyn {a_dyn:.3f} static {a_sta:.3f} note {a_note:.3f}", flush=True)
+            if min(a_dyn, a_sta, a_note) >= args.base_target or epochs_done >= args.base_max_epochs:
+                break
+        deployed = dict(epochs=epochs_done, acc_dynamic=float(a_dyn), acc_static=float(a_sta), acc_note=float(a_note),
+                        converged=bool(min(a_dyn, a_sta, a_note) >= args.base_target))
+        if cache_path:
+            os.makedirs(args.base_cache, exist_ok=True)
+            torch.save(dict(sd={k: v.detach().clone() for k, v in model.state_dict().items()}, deployed=deployed), cache_path)
     base_sd = {k: v.clone() for k, v in model.state_dict().items()}
+    rng = np.random.RandomState(seed + 10000)   # drift stream independent of how long base training took
 
     # copy diagnostic: does the model follow a conflicting note?
     conf = []
@@ -380,6 +397,7 @@ def main():
     ap.add_argument("--model", default="EleutherAI/pythia-70m")
     ap.add_argument("--quick", action="store_true", help="small world, few epochs: smoke test only")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--base-cache", default="", help="directory for reusable deployed checkpoints")
     ap.add_argument("--threads", type=int, default=0)
     # world and drift
     ap.add_argument("--companies", type=int, default=150)
@@ -393,8 +411,8 @@ def main():
     ap.add_argument("--base-lr", type=float, default=1e-3)
     ap.add_argument("--base-bs", type=int, default=32)
     ap.add_argument("--base-target", type=float, default=0.95)
-    ap.add_argument("--base-check-every", type=int, default=4)
-    ap.add_argument("--base-max-epochs", type=int, default=80)
+    ap.add_argument("--base-check-every", type=int, default=5)
+    ap.add_argument("--base-max-epochs", type=int, default=200)
     # repairs
     ap.add_argument("--edit-layer", type=int, default=3)
     ap.add_argument("--edit-epochs", type=int, default=15)
