@@ -146,7 +146,8 @@ where $\kappa$ converts operations to money or opportunity cost and $n_{\mathrm{
 The long-run objective is to choose maintenance times, displacements, and corpus updates to minimize the average cost rate
 \begin{multline}
 J=\limsup_{T\to\infty}\frac{1}{T}\,\E\Big[\int_0^T c_L D(t)\,dt\\
-+\sum_{\tau_k\le T}\big(K(\Delta\theta_k)+c_F F(\Delta\theta_k)\big)+\int_0^T k_C\,\mathbf 1_{\{C\ \mathrm{active}\}}\,dt\Big].
++\sum_{\tau_k\le T}\big(K(\Delta\theta_k)+c_F F(\Delta\theta_k)\big)\\
++\int_0^T k_C\,\mathbf 1_{\{C\ \mathrm{active}\}}\,dt\Big].
 \end{multline}
 Here $c_L$ converts degradation into an operating-loss rate (lost users, compliance exposure, downstream error), and $c_F$ is a one-off charge per unit of forgetting (regression triage, recertification, visible behavioral change). Forgetting is charged twice by design: once as an event cost through $c_F$, and once as a flow cost through $c_L$ for as long as residual damage remains in $D$. Setting $c_F=0$ keeps only the flow cost.
 
@@ -258,9 +259,9 @@ The optimal cost rate therefore rises through two channels: the effective one-of
 \subsection{State, Action, and Transition}
 Time is discretized into decision epochs. The state is $x=(d,r)$, where $d$ is the discretized degradation index and $r$ is a coarse estimate of the current drift-hazard regime (for example, an indicator of whether the time since the last shock is in a decreasing- or increasing-mean-residual-life phase). The regime evolves as an exogenous Markov chain, independent of $d$ and of the action. At each epoch the maintainer chooses a parametric action
 \begin{equation}
-\begin{gathered}a\in\mathcal A=\{\text{no-op, knowledge edit,}\\ \text{parameter-efficient fine-tune, full retrain}\},\end{gathered}
+a\in\mathcal A=\{\text{no-op, edit, fine-tune, retrain}\},
 \end{equation}
-with cost $K(a)$, forgetting increment $F(a)$, and degradation-reduction fraction $\rho(a)\in[0,1]$, so that
+where edit, fine-tune, and retrain stand for a knowledge edit, a parameter-efficient fine-tune, and a full retrain, in order of increasing aggressiveness. Action $a$ has cost $K(a)$, forgetting increment $F(a)$, and degradation-reduction fraction $\rho(a)\in[0,1]$, so that
 \begin{equation}
 d'=(1-\rho(a))\,d+F(a)+\zeta,
 \label{eq:trans}
@@ -307,10 +308,11 @@ Suppose the store is kept current at upkeep $k_C$ per unit time and absorbs drif
 \label{eq:retr}
 \end{equation}
 Relative to the no-retrieval optimum, the store lowers the staleness threshold by the factor $\sqrt{1-\alpha/\gamma}$ and lengthens the parametric interval by the reciprocal factor $\sqrt{\gamma/(\gamma-\alpha)}$. Comparing average costs yields the investment test
-\begin{equation}
-k_C<J^\ast(\gamma)-J^\ast(\gamma-\alpha)=\sqrt{2K_Rc_L\gamma}\Big(1-\sqrt{1-\alpha/\gamma}\Big).
+\begin{multline}
+k_C<J^\ast(\gamma)-J^\ast(\gamma-\alpha)\\
+=\sqrt{2K_Rc_L\gamma}\Big(1-\sqrt{1-\alpha/\gamma}\Big).
 \label{eq:invest}
-\end{equation}
+\end{multline}
 Retrieval alone, with no parametric maintenance, is never optimal when $\gamma>\alpha$: effective staleness then grows without bound under the affine model and the average cost diverges. Blending therefore dominates both pure strategies exactly when \eqref{eq:invest} holds. The substitution is partial and bounded by $\alpha$. Forms of drift that retrieval cannot correct still accumulate at their full rate against the parametric model and must eventually be repaired by the mechanisms of Sections~\ref{sec:imperfect} and \ref{sec:mdp}. For the measured share $\alpha/\gamma\approx0.61$ of Section~\ref{sec:num}, the right-hand side of \eqref{eq:invest} is about $0.38\sqrt{2K_Rc_L\gamma}$, so the store is worth keeping whenever its upkeep is below roughly 38\% of the optimal no-retrieval cost rate.
 
 \subsection{A Monitoring Caveat}
@@ -324,12 +326,13 @@ Sections~\ref{sec:num}-B and \ref{sec:num}-C illustrate the comparative statics 
 The single-threshold model is instantiated with leak $\beta=0.01$ staleness units per day, event rate $\lambda\in\{0.05,0.10,0.20,0.40\}$ per day, mean mark $\mu_\xi=1$, and operating-loss coefficient $c_L=1$. The retrain cost $K_R$ is swept over $\{10^2,10^4,10^6\}$ to stand for a small fine-tune, a mid-size continual-pretraining run, and a large full retrain. Table~\ref{tab:sqrt} reports $t^\ast$ and $J^\ast$ from \eqref{eq:sqrt}.
 
 \begin{table*}[t]
-\caption{Optimal Cycle Length $t^\ast$ (Days) and Cost Rate $J^\ast$ From the Square-Root Formula, With $\beta=0.01$, $\mu_\xi=1$, and $c_L=1$}\label{tab:sqrt}
+\caption{Optimal Cycle Length $t^\ast$ (Days) and Cost Rate $J^\ast$ From the Square-Root Formula, With $\beta=0.01$, $\mu_\xi=1$, and $c_L=1$ (Second Header Row Gives $K_R$)}\label{tab:sqrt}
 \centering
 \footnotesize
 \begin{tabular}{cccccccc}
 \toprule
-$\lambda$ (per day) & $\gamma$ & $t^\ast$, $K_R\!=\!10^2$ & $t^\ast$, $K_R\!=\!10^4$ & $t^\ast$, $K_R\!=\!10^6$ & $J^\ast$, $K_R\!=\!10^2$ & $J^\ast$, $K_R\!=\!10^4$ & $J^\ast$, $K_R\!=\!10^6$\\
+$\lambda$ & $\gamma$ & $t^\ast$ & $t^\ast$ & $t^\ast$ & $J^\ast$ & $J^\ast$ & $J^\ast$\\
+(per day) & & $10^2$ & $10^4$ & $10^6$ & $10^2$ & $10^4$ & $10^6$\\
 \midrule
 0.05 & 0.06 & 57.7 & 577.4 & 5773.5 & 3.46 & 34.64 & 346.41\\
 0.10 & 0.11 & 42.6 & 426.4 & 4264.0 & 4.69 & 46.90 & 469.04\\

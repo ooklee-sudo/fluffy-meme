@@ -49,7 +49,7 @@ labels = {}
 sec = sub = fig = tab = eq = asm = prop = 0
 appendix = False
 last = {}
-tok = re.compile(r"\\(section\*?|subsection|appendices)\b(?:\{)?|\\begin\{(figure|table\*?|equation|multline|assumption|proposition)\}|\\label\{([^}]+)\}")
+tok = re.compile(r"\\(section(?!\*)|subsection|appendices)\b(?:\{)?|\\begin\{(figure|table\*?|equation|multline|assumption|proposition)\}|\\label\{([^}]+)\}")
 for m in tok.finditer(main_text):
     if m.group(1) == "section":
         sec += 1; sub = 0
@@ -335,11 +335,26 @@ def table_xml(env_body, number, drop=(), fsz=15, widths=None, left_all=False, ex
 
 
 def equation_xml(eq_tex, number):
-    e = collect_math(eq_tex)
-    idx = math_list.index(e)
+    """One Word paragraph per line of the equation; the number goes on the last line.
+
+    Multi-line equations (multline, gathered) are split into separate paragraphs because Word
+    shows a matrix inside an inline equation in its linear '\u25a0(...)' form on a single line.
+    """
+    body = re.sub(r"\\label\{[^}]*\}", "", eq_tex).strip()
+    body = re.sub(r"\\(?:begin|end)\{gathered\}", "", body)
+    lines = [l.strip() for l in re.split(r"\\\\(?![A-Za-z])", body) if l.strip()]
     tabs = '<w:tabs><w:tab w:val="clear" w:pos="5040"/><w:tab w:val="center" w:pos="2520"/><w:tab w:val="right" w:pos="5040"/></w:tabs>'
-    return (f'<w:p><w:pPr><w:pStyle w:val="Equation"/>{tabs}<w:spacing w:before="60" w:after="60"/></w:pPr>'
-            f'<w:r><w:tab/></w:r>@@MATH{idx}@@<w:r><w:tab/><w:t>({number})</w:t></w:r></w:p>')
+    xml = ""
+    for k, line in enumerate(lines):
+        idx = math_list.index(collect_math(line))
+        last = k == len(lines) - 1
+        before = "60" if k == 0 else "0"
+        after = "60" if last else "0"
+        keep = "" if last else "<w:keepNext/>"
+        num = f"<w:r><w:tab/><w:t>({number})</w:t></w:r>" if last else ""
+        xml += (f'<w:p><w:pPr><w:pStyle w:val="Equation"/>{keep}{tabs}<w:spacing w:before="{before}" w:after="{after}"/></w:pPr>'
+                f'<w:r><w:tab/></w:r>@@MATH{idx}@@{num}</w:p>')
+    return xml
 
 
 # --------------------------------------------------------------------------
@@ -431,7 +446,7 @@ for ch in chunks:
         if "tab:gap" in inner:
             out.append(table_xml(inner, tab_no, fsz=14, widths=[900, 1250, 1500, 1390], left_all=True))
         elif "tab:sqrt" in inner:
-            out.append(table_xml(inner, tab_no, fsz=13, widths=[560, 480, 600, 600, 640, 520, 560, 640]))
+            out.append(table_xml(inner, tab_no, fsz=13, widths=[520, 420, 680, 680, 680, 680, 680, 680]))
         elif "tab:mech" in inner:
             inner = inner.replace("Trainable subset", "Trainable subset")
             out.append(table_xml(inner, tab_no, drop=(1,), fsz=14, widths=[1150, 500, 500, 1100, 1000, 790], extra_note=" Trainable subsets: edit, MLP block of one layer; LoRA, low-rank adapters on all layers; full fine-tune, all parameters."))
@@ -439,10 +454,7 @@ for ch in chunks:
             out.append(table_xml(inner, tab_no, fsz=14, widths=[1500, 3540], left_all=True))
     elif env in ("equation", "multline"):
         eq_no += 1
-        body_eq = inner.strip()
-        if env == "multline":
-            body_eq = r"\begin{gathered}" + body_eq + r"\end{gathered}"
-        out.append(equation_xml(body_eq, eq_no))
+        out.append(equation_xml(inner.strip(), eq_no))
     elif env == "assumption":
         assump += 1
         mm = re.match(r"\s*\[(.*?)\](?:\\label\{[^}]*\})?\s*(.*)", inner, re.S)
