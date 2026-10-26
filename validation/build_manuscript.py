@@ -51,6 +51,7 @@ for p in ps:
 import sys; sys.path.insert(0,'/home/user/fluffy-meme/validation')
 from study4_text import add_study4
 add_study4(d, ps)
+d.save('/tmp/claude-0/-home-user-fluffy-meme/85836436-e025-583a-b00a-2fcdeefc7114/scratchpad/content.docx')
 ps=d.paragraphs[:0] or ps
 # ---- formatting: IEEE Access look (Times 10 pt, two columns) ----
 st=d.styles

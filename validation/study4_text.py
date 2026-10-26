@@ -112,8 +112,10 @@ def add_study4(d, ps):
     for p in d.paragraphs:
         if p.text.startswith('TABLE'): continue
         for r in p.runs:
-            r.text = re.sub(r'Table(\s|\xa0)VII\b', lambda m: 'Table' + m.group(1) + 'IX', r.text)
-            r.text = re.sub(r'Table(\s|\xa0)VI\b', lambda m: 'Table' + m.group(1) + 'VIII', r.text)
+            t0 = r.text
+            t1 = re.sub(r'Table(\s|\xa0)VII\b', lambda m: 'Table' + m.group(1) + 'IX', t0)
+            t1 = re.sub(r'Table(\s|\xa0)VI\b', lambda m: 'Table' + m.group(1) + 'VIII', t1)
+            if t1 != t0: r.text = t1      # assigning run.text would drop drawings and other non-text content
     # ---------------- new subsection ----------------
     heading_v = find('V. DISCUSSION'); out = []
     out.append(clone(d, find('E. Sensitivity'), 'F. Study 4: Comparison With Public Platform Data (RQ1)'))

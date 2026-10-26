@@ -10,6 +10,6 @@ with public activity data.
 | `extract_bluesky.py` | Decodes TID record keys of the 12.1M-post Bluesky sample (`midwestern-simulation/12.1m_bluesky_posts` on Hugging Face) to creation times and parent creation times. |
 | `extract_stackexchange.py` | Hour-of-day and comment-delay references from the Stack Exchange dump (Money, Law, Workplace; `archive.org/details/stackexchange`). |
 | `analyze.py`, `make_figure.py` | Metrics (`study1_real_validation.json`) and Fig. 4. |
-| `study4_text.py`, `build_manuscript.py` | Add Study 4 to the manuscript and format it for IEEE Access. |
+| `study4_text.py`, `build_manuscript.py`, `build_access_template.py` | Add Study 4 to the manuscript and pour it into the official IEEE Access Word template. |
 
 Raw data are not committed. Paths in the scripts point to a scratch directory and need adjusting.
