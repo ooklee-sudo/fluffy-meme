@@ -35,6 +35,32 @@ def select(a):
         r = cands[(b.pid, b.kind, b.k)]; out.append(dict(id=r["id"], cond=f"bok_{r['kind']}", text=r["text"], generator=r["generator"], source=r["source"], label=1, fd=b.fastdetect))
     wr("attacked_bok.jsonl", out); print(len(out), "selected attacked papers")
 
+def sup(a):
+    """Per-target train/test files. Training never contains calibration humans, evaluation humans, papers sharing a source with a test paper,
+    the target generator, Llama (the rewriter) or DeepSeek (held out). Test files hold the 200 evaluation humans, the 100 calibration humans and every attacked version."""
+    os.makedirs(os.path.join(DATA, "sup"), exist_ok=True)
+    docs = rd("docs.jsonl"); cal = set(json.load(open(os.path.join(DATA, "cal_ids.json")))); sm = samp(); hold = set(sm[sm.generator == "human"].id)
+    hum = {d["id"]: d for d in docs if d["generator"] == "human"}
+    att = {g: [] for g in GENS}
+    for f in ("attacked.jsonl", "attacked2.jsonl", "attacked_bok.jsonl", "attacked_ds.jsonl", "attacked2_ds.jsonl"):
+        if os.path.exists(os.path.join(DATA, f)):
+            for r in rd(f): att[r["generator"]].append(r)
+    def neg_rows(tag):
+        out = [dict(id=f"{tag}|{i}|clean", label=0, group="eval_neg", field="main", text=excerpt(hum[i]["text"])) for i in sorted(hold & set(hum))]
+        out += [dict(id=f"{tag}|{i}|clean", label=0, group="cal", field="main", text=excerpt(hum[i]["text"])) for i in sorted(cal)]
+        return out
+    for g in GENS:
+        test_src = {str(r["source"]) for r in att[g]}
+        train = [dict(id=d["id"], label=d["label"], text=excerpt(d["text"])) for d in docs
+                 if str(d["source"]) not in test_src and d["id"] not in hold and d["id"] not in cal
+                 and (d["generator"] == "human" or d["generator"] in {"gpt4o", "claude"} - {g})]
+        test = neg_rows(g) + [dict(id=f'{g}|{r["id"]}|{r["cond"]}', label=1, group="attacked", field="main", text=excerpt(r["text"])) for r in att[g]]
+        wr(f"sup/train_{g}.jsonl", train); wr(f"sup/test_{g}.jsonl", test); print(g, "train", len(train), "test", len(test))
+    train = [dict(id=d["id"], label=d["label"], text=excerpt(d["text"])) for d in docs if d["id"] not in hold and d["id"] not in cal and d["generator"] in ("human", "gpt4o", "claude")]
+    test = neg_rows("econ")[200:] + [dict(id=f'econ|{h["id"]}|clean', label=0, group="eval_neg", field="econ", text=excerpt(h["text"])) for h in rd("human_econ.jsonl")]
+    test += [dict(id=f'econ|{r["id"]}|{r["cond"]}', label=1, group="attacked", field="econ", text=excerpt(r["text"])) for r in rd("attacked_econ.jsonl")]
+    wr("sup/train_econ.jsonl", train); wr("sup/test_econ.jsonl", test); print("econ train", len(train), "test", len(test))
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("step", choices=["calib", "podA", "select", "sup"]); a = ap.parse_args()
-    {"calib": calib, "podA": podA, "select": select}[a.step](a)
+    {"calib": calib, "podA": podA, "select": select, "sup": sup}[a.step](a)

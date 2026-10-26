@@ -46,7 +46,7 @@ def local(a):
     pd.DataFrame(out).to_csv(os.path.join(DATA, ("attack_local_results.csv" if ATT == "attacked" else ATT + "_local_results.csv")), index=False); print(pd.DataFrame(out).pivot_table(index=["detector", "generator"], columns="cond", values="auc").round(3))
 
 def judge(a):
-    JC = ("orig", "edit1.0", "rewrite", "hybrid1.0") if ATT == "attacked" else ("mix50",)
+    JC = tuple(os.environ["JC"].split(",")) if os.environ.get("JC") else (("orig", "edit1.0", "rewrite", "hybrid1.0") if ATT == "attacked" else ("mix50",))
     A = [r for r in att() if r["cond"] in JC]; out = os.path.join(DATA, "attack_judge_scores.csv" if ATT == "attacked" else ATT + "_judge_scores.csv")
     done = set(); 
     if os.path.exists(out): done = {(r.id, r.cond) for r in pd.read_csv(out).itertuples()}
