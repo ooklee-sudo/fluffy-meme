@@ -12,6 +12,8 @@ no-persona comparison. The H6 grid is replicated on new respondents as registere
    P7b, the calibration slope (predicted on observed log-odds differences) exceeds 1 in cue-contrast tests; P7c, the no-persona arm does at least as well as the persona arm.
 3. Arms: persona (demographics only) and no-persona (a typical US social-media adult), five draws per test per model, temperature 0.7, reasoning effort low.
 4. Clarification of the calibration slope: predicted regressed on observed (slope > 1 = twin overstates). The registered text said 'observed on predicted', which contradicts its stated meaning.
+   Development on the exploratory package showed that sampling noise in the observed log-odds differences biases this slope toward zero, so P7b is evaluated on the
+   disattenuated slope (denominator corrected by the sampling variance of the observed differences); the raw slope is also reported.
 5. Test selection: 1,000 tests from the confirmatory package (seed 2026) with 2-6 arms, distinct headlines, at least 1,000 impressions per arm, created outside the
    archive's documented randomization-problem window (2013-06-25 to 2014-01-10). The imbalance-flag column is not in the December 2020 files.
 6. Development used only the exploratory package (150 tests, seed 11); no confirmatory-package outputs have been generated.
