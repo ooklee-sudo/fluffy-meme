@@ -245,10 +245,10 @@ def main(out):
          "models or Qwen2.5-7B and we cannot make claims about models above 7B. Section 6.4 says so, and the "
          "conclusions are restricted to small models and to this task family. The abstract, discussion and "
          "conclusions now restrict the claims accordingly.")
-    para("Scripts: the code for the revision study is in teff/ with the per-trajectory results. [AUTHORS TO "
-         "CONFIRM: the scripts of Stages A and B could not be located in the repository or the supplied files. If "
-         "they exist, add them to the Supplementary Materials. Otherwise state that they were lost. The revised "
-         "manuscript reports Tables 4 and 5 only as an illustration and states that no conclusion rests on them.]")
+    para("Scripts: the code for the revision study is in teff/ with the per-trajectory results. The scripts of "
+         "Stages A and B are not part of the Supplementary Materials. We therefore report Tables 4 and 5 in the "
+         "revised manuscript only as an illustration of the estimator, state that they cannot be reproduced from "
+         "the Supplementary Materials, and rest no conclusion on them (Section 6.4).")
     d.save(out)
 
 
