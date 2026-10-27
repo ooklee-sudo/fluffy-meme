@@ -206,6 +206,21 @@ d.add_paragraph("Acknowledgment", style=ST("Style11"))
 TXT("Generative AI disclosure: the machine-written papers studied here were produced by GPT-4o, Claude Sonnet 5.5, Llama 3.3 70B Instruct and DeepSeek V4.1 Flash, and Gemini 2.5 Pro served as a judge. An AI coding assistant (Claude Code) was used to write and run the analysis code and to draft and edit the manuscript text; the author reviewed the results and takes responsibility for the content.")
 d.add_paragraph("References", style=ST("ReferenceHead"))
 for k in order: d.add_paragraph(REF[k], style=ST("References"))
-d.add_paragraph("Ook Lee is with the Department of Information Systems, Hanyang University, Seoul, Republic of Korea. [Biography to be completed.]", style=ST("Normal"))
+d.add_paragraph(style=ST("Normal"))
+_bp2 = d.add_paragraph(style=ST("Normal")); _bp2.alignment = 3
+_pr = _bp2.add_run(); _pr.add_picture("tai_template/author_photo.jpg", width=Inches(1.0), height=Inches(1.25))
+_inl = _pr._r.find(".//" + _qn("wp:inline"))
+_ext = _inl.find(_qn("wp:extent")); _cx, _cy = _ext.get("cx"), _ext.get("cy")
+_graphic = _inl.find(_qn("a:graphic")); _docpr = _inl.find(_qn("wp:docPr"))
+from docx.oxml import parse_xml as _px
+_anchor = _px('<wp:anchor xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="114300" simplePos="0" relativeHeight="2" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">'
+              '<wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="column"><wp:posOffset>0</wp:posOffset></wp:positionH>'
+              '<wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>'
+              f'<wp:extent cx="{_cx}" cy="{_cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapSquare wrapText="right"/></wp:anchor>')
+_anchor.append(_docpr); _anchor.append(_px('<wp:cNvGraphicFramePr xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"/>')); _anchor.append(_graphic)
+_inl.getparent().replace(_inl, _anchor)
+_rb = _bp2.add_run("Ook Lee"); _rb.bold = True
+_bp2.add_run(' is a professor of department of Information System at Hanyang University, Seoul, Korea. He received a PhD in Management of Information Systems from Claremont Graduate University, USA. He was a faculty member at the University of Queensland, Australia, University of Nevada at Las Vegas, USA and North Carolina A&T State University, USA. His research interests are information system economics, information system maintenance, large language models, and critical social theory.')
+for _r in _bp2.runs: _r.font.size = Pt(8)
 d.save("TAI_Manuscript_template.docx")
 print("words", sum(len(p.text.split()) for p in d.paragraphs), "refs", len(order), "unused", set(REF) - set(order))
