@@ -128,6 +128,33 @@ def build(src, out, mark):
                   " again did not outperform simpler indicators, and with six choices per trajectory its 95% "
                   f"interval spanned a median factor of about {TRAJ_RATIO:.0f}.")
 
+    # ------------------------------------------- tone-down of Section 3.2 / intro
+    p = ed.para("where p is given by Equation (1)")
+    ed.sub(p, "the chosen tokens are explained less well by the reference, and T",
+           "the chosen tokens are in general explained less well by the reference, and T")
+    ed.sub(p, " departs from ", " may depart from ")
+    ed.sub(p, ". A value above ",
+           ". It need not: a change that leaves the scale and the ordering of the candidates unchanged, or whose "
+           "effects cancel across steps, leaves *T*_{eff} at *T*, and a change of ordering alone corresponds to no "
+           "particular temperature (Section 3.3). A value above ")
+    p = ed.para("This paper proposes and evaluates")
+    ed.sub(p, " departs from it, in either direction.",
+           " may depart from it, in either direction, although it need not (Section 3.3).")
+    p = ed.para("That assumption is fragile")
+    ed.sub(p, "with high confidence [1]", "with high confidence [1,24]")
+    p = ed.para("The softmax with a temperature")
+    ed.append(p, " Empirical work that varies the temperature on problem-solving benchmarks finds that changes "
+                 "between 0 and 1 have little systematic effect on average accuracy [23]. That is a statement "
+                 "about performance averaged over contexts, whereas the question here is how the effect of one "
+                 "temperature changes with the context. Repetition loops, in which the probability of a "
+                 "repeated continuation grows with each repetition, have been analysed and mitigated at "
+                 "training time [24]; our planted attractor is a controlled version of that self-reinforcement.")
+    p = ed.para("Work on uncertainty in language models")
+    ed.append(p, " Adaptive temperature scaling fits a per-token temperature to calibrate the probabilities of a "
+                 "fine-tuned model [25]. Its temperature is a calibration device fitted on labelled data, "
+                 "whereas *T*_{eff} is fitted against a clean-context reference without labels; both treat the "
+                 "effective temperature as depending on the context.")
+
     # ----------------------------------------------------------- introduction
     p = ed.para("We define")
     ed.insert_after(p, "We separate what the estimator identifies (a temperature-equivalent of the context's net "
@@ -447,7 +474,10 @@ def discussion(ed):
         + (f" (the reference pass took {np.mean(ov):.2f} times as long as the sampling pass in our free-generation "
            "runs)" if ov else "")
         + ". Whether a model-specific diagnostic that reports a share of a context effect as scale is worth that "
-          "cost depends on the use. We would not recommend it as a monitor.", like=p)
+          "cost depends on the use. We would not recommend it as a monitor. Fifth, detecting a distorted prompt is not "
+        "the same as detecting a failure: against failure itself (Section 5.13), indicators based on the sampling "
+        "distribution or on the same-history reference were close to chance, and only references with a repaired "
+        "history predicted failure, as a verifier of the model's own knowledge.", like=p)
     # --- limitations
     p = ed.para("The three levels of attractor strength were chosen")
     ed.append(p, " The revision study repeats the selection on a different wording and over the full grid; the "
@@ -468,6 +498,9 @@ def discussion(ed):
         "The reference is a modelling choice. The same-history reference is blind when the history itself locks the "
         "agent, and the repaired references answer a different question (Section 5.10). No reference is neutral, "
         "and we tested no reference from a different model.",
+        "Prediction of failure (Section 5.13) could be evaluated only for low accuracy and only in cells where "
+        "both outcomes occur, because most trajectories fail in the sticky and strong regimes; failure to recover "
+        "could not be analysed.",
         "Free generation was studied for two models, two tasks and at most 24 tokens. At *T* = 2 unrestricted "
         "sampling from the full vocabulary produces near-random text, so accuracy is not interpretable there and "
         "the pooled estimate is dominated by tokens that carry no task information.",
@@ -567,7 +600,16 @@ def discussion(ed):
         "Williams, A.; Nangia, N.; Bowman, S. A Broad-Coverage Challenge Corpus for Sentence Understanding through "
         "Inference. In Proceedings of NAACL-HLT 2018, New Orleans, LA, USA, 1–6 June 2018; pp. 1112–1122.",
         "Gneiting, T.; Raftery, A.E. Strictly Proper Scoring Rules, Prediction, and Estimation. *J. Am. Stat. "
-        "Assoc.* **2007**, *102*, 359–378."]
+        "Assoc.* **2007**, *102*, 359–378.",
+        "Renze, M.; Guven, E. The Effect of Sampling Temperature on Problem Solving in Large Language Models. In "
+        "Findings of the Association for Computational Linguistics: EMNLP 2024, Miami, FL, USA, 12–16 November "
+        "2024; pp. 7346–7356.",
+        "Xu, J.; Liu, X.; Yan, J.; Cai, D.; Li, H.; Li, J. Learning to Break the Loop: Analyzing and Mitigating "
+        "Repetitions for Neural Text Generation. In *Advances in Neural Information Processing Systems 35 "
+        "(NeurIPS 2022)*; Curran Associates: Red Hook, NY, USA, 2022.",
+        "Xie, J.; Chen, A.S.; Lee, Y.; Mitchell, E.; Finn, C. Calibrating Language Models with Adaptive "
+        "Temperature Scaling. In Proceedings of the 2024 Conference on Empirical Methods in Natural Language "
+        "Processing (EMNLP), Miami, FL, USA, 12–16 November 2024."]
     cur = last_ref
     for t in new_refs:
         el = copy.deepcopy(last_ref._p)
@@ -585,6 +627,7 @@ def results2(ed, cur):
     cur = results_5_10(ed, cur, like)
     cur = results_5_11(ed, cur, like)
     cur = results_5_12(ed, cur, like)
+    cur = results_5_13(ed, cur, like)
     return cur
 
 
@@ -854,6 +897,118 @@ def results_5_10(ed, cur, like):
         rows.append([SHORT[m], str(t["ni_099"]), str(t["ni_0999"]), str(t["ni_09999"]), str(t["ni_interval"]),
                      str(t["interval_ni_but_below_0999"])])
     cur = ed.make_table(cur, rows, [2400, 1800, 1300, 1300, 1500, 2166])
+    return cur
+
+
+def _wavg(items):
+    """items: list of (mean, n) -> weighted mean, total n."""
+    n = sum(x[1] for x in items)
+    return (sum(x[0] * x[1] for x in items) / n, n) if n else (None, 0)
+
+
+def results_5_13(ed, cur, like):
+    FT, FL, FR = S["fit"], S["failure"], S.get("failure_refcmp", {})
+    ms = [m for m in MODELS if m in FT]
+    cur = heading(ed, cur, "5.13. Fit Quality and Prediction of Failure")
+    gd = [FT[m]["distorted"]["mean_gain"] for m in ms]
+    gc = [FT[m]["clean"]["mean_gain"] for m in ms]
+    nl = [FT[m]["distorted"]["mean_nll_nom"] for m in ms]
+    nb = sum(FT[m]["distorted"]["boundary"] for m in ms)
+    nd = sum(FT[m]["distorted"]["n"] for m in ms)
+    cur = body(ed, cur,
+        "**Fit quality.** A fitted temperature exists whether or not any temperature describes the choices, so the "
+        "estimate has to be read with a measure of fit. Table 20 gives the mean log-likelihood per step of the "
+        "chosen items under the same-history reference at the nominal temperature and at the fitted temperature, "
+        "the gain from fitting, and the uniform value. Fitting adds almost nothing to what the reference already "
+        f"provides: {min(gc):.3f} to {max(gc):.3f} nats per step in clean cells, where it must add nothing, and "
+        f"{min(gd):.3f} to {max(gd):.3f} nats per step in distorted cells, against a mean negative log-likelihood "
+        f"of {min(nl):.2f} to {max(nl):.2f} nats at the nominal temperature. The fitted temperature lay on a grid "
+        f"bound in {nb} of {nd} distorted cells. The reference log-likelihood therefore carries what the fit "
+        "carries, and the fit's only addition is the decomposition into scale and remainder (Section 5.9). "
+        "Together with the intervals of Table 15, trajectory-level estimates should be reported with both an "
+        "interval and this fit measure; both are given in Tables 15 and 20 and, for every cell, in the results files.", like)
+    cur = caption(ed, cur, "Table 20.",
+        " Fit of the same-history reference to the chosen items: mean log-likelihood per step at the nominal "
+        "temperature and at the fitted temperature, gain from fitting (nats per step), and cells with the fitted "
+        "temperature on a grid bound.")
+    rows = [["Model", "Cells", "Log-lik. at nominal *T*", "Log-lik. at fitted *T*_{eff}", "Gain (distorted)",
+             "Gain (clean)", "Uniform", "On grid bound"]]
+    for m in ms:
+        d, c = FT[m]["distorted"], FT[m]["clean"]
+        rows.append([SHORT[m], str(d["n"]), f"{-d['mean_nll_nom']:.2f}", f"{d['mean_ll_fit']:.2f}",
+                     f"{d['mean_gain']:.3f}", f"{c['mean_gain']:.3f}", f"{d['mean_uniform']:.2f}",
+                     f"{d['boundary']}/{d['n']}"])
+    cur = ed.make_table(cur, rows, [2000, 800, 1500, 1500, 1200, 1100, 1000, 1366])
+    cur = footer(ed, cur, "Distorted cells are all prompt conditions except clean. The uniform value is -log *K* for "
+                          "the number *K* of candidates.")
+    # failure -------------------------------------------------------------
+    def pooled(src, grp, ind, lab="low"):
+        return _wavg([(src[m]["auc"][grp][lab][ind]["mean"], src[m]["auc"][grp][lab][ind]["n"])
+                      for m in src if lab in src[m]["auc"][grp] and ind in src[m]["auc"][grp][lab]])
+
+    fr = [FL[m]["fail_rate"]["distorted"]["low"] for m in FL]
+    fn = [FL[m]["fail_rate"]["distorted"]["norec"] for m in FL]
+    accs = {c: [FL[m]["acc_by_cond"][c] for m in FL if c in FL[m]["acc_by_cond"]] for c in ("clean", "P0", "C0", "P0+C0")}
+    cur = body(ed, cur,
+        "**Does an indicator predict failure and not the prompt?** The comparison of Section 5.6 asks whether an "
+        "indicator separates distorted from clean prompts. Detecting a distortion is not the same as detecting a "
+        "problem, and the main text shows why: in Qwen2.5-3B pressure lowered ECE because it disrupted a "
+        "confidently wrong repetition. We therefore evaluate the indicators against outcomes. Within each matched "
+        "cell and separately for clean-prompt and distorted cells, we compute the probability that a trajectory "
+        "that failed has a higher indicator value than one that did not (0.5 is chance), for the outcome low "
+        "accuracy (fewer than half of the six steps correct). The other outcome, failure to recover the exact "
+        "continuation, could not be analysed, because "
+        f"{min(fn)*100:.0f} to {max(fn)*100:.0f}% of trajectories fail to recover and almost no cell contains both "
+        f"classes; low accuracy is also common ({min(fr)*100:.0f} to {max(fr)*100:.0f}% of trajectories in distorted "
+        "cells), so only cells with at least three trajectories in each class enter Table 21. In these small "
+        "models the distortions did not improve accuracy: the mean local accuracy was "
+        f"{min(accs['clean']):.2f} to {max(accs['clean']):.2f} in clean cells and {min(accs['P0']):.2f} to "
+        f"{max(accs['P0']):.2f} under P0, so the benefit of pressure seen in Qwen2.5-3B (ECE fell in five of "
+        "eight cells) was not reproduced as a gain in accuracy, but the argument for outcome-based evaluation does "
+        "not depend on it.", like)
+    rows = [["Indicator (reference)", "Needs", "Clean-prompt cells: AUC (cells)", "Distorted cells: AUC (cells)"]]
+
+    def row(name, needs, src, ind):
+        c = pooled(src, "clean", ind)
+        d = pooled(src, "distorted", ind)
+        f = lambda x: "–" if x[0] is None else f"{x[0]:.2f} ({x[1]})"
+        return [name, needs, f(c), f(d)]
+
+    rows += [row("Token entropy", "–", FL, "entropy"), row("Confidence", "–", FL, "conf"),
+             row("Reference log-likelihood (same history)", "clean pass", FL, "nll_same"),
+             row("KL(sampling ‖ reference)", "clean pass", FL, "kl_same"),
+             row("*T*_{eff} (same history)", "clean pass", FL, "teff_same"),
+             row("*T*_{eff}^{dist} (same history)", "clean pass", FL, "teffdist_same")]
+    if FR:
+        rows += [row("Reference log-likelihood (de-duplicated history)", "clean pass, repetition detector", FR, "nll_dedup"),
+                 row("*T*_{eff} (de-duplicated history)", "clean pass, repetition detector", FR, "teff_dedup")]
+    rows += [row("Reference log-likelihood (gold-repaired history)", "clean pass, task order", FL, "nll_repair")]
+    dn = pooled(FR, "distorted", "nll_dedup")[0] if FR else None
+    ds = pooled(FL, "distorted", "nll_same")[0]
+    de = pooled(FL, "distorted", "entropy")[0]
+    dt = pooled(FL, "distorted", "teff_same")[0]
+    cur = caption(ed, cur, "Table 21.",
+        " Prediction of low accuracy (fewer than half of six steps correct) within matched cells: mean signed AUC "
+        "(probability that a failed trajectory has the higher value; 0.5 is chance) and number of cells with both "
+        "outcomes, pooled over the four additional models.")
+    cur = ed.make_table(cur, rows, [3800, 2200, 2200, 2266])
+    cur = footer(ed, cur, "Matched cells (*T* = 0.8, 2.0) for all rows except the de-duplicated reference, which uses "
+                          "the reference-comparison cells (sticky attractor, *T* = 0.15, 0.8, 2.0).")
+    cur = body(ed, cur,
+        "Within a cell, the indicators computed from the sampling distribution or from the same-history reference "
+        f"were close to chance, at most weakly informative, as predictors of failure (distorted cells: entropy {de:.2f}, reference "
+        f"log-likelihood {ds:.2f}, *T*_{{eff}} {dt:.2f}). "
+        "The indicators that did predict failure were those computed against a repaired reference "
+        + (f"(AUC {dn:.2f} for the de-duplicated reference in distorted cells)" if dn else "")
+        + ". This is expected, and it limits what the result shows. A repaired reference asks the model, in a "
+          "healthy context, what the next item should be, so its log-likelihood works as a verifier that uses the "
+          "model's own knowledge of the list. The gold-repaired version uses the task order, and the "
+          "de-duplicated version needs only a repetition detector but still presumes that the clean model knows "
+          "the answer. The fitted temperature under these references predicted failure about as well as the "
+          "log-likelihood itself, because a poor fit moves it to a grid bound, so its value again adds nothing "
+          "beyond the log-likelihood. We conclude that a label-free indicator based on the sampling "
+          "distribution predicts failure at most weakly in this task family, and that a reference-based log-likelihood "
+          "does so only when the reference is repaired and the model knows the task.", like)
     return cur
 
 

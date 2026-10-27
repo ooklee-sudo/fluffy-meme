@@ -353,6 +353,66 @@ def ref_strategy_matched(M):
     return out
 
 
+def failure_analysis(M, inds=None):
+    """Do the indicators predict failure (not the prompt condition)?
+
+    Within each matched cell, signed AUC P(indicator in failed > in successful
+    trajectories) for two outcomes: low accuracy (fewer than half of the six
+    steps correct) and failure to recover (not the exact continuation).
+    Cells with fewer than 3 trajectories in either class are skipped.
+    """
+    inds = inds or ["entropy", "conf", "nll_same", "kl_same", "teff_same", "teffdist_same",
+                    "nll_repair", "teff_repair"]
+    out = {}
+    recov = (2, 3, 4, 5, 6, 7)
+    for model, d in M.items():
+        res = {"clean": {}, "distorted": {}}
+        acc_by = {}
+        base = {"clean": {"low": [], "norec": []}, "distorted": {"low": [], "norec": []}}
+        for key, tr in d["traj"].items():
+            cond = key.split("|")[-1]
+            grp = "clean" if cond == "clean" else "distorted"
+            acc_by.setdefault(cond, []).append(np.mean([np.mean(t["correct_steps"]) for t in tr]))
+            labels = {"low": np.array([np.mean(t["correct_steps"]) < 0.5 for t in tr]),
+                      "norec": np.array([tuple(t["comp"]) != recov for t in tr])}
+            for lab, y in labels.items():
+                base[grp][lab].append(float(y.mean()))
+                if y.sum() < 3 or (~y).sum() < 3:
+                    continue
+                for ind in inds:
+                    x = np.array([t[ind] for t in tr])
+                    a = auc(x[~y], x[y])      # P(x_fail > x_ok)
+                    res[grp].setdefault(lab, {}).setdefault(ind, []).append(a)
+        out[model] = dict(
+            auc={g: {lab: {i: dict(mean=float(np.mean(v)), n=len(v)) for i, v in dd.items()}
+                     for lab, dd in gg.items()} for g, gg in res.items()},
+            fail_rate={g: {lab: float(np.mean(v)) for lab, v in bb.items() if v} for g, bb in base.items()},
+            acc_by_cond={c: float(np.mean(v)) for c, v in acc_by.items()})
+    return out
+
+
+def fit_analysis(M):
+    """What does fitting a temperature add to the reference at the nominal T?"""
+    out = {}
+    for model, d in M.items():
+        rows = {"clean": [], "distorted": []}
+        for task, td in d["res"].items():
+            for k, s in td["cells"].items():
+                T, cond = k.split("|")
+                r = s["same"]
+                g = "clean" if cond == "clean" else "distorted"
+                rows[g].append(dict(gain=r["ll_at_teff"] + r["nll_nom"], ll_fit=r["ll_at_teff"],
+                                    nll_nom=r["nll_nom"], boundary=bool(r["at_boundary"]),
+                                    K=len(__import__("teff_core").TASKS[task]["items"])))
+        out[model] = {g: dict(n=len(v), mean_gain=float(np.mean([x["gain"] for x in v])),
+                              mean_ll_fit=float(np.mean([x["ll_fit"] for x in v])),
+                              mean_nll_nom=float(np.mean([x["nll_nom"] for x in v])),
+                              mean_uniform=float(-np.mean([np.log(x["K"]) for x in v])),
+                              boundary=int(sum(x["boundary"] for x in v)))
+                      for g, v in rows.items() if v}
+    return out
+
+
 def refcmp_analysis(R):
     """Same-history / gold-repaired / de-duplicated references."""
     out = {}
@@ -462,6 +522,12 @@ if __name__ == "__main__":
         summ["matched"] = matched_analysis(M)
         summ["hypotheses"] = h_analysis(M)
         summ["ref_strategy_matched"] = ref_strategy_matched(M)
+        summ["failure"] = failure_analysis(M)
+        R_ = load("refcmp")
+        if R_:
+            summ["failure_refcmp"] = failure_analysis(
+                R_, ["entropy", "conf", "nll_same", "teff_same", "nll_dedup", "teff_dedup"])
+        summ["fit"] = fit_analysis(M)
         summ["runtime_matched"] = {m: dict(fwd_s=d.get("fwd_s"), n_fwd=d.get("n_fwd"))
                                    for m, d in M.items()}
     if G:

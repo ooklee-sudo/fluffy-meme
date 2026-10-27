@@ -24,6 +24,87 @@ def lockstats():
     return n, idn, med
 
 
+def reviewer2(d, h, quote, para, bullet):
+    FT, FL, FR = S["fit"], S["failure"], S.get("failure_refcmp", {})
+    ms = [m for m in B.MODELS if m in FT]
+    gd = [FT[m]["distorted"]["mean_gain"] for m in ms]
+    gc = [FT[m]["clean"]["mean_gain"] for m in ms]
+    nl = [FT[m]["distorted"]["mean_nll_nom"] for m in ms]
+
+    def pooled(src, grp, ind):
+        return B._wavg([(src[m]["auc"][grp]["low"][ind]["mean"], src[m]["auc"][grp]["low"][ind]["n"])
+                        for m in src if "low" in src[m]["auc"][grp] and ind in src[m]["auc"][grp]["low"]])[0]
+
+    h("Reviewer 2", 1)
+    para("We thank the reviewer for the summary, which states the aim of the study accurately, and for the "
+         "constructive suggestions. All three were adopted.")
+    h("Reviewer 2, Point 1: Fit quality, uncertainty intervals, and the claim in Section 3.2", 2)
+    quote("Section 3.3 acknowledges that changing temperature cannot represent changes in the ranking of possible "
+          "answers, but the paper does not examine fit quality [...] the fitting procedure can return a "
+          "temperature even when no temperature describes the observed behavior well at all. I would therefore "
+          "recommend reporting a measure of fit together with the estimated temperature and providing uncertainty "
+          "intervals. This is particularly important for the trajectory-level estimates based on only six "
+          "choices. I would also tone down the statement in Section 3.2 that changes in the model's valuations "
+          "necessarily make the effective temperature differ from the nominal temperature.")
+    para(f"Fit: Section 3.3 now states that the estimate must be reported with its fit, and defines two measures, the "
+         f"log-likelihood per step (compared with the uniform value and with the reference at the nominal "
+         f"temperature) and the residual divergence that no rescaling removes. Table 20 reports them for all "
+         f"matched cells of the revision study. Fitting a temperature improved the log-likelihood by only "
+         f"{min(gd):.3f} to {max(gd):.3f} nats per step in distorted cells, against {min(nl):.2f} to {max(nl):.2f} "
+         f"nats at the nominal temperature, and the context effect is mostly a change of ordering (on average only "
+         f"{B.SCALE_EX*100:.0f}% of the divergence is removable by rescaling; Section 5.9). In simulation a pure "
+         f"reordering returned the upper grid bound with a log-likelihood at the uniform value, which is exactly "
+         f"the failure the reviewer describes (Appendix E, S1).", "Reply, fit.")
+    para(f"Intervals: profile-likelihood and trajectory-bootstrap intervals are now reported (Section 3.3, Tables 15, "
+         f"16, E1, E2). With six choices the median upper-to-lower ratio of the 95% interval was {B.TRAJ_RATIO:.1f} "
+         f"and {B.TRAJ_GT4*100:.0f}% of trajectories exceeded 4, so we now state that trajectory-level estimates "
+         "carry little information on their own and that only pooled estimates should be interpreted.",
+         "Reply, intervals.")
+    para("Section 3.2: we toned down the statement. The text now says that a context that alters the valuations "
+         "may move the effective temperature away from the nominal one, but need not: a change that leaves the "
+         "scale and the ordering unchanged, or whose effects cancel across steps, leaves it at the nominal value, "
+         "and a change of ordering alone corresponds to no particular temperature. The same qualification was made "
+         "in the Introduction.", "Reply, Section 3.2.")
+    h("Reviewer 2, Point 2: Detecting a distortion versus predicting failure; the reference-likelihood comparison", 2)
+    quote("[...] the paper itself shows that pressure can improve calibration by disrupting a confidently wrong "
+          "repetition. Detecting pressure therefore does not necessarily mean that one detects a problem per se. "
+          "In my opinion, the authors should examine separately whether the indicators predict incorrect answers "
+          "or failure to recover. I would also add a simple comparison using the probability of the observed "
+          "choices under the clean-prompt reference. This would help establish what fitting a temperature adds "
+          "beyond having access to that reference.")
+    para(f"Section 5.13 and Table 21 evaluate the indicators against outcomes. Within each matched cell we compute "
+         f"the probability that a failed trajectory has the higher indicator value, for the outcome low accuracy "
+         f"(fewer than half of six steps correct). Failure to recover could not be analysed, because 98 to 100% "
+         f"of trajectories fail to recover and almost no cell contains both classes. In cells with both outcomes, "
+         f"the sampling-distribution indicators and the same-history reference were close to chance in distorted "
+         f"cells (entropy {pooled(FL,'distorted','entropy'):.2f}, reference log-likelihood "
+         f"{pooled(FL,'distorted','nll_same'):.2f}, T_eff {pooled(FL,'distorted','teff_same'):.2f}). "
+         + (f"Only references with a repaired history predicted failure (log-likelihood under the de-duplicated "
+            f"reference {pooled(FR,'distorted','nll_dedup'):.2f}), and we explain why this is expected: it works as "
+            f"a verifier that uses the model's own knowledge of the list, and the gold-repaired version uses the task "
+            f"order. " if FR else "") +
+         "We state that the failure analysis is limited (most trajectories fail in the sticky and strong regimes) "
+         "and that, in these small models, the distortions did not improve accuracy, so the calibration effect seen "
+         "in Qwen2.5-3B was not reproduced as an accuracy gain.", "Reply, outcomes.")
+    para(f"Reference likelihood comparison: the probability of the observed choices under the clean-prompt reference is "
+         f"added as an indicator in Table 13 (Section 5.9) and in Table 21, and Table 20 isolates what fitting adds "
+         f"to it: {min(gd):.3f} to {max(gd):.3f} nats per step in distorted cells and {min(gc):.3f} to "
+         f"{max(gc):.3f} in clean cells. Fitting a temperature adds nothing as a detector or a predictor of "
+         f"failure beyond the reference likelihood; its contribution is the decomposition into scale and remainder.",
+         "Reply, reference likelihood.")
+    h("Reviewer 2, Point 3: Suggested references", 2)
+    quote("I would cite three papers that seem relevant to the object of the study: The Effect of Sampling "
+          "Temperature on Problem Solving in Large Language Models (2024); Learning to Break the Loop: Analyzing and "
+          "Mitigating Repetitions for Neural Text Generation (2022); Calibrating Language Models with Adaptive "
+          "Temperature Scaling (2024).")
+    para("We thank the reviewer and cite all three. Renze and Guven [23] are discussed in Section 2.1 as evidence that "
+         "the nominal temperature has little systematic effect on average accuracy, in contrast to our question about "
+         "context dependence. Xu et al. [24] are cited in the Introduction and Section 2.1 for the self-reinforcement "
+         "of repetition, of which the planted attractor is a controlled version. Xie et al. [25] are discussed in "
+         "Section 2.2 as a context-dependent temperature fitted for calibration with labels, in contrast to "
+         "*T*_eff, which is fitted against a clean-context reference without labels.".replace("*T*_eff","T_eff"))
+
+
 def main(out):
     d = docx.Document()
     st = d.styles["Normal"]
@@ -73,10 +154,10 @@ def main(out):
     tm = np.mean([v["_runtime"]["t_main"] for v in F.values()]) if F else float("nan")
     ns = np.mean([v["_runtime"]["nli_seconds"] / 20 for v in F.values()]) if F else float("nan")
 
-    d.add_heading("Response to the Reviewer", 0)
+    d.add_heading("Response to the Reviewers", 0)
     para("Manuscript: \"Is the Sampling Temperature the Agent's Decision State? A Reference-Based Indicator and Its "
          "Comparison with Entropy, Calibration and Semantic Entropy\"")
-    para("We thank the reviewer for a careful and constructive report. Every point below was addressed either by a "
+    para("We thank both reviewers for careful and constructive reports. Reviewer 1's points are answered first, then Reviewer 2's. Every point below was addressed either by a "
          "change in the theory, by new experiments, or, where we could not do what was asked, by narrowing our claims "
          "and saying so. New and changed text in the revised manuscript is marked in blue. All new experiments are "
          "run with the code in the repository folder teff/ (Appendix F), and every number quoted below is produced "
@@ -94,10 +175,13 @@ def main(out):
            "interval and threshold sensitivity, and attractor strengths without post-hoc selection.")
     bullet("The conclusions became more cautious. The new evidence does not rescue T_eff as a detector, and the "
            "revised abstract, discussion and conclusions say so.")
+    bullet("Reviewer 2: the fit and uncertainty of the estimate are reported together (Section 3.3, Tables 15 and 20), "
+           "the claim in Section 3.2 is qualified, the indicators are evaluated against failure and not only against "
+           "the prompt condition (Section 5.13), and the three suggested papers are cited.")
     bullet("What we could not do: re-run the 3B and 7B models of the main text, add models above 2B parameters, and "
            "supply the Stage A and B scripts (see Points 7).")
 
-    h("Point 1: Identification of the effective temperature and the choice of reference", 1)
+    h("Reviewer 1, Point 1: Identification of the effective temperature and the choice of reference", 1)
     quote("Eq. (2) estimates the effective temperature using clean-context logits, but changes in logit scale can also "
           "change the estimated temperature without changing the actual sampling setting. Please explain how the "
           "method distinguishes context-induced preference scaling from genuine changes in decision randomness. "
@@ -140,7 +224,7 @@ def main(out):
          f"improve the detection of distorted prompts (mean AUC of the log-likelihood {AUCS['same']:.2f}, {AUCS['repair']:.2f} "
          f"and {AUCS['dedup']:.2f} for the three references, Table 14). We say this in Sections 3.3, 5.10 and 6.1.")
 
-    h("Point 2: Saturation threshold, confidence intervals and six choices per trajectory", 1)
+    h("Reviewer 1, Point 2: Saturation threshold, confidence intervals and six choices per trajectory", 1)
     quote("Section 4.4 flags the estimator as unidentified when the mean reference probability exceeds 0.999. This "
           "threshold seems rather arbitrary. Please provide sensitivity analysis and confidence intervals of the "
           "estimated temperature. It is still unclear how reliable the estimates are with only six choices per "
@@ -160,7 +244,7 @@ def main(out):
          "pooled estimates should be interpreted. The distributional estimator in Section 3.3 removes the draw "
          "noise but not this limitation, since it still rests on six histories.", "Reply, six choices.")
 
-    h("Point 3: Comparison with reference-based measures; candidate-restricted sampling", 1)
+    h("Reviewer 1, Point 3: Comparison with reference-based measures; candidate-restricted sampling", 1)
     quote("Table 8 shows that the proposed indicator detects only 6 of 15 pressured cells, while ordinary token "
           "entropy detects 10 of 16. [...] Please compare with reference-based log-likelihood and "
           "distribution-divergence measures to show whether temperature fitting provides any additional value. The "
@@ -183,7 +267,7 @@ def main(out):
          "the support on which it is computed. The free-generation task is still a controlled list task, not an "
          "open-ended assistant task.")
 
-    h("Point 4: Attractor strengths chosen on the same models; semantic evaluation and representation reliability", 1)
+    h("Reviewer 1, Point 4: Attractor strengths chosen on the same models; semantic evaluation and representation reliability", 1)
     quote("Section 4.1 selects attractor strengths after probing the same models used in the main experiments. [...] "
           "Please validate the findings using independently selected attractor strengths and examine the cases where "
           "strong attractors also show interior peaks. The discussion of semantic evaluation and representation "
@@ -203,7 +287,7 @@ def main(out):
          "entailment-based clustering depends on the quality of the representation of the entailment model "
          "[20,21], which we use only for the free-generation baseline and do not validate.")
 
-    h("Point 5: One prompt template, mostly negative-sentiment contamination, and H3", 1)
+    h("Reviewer 1, Point 5: One prompt template, mostly negative-sentiment contamination, and H3", 1)
     quote("The pressure and contamination experiments use only one prompt template, and the contamination text is "
           "mainly negative sentiment. H3 is not fully examined because the dominant-response-related contamination "
           "condition is missing. Please test additional prompt formulations and make the conclusions about "
@@ -217,7 +301,7 @@ def main(out):
          f"in the case that was missing. The conclusions about contamination are now explicitly limited to these "
          f"wordings, to small models and to this task (Sections 5.8, 6.4 and 7).")
 
-    h("Point 6: Semantic entropy baseline; computational overhead", 1)
+    h("Reviewer 1, Point 6: Semantic entropy baseline; computational overhead", 1)
     quote("The semantic entropy baseline is reduced to exact matching of complete outputs. [...] Please include a "
           "more faithful implementation on open-ended responses. [...] Please report the actual runtime and "
           "computational overhead. [...]")
@@ -234,7 +318,7 @@ def main(out):
          f"vocabulary. Since the fitted temperature flagged fewer distorted cells than entropy, which is free, we say "
          f"that the extra computation is hard to justify as a detector (Section 6.1).")
 
-    h("Point 7: Small models, mixed inference stacks, and missing scripts", 1)
+    h("Reviewer 1, Point 7: Small models, mixed inference stacks, and missing scripts", 1)
     quote("The model comparison is limited mainly to small language models, and Qwen2.5-7B uses a different inference "
           "framework and quantization setting. Please add more controlled cross-model experiments and provide the "
           "missing scripts from Stages A and B. [...]")
@@ -248,6 +332,7 @@ def main(out):
          "Stages A and B are not part of the Supplementary Materials. We therefore report Tables 4 and 5 in the "
          "revised manuscript only as an illustration of the estimator, state that they cannot be reproduced from "
          "the Supplementary Materials, and rest no conclusion on them (Section 6.4).")
+    reviewer2(d, h, quote, para, bullet)
     d.save(out)
 
 
