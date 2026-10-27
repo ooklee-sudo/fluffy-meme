@@ -1,0 +1,766 @@
+{
+ "title": "When Can Marketers Trust Synthetic Consumers? Validity Regions and a Validation Protocol for LLM Digital Twins in Digital Experimentation",
+ "abstract": "Marketers increasingly consider LLM-based synthetic consumers to pre-screen digital experiments and to run market research, yet when such agents can be trusted is unknown. The authors propose a validity-region account: a synthetic agent is informative about a treatment effect only if the effect operates through textual cues, does not depend on effort costs, lies outside memorized paradigms, and the agent’s reasoning regime matches the human one. In preregistered tests with new simulated respondents, a reasoning-by-temperature grid, and 999 public headline A/B tests, plus a stability study over 13 model versions, default effects reverse with paradigm familiarity in all five model families, naming the theory inflates canonical effects, reasoning reduces factual errors but raises bias, and click predictions beat chance by nine points only without personas and are compressed. Errors are specific to model versions. The authors derive a version-specific validation protocol that tells managers when synthetic evidence can screen designs and when human tests are required.",
+ "keywords": "synthetic consumers; digital twins; large language models; digital experimentation; A/B testing; marketing research; validity",
+ "body": [
+  {
+   "h1": "Introduction"
+  },
+  {
+   "p": "Marketers now learn about customers by running experiments continuously. A retailer tests whether a pre-checked loyalty enrollment box raises sign-ups, a subscription service tests price menus, a publisher tests headlines, and a platform tests how targeted advertising is perceived. Each test consumes customer traffic and time, and many promising designs never reach a test. Market researchers face the parallel problem of the cost and speed of surveys and conjoint studies. Large language models (LLMs) offer a tempting shortcut: synthetic consumers, also called silicon samples or digital twins, that answer experimental scenarios as if they were customers (Argyle et al. 2023; Brand, Israeli, and Ngwe 2024; Sarstedt et al. 2024; Toubia et al. 2025). If such agents behaved like customers, a firm could screen thousands of designs before spending customer traffic, and researchers could pilot studies at near-zero marginal cost."
+  },
+  {
+   "p": "Whether managers should rely on such evidence is an open question with practical stakes. A firm that trusts synthetic consumers where they fail will promote the wrong designs, and a firm that distrusts them everywhere forgoes a cheap screening tool. The marketing literature has begun to offer guidelines. Sarstedt et al. (2024) see promise for pretests and pilots but caution against replacing real respondents, and Stromberg et al. (2025) document blind spots as insights become more specific. The empirical evidence is thinner and mostly asks whether LLMs reproduce effects on average (Aher, Arriaga, and Kalai 2023; Binz et al. 2025). Individual-level predictions of digital twins are weak and twins behave as hyper-rational agents (Peng et al. 2026), and recent studies of headline A/B tests find weak accuracy for LLM click prediction (Maiorano 2026; Persson, Schultzberg, and Ankargren 2026). What a manager needs is different: for a specific kind of effect and a specific model configuration, is the synthetic output informative about direction, informative about magnitude, or not informative at all, and how long does that answer remain valid when the model changes?"
+  },
+  {
+   "p": "This paper answers that question with a validity-region account and a protocol for using it. We argue that a synthetic consumer is informative about a treatment effect only if four conditions hold: the treatment operates through information that the consumer reads in the stimulus, namely wording, numbers, and option structure (V1); the effect is not mediated by effort or transaction costs that a text-only agent does not bear (V2); the paradigm is not memorized (V3); and the agent’s reasoning regime matches the consumer’s decision regime (V4). We test seven propositions derived from the account on five effects that are central to digital choice architecture: default enrollment, loss-framed messages, numerical anchors, decoy options in choice sets, and fairness perceptions of targeted advertising."
+  },
+  {
+   "p": "The design separates exploration from confirmation. Exploratory simulations generated the propositions. New simulated respondents, a new prompt template, a reasoning-effort by temperature grid, and 999 public headline A/B tests then tested them under preregistrations that fixed predictions and decision rules before the data were generated. A further exploratory study varies the prompt template and model generation across 13 model versions in five families."
+  },
+  {
+   "p": "The results support the account in part and reject it in part. Default effects reverse with paradigm familiarity in all five model families: synthetic consumers overstate the canonical organ-donation default and understate a novel green-energy default that human consumers respond to strongly. Naming the phenomenon in the prompt inflates canonical effects. More reasoning reduces factual errors but increases cue-based bias, and the two do not move together. In the field data, predictions of headline winners beat chance by about nine percentage points only without personas, and predicted effects are compressed to about a quarter of observed effects. Prompt wording matters little, whereas each model has its own profile of errors that changes between generations."
+  },
+  {
+   "p": "The paper makes three contributions. First, it supplies a falsifiable account of when synthetic consumers are informative about consumer decision effects, and reports which parts survive confirmation, which is rare in a literature dominated by positive demonstrations. Second, it provides an empirical validity map across effect types, persona architectures, reasoning settings, prompt templates, and model generations. Third, it turns the map into a managerial protocol: what synthetic evidence can be used for, what must still be tested on people, and what to document so that synthetic evidence can be audited. The next section develops the account and propositions, the research design section describes the studies, the results section reports the findings, the managerial implications section derives the protocol, and the discussion considers theory, research practice, and limitations."
+  },
+  {
+   "h1": "Theory and Propositions"
+  },
+  {
+   "h2": "Synthetic Consumers in Marketing Research and Digital Experimentation"
+  },
+  {
+   "p": "Digital experimentation is a measurement infrastructure for interactive marketing: it produces the evidence on which firms choose defaults, layouts, prices, and messages. Introducing synthetic consumers adds a new instrument whose measurement properties are unknown. A good instrument has known validity conditions, known failure modes, and known stability over time. We therefore treat a twin as a measurement instrument and ask under which conditions its readings can be trusted. This framing differs from the question of whether LLMs “think like humans,” which is not needed for the managerial decision and cannot be settled by behavioral output alone."
+  },
+  {
+   "p": "Prior work gives a mixed picture. LLMs can reproduce the direction of many classic effects (Aher, Arriaga, and Kalai 2023; Horton, Filippas, and Manning 2023), generate plausible willingness-to-pay estimates in market research (Brand, Israeli, and Ngwe 2024), and, when fine-tuned on behavioral corpora, predict held-out participants (Binz et al. 2025). Guidelines for silicon samples recommend them for pretests and hypothesis generation but not as a replacement for respondents (Sarstedt et al. 2024). At the same time, twins built from individual answers predict individuals weakly and act as hyper-rational agents (Peng et al. 2026), the specificity of the insights limits what silicon samples can deliver (Stromberg et al. 2025), and click-prediction studies on public A/B tests find weak accuracy and no benefit from personas (Maiorano 2026; Persson, Schultzberg, and Ankargren 2026). Recent work argues that simulations should be validated against held-out human data because memorization and bias threaten validity (Hullman et al. 2026) and that behavioral fidelity does not by itself imply that twins reduce the need for human measurement (Wang et al. 2026). Our account is complementary: it states conditions on the effect and the agent that predict where validity should hold, and it tests those predictions across effect types and model versions."
+  },
+  {
+   "h2": "Consumer Decision Effects and Why LLM Responses May or May Not Reproduce Them"
+  },
+  {
+   "p": "We study five effects because each corresponds to a design lever of digital choice architecture. Default effects shape enrollment, renewal, and privacy settings, and arise partly because acting against the default costs effort and attention (Jachimowicz et al. 2019; Lieder and Griffiths 2020). Loss framing is the basis of many promotional messages and works through the wording of the stimulus (Kahneman and Tversky 1979). Numerical anchors, such as list prices and reference prices, shift later judgments through the numbers a consumer reads (Tversky and Kahneman 1974). Decoy options, used in pricing menus and assortments, change choices through the structure of the option set (Huber, Payne, and Puto 1982). Fairness perceptions govern how consumers respond to targeting and differential pricing (Güth, Schmittberger, and Schwarze 1982)."
+  },
+  {
+   "p": "An LLM’s answer to a decision scenario is generated from three sources: retrieved regularities about how people respond in text, normative reasoning, and conditioning on the supplied persona. Human biases arise from additional processes that a text-only agent does not bear. Because training corpora contain many descriptions of the canonical experiments (Carlini et al. 2021, 2023), a model may reproduce a canonical effect by recall instead of by generalizing the mechanism. Reasoning budgets introduce a further regime: extended deliberation may increase normative responding, or it may elaborate the cues in the stimulus and amplify cue-driven effects."
+  },
+  {
+   "h2": "The Validity-Region Account"
+  },
+  {
+   "p": "We define a twin as valid for a treatment effect, in the sense relevant to a marketing decision, when its estimate of the effect falls inside the sampling uncertainty of the human effect (magnitude-valid) or has the same sign with confidence that excludes zero (direction-valid). The account says that validity is jointly governed by four conditions on the effect and the agent."
+  },
+  {
+   "p": "**V1, textual channel.** The treatment acts through information carried in the text of the stimulus: words, numbers, and option structure. Effects with this property are cue-based (loss framing, anchoring, attraction). **V2, cost insensitivity.** The effect is not mediated by effort, attention, or transaction costs borne by the decision maker. Defaults violate V2 because inertia is costly for humans and free for a text-only agent. **V3, novelty.** The paradigm is not available in training text, so recovery reflects generalization instead of recall. **V4, regime match.** The reasoning regime of the agent matches the human regime being simulated, so adding deliberation to the agent is not guaranteed to move it toward humans."
+  },
+  {
+   "h2": "Propositions"
+  },
+  {
+   "p": "Let D denote the twin effect minus the human effect, in the standardized unit of each effect. Table 1 states the seven propositions with the registered directions. P1 to P3 and P6 concern the effect types and prompt content (V1 to V3), P4 and P5 concern reasoning and its relation to errors (V4), and P7 concerns the field setting (V1). The propositions were formulated after exploratory simulations, so they are hypotheses tested on new data and not findings from the exploratory data."
+  },
+  {
+   "table": "props"
+  },
+  {
+   "h1": "Research Design"
+  },
+  {
+   "h2": "Study Structure and Preregistration"
+  },
+  {
+   "p": "Table 2 lists the studies. Studies E1 and E2 are exploratory: they were run and examined before the propositions were stated. Studies C1, H6c, and C2 are confirmatory and were run under two AsPredicted preregistrations (#320110 and #320124) whose decision rules were coded and committed before the confirmatory output was analyzed. Study S, on stability across prompt templates and model generations, was prompted by the confirmatory results and is exploratory. The registered text, the analysis code, and a log of all deviations are in the supplementary files. Appendix A lists the deviations."
+  },
+  {
+   "table": "studies"
+  },
+  {
+   "h2": "Human Benchmarks and Respondents"
+  },
+  {
+   "p": "No new human data were collected. Human benchmarks come from two public datasets. Twin-2K-500 comprises 2,058 US panelists who completed four survey waves, including classic heuristics-and-biases items and a repeat wave (Toubia et al. 2025). The accompanying mega-study ran 19 new preregistered human studies after the twins were built (Peng et al. 2026). The paradigms map to marketing contexts: the organ-donation and green-energy items are enrollment defaults, the three choice sets (television, printer, phone) are price-menu decoys, the targeting-fairness item concerns demographically targeted advertising, and the framing and anchoring items are message and price cues. We computed the human effects in Table 3 from the public responses, coding conditions from the displayed survey text. The raw condition tag in the targeting-fairness file is inverted relative to the text shown to participants, and we note this for the data providers. Simulated respondents are Twin-2K-500 participants. The exploratory studies used the 772 participants who appear in the three mega-study files, and the confirmatory studies used respondents who did not appear in any of those files or in earlier confirmatory samples."
+  },
+  {
+   "table": "human"
+  },
+  {
+   "h2": "Twin Construction, Models, Prompts"
+  },
+  {
+   "p": "Three persona architectures were used. The demographics-only twin receives 14 demographic attributes. The persona-summary twin receives the Twin-2K-500 text summary of the participant’s answers to the earlier waves. The theory-explicit twin receives the demographic profile plus a research note naming the phenomena in the survey, which serves as a leakage check. Five model families from five developers were used in the main studies: Claude Haiku 5.5, GPT-5.6 luna, Gemini 3.7 Flash, Grok 4.3, and Llama 4 Maverick. Study S adds earlier and later versions within families, for 13 models. All models were called through one API aggregator at temperature .7 and low reasoning effort unless a study varies those settings. Two prompt templates were used. Template A reproduces the survey-text format of the mega-study. Template B, used in the confirmatory studies, rewrites the instructions and the answer format. Reasoning-effort levels are provider-specific, and one model (Gemini 3.7 Flash) cannot disable reasoning, so its levels are low, medium, and high."
+  },
+  {
+   "h2": "Measures and Analysis Rules"
+  },
+  {
+   "p": "Effects are expressed in the units of Table 3: percentage-point differences for defaults, log odds ratios for the attraction effect, and standardized mean differences for fairness, framing, and anchoring (on log estimates). For each model and persona architecture, effects are estimated on respondent-level bootstrap samples. A proposition is supported if its sign holds in at least four of five models and the pooled bootstrap interval, averaged over models, excludes the null; it is partly supported if the sign holds in at least four models but the interval includes the null; otherwise it is not supported. Benjamini–Hochberg adjustment (Benjamini and Hochberg 1995) is applied across the registered tests in each study. The primary persona architecture for P1 to P3 is the persona summary, and demographics-only results are reported as robustness. For the validity map we classify each effect and configuration as magnitude-valid when the twin estimate lies inside the 95% interval of the human effect, direction-valid when the sign matches and the twin interval excludes zero, and invalid otherwise."
+  },
+  {
+   "p": "The reasoning grid (H6c) varies reasoning effort (three levels) and temperature (0, .7, 1.2) for four models. Bias is the average ratio of twin to human effects for framing, attraction, and anchoring. Factual error is the share of 16 answerable general-knowledge items answered wrongly, with an explicit “not sure” option. Fabrication is the share of invented-entity items answered with a non-abstain option, measured with and without an abstention prompt. The field test (C2) uses the Upworthy Research Archive of headline A/B tests (Matias et al. 2021). For each test, simulated respondents estimate the probability of clicking each headline variant, and predictions are averaged over five draws. We evaluate winner agreement among tests whose arms differ at p < .05, expressed as excess over the chance rate of the test, the rank correlation across arms, and a calibration slope of predicted on observed log-odds differences that is corrected for the sampling noise of the observed differences."
+  },
+  {
+   "h2": "Use of Generative AI"
+  },
+  {
+   "p": "An AI model (Claude, Anthropic) wrote most of the simulation and analysis code, executed the analyses, and drafted the text under the authors’ direction. The AI model is not an author, and the authors are responsible for the content. The simulated respondents in all studies are outputs of large language models and not people, and no new human-subject data were collected."
+  },
+  {
+   "h1": "Results"
+  },
+  {
+   "h2": "Exploratory Studies (E1, E2)"
+  },
+  {
+   "p": "Exploratory simulations on 772 respondents (template A, three persona architectures, five models) suggested four patterns that became propositions: a reversal of default effects between a canonical and a novel paradigm, larger canonical effects when the phenomenon is named, inflated attraction effects, and a positive relation between reasoning effort and bias. The reasoning pilot also pointed in a direction opposite to the dual-process expectation: more reasoning increased the attraction effect (about +.5 log odds per reasoning level) and bias and factual error were negatively related across cells. These patterns are treated as hypotheses, and the confirmatory studies report their tests. The inflated attraction effect did not replicate in the confirmatory twin study."
+  },
+  {
+   "h2": "Confirmatory Twin Study (C1)"
+  },
+  {
+   "p": "Table 4 reports the confirmatory propositions for the persona-summary architecture. The default dissociation is confirmed. Twins overstate the canonical organ-donation default relative to the human effect of 4.4 percentage points in four of five models (pooled difference +8.7 points, interval 6.1 to 11.2), and they understate the novel green-energy default in all five models, in which humans show a 24.7-point effect (pooled difference −26.3 points, interval −29.8 to −22.8). The contrast between the two paradigms is negative in all five models (pooled −35.0 points). Naming the phenomenon in the prompt raises canonical effects in all five models (pooled +.71 standardized units), which supports leakage."
+  },
+  {
+   "p": "The prediction that cue-based effects overshoot in canonical paradigms is not supported. Framing exceeded the human effect in only two of five models (it was extreme in one model, whose framing effect reached a standardized difference of about 6), and anchoring was on average below the human effect. The robustness check with demographics-only twins shows that the organ-donation overshoot depends on persona architecture: with demographics only, it holds in three of five models and the pooled difference is negative (−4.0 points). The attraction effect that was inflated in the exploratory simulations is near zero or negative for three of five models in C1 (persona summary: −.19, −.36, and −.29 log odds against a human effect of .37), whereas two models overshoot (.90 and 1.91). Effects in the fairness study differ in sign across models (Table 5). Figure 1 plots all effects, models, and architectures against the human benchmarks."
+  },
+  {
+   "table": "c1"
+  },
+  {
+   "table": "c1models"
+  },
+  {
+   "figure": "../figures/Figure1_forest_C1.png",
+   "alt": "Forest plot of twin effects against human benchmarks for seven effects, five models, and three persona architectures",
+   "caption": "Twin Effects Diverge Widely from Human Benchmarks in the Confirmatory Twin Study. Notes: Each panel is one effect. Points are twin estimates and bars are 95% respondent-bootstrap intervals (600 simulated respondents per model and architecture). The shaded band is the 95% interval of the human effect and the vertical line is the human estimate. Estimates beyond the axis range appear as triangles at the panel edge with their value."
+  },
+  {
+   "h2": "Confirmatory Reasoning Grid (H6c)"
+  },
+  {
+   "p": "Table 6 reports the confirmatory tests of P4 and P5. Higher reasoning effort reduces factual error: the coefficient on reasoning level is −.025 (interval −.039 to −.011), and error falls from about 7% without reasoning (for the three models that allow it) to under 1% at high effort. The registered prediction that reasoning reduces bias is rejected. The coefficient on the bias index is positive (+.27, interval .08 to .46), and the framing effect rises with reasoning (+.34, interval .03 to .65), with the right sign for only one of four models. The attraction effect shows no reliable relation to reasoning. P5 is also not supported: within models, the bias index and factual error are negatively correlated (−.19), and only one of four models shows the registered positive sign. Fabrication on invented entities was essentially zero in all cells, with and without the abstention prompt, so the hallucination component of the resource-rationality account could not be tested with this instrument. Temperature had no reliable effect."
+  },
+  {
+   "table": "h6"
+  },
+  {
+   "h2": "Confirmatory Field Test (C2)"
+  },
+  {
+   "p": "The field test used 999 eligible tests from the confirmatory package, of which 833 were classified as cue-contrast tests by the fixed lexical rule and 166 as non-cue tests; 528 tests had arms that differed at p < .05. Table 7 reports the registered verdicts. Without a persona, twin predictions identify the winning headline more often than chance. Excess agreement over the test-specific chance rate is +9.3 percentage points (interval 6.6 to 12.1) and the sign holds in all five models. With demographic personas, excess agreement is about zero, so the no-persona arm outperforms the persona arm by 8.9 points (interval 6.5 to 11.6). This agrees with independent reports that persona conditioning does not help for headline prediction (Maiorano 2026; Persson, Schultzberg, and Ankargren 2026)."
+  },
+  {
+   "p": "The theory-derived moderator is not supported: the advantage of cue-contrast tests over non-cue tests is −1.6 points (interval −10.0 to 6.5). The prediction that twins overstate effects is also rejected. The disattenuated calibration slope in cue-contrast tests is .26 (interval .20 to .31), so twin-predicted differences are roughly a quarter of the observed ones. Twin predictions therefore behave as a weak ranking signal with compressed magnitudes. The archive is public and dates from 2013 to 2015, so some contamination of the models cannot be excluded, and this would work against the pessimistic reading."
+  },
+  {
+   "table": "c2"
+  },
+  {
+   "h2": "Stability Across Templates and Model Generations (S)"
+  },
+  {
+   "p": "Study S asks how long a validity finding survives changes in prompt wording and model version. Using 200 new respondents, 13 model versions in five families, and two prompt templates, we find three things. First, the prompt template hardly matters: classification of effects into validity levels agrees between templates for 86% of model–effect pairs (kappa .75), the correlation of standardized discrepancies is .87, and the template explains no variance in a balanced decomposition. Second, the pattern of errors is model-specific. About 68% of the variance of standardized discrepancies is a model-by-effect interaction and 25% is a model main effect, of which 78% separates families and 22% separates generations within a family. Third, generations differ: the agreement of validity levels between consecutive versions of a family ranges from 43% to 100% and the correlation of standardized discrepancies from −.73 to .84."
+  },
+  {
+   "p": "Table 8 summarizes the validity map. Direction was valid in at least three quarters of the 26 configurations for anchoring, framing, attraction, and fairness, but magnitude was valid in only 4% to 27% of them. Defaults were valid in direction in only 15% of configurations. One model in one template produced unusable output in half of its responses and was flagged."
+  },
+  {
+   "table": "map"
+  },
+  {
+   "h1": "Managerial Implications: A Validation Protocol for Synthetic Evidence"
+  },
+  {
+   "p": "The results imply a protocol with five steps for managers and research teams that consider synthetic consumers in digital experimentation or market research. The protocol is a proposition derived from the confirmatory and stability results and has not been tested in a deployed pipeline."
+  },
+  {
+   "p": "**Step 1, classify the effect.** Determine whether the planned treatment works through cues the consumer reads (wording, numbers, option structure), through effort or transaction costs (defaults, inertia, friction), or through fairness perceptions, and whether the paradigm resembles a widely documented experiment. **Step 2, consult the validity map (Table 8).** For cue-based changes, such as a price anchor, a loss-framed message, or a decoy in a price menu, synthetic consumers were direction-valid in most configurations and can be used to rank alternatives, but not to size effects. For cost-based design, such as enrollment defaults, they should not be used, because direction was valid in only 15% of configurations and the sign changed with paradigm familiarity. Fairness perceptions of targeting are model-dependent. **Step 3, validate the exact model version and configuration.** Because errors are specific to model versions and persona architectures, a team should run a short validation battery on the configuration it will use, with human benchmarks for the relevant effect type, and require direction-validity for that effect type. The battery used here (nine items covering five effect types, with public human benchmarks and code) is a starting point. A new model version triggers revalidation."
+  },
+  {
+   "p": "**Step 4, never rely on synthetic magnitudes.** Magnitude was valid in few configurations, and reasoning effort moves bias in the wrong direction, so raising reasoning effort is not a debiasing tool. When effect size drives a decision, such as the expected lift of a new default, calibrate with a small human pilot. **Step 5, for textual field treatments such as headlines, use the no-persona configuration and treat the output as a weak prior.** Excess agreement of about nine points over chance and a calibration slope of about a quarter mean that predictions can order candidates only weakly."
+  },
+  {
+   "h2": "Illustrations"
+  },
+  {
+   "p": "Three cases show how the protocol applies. A subscription firm considering pre-selected add-ons should not use synthetic consumers to forecast uptake, because the default effect is the cost-based effect on which twins failed and the sign flipped between a canonical and a novel paradigm. A retailer comparing three price-menu layouts with a decoy can use a validated configuration to screen out layouts whose predicted direction is clearly wrong, then test the survivors on customers. A publisher ranking headlines can run no-persona predictions as a cheap prior, but should not expect more than a modest improvement over chance and should keep the live test."
+  },
+  {
+   "h2": "Cost, Speed, and Governance"
+  },
+  {
+   "p": "Synthetic responses are cheap and fast. In our studies a call cost between a fraction of a cent and a few cents (for example, 9,000 calls in the confirmatory twin study cost about US$19), while participants in the human panel underlying our benchmarks were paid US$7 per survey wave. The savings are real only if the output is used for what it can do. Because the failures we document are largest for defaults, a design lever that shapes consumer welfare and attracts regulatory attention, firms should not evaluate default and friction design with synthetic evidence alone, and they should record the evidence they relied on."
+  },
+  {
+   "p": "The protocol also implies documentation duties. Synthetic evidence should be reported with the model identifier and access date, the persona architecture, the prompt template, the reasoning setting, the validation battery result, and the share of unusable responses. Without these, a synthetic result cannot be audited or reproduced, which matters for internal governance and for marketing research that uses synthetic respondents."
+  },
+  {
+   "h1": "Discussion"
+  },
+  {
+   "h2": "Theoretical Implications for Consumer Decision Research"
+  },
+  {
+   "p": "The confirmed results favor V3: recall of canonical paradigms, not mechanism, explains much of what looks like fidelity, and naming the theory amplifies that recall. This matters for consumer research that uses LLMs to probe mechanisms, because an effect that appears in a textbook paradigm can disappear in a novel paradigm that tests the same mechanism. The findings cannot separate V2 from V3 for defaults, because the only cost-based effect studied is confounded with paradigm familiarity. A cleaner test would need a cost-based effect with both a canonical and a novel paradigm and a cue-based effect with both."
+  },
+  {
+   "p": "The cue-based predictions fared worse than the account anticipated. Cue-based effects were direction-valid but not reliably overshooting, and the lexical moderator did not predict field accuracy. This suggests that V1 is necessary but not sufficient, and that the relevant property is the specific cue processing of each model, not the cue type. Regarding V4, extended reasoning did not move agents toward human responding: it reduced factual errors while elaborating cues and raising bias. For marketing theory, the implication is that capability gains in AI agents do not monotonically improve their usefulness as models of consumers, so validity must be established for each use."
+  },
+  {
+   "h2": "Implications for Marketing Research Practice"
+  },
+  {
+   "p": "For researchers who use synthetic respondents, the results argue for pre-specifying validation, reporting configuration details, and distinguishing canonical from novel paradigms. They also favor using synthetic respondents for pretests and hypothesis generation, in line with existing guidelines (Sarstedt et al. 2024), and not for estimating effect sizes."
+  },
+  {
+   "h2": "Limitations and Future Research"
+  },
+  {
+   "p": "Several limitations apply. Human benchmarks come from one US online panel and cover seven effects, so the validity map describes those effects and not consumer behavior in general. The confirmatory twin studies used one draw per respondent and one temperature, and provider routing through an aggregator may vary across calls. Reasoning-effort settings are provider-specific, and one model could not disable reasoning. Results describe specific model versions in October 2026 and will date, which is why the protocol emphasizes revalidation instead of conclusions about models. The hallucination measure produced almost no variation, so the associated predictions are untested. The stability study was not preregistered. The field archive is public and may be partly memorized. We discovered and corrected an indexing error in our multiplicity correction during analysis, which changed no verdict, and the correction is recorded in the supplementary files. Finally, the account was built from exploratory data and only partly survived confirmation."
+  },
+  {
+   "p": "Future research should extend the validity map to further consumer effects such as choice overload, mental accounting, and price promotions; test cost-based and cue-based effects in both canonical and novel paradigms; replicate with human samples from other countries and with firm-run field experiments in which synthetic predictions are registered before the test; study multimodal stimuli such as images and video, which our text-only agents did not see; and evaluate calibration methods that combine small human samples with synthetic outputs (Persson, Schultzberg, and Ankargren 2026; Wang et al. 2026)."
+  },
+  {
+   "h1": "Conclusion"
+  },
+  {
+   "p": "Synthetic consumers are neither valid nor invalid in general. In our data they carried information about the direction of cue-based effects, were unreliable about magnitudes and about cost-based effects such as defaults, and gave a weak, compressed signal in a field setting. Their errors belong to model versions and change as models change. For marketers and researchers, the practical answer to when a synthetic consumer can be trusted is a documented, version-specific validation against human benchmarks for the type of effect at hand, and not a general verdict about twins."
+  }
+ ],
+ "tables": {
+  "props": {
+   "caption": "Registered Propositions Receive Mixed Confirmation",
+   "widths": [
+    620,
+    4140,
+    2200,
+    2400
+   ],
+   "head": [
+    "",
+    "Registered prediction",
+    "Study and test",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "P1",
+     "Cue-based effects (framing, anchoring) overshoot human effects on canonical paradigms (V1)",
+     "C1, persona summary, ≥4 of 5 models",
+     "Not supported (framing 2/5 models, anchoring pooled below human)"
+    ],
+    [
+     "P2",
+     "Defaults: twin overshoots the canonical paradigm (organ donation), does not overshoot the novel paradigm (green energy) (V2, V3)",
+     "C1",
+     "Supported (organ 4/5 models, green 5/5)"
+    ],
+    [
+     "P3",
+     "Twin discrepancy is larger on the canonical than on the novel default paradigm (V3)",
+     "C1",
+     "Supported (5/5 models)"
+    ],
+    [
+     "P4",
+     "Higher reasoning effort reduces cue-based effects and factual error (V4)",
+     "H6c, 36 cells",
+     "Error: supported. Bias: not supported; bias rises with reasoning"
+    ],
+    [
+     "P5",
+     "Bias and factual error co-move positively within models (V4)",
+     "H6c",
+     "Not supported (within-model correlation −.19)"
+    ],
+    [
+     "P6",
+     "Naming the phenomenon raises canonical effects (V3)",
+     "C1, theory-explicit vs demographics-only",
+     "Supported (5/5 models)"
+    ],
+    [
+     "P7",
+     "Field: twin winner agreement exceeds chance, higher for cue-contrast tests (a), with overstated effects (b), no-persona no worse than persona (c), no-persona above chance (d) (V1)",
+     "C2, 999 tests",
+     "a: not supported. b: not supported (twins compress). c and d: supported"
+    ]
+   ]
+  },
+  "studies": {
+   "caption": "Three Confirmatory and Three Exploratory Studies Test the Account",
+   "widths": [
+    760,
+    2620,
+    2700,
+    3280
+   ],
+   "head": [
+    "Study",
+    "Purpose and status",
+    "Units",
+    "Configuration"
+   ],
+   "rows": [
+    [
+     "E1",
+     "Exploratory twin simulations (not registered)",
+     "772 mega-study respondents; defaults, attraction, fairness",
+     "5 models × 3 persona architectures, template A; about 36,000 calls"
+    ],
+    [
+     "E2",
+     "Exploratory reasoning-by-temperature pilot (not registered)",
+     "100 respondents per task",
+     "4 models × 9 cells; 14,400 calls"
+    ],
+    [
+     "C1",
+     "Confirmatory twin study (#320110)",
+     "600 new respondents; 9 items",
+     "5 models × 3 architectures, template B; 9,000 calls"
+    ],
+    [
+     "H6c",
+     "Confirmatory reasoning grid (#320110)",
+     "100 new respondents; booklet and two factual batteries",
+     "4 models × 3 effort × 3 temperature; 10,800 calls"
+    ],
+    [
+     "C2",
+     "Confirmatory field test (#320124)",
+     "999 Upworthy headline tests",
+     "5 models × persona/no-persona × 5 draws; 50,000 calls"
+    ],
+    [
+     "S",
+     "Stability across templates and generations (exploratory)",
+     "200 new respondents",
+     "13 model versions × 2 templates, persona summary; 5,200 calls"
+    ]
+   ]
+  },
+  "human": {
+   "caption": "Public Human Benchmarks for Seven Consumer Decision Effects",
+   "widths": [
+    2400,
+    2800,
+    2300,
+    1860
+   ],
+   "head": [
+    "Effect",
+    "Human estimate (units as noted)",
+    "95% interval",
+    "Source (n)"
+   ],
+   "rows": [
+    [
+     "Organ-donation default (canonical)",
+     "+4.4 percentage points",
+     "−3.5 to 12.3",
+     "Mega-study, n = 600"
+    ],
+    [
+     "Green-energy default (novel)",
+     "+24.7 percentage points",
+     "16.9 to 32.4",
+     "Mega-study, n = 600"
+    ],
+    [
+     "Attraction effect (three choice sets)",
+     "log odds ratio .37",
+     ".11 to .62",
+     "Mega-study, about 165 per cell"
+    ],
+    [
+     "Targeting fairness (targeted vs broad)",
+     "d = −.54",
+     "−.75 to −.33 (approximate)",
+     "Mega-study, n = 357"
+    ],
+    [
+     "Loss framing (loss vs gain)",
+     "d = .76",
+     ".67 to .85",
+     "Twin-2K-500, wave 4"
+    ],
+    [
+     "Anchoring, African UN members",
+     "d(log) = .78",
+     ".69 to .87",
+     "Twin-2K-500, wave 4"
+    ],
+    [
+     "Anchoring, redwood height",
+     "d(log) = 1.69",
+     "1.59 to 1.79",
+     "Twin-2K-500, wave 4"
+    ]
+   ]
+  },
+  "c1": {
+   "caption": "Twins Overstate the Canonical Default and Understate the Novel Default",
+   "widths": [
+    3000,
+    1000,
+    1500,
+    1100,
+    800,
+    1960
+   ],
+   "head": [
+    "Test",
+    "Pooled D",
+    "95% CI",
+    "Models (n of 5)",
+    "p",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "P1 framing (d)",
+     "+.94",
+     ".72 to 1.33",
+     "2/5",
+     "≤ .001",
+     "Not supported"
+    ],
+    [
+     "P1 anchoring (d on log estimates)",
+     "−.21",
+     "−.25 to −.16",
+     "2/5",
+     "≤ .001",
+     "Not supported"
+    ],
+    [
+     "P2 organ default overshoot (points)",
+     "+8.7",
+     "6.1 to 11.2",
+     "4/5",
+     "≤ .001",
+     "Supported"
+    ],
+    [
+     "P2 green default not overshoot (points)",
+     "−26.3",
+     "−29.8 to −22.8",
+     "5/5",
+     "≤ .001",
+     "Supported"
+    ],
+    [
+     "P3 green minus organ discrepancy (points)",
+     "−35.0",
+     "−39.3 to −30.9",
+     "5/5",
+     "≤ .001",
+     "Supported"
+    ],
+    [
+     "P6 theory-explicit minus demographics-only, canonical",
+     "+.71",
+     ".58 to .97",
+     "5/5",
+     "≤ .001",
+     "Supported"
+    ],
+    [
+     "Robustness: P2 organ overshoot, demographics-only (points)",
+     "−4.0",
+     "−6.0 to −2.1",
+     "3/5",
+     "≤ .001",
+     "Not supported"
+    ]
+   ]
+  },
+  "c1models": {
+   "caption": "Model Estimates Differ Widely from Human Benchmarks (Persona-Summary Twins)",
+   "widths": [
+    2500,
+    1180,
+    1180,
+    1100,
+    1100,
+    1100,
+    1200
+   ],
+   "head": [
+    "Model",
+    "Organ (pts)",
+    "Green (pts)",
+    "Attract.",
+    "Framing",
+    "Fairness",
+    "Anch. African / redwood"
+   ],
+   "rows": [
+    [
+     "Human benchmark",
+     "4.4",
+     "24.7",
+     ".37",
+     ".76",
+     "−.54",
+     ".78 / 1.69"
+    ],
+    [
+     "Claude Haiku 5.5",
+     "31.4",
+     "−2.0",
+     "−.19",
+     ".38",
+     "−.26",
+     ".61 / .66"
+    ],
+    [
+     "Gemini 3.7 Flash",
+     "6.9",
+     "12.4",
+     "1.91",
+     "5.95",
+     "−1.86",
+     "1.23 / 1.74"
+    ],
+    [
+     "Llama 4 Maverick",
+     "−27.3",
+     "−29.3",
+     "−.36",
+     "1.77",
+     ".23",
+     ".85 / 2.08"
+    ],
+    [
+     "GPT-5.6 luna",
+     "21.9",
+     "−1.6",
+     ".90",
+     "−.15",
+     "−.29",
+     ".71 / .57"
+    ],
+    [
+     "Grok 4.3",
+     "32.4",
+     "12.3",
+     "−.29",
+     ".52",
+     ".40",
+     ".84 / .98"
+    ]
+   ]
+  },
+  "h6": {
+   "caption": "More Reasoning Lowers Factual Errors but Raises Bias",
+   "widths": [
+    2900,
+    1150,
+    750,
+    1550,
+    1000,
+    2010
+   ],
+   "head": [
+    "Test",
+    "Coefficient",
+    "SE",
+    "95% CI",
+    "Models (n of 4)",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "P4 reasoning level → bias index (predicted negative)",
+     "+.27",
+     ".097",
+     ".08 to .46",
+     "1/4",
+     "Not supported"
+    ],
+    [
+     "P4 reasoning level → framing effect (predicted negative)",
+     "+.34",
+     ".156",
+     ".03 to .65",
+     "1/4",
+     "Not supported"
+    ],
+    [
+     "P4 reasoning level → attraction effect (predicted negative)",
+     "+.10",
+     ".098",
+     "−.10 to .29",
+     "2/4",
+     "Not supported"
+    ],
+    [
+     "P4 reasoning level → factual error (predicted negative)",
+     "−.025",
+     ".007",
+     "−.039 to −.011",
+     "3/4",
+     "Supported"
+    ],
+    [
+     "P4 reasoning level → fabrication, with / without nudge",
+     "≈ 0",
+     "—",
+     "≈ 0",
+     "—",
+     "No variation"
+    ],
+    [
+     "P5 within-model correlation of bias and error (predicted positive)",
+     "−.19",
+     "—",
+     "permutation: −.41 to .41",
+     "1/4",
+     "Not supported"
+    ]
+   ]
+  },
+  "c2": {
+   "caption": "Headline Predictions Beat Chance Only Without Personas and Are Compressed",
+   "widths": [
+    3100,
+    900,
+    1600,
+    1100,
+    800,
+    1860
+   ],
+   "head": [
+    "Test",
+    "Pooled value",
+    "95% CI",
+    "Models (n of 5)",
+    "p",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "P7a cue-contrast minus non-cue excess agreement, no persona",
+     "−.016",
+     "−.100 to .065",
+     "2/5",
+     ".660",
+     "Not supported"
+    ],
+    [
+     "P7b disattenuated calibration slope, cue-contrast tests (null = 1)",
+     ".26",
+     ".20 to .31",
+     "0/5",
+     "≤ .001",
+     "Not supported (compressed)"
+    ],
+    [
+     "P7c no-persona minus persona excess agreement",
+     "+.089",
+     ".065 to .116",
+     "5/5",
+     "≤ .001",
+     "Supported"
+    ],
+    [
+     "P7d no-persona excess agreement over chance",
+     "+.093",
+     ".066 to .121",
+     "5/5",
+     "≤ .001",
+     "Supported"
+    ]
+   ]
+  },
+  "map": {
+   "caption": "Direction Is Usually Valid, Magnitude Rarely, and Defaults Almost Never",
+   "widths": [
+    2700,
+    1700,
+    1700,
+    3260
+   ],
+   "head": [
+    "Effect",
+    "Direction valid (% of configurations)",
+    "Magnitude valid (% of configurations)",
+    "Decision rule"
+   ],
+   "rows": [
+    [
+     "Anchoring (two items)",
+     "100%",
+     "12–15%",
+     "Use for direction screening; size with a human pilot"
+    ],
+    [
+     "Loss framing",
+     "92%",
+     "8%",
+     "Use for direction screening; one model produced extreme effects"
+    ],
+    [
+     "Attraction (decoy)",
+     "85%",
+     "12%",
+     "Screening with model-specific validation"
+    ],
+    [
+     "Fairness (targeted vs broad)",
+     "77%",
+     "27%",
+     "Model-dependent; validate before use"
+    ],
+    [
+     "Defaults (canonical and novel)",
+     "15%",
+     "4–15%",
+     "Do not use; sign depends on paradigm familiarity"
+    ],
+    [
+     "Textual field treatments (headlines)",
+     "+9 points above chance, no persona",
+     "slope .26",
+     "Weak prior only; no-persona configuration"
+    ]
+   ]
+  }
+ },
+ "refs": [
+  "Aher, Gati V., Rosa I. Arriaga, and Adam Tauman Kalai (2023), “Using Large Language Models to Simulate Multiple Humans and Replicate Human Subject Studies,” in *Proceedings of the 40th International Conference on Machine Learning*, PMLR 202, 337–71.",
+  "Argyle, Lisa P., Ethan C. Busby, Nancy Fulda, Joshua R. Gubler, Christopher Rytting, and David Wingate (2023), “Out of One, Many: Using Language Models to Simulate Human Samples,” *Political Analysis*, 31 (3), 337–51.",
+  "Benjamini, Yoav and Yosef Hochberg (1995), “Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing,” *Journal of the Royal Statistical Society: Series B*, 57 (1), 289–300.",
+  "Binz, Marcel, Elif Akata, Matthias Bethge, Franziska Brändle, Fred Callaway, Julian Coda-Forno, Peter Dayan, Can Demircan, Maria K. Eckstein, Noémi Éltető, Thomas L. Griffiths, Susanne Haridi, Akshay K. Jagadish, Li Ji-An, Alexander Kipnis, Sreejan Kumar, Tobias Ludwig, Marvin Mathony, Marcelo Mattar, Alireza Modirshanechi, et al. (2025), “A Foundation Model to Predict and Capture Human Cognition,” *Nature*, 644 (8078), 1002–9, https://doi.org/10.1038/s41586-025-09215-4.",
+  "Brand, James, Ayelet Israeli, and Donald Ngwe (2024), “Using GPT for Market Research,” in *Proceedings of the 25th ACM Conference on Economics and Computation*, https://doi.org/10.1145/3670865.3673479.",
+  "Carlini, Nicholas, Daphne Ippolito, Matthew Jagielski, Katherine Lee, Florian Tramèr, and Chiyuan Zhang (2023), “Quantifying Memorization Across Neural Language Models,” in *International Conference on Learning Representations*.",
+  "Carlini, Nicholas, Florian Tramèr, Eric Wallace, Matthew Jagielski, Ariel Herbert-Voss, Katherine Lee, Adam Roberts, Tom Brown, Dawn Song, Úlfar Erlingsson, Alina Oprea, and Colin Raffel (2021), “Extracting Training Data from Large Language Models,” in *30th USENIX Security Symposium*. USENIX Association, 2633–50.",
+  "Güth, Werner, Rolf Schmittberger, and Bernd Schwarze (1982), “An Experimental Analysis of Ultimatum Bargaining,” *Journal of Economic Behavior & Organization*, 3 (4), 367–88.",
+  "Horton, John J., Apostolos Filippas, and Benjamin S. Manning (2023), “Large Language Models as Simulated Economic Agents: What Can We Learn from Homo Silicus?” NBER Working Paper No. 31122, National Bureau of Economic Research.",
+  "Huber, Joel, John W. Payne, and Christopher Puto (1982), “Adding Asymmetrically Dominated Alternatives: Violations of Regularity and the Similarity Hypothesis,” *Journal of Consumer Research*, 9 (1), 90–98.",
+  "Hullman, Jessica, David Broska, Huaman Sun, and Aaron Shaw (2026), “This Human Study Did Not Involve Human Subjects: Validating LLM Simulations as Behavioral Evidence,” arXiv preprint (arXiv:2602.15785), https://arxiv.org/abs/2602.15785.",
+  "Jachimowicz, Jon M., Shannon Duncan, Elke U. Weber, and Eric J. Johnson (2019), “When and Why Defaults Influence Decisions: A Meta-Analysis of Default Effects,” *Behavioural Public Policy*, 3 (2), 159–86.",
+  "Kahneman, Daniel and Amos Tversky (1979), “Prospect Theory: An Analysis of Decision Under Risk,” *Econometrica*, 47 (2), 263–91.",
+  "Lieder, Falk and Thomas L. Griffiths (2020), “Resource-Rational Analysis: Understanding Human Cognition as the Optimal Use of Limited Computational Resources,” *Behavioral and Brain Sciences*, 43, e1.",
+  "Maiorano, Alexandre Cristovão (2026), “Do Synthetic Personas Predict Real Audience Response? A Sim-to-Real Study Where a No-Persona Baseline Beats Persona-Based Copy Simulation,” arXiv preprint (arXiv:2609.25010), https://arxiv.org/abs/2609.25010.",
+  "Matias, J. Nathan, Kevin Munger, Marianne Aubin Le Quere, and Charles Ebersole (2021), “The Upworthy Research Archive, a Time Series of 32,487 Experiments in U.S. Media,” *Scientific Data*, 8, Article 195.",
+  "Peng, Tianyi, George Gui, Melanie Brucks, Daniel J. Merlau, Grace Jiarui Fan, Malek Ben Sliman, Eric J. Johnson, Abdullah Althenayyan, Silvia Bellezza, Dante Donati, Hortense Fong, Elizabeth Friedman, Ariana Guevara, Mohamed Hussein, Kinshuk Jerath, Bruce Kogut, Akshit Kumar, Kristen Lane, Hannah Li, Vicki Morwitz, et al. (2026), “Digital Twins Are Funhouse Mirrors: Five Systematic Distortions,” arXiv preprint (arXiv:2509.19088), https://arxiv.org/abs/2509.19088.",
+  "Persson, Joel, Mårten Schultzberg, and Sebastian Ankargren (2026), “Statistical Foundations of LLM-Based A/B Testing: A Surrogacy Framework for Human Causal Inference,” arXiv preprint (arXiv:2606.17165), https://arxiv.org/abs/2606.17165.",
+  "Sarstedt, Marko, Susanne J. Adler, Lea Rau, and Bernd Schmitz (2024), “Using Large Language Models to Generate Silicon Samples in Consumer and Marketing Research: Challenges, Opportunities, and Guidelines,” *Psychology & Marketing*, 41 (6), 1254–70, https://doi.org/10.1002/mar.21982.",
+  "Stromberg, Malik, Wendy W. Moe, Thomas Reutterer, and David A. Schweidel (2025), “Blind Spots in Broad Strokes: Caveats for the Use of LLMs in Marketing Research,” SSRN, https://doi.org/10.2139/ssrn.5145114.",
+  "Toubia, Olivier, George Z. Gui, Tianyi Peng, Daniel J. Merlau, Ang Li, and Haozhe Chen (2025), “Twin-2K-500: A Data Set for Building Digital Twins of over 2,000 People Based on Their Answers to over 500 Questions,” *Marketing Science*, 44 (6), 1446–55, https://doi.org/10.1287/mksc.2025.0262.",
+  "Tversky, Amos and Daniel Kahneman (1974), “Judgment Under Uncertainty: Heuristics and Biases,” *Science*, 185 (4157), 1124–31.",
+  "Wang, Steven, Kyle Hunt, Shaojie Tang, and Kenneth Joseph (2026), “When Can LLM Digital Twins Reduce Human Measurement? From Behavioral Fidelity to Statistical Substitutability,” arXiv preprint (arXiv:2609.07987), https://arxiv.org/abs/2609.07987."
+ ],
+ "appendix": [
+  {
+   "h1": "Appendix A: Deviations from the Preregistrations and Corrections"
+  },
+  {
+   "p": "All registered predictions are reported, including those that were rejected. We list departures from the registered text. (1) C1 includes a theory-explicit persona architecture because proposition P6 requires it, although the registered conditions listed two architectures. (2) C1 used one booklet per respondent with independent random conditions for all items, instead of separate respondents per phenomenon, with the same per-cell sample of 600. (3) The attraction test used the binary versus decoy contrast only. (4) P1 and P3 were evaluated on the persona-summary architecture, a choice fixed in the analysis code before the C1 output was analyzed. (5) Because C1 contains no canonical fairness paradigm, P3 was tested for defaults only. (6) For C2, the calibration slope was defined as predicted on observed and was disattenuated for the sampling noise of observed differences, which was documented before the confirmatory evaluation, and the exclusion window was defined by date because the archive version had no randomization-risk flag. (7) The reasoning scale of Gemini 3.7 Flash is low, medium, high. (8) An indexing error in the Benjamini–Hochberg routine was found and corrected after the C2 evaluation, and all registered analyses were recomputed with no change in verdicts. (9) The stability study (S) is exploratory and was not registered."
+  }
+ ]
+}

@@ -15,22 +15,20 @@ def para(d, text, bold=False, italic=False, align=None, after=6):
 def bullets(d, items):
     for t in items: p = d.add_paragraph(style='List Bullet'); p.add_run(t)
 
-# ---------------- title page
-d = newdoc(); para(d, 'TITLE PAGE (separate file for double-anonymized review)', bold=True, align='c')
-para(d, TITLE, bold=True, align='c', after=12)
-para(d, 'Running title: Validity regions for synthetic consumers', italic=True, align='c', after=12)
-para(d, 'Authors and affiliations', bold=True)
-para(d, '[Author 1 name], [department, institution, city, country], [email], [ORCID]\n[Author 2 name], [department, institution, city, country], [email], [ORCID]')
-para(d, 'Corresponding author', bold=True); para(d, '[Name, postal address, email, telephone]')
-para(d, 'Keywords', bold=True); para(d, 'synthetic consumers; digital twins; large language models; digital experimentation; A/B testing; marketing research; validity')
-para(d, 'Manuscript length', bold=True); para(d, 'About 6,000 words including tables and references (main manuscript); unstructured abstract of about 160 words; online appendix provided separately. [Check against the journal word limit, which we could not verify.]')
-para(d, 'Pre-registration', bold=True); para(d, 'AsPredicted #320110 (twin study, reasoning grid) and AsPredicted #320124 (field test; overlapping amendment to #320110). Analysis code for confirmatory studies was committed before the confirmatory outputs were analyzed.')
-para(d, 'Data and code availability', bold=True); para(d, 'Code, pre-registrations, summary results, and raw model outputs are provided as supplementary files (code package and raw-output archive). Human data are public secondary data: Twin-2K-500 and its mega-study (Hugging Face, CC BY 4.0 and Apache-2.0) and the Upworthy Research Archive (OSF jd64p). [Add repository DOI / permanent link when deposited.]')
-para(d, 'Ethics', bold=True); para(d, 'No new human-subject data were collected. [Institutional determination of exemption to be added by the authors.]')
-para(d, 'Funding', bold=True); para(d, '[Funding sources, or "none"]. API compute for the simulations (about 306 USD) was paid by [the authors / institution].')
-para(d, 'Conflicts of interest', bold=True); para(d, '[Authors to complete.]')
-para(d, 'Use of AI assistance', bold=True); para(d, 'An AI model (Anthropic Claude) assisted with study design discussion, code for the simulations and analyses, and drafting of the manuscript, appendix, and cover letter. The authors are responsible for all content. [Confirm wording against the journal\'s AI-use policy.]')
-para(d, 'Acknowledgments', bold=True); para(d, '[To be completed.]')
+# ---------------- title page (AMA format: FILE 1)
+d = newdoc(); para(d, TITLE, bold=True, align='c', after=14)
+para(d, 'Author(s): name, title, institution, address, telephone number, and email address', bold=True)
+para(d, '[Author 1: full name, present position, department/school, university, postal address, telephone, email, ORCID]\n[Author 2: full name, present position, department/school, university, postal address, telephone, email, ORCID]')
+para(d, 'Author\'s note', bold=True); para(d, '[Corresponding author and any author note, e.g., prior presentations or relation to dissertations.]')
+para(d, 'Acknowledgments', bold=True)
+para(d, 'Generative AI use: an AI model (Claude, Anthropic) wrote most of the simulation and analysis code, executed the analyses, and drafted the manuscript text under the authors\' direction. The AI model is not an author, and the authors are responsible for the content. This use is also identified in the main document. [Other acknowledgments to be added by the authors.]')
+para(d, 'Statements and declarations', bold=True)
+para(d, 'Ethical considerations: No new human-subject data were collected. All human data are public secondary data (Twin-2K-500 and its mega-study; Upworthy Research Archive). [Institutional determination of exemption to be added by the authors.]')
+para(d, 'Consent to participate: Not applicable; no new participants were recruited. The simulated respondents are outputs of large language models.')
+para(d, 'Declaration of conflicting interest: [The authors declared no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. Authors to confirm or revise.]')
+para(d, 'Funding statement: [The authors received no financial support / list funders.] Application-programming-interface compute for the simulations (about US$306) was paid by [the authors / institution].')
+para(d, 'Data availability statement: The model outputs, prompts, and code that support the findings of this article are publicly available in [repository name] ([URL/DOI link; to be added when deposited]). The human benchmark data are publicly available from the Twin-2K-500 repositories on Hugging Face (CC BY 4.0; Apache-2.0 for the mega-study) and from the Upworthy Research Archive on the Open Science Framework (project jd64p).')
+para(d, 'Preregistration: AsPredicted #320110 (twin study and reasoning grid) and AsPredicted #320124 (field test; overlapping amendment to #320110). Analysis code for the confirmatory studies was committed before the confirmatory outputs were analyzed.')
 d.save(os.path.join(SUB, '01_Title_Page.docx'))
 
 # ---------------- cover letter
@@ -82,7 +80,7 @@ Run order (examples; <data> is the data directory, <out> an output directory)
   python3 pilot/analyze_c2.py <out>/c2conf <out>/c2conf/final2 500   and   python3 pilot/analyze_c2_verdict.py <out>/c2conf <out>/c2conf/final 1000
   python3 pilot/run_gen.py <data> <out>/gen 200 130    then  python3 pilot/analyze_gen.py <out>/gen/raw.jsonl <out>/gen/res 400
 Seeds: 2026 (respondent draws, test draw, bootstrap), 11 (C2 development), 2027 (Study S).
-Rebuild the manuscript: cd paper_src && node make.js ../manuscript.docx (needs Node.js and the docx package). Rebuild the appendix: python3 submission/build/build_appendix.py <data> out.docx.
+Rebuild the manuscript: cd paper_src && node make.js ../manuscript.docx (needs Node.js and the docx package). Rebuild the Web Appendix PDF: bash submission/build/make_webappendix.sh <data> <out_dir>. The manuscript is built with node paper_src/make_ama.js from paper_src/content_ama.json (AMA/JIM format).
 
 Notes
 - Raw outputs are in the separate archive 06_Raw_Model_Outputs.zip (one gzip JSON-lines file per study). Each line holds respondent id, model, settings, response text, cost, and the questions shown.
@@ -103,7 +101,7 @@ with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
     for sub in ['c1', 'c2', 'e1', 'e2', 'h6c', 's']:
         for dp, dn, fn in os.walk(os.path.join(ROOT, 'results', sub)):
             for f in fn: full = os.path.join(dp, f); z.write(full, os.path.relpath(full, ROOT))
-    for f in ['build_appendix.py', 'build_front.py']: z.write(os.path.join(HERE, f), 'submission/build/' + f)
+    for f in ['build_webappendix.py', 'make_webappendix.sh', 'build_front.py', 'build_contribution.py']: z.write(os.path.join(HERE, f), 'submission/build/' + f)
     z.write(os.path.join(ROOT, 'submission', '02_Manuscript_blind.docx'), 'manuscript/02_Manuscript_blind.docx')
 # ---------------- raw outputs zip
 RAWREAD = '''Raw model outputs (JSON lines, gzip). One line per API call.

@@ -12,7 +12,7 @@ XLIM = {'default_organ': (-85, 85), 'default_green': (-85, 55), 'attraction': (-
 MODELS = [('anthropic/claude-haiku-5.5', 'Claude Haiku 5.5'), ('google/gemini-3.7-flash', 'Gemini 3.7 Flash'), ('openai/gpt-5.6-luna', 'GPT-5.6 luna'), ('x-ai/grok-4.3', 'Grok 4.3'), ('meta-llama/llama-4-maverick', 'Llama 4 Maverick')]
 ARCH = [('demo', 'Demographics only', '#E69F00', 'o'), ('summary', 'Persona summary (primary)', '#0072B2', 'D'), ('theory', 'Theory-explicit prompt', '#009E73', 's')]
 order = ['default_organ', 'default_green', 'attraction', 'fair', 'frame', 'anch_africa', 'anch_redwood']
-plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 7.5, 'axes.spines.top': False, 'axes.spines.right': False})
+plt.rcParams.update({'font.family': ['Arial', 'Liberation Sans', 'DejaVu Sans'], 'font.size': 7.5, 'axes.spines.top': False, 'axes.spines.right': False})
 fig, axes = plt.subplots(4, 2, figsize=(6.9, 9.8)); axes = axes.ravel()
 rows = []; ypos = {}
 for mi, (m, _) in enumerate(MODELS):
@@ -33,7 +33,10 @@ for ax, it in zip(axes, order):
     ax.set_xlim(*xl); ax.set_ylim(-19.2, 0.9); ax.set_title(TITLE[it], fontsize=7.8, loc='left', fontweight='bold')
     ax.set_yticks([ypos[(m, 'summary')] for m, _ in MODELS] if it in ('default_organ', 'attraction', 'frame', 'anch_redwood') else [])
     if it in ('default_organ', 'attraction', 'frame', 'anch_redwood'): ax.set_yticklabels([lab for _, lab in MODELS], fontsize=7)
-    ax.tick_params(axis='y', length=0); ax.grid(axis='x', color='#EEEEEE', lw=.6); ax.set_axisbelow(True)
+    XL={'default_organ':'Twin Effect (Percentage Points)','default_green':'Twin Effect (Percentage Points)','attraction':'Twin Effect (Log Odds Ratio)','fair':'Twin Effect (Cohen\'s d)','frame':'Twin Effect (Cohen\'s d)','anch_africa':'Twin Effect (d on Log Estimates)','anch_redwood':'Twin Effect (d on Log Estimates)'}
+    ax.set_xlabel(XL[it], fontsize=7.2)
+    if it in ('default_organ', 'attraction', 'frame', 'anch_redwood'): ax.set_ylabel('Model', fontsize=7.2)
+    ax.tick_params(axis='y', length=0); ax.grid(axis='x', color='#EEEEEE', lw=.6); ax.tick_params(axis='x', direction='out', length=3); ax.set_axisbelow(True)
     ax.text(h, 0.9, '', ha='center')
 ax = axes[7]; ax.axis('off')
 for i, (a, lab, col, mk) in enumerate(ARCH): ax.plot([0.04], [0.82 - i * 0.12], mk, color=col, ms=6, transform=ax.transAxes); ax.text(0.12, 0.82 - i * 0.12, lab, transform=ax.transAxes, va='center', fontsize=7.3)
