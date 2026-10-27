@@ -1,5 +1,6 @@
 const fs=require('fs');const d=require('docx');
 const {title,abstract,keywords,body,tables,refs,appendix}=require('./content.js');
+const path=require('path');
 const F="Times New Roman";
 function runs(t,extra={}){const out=[];const re=/(\*\*[^*]+\*\*|\*[^*]+\*)/g;let last=0,m;
   while((m=re.exec(t))){if(m.index>last)out.push(new d.TextRun({text:t.slice(last,m.index),font:F,size:24,...extra}));const s=m[0];
@@ -20,6 +21,9 @@ kids.push(new d.Paragraph({spacing:{...dbl,before:120},children:[new d.TextRun({
 kids.push(new d.Paragraph({children:[new d.PageBreak()]}));
 for(const b of body){
   if(b.h1)kids.push(H1(b.h1));else if(b.h2)kids.push(H2(b.h2));else if(b.p)kids.push(P(b.p));
+  else if(b.figure){const img=fs.readFileSync(path.join(__dirname,b.figure));const iw=img.readUInt32BE(16),ih=img.readUInt32BE(20);const w=Math.min(600,Math.round(740*iw/ih)),h=Math.round(w*ih/iw);
+    kids.push(new d.Paragraph({alignment:d.AlignmentType.CENTER,spacing:{before:120,after:60},keepNext:true,children:[new d.ImageRun({type:"png",data:img,transformation:{width:w,height:h},altText:{title:"Forest plot",description:b.alt,name:"Figure1"}})]}));
+    kids.push(new d.Paragraph({spacing:{after:200,line:276},children:[new d.TextRun({text:"Figure 1. ",bold:true,font:F,size:22}),new d.TextRun({text:b.caption,font:F,size:22})]}));}
   else if(b.table){tn++;const T=tables[b.table];
     kids.push(new d.Paragraph({spacing:{before:120,after:80},keepNext:true,children:[new d.TextRun({text:`Table ${tn}. `,bold:true,font:F,size:22}),new d.TextRun({text:T.caption,font:F,size:22})]}));
     kids.push(table(T));kids.push(new d.Paragraph({spacing:{after:200},children:[]}));}

@@ -62,6 +62,7 @@ Contents
 - benchmarks/       compute_human_benchmarks.py: human effects from the public Twin-2K-500 data and mega-study
 - prereg/           pre-registration texts (#320110, #320124), amendment, working document
 - results/          summary tables of every study (c1, c2, e1, e2, h6c, s)
+- figures/          make_forest.py and Figure 1 (forest plot of C1 effects)
 - paper_src/        manuscript source (content.js, make.js) and submission/build/ builders for appendix, title page, cover letter
 
 Mapping of study names: E1 = full-run simulations (pilot/run_full.py), E2 = reasoning pilot (run_h6.py), C1 = run_c1.py, H6c = run_h6c.py, C2 = run_c2.py, S = run_gen.py.
@@ -93,7 +94,7 @@ REQ = 'pandas>=2.2\nnumpy>=1.26\nscipy>=1.11\nrequests>=2.31\npyarrow>=15\npytho
 zp = os.path.join(SUB, '04_Code_Package.zip')
 with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
     z.writestr('README_CODE.md', README); z.writestr('requirements.txt', REQ)
-    for sub in ['pilot', 'benchmarks', 'prereg', 'paper_src']:
+    for sub in ['pilot', 'benchmarks', 'prereg', 'paper_src', 'figures']:
         for dp, dn, fn in os.walk(os.path.join(ROOT, sub)):
             dn[:] = [x for x in dn if x != '__pycache__']
             for f in fn:
