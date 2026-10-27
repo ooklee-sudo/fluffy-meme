@@ -1,5 +1,5 @@
 const fs=require('fs');const d=require('docx');
-const {title,abstract,keywords,body,tables,refs,appendix}=require('./content.js');
+const {title,abstract,keywords,body,tables,refs,appendix}=require(process.env.CONTENT||'./content.js');
 const path=require('path');
 const F="Times New Roman";
 function runs(t,extra={}){const out=[];const re=/(\*\*[^*]+\*\*|\*[^*]+\*)/g;let last=0,m;
@@ -30,10 +30,10 @@ for(const b of body){
 }
 kids.push(new d.Paragraph({children:[new d.PageBreak()]}));
 kids.push(new d.Paragraph({alignment:d.AlignmentType.CENTER,spacing:{after:120},children:[new d.TextRun({text:"References",bold:true,font:F,size:24})]}));
-for(const r of refs)kids.push(new d.Paragraph({spacing:{line:480},indent:{left:720,hanging:720},children:[new d.TextRun({text:r,font:F,size:24})]}));
+for(const r of refs)kids.push(new d.Paragraph({spacing:{line:480},indent:{left:720,hanging:720},children:runs(r)}));
 kids.push(new d.Paragraph({children:[new d.PageBreak()]}));
 for(const b of appendix){if(b.h1)kids.push(H1(b.h1));else if(b.p)kids.push(P(b.p));}
-const doc=new d.Document({styles:{default:{document:{run:{font:F,size:24}}},paragraphStyles:[
+const doc=new d.Document({creator:"Anonymous",lastModifiedBy:"Anonymous",title:"Manuscript",styles:{default:{document:{run:{font:F,size:24}}},paragraphStyles:[
  {id:"Heading1",name:"Heading 1",basedOn:"Normal",next:"Normal",quickFormat:true,run:{font:F,size:24,bold:true},paragraph:{outlineLevel:0}},
  {id:"Heading2",name:"Heading 2",basedOn:"Normal",next:"Normal",quickFormat:true,run:{font:F,size:24,bold:true,italics:true},paragraph:{outlineLevel:1}}]},
  sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},
