@@ -200,9 +200,9 @@ def main(out):
          "attractors with interior peaks are listed in Section 5.11; the peaks lie inside the grid and have low "
          "accuracy. The stylised model in Section 3.4 gives the existence condition for a peak (Delta < (K-2)g) and "
          "explains why strength is continuous and task-dependent; we checked it numerically.")
-    para("We expanded the discussion of semantic equivalence and representation reliability in Section 2.2, with "
-         "references [20-23]. [AUTHORS TO DECIDE: the two cited papers are only loosely related to this study and "
-         "share an author; keep the sentence only if you consider them relevant.]")
+    para("We expanded the discussion of semantic equivalence and representation reliability in Section 2.2: "
+         "entailment-based clustering depends on the quality of the representation of the entailment model "
+         "[20,21], which we use only for the free-generation baseline and do not validate.")
 
     h("Point 5: One prompt template, mostly negative-sentiment contamination, and H3", 1)
     quote("The pressure and contamination experiments use only one prompt template, and the contamination text is "

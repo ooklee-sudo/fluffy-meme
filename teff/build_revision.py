@@ -138,17 +138,14 @@ def build(src, out, mark):
     # ---------------------------------------------------------- related work
     p = ed.para("Work on uncertainty in language models")
     ed.append(p, " Estimating semantic equivalence reliably is itself a representation problem. Entailment-based "
-                 "clustering relies on a natural-language-inference model [20,21], whereas evaluation metrics "
-                 "that combine lexical overlap with semantic similarity, such as ROUGE-SEM [22], and "
-                 "representation-learning approaches to correcting surface errors, such as MCRSpell [23], "
-                 "illustrate how much the outcome depends on the quality of the learned representation. "
-                 "We use an entailment model only for the free-generation semantic-entropy baseline "
-                 "(Section 5.12) and do not evaluate its reliability.")
+                 "clustering relies on a natural-language-inference model [20,21], and its outcome depends on how "
+                 "well that model represents the text being compared. We use an entailment model only for the "
+                 "free-generation semantic-entropy baseline (Section 5.12) and do not evaluate its reliability.")
     p = ed.para("The use of the softmax as a choice rule")
     ed.append(p, " The estimator in Section 3.2 is a quasi-likelihood in the sense of White [19]: when the "
                  "reference family is misspecified, the maximizer converges to the member of the family "
                  "closest in Kullback-Leibler divergence to the true choice distribution, and the log "
-                 "likelihood is a strictly proper scoring rule [24].")
+                 "likelihood is a strictly proper scoring rule [22].")
 
     # ----------------------------------------------------------------- Sec 3.3
     p37 = ed.para("Four properties of the estimator matter")
@@ -569,10 +566,6 @@ def discussion(ed):
         "Proceedings of the International Conference on Learning Representations (ICLR), **2021**.",
         "Williams, A.; Nangia, N.; Bowman, S. A Broad-Coverage Challenge Corpus for Sentence Understanding through "
         "Inference. In Proceedings of NAACL-HLT 2018, New Orleans, LA, USA, 1–6 June 2018; pp. 1112–1122.",
-        "Zhang, M.; Li, C.; Wan, M.; et al. ROUGE-SEM: Better Evaluation of Summarization Using ROUGE Combined "
-        "with Semantics. *Expert Syst. Appl.* **2023**, 121364.",
-        "Li, C.; Zhang, M.; Zhang, X.; Yan, Y. MCRSpell: A Metric Learning of Correct Representation for Chinese "
-        "Spelling Correction. *Expert Syst. Appl.* **2024**, *237*, 121513.",
         "Gneiting, T.; Raftery, A.E. Strictly Proper Scoring Rules, Prediction, and Estimation. *J. Am. Stat. "
         "Assoc.* **2007**, *102*, 359–378."]
     cur = last_ref
