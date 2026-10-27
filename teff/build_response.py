@@ -187,8 +187,7 @@ def main(out):
     quote("Section 4.1 selects attractor strengths after probing the same models used in the main experiments. [...] "
           "Please validate the findings using independently selected attractor strengths and examine the cases where "
           "strong attractors also show interior peaks. The discussion of semantic evaluation and representation "
-          "reliability could be expanded a little. Related studies such as ROUGE-SEM [...] and MCRSpell [...] may "
-          "provide useful perspectives [...].")
+          "reliability could be expanded a little. [...]")
     para(f"Section 5.11 and Table 17: we ran the full a-priori grid of 12 run lengths for three models and three tasks, "
          f"with no selection, and selected the regimes in two ways, on the main prompt and on a different wording of "
          f"the instruction with fresh trajectories. Selected on the main prompt, sticky attractors showed an "
