@@ -4,6 +4,7 @@ Respondents: Twin-2K-500 participants not in the three mega-study files, drawn w
 Architectures: demo, summary, theory (demographics plus phenomena named; needed for P6). One draw each, temperature 0.7, reasoning effort low."""
 import sys, os, re, json, time, random, threading, concurrent.futures as cf
 import pandas as pd, requests
+HDR = {'Authorization': 'Bearer ' + os.environ['OPENROUTER_API_KEY']} if os.environ.get('OPENROUTER_API_KEY') else {}   # set OPENROUTER_API_KEY to run; added after the studies for replication
 D, OUT = sys.argv[1], sys.argv[2]
 NR = int(sys.argv[3]) if len(sys.argv) > 3 else 600
 STOP = float(sys.argv[4]) if len(sys.argv) > 4 else 120.0
@@ -92,7 +93,7 @@ def call(job):
     err = None
     for k in range(5):
         try:
-            r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=240)
+            r = requests.post('https://openrouter.ai/api/v1/chat/completions', headers=HDR, json=body, timeout=240)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
                 rec = dict(pid=pid, model=m, arch=a, content=x['choices'][0]['message'].get('content'), cost=u.get('cost') or 0, conds=conds, qs=qs)

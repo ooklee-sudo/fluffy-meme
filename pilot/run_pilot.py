@@ -4,6 +4,7 @@ data_dir holds the three mega-study parquet files and wave1_3_response_label.csv
 Outputs raw.jsonl (one line per call, with token usage and cost) and prints parse and cost summaries."""
 import sys, os, json, re, time, random, concurrent.futures as cf
 import pandas as pd, requests
+HDR = {'Authorization': 'Bearer ' + os.environ['OPENROUTER_API_KEY']} if os.environ.get('OPENROUTER_API_KEY') else {}   # set OPENROUTER_API_KEY to run; added after the studies for replication
 
 D, OUT = sys.argv[1], sys.argv[2]
 N = int(sys.argv[3]) if len(sys.argv) > 3 else 20
@@ -49,7 +50,7 @@ def call(j):
                 messages=[{'role': 'system', 'content': SYSTEM + persona(j['pid'])}, {'role': 'user', 'content': j['text']}])
     for k in range(3):
         try:
-            r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=180)
+            r = requests.post('https://openrouter.ai/api/v1/chat/completions', headers=HDR, json=body, timeout=180)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
                 return dict(study=j['study'], pid=j['pid'], model=j['model'], content=x['choices'][0]['message'].get('content'),

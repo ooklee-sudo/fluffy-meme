@@ -5,6 +5,7 @@ Per respondent per cell: C1 booklet (cue-based effects), battery A (16 answerabl
 import sys, os, json, time, random, threading, concurrent.futures as cf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pandas as pd, requests
+HDR = {'Authorization': 'Bearer ' + os.environ['OPENROUTER_API_KEY']} if os.environ.get('OPENROUTER_API_KEY') else {}   # set OPENROUTER_API_KEY to run; added after the studies for replication
 from h6_battery import ANSWERABLE, INVENTED, INVENTED2, ABSTAIN
 D, OUT = sys.argv[1], sys.argv[2]; NR = int(sys.argv[3]) if len(sys.argv) > 3 else 100; STOP = float(sys.argv[4]) if len(sys.argv) > 4 else 60.0
 os.environ['C1_DRY'] = '1'; sys.argv = ['run_c1', D, os.path.join(OUT, '_c1unused'), '600']
@@ -42,7 +43,7 @@ def call(j):
     err = None
     for k in range(5):
         try:
-            r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=300)
+            r = requests.post('https://openrouter.ai/api/v1/chat/completions', headers=HDR, json=body, timeout=300)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
                 rec = dict(task=j['task'], pid=j['pid'], model=j['model'], effort=j['effort'], temp=j['temp'], content=x['choices'][0]['message'].get('content'), cost=u.get('cost') or 0, qs=qs, conds=conds)

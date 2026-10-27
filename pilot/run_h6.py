@@ -4,6 +4,7 @@ Cells per model: 3 reasoning levels x 3 temperatures (0, 0.7, 1.2). Bias tasks r
 import sys, os, json, time, random, threading, concurrent.futures as cf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pandas as pd, requests
+HDR = {'Authorization': 'Bearer ' + os.environ['OPENROUTER_API_KEY']} if os.environ.get('OPENROUTER_API_KEY') else {}   # set OPENROUTER_API_KEY to run; added after the studies for replication
 from h6_battery import ANSWERABLE, INVENTED, ABSTAIN
 D, OUT = sys.argv[1], sys.argv[2]
 NS = int(sys.argv[3]) if len(sys.argv) > 3 else 100
@@ -63,7 +64,7 @@ def call(j):
     err = None
     for k in range(5):
         try:
-            r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=300)
+            r = requests.post('https://openrouter.ai/api/v1/chat/completions', headers=HDR, json=body, timeout=300)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
                 rec = dict(task=j['task'], pid=j['pid'], model=j['model'], effort=j['effort'], temp=j['temp'], content=x['choices'][0]['message'].get('content'),

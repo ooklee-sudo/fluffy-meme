@@ -4,6 +4,7 @@ Test selection: >= 2 arms (at most 6), all headlines distinct, every arm >= 1,00
 (the archive's documented randomization-problem window). Personas: demographics only, drawn at random from Twin-2K-500 (seeded)."""
 import sys, os, json, time, random, threading, concurrent.futures as cf
 import pandas as pd, requests
+HDR = {'Authorization': 'Bearer ' + os.environ['OPENROUTER_API_KEY']} if os.environ.get('OPENROUTER_API_KEY') else {}   # set OPENROUTER_API_KEY to run; added after the studies for replication
 D, CSV, OUT, NT, SEED = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
 K = int(sys.argv[6]) if len(sys.argv) > 6 else 5
 STOP = float(sys.argv[7]) if len(sys.argv) > 7 else 40.0
@@ -52,7 +53,7 @@ def call(job):
     err = None
     for a in range(5):
         try:
-            r = requests.post('https://openrouter.ai/api/v1/chat/completions', json=body, timeout=240)
+            r = requests.post('https://openrouter.ai/api/v1/chat/completions', headers=HDR, json=body, timeout=240)
             if r.status_code == 200:
                 x = r.json(); u = x.get('usage', {})
                 rec = dict(test=t, model=m, k=k, arm=arm, pid=pid, order=order, content=x['choices'][0]['message'].get('content'), cost=u.get('cost') or 0)
