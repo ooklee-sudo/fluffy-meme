@@ -367,7 +367,7 @@ Si, C., Goyal, N., Wu, S. T., Zhao, C., Feng, S., Daumé, H., III, & Boyd-Graber
 
 Taudien, A., Fügener, A., Gupta, A., & Ketter, W. (2026). Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Information Systems Research*. Advance online publication (Just Accepted, September 4). https://doi.org/10.1287/isre.2024.1330
 
-Tu, L., Meng, R., Joty, S., Zhou, Y., & Yavuz, S. (2025). Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proceedings of EMNLP 2025*. arXiv:2411.15993.
+Tu, L., Meng, R., Joty, S., Zhou, Y., & Yavuz, S. (2025). Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proceedings of the UncertaiNLP Workshop 2025*. arXiv:2411.15993.
 
 Townsend, R. M. (1979). Optimal contracts and competitive markets with costly state verification. *Journal of Economic Theory, 21*(2), 265–293.
 

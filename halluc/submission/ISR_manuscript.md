@@ -324,7 +324,7 @@ Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complement
 
 Townsend RM (1979) Optimal contracts and competitive markets with costly state verification. *J. Econom. Theory* 21(2):265–293.
 
-Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. 2025 Conf. Empirical Methods Natural Language Processing*. arXiv:2411.15993.
+Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. UncertaiNLP Workshop 2025*. arXiv:2411.15993.
 
 Vasconcelos H, Jörke M, Grunde-McLaughlin M, Gerstenberg T, Bernstein MS, Krishna R (2023) Explanations can reduce overreliance on AI systems during decision-making. *Proc. ACM Human-Comput. Interaction* 7(CSCW1):Article 129.
 
