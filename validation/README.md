@@ -12,7 +12,7 @@ The original draft's kappas (0.18 between coders; 0.11 and 0.04 for the narrow s
 
 The original draft's κ values (0.18 between coders, 0.04 coder B vs LLM) are **invalid**: that "coder B" file
 (`original_session/`, from branch `claude/cool-hamilton-bi4mzt`) held AI automation-difficulty scores (78/81/41), not human visual-creation codes.
-Only coder A is human. Coder A vs the original LLM scores reproduces exactly with `original_session/agreement_creation.py`
+Only coder A is human (the first author; no second human coder exists). Coder A vs the original LLM scores reproduces exactly with `original_session/agreement_creation.py`
 (design-weighted exact agreement 0.73, weighted κ 0.11, linear κ 0.16, binary κ 0.15, sensitivity 0.12, specificity 0.98).
 
 Design-weighted agreement of coder A with the current scores (key weights; n = 199):
