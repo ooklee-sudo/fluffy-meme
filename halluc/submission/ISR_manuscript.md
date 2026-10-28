@@ -324,12 +324,12 @@ Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complement
 
 Townsend RM (1979) Optimal contracts and competitive markets with costly state verification. *J. Econom. Theory* 21(2):265–293.
 
-Tu, et al. (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. 2025 Conf. Empirical Methods Natural Language Processing*. arXiv:2411.15993. [AUTHORS: complete author list.]
+Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. UncertaiNLP Workshop 2025*. arXiv:2411.15993. [AUTHORS: confirm venue (ACL Anthology lists UncertaiNLP 2025; another listing says EMNLP 2025).]
 
 Vasconcelos H, Jörke M, Grunde-McLaughlin M, Gerstenberg T, Bernstein MS, Krishna R (2023) Explanations can reduce overreliance on AI systems during decision-making. *Proc. ACM Human-Comput. Interaction* 7(CSCW1):Article 129.
 
-Wei J, et al. (2024) Long-form factuality in large language models. *Adv. Neural Inform. Processing Systems*, vol. 37. arXiv:2403.18802. [AUTHORS: complete author list.]
+Wei J, Yang C, Song X, Lu Y, Hu N, Huang J, Tran D, Peng D, Liu R, Huang D, Du C, Le QV (2024) Long-form factuality in large language models. *Adv. Neural Inform. Processing Systems*, vol. 37. arXiv:2403.18802.
 
-Yang, et al. (2025) Hallucinate at the last in long response generation: A case study on long document summarization. Preprint, arXiv:2505.15291. [AUTHORS: complete author list and venue.]
+Yang J, Yoon S, Chang H, Kim B, Lee H (2025) Hallucinate at the last in long response generation: A case study on long document summarization. Preprint, arXiv:2505.15291. [AUTHORS: check the spelling of the fifth-listed name "Hwan Chang" and whether a venue exists.]
 
 Zhang M, Press O, Merrill W, Liu A, Smith NA (2024) How language model hallucinations can snowball. *Proc. 41st Internat. Conf. Machine Learn.* (PMLR).
