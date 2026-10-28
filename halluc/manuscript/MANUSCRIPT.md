@@ -364,7 +364,7 @@ Niu, C., Wu, Y., Zhu, J., Xu, S., Shum, K., Zhong, R., Song, J., & Zhang, T. (20
 
 Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410.
 
-Si, C., et al. (2024). Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proceedings of NAACL 2024*. arXiv:2310.12558. [AUTHORS: complete author list and venue.]
+Si, C., Goyal, N., Wu, S. T., Zhao, C., Feng, S., Daumé, H., III, & Boyd-Graber, J. (2024). Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proceedings of NAACL 2024*. arXiv:2310.12558.
 
 Taudien, A., Fügener, A., Gupta, A., & Ketter, W. (2026). Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Information Systems Research*. Advance online publication (Just Accepted, September 4). https://doi.org/10.1287/isre.2024.1330
 
