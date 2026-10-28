@@ -27,7 +27,7 @@ No human-human reliability exists. Run from `original_session/` data layout (`da
 
 ## Two-coder result
 
-Second human coder (outside coder, file `data/second_coder_filled.xlsx`) filled the blank sheet. `two_coder_agreement.py` (run from the `original_session/` layout) gives, design-weighted, n=199:
+Second human coder (undergraduate physics student, the author's relative; given only the written rubric, file `data/second_coder_filled.xlsx`) filled the blank sheet. `two_coder_agreement.py` (run from the `original_session/` layout) gives, design-weighted, n=199:
 human-human exact 0.77 (unweighted 0.59), weighted κ 0.42, linear κ 0.49, binary κ 0.55.
 Second coder vs original LLM: κ 0.13; vs Haiku: 0.11 (linear 0.16, PPV 0.54); vs Luna: 0.16.
 Per-row scores: `results/two_coder_scores.csv`.
