@@ -142,3 +142,13 @@ Entries in this ISR paper's list follow the pattern `Surname Initials, Surname I
 **What it shows.** Analytical model, image-classification experiments and a simulation: AI advice raises individual accuracy but reduces "unique human knowledge", so people's answers converge and a crowd aggregating them does worse than a crowd without advice; personalizing the advice (a threshold rule on expected harm and benefit of advising) mitigates this.
 
 **Overlap with us.** Peripheral. Used once in Section 8.4: shared machine flags may correlate reviewers' misses and lower the value of a second independent check (our extrapolation, not tested by them, flagged as unmodeled).
+
+## Baird & Maruping (2021), MIS Quarterly — read (partly)
+
+**Reference.** Baird A, Maruping LM (2021) The next generation of research on IS use: A theoretical framework of delegation to and from agentic IS artifacts. *MIS Quart.* 45(1):315–341. https://doi.org/10.25300/MISQ/2021/15882.
+
+**What was read.** The supplied PDF (28 pages) as extracted text: abstract, introduction, the opening of the framework and the appraisal mechanism, the conclusion. The propositions-style sections on endowments, preferences, roles, distribution and coordination, and the research roadmap were **not** read in detail. A term search found no occurrence of *hallucination*, *audit* or *language model*; "verify" appears once in an augmented-reality example.
+
+**What it does.** A conceptual framework: IS artifacts are increasingly agentic, so IS use theory should treat the human–artifact relation as delegation. Agent attributes (endowments, preferences, roles) and mechanisms (appraisal, distribution, coordination; coordination includes monitoring, updating, accountability, predictability, common understanding).
+
+**Overlap with us.** None quantitative. Cited once in Section 2 to place verification budgets as a monitoring decision within delegation to AI. Whether the monitoring examples are meant to cover review of generated content is our reading, not theirs.
