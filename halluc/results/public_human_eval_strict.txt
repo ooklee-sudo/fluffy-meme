@@ -1,0 +1,35 @@
+event definition: strict (major / conflict only); documents need >= 4 sentences; Fano windows w=3
+
+== WikiBio GPT-3 (biographies, sentence-level human labels)
+wikibio                 docs   237 sentences   1905 rate 0.399 | lead 0.160 later 0.433 | quintiles [0.226 0.391 0.454 0.438 0.491] | Fano(w=3) 1.22 vs null 0.67 [0.61,0.73] p=0.003 | tau 2.68
+  policy gains, wikibio (237 docs):
+    within-doc budget  phi 0.1: uniform 0.109 static 0.125 static-uniform +0.016 [+0.003,+0.030]  lead 0.047 tail 0.134
+    within-doc budget  phi 0.3: uniform 0.303 static 0.342 static-uniform +0.039 [+0.020,+0.060]  lead 0.208 tail 0.350
+    pooled budget      phi 0.1: uniform 0.100 static 0.118 static-uniform +0.019 [+0.002,+0.035]  adaptive-static +0.029
+    pooled budget      phi 0.3: uniform 0.300 static 0.334 static-uniform +0.033 [+0.011,+0.057]  adaptive-static +0.183
+
+== RAGTruth Summary (human-marked hallucination spans)
+gpt-3.5-turbo-0613      docs   900 sentences   6750 rate 0.003 | lead 0.002 later 0.003 | quintiles [0.003 0.004 0.003 0.002 0.002] | Fano(w=3) 0.99 vs null 1.00 [0.99,1.11] p=0.621 | tau 0.00
+gpt-4-0613              docs   791 sentences   4447 rate 0.007 | lead 0.015 later 0.005 | quintiles [0.014 0.004 0.005 0.004 0.006] | Fano(w=3) 0.98 vs null 0.99 [0.97,1.07] p=0.721 | tau 0.00
+llama-2-13b-chat        docs   819 sentences   4303 rate 0.031 | lead 0.016 later 0.035 | quintiles [0.016 0.046 0.031 0.035 0.028] | Fano(w=3) 0.99 vs null 0.97 [0.92,1.04] p=0.259 | tau 0.00
+llama-2-70b-chat        docs   734 sentences   4244 rate 0.017 | lead 0.011 later 0.019 | quintiles [0.012 0.013 0.021 0.027 0.013] | Fano(w=3) 0.98 vs null 0.98 [0.94,1.06] p=0.512 | tau 0.79
+llama-2-7b-chat         docs   678 sentences   3637 rate 0.049 | lead 0.041 later 0.050 | quintiles [0.044 0.045 0.043 0.06  0.051] | Fano(w=3) 0.92 vs null 0.95 [0.89,1.02] p=0.774 | tau 0.02
+mistral-7B-instruct     docs   810 sentences   4909 rate 0.054 | lead 0.042 later 0.057 | quintiles [0.042 0.069 0.063 0.06  0.036] | Fano(w=3) 0.94 vs null 0.95 [0.89,1.01] p=0.538 | tau 0.19
+ALL (model+ctx control) docs  4732 sentences  28290 rate 0.025 | lead 0.020 later 0.026 | quintiles [0.02  0.028 0.025 0.029 0.02 ] | Fano(w=3) 1.00 vs null 1.01 [0.98,1.05] p=0.635 | tau 0.13
+
+  long-context question:
+  source length tertile -> share of sentences in error / share of responses with any error:
+    short source  ctx chars ~  2000: sentence error 0.029, any error 0.130 (n=1579)
+    mid           ctx chars ~  2788: sentence error 0.025, any error 0.128 (n=1580)
+    long source   ctx chars ~  5466: sentence error 0.022, any error 0.145 (n=1573)
+    logit(any error) on log source length, controlling for model: coef +0.09 (z +1.0)
+  policy gains, RAGTruth, position only (4732 docs):
+    within-doc budget  phi 0.1: uniform 0.070 static 0.076 static-uniform +0.006 [-0.012,+0.024]  lead 0.056 tail 0.056
+    within-doc budget  phi 0.3: uniform 0.312 static 0.356 static-uniform +0.043 [+0.010,+0.076]  lead 0.279 tail 0.270
+    pooled budget      phi 0.1: uniform 0.100 static 0.099 static-uniform -0.001 [-0.023,+0.020]  adaptive-static +0.013
+    pooled budget      phi 0.3: uniform 0.300 static 0.377 static-uniform +0.077 [+0.040,+0.112]  adaptive-static +0.016
+  policy gains, RAGTruth, + model + log source length (4732 docs):
+    within-doc budget  phi 0.1: uniform 0.070 static 0.089 static-uniform +0.019 [+0.001,+0.038]  lead 0.056 tail 0.056
+    within-doc budget  phi 0.3: uniform 0.312 static 0.366 static-uniform +0.053 [+0.019,+0.088]  lead 0.279 tail 0.270
+    pooled budget      phi 0.1: uniform 0.100 static 0.249 static-uniform +0.149 [+0.114,+0.181]  adaptive-static -0.001
+    pooled budget      phi 0.3: uniform 0.300 static 0.644 static-uniform +0.344 [+0.305,+0.381]  adaptive-static +0.000
