@@ -24,6 +24,7 @@ def new_doc():
     d = Document()
     for s in d.sections:
         s.left_margin = s.right_margin = s.top_margin = s.bottom_margin = Inches(1)
+    cp = d.core_properties; cp.author = ""; cp.last_modified_by = ""; cp.comments = ""; cp.title = ""
     st = d.styles["Normal"]; st.font.name = "Times New Roman"; st.font.size = Pt(12)
     st.element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
     st.paragraph_format.line_spacing = 2.0; st.paragraph_format.space_after = Pt(0)
