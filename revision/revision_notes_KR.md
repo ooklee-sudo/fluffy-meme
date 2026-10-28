@@ -97,3 +97,9 @@ PDF의 Table 3~6은 서로 다른 버전의 셀이 섞여 있었습니다. 식 (
 - 9장을 "H3 연구 설계 제안"으로 재구성: 단위/표집, Table 7 측정 문항, 식별 전략, 검정력 예시(10% vs 25% → 집단당 약 96개), 반증 조건. H3를 검증하지 않음을 명시.
 - 10.1/10.4 문구 갱신(사람 코더 κ 반영), 참고문헌 5편 추가(Cohen & Levinthal, Leonardi, Orlikowski, Teece, Wade & Hulland — 서지 정보는 투고 전 확인).
 - 서론 기여1과 10.1절을 판단 보완자산/과업 단위 동화 중심으로 재조정, 획득 비용 주장은 추측으로 강등, 초록 문구 완화
+
+## JIT 투고 패키지 (revision/)
+- `manuscript_JIT.md` / `JIT_manuscript_anonymized.docx`: 약 8,900단어(초록 229단어), 키워드 8개, 이중 익명, Sage Harvard 인용.
+- `supplement_JIT.md` / `JIT_online_supplement.docx`: 부록·유도·추가 설계(S1–S5).
+- `JIT_title_page_and_cover.md` / `JIT_title_page.docx`: 표지, Statements and Declarations, 80단어 기여 진술([ ] 항목 입력 필요).
+- `references_JIT_SageHarvard.txt`: 참고문헌 45편(저자 이니셜 형식 변환; 쪽수·권호는 투고 전 확인).
