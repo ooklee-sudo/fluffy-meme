@@ -1,0 +1,68 @@
+
+===== labs_gemma-3-27b-it.jsonl sentence-level [all]: 485 docs, 12094 claims, overall rate 0.227 =====
+rate by position quintile (early->late): [0.397 0.225 0.152 0.158 0.199]
+rate by rarity tertile: {'rare': 0.167, 'mid': 0.243, 'popular': 0.27}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                  12947.1
+pos                       12353.6   lt=-0.61(-21.8)
+pos+rarity                12223.9   lt=-0.63(-21.6), lsl_c=+0.22(+6.6)
+pos+rarity+docrate        11621.4   lt=-0.70(-23.1), lsl_c=+0.12(+8.4), loo=+4.05(+29.2)
++prev (contagion)         11611.3   lt=-0.69(-22.8), lsl_c=+0.12(+8.3), loo=+3.86(+25.4), prev=+0.19(+3.4)
++decayed history          11603.7   lt=-0.70(-24.6), lsl_c=+0.12(+8.2), loo=+3.56(+19.9), prev_decay=+0.17(+4.4)
+
+  w  Fano obs  null mean            null 95%       p
+  3     1.048      0.860   [0.828,0.891]   0.003
+  5     1.283      0.927   [0.883,0.980]   0.003
+  8     1.524      0.981   [0.915,1.055]   0.003
+
+===== labs_gemma-3-27b-it.jsonl sentence-level [verif]: 255 docs, 4272 claims, overall rate 0.496 =====
+rate by position quintile (early->late): [0.63  0.57  0.444 0.39  0.442]
+rate by rarity tertile: {'rare': 0.672, 'mid': 0.531, 'popular': 0.347}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   5924.0
+pos                        5657.3   lt=-0.65(-13.9)
+pos+rarity                 5352.7   lt=-0.56(-12.0), lsl_c=-0.56(-11.5)
+pos+rarity+docrate         5243.6   lt=-0.56(-12.1), lsl_c=-0.27(-6.9), loo=+2.15(+9.6)
++prev (contagion)          5235.5   lt=-0.55(-12.6), lsl_c=-0.28(-6.9), loo=+1.94(+8.3), prev=+0.23(+3.1)
++decayed history           5226.6   lt=-0.63(-13.9), lsl_c=-0.28(-7.0), loo=+1.57(+6.2), prev_decay=+0.22(+4.7)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.722      0.625   [0.589,0.667]   0.003
+  5     0.892      0.730   [0.664,0.788]   0.003
+  8     1.144      0.862   [0.768,0.956]   0.003
+
+===== labs_gemma-3-4b-it.jsonl sentence-level [all]: 487 docs, 10809 claims, overall rate 0.260 =====
+rate by position quintile (early->late): [0.493 0.242 0.167 0.148 0.247]
+rate by rarity tertile: {'rare': 0.156, 'mid': 0.254, 'popular': 0.367}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                  12391.7
+pos                       11641.1   lt=-0.71(-24.6)
+pos+rarity                11089.5   lt=-0.79(-25.5), lsl_c=+0.46(+14.3)
+pos+rarity+docrate        10496.5   lt=-0.89(-27.7), lsl_c=+0.20(+12.0), loo=+3.82(+25.3)
++prev (contagion)         10474.2   lt=-0.86(-27.1), lsl_c=+0.20(+11.9), loo=+3.55(+22.0), prev=+0.27(+4.5)
++decayed history          10491.1   lt=-0.89(-28.2), lsl_c=+0.20(+11.9), loo=+3.51(+18.5), prev_decay=+0.11(+2.8)
+
+  w  Fano obs  null mean            null 95%       p
+  3     1.120      0.906   [0.874,0.938]   0.003
+  5     1.400      1.037   [0.984,1.084]   0.003
+  8     1.660      1.163   [1.097,1.237]   0.003
+
+===== labs_gemma-3-4b-it.jsonl sentence-level [verif]: 188 docs, 2594 claims, overall rate 0.728 =====
+rate by position quintile (early->late): [0.828 0.793 0.717 0.617 0.682]
+rate by rarity tertile: {'rare': 0.866, 'mid': 0.784, 'popular': 0.579}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   3039.1
+pos                        2923.6   lt=-0.66(-8.7)
+pos+rarity                 2718.1   lt=-0.51(-7.4), lsl_c=-0.78(-9.2)
+pos+rarity+docrate         2654.1   lt=-0.51(-7.4), lsl_c=-0.39(-6.5), loo=+2.39(+8.1)
++prev (contagion)          2633.2   lt=-0.53(-8.5), lsl_c=-0.39(-6.5), loo=+1.94(+6.3), prev=+0.51(+4.8)
++decayed history           2643.1   lt=-0.67(-8.0), lsl_c=-0.39(-6.5), loo=+1.68(+4.7), prev_decay=+0.27(+3.6)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.396      0.333   [0.300,0.365]   0.003
+  5     0.523      0.391   [0.345,0.441]   0.003
+  8     0.588      0.453   [0.385,0.521]   0.003
