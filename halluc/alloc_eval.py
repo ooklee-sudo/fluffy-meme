@@ -39,15 +39,16 @@ GH_X, GH_W = np.polynomial.hermite.hermgauss(21)
 LOGW = np.log(GH_W / np.sqrt(np.pi))
 
 
-def load(path, cost="unit", event="C", content=False):
+def load(path, cost="unit", event="C", content=False, keep=None, gen_path=None):
     docs = []
-    texts = {g["title"]: split_sentences(g["text"]) for g in read_jsonl(path.replace("labs_", "gen_"))} if content else {}
+    texts = {g["title"]: split_sentences(g["text"]) for g in read_jsonl(gen_path or path.replace("labs_", "gen_"))} if content else {}
     for r in read_jsonl(path):
         by = {}
         for c in r["claims"]:
             by.setdefault(c["sent"], []).append(c["label"])
-        y = np.array([int(any(l != "S" for l in by[s])) if event == "notS" else int("C" in by[s]) for s in sorted(by)])
-        k = np.array([len(by[s]) for s in sorted(by)], float)
+        ids = [s for s in sorted(by) if keep is None or s in keep.get(r["title"], ())]  # keep: restrict to units shared with another judge
+        y = np.array([int(any(l != "S" for l in by[s])) if event == "notS" else int("C" in by[s]) for s in ids])
+        k = np.array([len(by[s]) for s in ids], float)
         n = len(y)
         if n < 6:
             continue
@@ -58,7 +59,7 @@ def load(path, cost="unit", event="C", content=False):
             cols.append(np.log(k))
         if content:
             sents = texts[r["title"]]
-            cols += list(np.array([content_feats(sents[s - 1]) for s in sorted(by)]).T)
+            cols += list(np.array([content_feats(sents[s - 1]) for s in ids]).T)
         docs.append({"title": r["title"], "y": y, "X": np.column_stack(cols), "c": k if cost == "claims" else np.ones(n)})
     m = np.mean([d["X"][0, 4] for d in docs])
     for d in docs:
