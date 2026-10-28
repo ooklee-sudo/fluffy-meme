@@ -41,7 +41,7 @@ def main():
     sl = {}
     for i in range(0, len(rows), 50):
         titles = [r["entity"] for r in rows[i:i + 50]]
-        d = wd_get(action="wbgetentities", sites="enwiki", titles="|".join(titles), props="sitelinks", normalize=1)
+        d = wd_get(action="wbgetentities", sites="enwiki", titles="|".join(titles), props="sitelinks")
         for e in d.get("entities", {}).values():
             t = e.get("sitelinks", {}).get("enwiki", {}).get("title")
             if t:
