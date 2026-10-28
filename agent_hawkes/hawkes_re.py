@@ -31,10 +31,12 @@ def nll(th, E, M, re=True, hawkes=True):
         return -logsumexp(ll.sum(1) + lw[None, :], axis=1).sum()
     mu = np.exp(th[3]); lam = mu * trend[None, :] + alpha * S
     return -((E * np.log(np.clip(-np.expm1(-lam), 1e-12, 1)) - (1 - E) * lam) * M).sum()
-def fit(E, M, re, hawkes):
+def fit(E, M, re, hawkes, warm=(), only_warm=False):
     x0 = [0.0, np.log(0.2), 1.0, np.log(1.0), np.log(0.1)] if re else [0.0, np.log(0.2), 1.0, np.log(0.1)]
     f = lambda th: nll(th, E, M, re, hawkes)
-    r = minimize(f, x0, method="L-BFGS-B", options=dict(maxiter=200))
+    starts = [np.array(x0)] + [np.array(x0) + rng.normal(0, 0.7, len(x0)) for _ in range(3)] + [np.array(w) for w in warm if len(w) == len(x0)]
+    if only_warm: starts = [np.array(w) for w in warm]
+    r = min((minimize(f, x, method="L-BFGS-B", options=dict(maxiter=200)) for x in starts), key=lambda z: z.fun)
     th = r.x; out = dict(nll=round(float(r.fun), 1), gamma_trend=round(float(th[0]), 3), k=len(th) - (0 if hawkes else 2))
     if hawkes:
         a, d = float(np.exp(th[1])), float(1 / (1 + np.exp(-th[2]))); out.update(alpha=round(a, 3), delta=round(d, 3), branching=round(a / (1 - d), 3))
@@ -42,19 +44,26 @@ def fit(E, M, re, hawkes):
         k, sc = float(np.exp(th[3])), float(np.exp(th[4])); out.update(re_shape=round(k, 3), re_scale=round(sc, 4), re_mean=round(k * sc, 4), re_cv=round(1 / np.sqrt(k), 3))
     else: out.update(mu=round(float(np.exp(th[3])), 4))
     return out, th
-res = {}
+res = {}; THETA = {}
 for mdl, grp in df.groupby("model"):
-    idx = grp.index.values; idx = rng.choice(idx, size=min(1200, len(idx)), replace=False)
+    idx = grp.index.values; idx = rng.choice(idx, size=min(3000, len(idx)), replace=False)
     E, M = pad([np.array(df.errors[i], float) for i in idx]); r = {}
+    th = {}
     for name, re_, hk in (("poisson_trend", False, False), ("re_only", True, False), ("hawkes_only", False, True), ("re_hawkes", True, True)):
-        r[name] = fit(E, M, re_, hk)[0]; print(mdl, name, r[name], flush=True)
+        warm = []
+        if name == "re_hawkes":
+            h = th["hawkes_only"]; q = th["re_only"]
+            warm = [[q[0], h[1], h[2], q[3], q[4]], [h[0], h[1], h[2], np.log(1.0), h[3]]]
+        r[name], th[name] = fit(E, M, re_, hk, warm); print(mdl, name, r[name], flush=True)
     r["LR_hawkes_given_re"] = round(2 * (r["re_only"]["nll"] - r["re_hawkes"]["nll"]), 1)
     r["LR_re_given_hawkes"] = round(2 * (r["hawkes_only"]["nll"] - r["re_hawkes"]["nll"]), 1)
-    r["n_traj"] = len(idx); res[mdl] = r
+    r["n_traj"] = len(idx); res[mdl] = r; THETA[mdl] = th["re_hawkes"]
 # bootstrap interval of the branching ratio for the largest group (trajectory resampling)
-mdl = df.model.value_counts().index[0]; idx = df[df.model == mdl].index.values; bs = []
-for b in range(12):
-    s = rng.choice(idx, size=1000, replace=True); E, M = pad([np.array(df.errors[i], float) for i in s])
-    bs.append(fit(E, M, True, True)[0]["branching"])
-res["bootstrap_branching_" + mdl] = dict(mean=round(float(np.mean(bs)), 3), lo=round(float(np.percentile(bs, 2.5)), 3), hi=round(float(np.percentile(bs, 97.5)), 3), reps=len(bs), size=1000)
+for mdl, grp in df.groupby("model"):                                                       # bootstrap over trajectories, per model
+    idx = grp.index.values; size = min(1500, len(idx)); bs = []
+    for b in range(15):
+        s_ = rng.choice(idx, size=size, replace=True); E, M = pad([np.array(df.errors[i], float) for i in s_])
+        bs.append(fit(E, M, True, True, warm=[THETA[mdl]], only_warm=True)[0]["branching"])
+    res["bootstrap_branching_" + mdl] = dict(mean=round(float(np.mean(bs)), 3), lo=round(float(np.percentile(bs, 2.5)), 3), hi=round(float(np.percentile(bs, 97.5)), 3), reps=len(bs), size=size)
+    print(mdl, res["bootstrap_branching_" + mdl], flush=True)
 json.dump(res, open(sys.argv[2], "w"), indent=1); print(json.dumps(res, indent=1))

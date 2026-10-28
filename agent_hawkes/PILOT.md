@@ -31,3 +31,17 @@ Reading: ignoring heterogeneity overstates the branching ratio about fourfold; a
 highly significant but subcritical (an error triggers on average 0.35-0.62 further errors), so cascades die out rather than run away.
 The ordering across model sizes is not monotone and the 405B sample is small. Optimisation by L-BFGS-B from one start;
 for Llama-70B the full model barely improves on Hawkes-only, so local optima should be checked with multiple starts.
+
+## Step 3: all 12 shards, multi-start estimation (`hawkes_re_results_all.json`)
+80,036 trajectories (Llama-70B 74,792; 8B 4,053; 405B 1,191). Up to 3,000 trajectories per model (>= 6 steps), five starting
+points per fit plus warm starts from the nested models; bootstrap: 15 resamples, warm-started at the point estimate
+(this may understate the spread).
+
+| Model | Trajectories | Branching, Hawkes only | Branching, Hawkes + heterogeneity | 95% bootstrap | LR excitation given heterogeneity | LR heterogeneity given excitation |
+|---|---|---|---|---|---|---|
+| Llama-8B | 3,000 | 1.85 | 0.50 | 0.44-0.56 | 2,077 | 595 |
+| Llama-70B | 3,000 | 1.48 | 0.38 | 0.31-0.42 | 1,130 | 219 |
+| Llama-405B | 1,140 | 2.08 | 0.56 | 0.49-0.62 | 659 | 357 |
+
+Both contagion and heterogeneity are needed; ignoring heterogeneity overstates the branching ratio about four-fold;
+all three models are subcritical; 70B is lower than 8B and 405B, so excitation is not monotone in model size.
