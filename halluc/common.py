@@ -10,7 +10,7 @@ DATA = os.path.join(HERE, "data")
 URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
-def chat(model, prompt, max_tokens=1500, temperature=0.7, system=None, retries=5):
+def chat(model, prompt, max_tokens=1500, temperature=0.7, system=None, retries=8):
     msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
     body = {"model": model, "messages": msgs, "max_tokens": max_tokens, "temperature": temperature}
     for k in range(retries):
@@ -22,7 +22,7 @@ def chat(model, prompt, max_tokens=1500, temperature=0.7, system=None, retries=5
             err = r.text[:200]
         except requests.RequestException as e:
             err = str(e)
-        time.sleep(2 ** k)
+        time.sleep(min(2 ** k, 40))
     raise RuntimeError(f"chat failed for {model}: {err}")
 
 
