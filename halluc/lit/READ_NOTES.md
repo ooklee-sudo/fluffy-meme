@@ -100,3 +100,15 @@ Only papers whose text was provided or retrieved and read are listed. For each: 
 ## ISR reference style (evidence from the same paper)
 
 Entries in this ISR paper's list follow the pattern `Surname Initials, Surname Initials (Year) Title in sentence case. Journal abbreviation Volume(Issue):pages.` with abbreviated journal names, for example `Inform. Systems Res.`, `MIS Quart.`, `Proc. Natl. Acad. Sci. USA`, `Amer. Econom. Rev.`; conference papers as `Internat. Conf. Machine Learn. (PMLR, New York), 337–371`; books as `Bratman M (1987) Intention, Plans, and Practical Reason (Harvard University Press, Cambridge, MA)`. In-text citations are `Baird and Maruping (2021)` or `(Baird and Maruping 2021)`. The official INFORMS reference-style PDF itself has not been read.
+
+## Dionne, Giuliano & Picard (2009), Management Science
+
+**Reference.** Dionne G, Giuliano F, Picard P (2009) Optimal auditing with scoring: Theory and application to insurance fraud. *Management Sci.* 55(1):58–70. https://doi.org/10.1287/mnsc.1080.0905.
+
+**What was read.** The supplied PDF as extracted text: abstract, introduction, model setup, Propositions 1–3, the budget-constrained corollary, the start of the signal-manipulation section and the conclusion. The calibration and the e-companion appendices were **not** read in detail.
+
+**What it shows.** Optimal auditing combined with a fraud-scoring "suspicion index" i: the insurer's optimal strategy is a type-dependent "red flags strategy" (audit if i exceeds a threshold i*), deterministic from the insurer's viewpoint, random from the policyholder's. Audits deter, so the optimal rule can audit claims whose direct expected gain is negative (needs commitment), and the rule stays threshold-shaped under a budget constraint (Corollary 1) and some signal manipulation.
+
+**Overlap with us.** A threshold rule on an estimated risk score is not new: it is the scoring-based audit rule. Ours is the no-deterrence counterpart (the generator does not respond to checks), where the direct benefit-cost rule is optimal. Our novelty lies in the Cox/overdispersion measurement link, the value-of-targeting identity, adaptivity result and the empirical structure, not in the threshold form.
+
+**Suggested wording.** "In audit settings with scoring, the optimal rule refers a case when its suspicion index exceeds a threshold, and deterrence can justify audits whose direct expected gain is negative (Dionne et al. 2009)."
