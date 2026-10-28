@@ -1,0 +1,19 @@
+# Pilot: are LLM agent tool errors self-exciting? (SWE-agent trajectories)
+
+Data: nebius/SWE-agent-trajectories (Hugging Face, CC-BY-4.0), shards 0-1: 13,340 trajectories, 12,375 with >= 6 steps
+(Llama-70B 11,321; Llama-8B 814; Llama-405B 240). Event = agent-side tool error in the observation after an action
+(edit rejected for syntax errors, command not found, missing file/directory, usage error, interface error, timeout);
+file-viewer output excluded. 22% of steps are errors; 84% of trajectories do not resolve the issue.
+
+| Question | Result | Verdict |
+|---|---|---|
+| Errors cluster? | P(error after error) 0.657 vs P(error after success) 0.102; difference 0.555 against 0.434 (95% upper 0.435) when errors are permuted within each trajectory (heterogeneity only) | clustering beyond heterogeneity |
+| Contagion with trajectory fixed effects | conditional logit of error on decayed past errors: beta 0.25-0.31 (SE 0.01-0.02) across decay 0.3-0.8; placebo on permuted sequences -0.33 (fixed-effect bias is negative, so the test is conservative) | supported |
+| Not only edit-retry loops | non-edit errors: beta 0.32 (placebo -0.40); edit errors: 0.44 (placebo -0.39) | supported |
+| Branching ratio (pooled discrete Hawkes, no heterogeneity) | 8B 2.10, 70B 1.59, 405B 1.97 | upper bounds only: heterogeneity not removed; not monotone in size |
+| Early warning of final failure from first 8 steps | AUC 0.55 (error count), 0.53 (excitation) | not supported here |
+| Escalation rules | count >= 3: catches 40% of failures, hands off 17% of successes; excitation >= 1.5: 37% / 18% | no advantage here |
+
+Caveats: errors are tool-misuse events, not task failure; final failure (84%) is dominated by other causes; step index used as time;
+cross-excitation model between edit and non-edit errors did not converge cleanly. Next: heterogeneity-adjusted Hawkes
+(random baseline per trajectory), fault-injection experiment for causal excitation, tau-bench outcome where failures matter.
