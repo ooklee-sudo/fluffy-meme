@@ -1,0 +1,80 @@
+
+===== labs_gemma-3-27b-it.jsonl [all, lead sentence dropped]: 485 docs, 11609 sentences, event rate 0.202 =====
+composition by position quintile:
+      has_date  has_num  caps     k  event
+pos                                      
+0        0.32     0.10  1.66  2.14  0.287
+1        0.55     0.17  2.00  1.80  0.214
+2        0.56     0.20  2.19  1.80  0.152
+3        0.56     0.21  2.15  1.70  0.153
+4        0.54     0.22  1.85  1.71  0.204
+event rate by content type: has_date=1: 0.271, has_date=0: 0.131 | has_num=1: 0.349, has_num=0: 0.169
+
+model                         AIC   standardised rate at position 0.1/0.3/0.5/0.7/0.9
+A spline(pos)             11482.3   [0.288 0.211 0.157 0.142 0.2  ]
+B + rarity + docrate      10672.3   [0.291 0.212 0.156 0.141 0.2  ]
+C + content type           9625.9   [0.303 0.205 0.149 0.143 0.201]
+D + prev sentence          9560.3   [0.299 0.198 0.152 0.146 0.201]
+
+model C content-type coefficients (z): {'has_date': '+0.87 (+14.0)', 'has_num': '+0.54 (+8.4)', 'caps': '-0.02 (-1.0)', 'k': '+0.49 (+16.5)'}
+model D: prev = +0.52 (z +7.9), lsl_c = -0.02 (z -0.8)
+
+===== labs_gemma-3-27b-it.jsonl [verif, lead sentence dropped]: 271 docs, 4113 sentences, event rate 0.486 =====
+composition by position quintile:
+      has_date  has_num  caps     k  event
+pos                                      
+0        0.36     0.16  1.62  2.64  0.609
+1        0.63     0.24  1.90  2.33  0.560
+2        0.66     0.27  1.94  2.30  0.422
+3        0.63     0.27  1.98  2.30  0.392
+4        0.62     0.30  1.72  2.21  0.449
+event rate by content type: has_date=1: 0.570, has_date=0: 0.371 | has_num=1: 0.582, has_num=0: 0.455
+
+model                         AIC   standardised rate at position 0.1/0.3/0.5/0.7/0.9
+A spline(pos)              5593.3   [0.616 0.56  0.431 0.393 0.436]
+B + rarity + docrate       5073.7   [0.62  0.561 0.431 0.389 0.433]
+C + content type           4792.7   [0.667 0.549 0.412 0.373 0.427]
+D + prev sentence          4775.7   [0.668 0.535 0.412 0.377 0.429]
+
+model C content-type coefficients (z): {'has_date': '+0.93 (+11.0)', 'has_num': '+0.53 (+6.0)', 'caps': '+0.12 (+4.2)', 'k': '+0.06 (+2.0)'}
+model D: prev = +0.34 (z +4.2), lsl_c = -0.40 (z -9.3)
+
+===== labs_gemma-3-4b-it.jsonl [all, lead sentence dropped]: 487 docs, 10322 sentences, event rate 0.231 =====
+composition by position quintile:
+      has_date  has_num  caps     k  event
+pos                                      
+0        0.32     0.12  1.75  2.07  0.359
+1        0.57     0.12  2.23  1.69  0.225
+2        0.55     0.20  2.33  1.64  0.168
+3        0.57     0.21  2.34  1.62  0.147
+4        0.62     0.25  2.08  1.63  0.253
+event rate by content type: has_date=1: 0.289, has_date=0: 0.165 | has_num=1: 0.372, has_num=0: 0.200
+
+model                         AIC   standardised rate at position 0.1/0.3/0.5/0.7/0.9
+A spline(pos)             10721.8   [0.35  0.215 0.174 0.143 0.231]
+B + rarity + docrate       9476.3   [0.355 0.215 0.173 0.14  0.232]
+C + content type           8579.5   [0.356 0.216 0.17  0.146 0.225]
+D + prev sentence          8514.6   [0.348 0.209 0.174 0.15  0.226]
+
+model C content-type coefficients (z): {'has_date': '+0.84 (+12.0)', 'has_num': '+0.44 (+6.4)', 'caps': '-0.06 (-3.1)', 'k': '+0.55 (+16.3)'}
+model D: prev = +0.53 (z +7.3), lsl_c = +0.11 (z +4.9)
+
+===== labs_gemma-3-4b-it.jsonl [verif, lead sentence dropped]: 208 docs, 2526 sentences, event rate 0.725 =====
+composition by position quintile:
+      has_date  has_num  caps     k  event
+pos                                      
+0        0.36     0.17  1.67  2.51  0.822
+1        0.63     0.20  1.96  2.17  0.786
+2        0.69     0.25  2.09  2.19  0.706
+3        0.65     0.24  1.98  2.12  0.620
+4        0.70     0.34  1.67  2.16  0.694
+event rate by content type: has_date=1: 0.800, has_date=0: 0.610 | has_num=1: 0.806, has_num=0: 0.700
+
+model                         AIC   standardised rate at position 0.1/0.3/0.5/0.7/0.9
+A spline(pos)              2914.8   [0.833 0.787 0.687 0.647 0.674]
+B + rarity + docrate       2580.8   [0.836 0.787 0.687 0.642 0.672]
+C + content type           2381.6   [0.871 0.78  0.659 0.623 0.657]
+D + prev sentence          2369.2   [0.874 0.765 0.656 0.627 0.657]
+
+model C content-type coefficients (z): {'has_date': '+1.11 (+9.3)', 'has_num': '+0.67 (+4.2)', 'caps': '+0.24 (+4.7)', 'k': '-0.01 (-0.1)'}
+model D: prev = +0.46 (z +3.8), lsl_c = -0.61 (z -8.7)
