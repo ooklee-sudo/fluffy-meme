@@ -152,3 +152,13 @@ Entries in this ISR paper's list follow the pattern `Surname Initials, Surname I
 **What it does.** A conceptual framework: IS artifacts are increasingly agentic, so IS use theory should treat the human–artifact relation as delegation. Agent attributes (endowments, preferences, roles) and mechanisms (appraisal, distribution, coordination; coordination includes monitoring, updating, accountability, predictability, common understanding).
 
 **Overlap with us.** None quantitative. Cited once in Section 2 to place verification budgets as a monitoring decision within delegation to AI. Whether the monitoring examples are meant to cover review of generated content is our reading, not theirs.
+
+## Berente, Gu, Recker & Santhanam (2021), MIS Quarterly — read (partly)
+
+**Reference.** Berente N, Gu B, Recker J, Santhanam R (2021) Managing artificial intelligence. *MIS Quart.* 45(3):1433–1450. https://doi.org/10.25300/MISQ/2021/16274.
+
+**What was read.** The supplied PDF (19 pages) as extracted text: abstract, introduction, the discussion of the three facets (autonomy, learning, inscrutability) around the passages on oversight, and the conclusion's start. The summaries of the seven special-issue papers were **not** read in detail. A term search found no occurrence of *hallucination*, *audit* or *verification*; "generative" appears in other senses (generative agency, GANs).
+
+**What it does.** Special-issue introduction: managing AI means decisions about autonomy, learning and inscrutability, at an ever-shifting frontier. Mentions oversight and augmentation as responses to bias and fairness problems of AI-generated knowledge, and that newer learning approaches involve less human oversight.
+
+**Overlap with us.** None quantitative. Cited once in Section 2 as framing: oversight is a recognised management issue, but sizing and targeting it is not addressed there.
