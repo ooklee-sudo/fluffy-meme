@@ -23,7 +23,7 @@ from analyze_sent import sentence_docs
 from common import DATA, read_jsonl
 
 
-def row(path, event):
+def row(path, event, content=False):
     raw = read_jsonl(path)
     df = to_frame(sentence_docs(raw, "all", event), strict=True)
     rate = df.y.mean()
@@ -36,7 +36,7 @@ def row(path, event):
     rng = np.random.default_rng(0)
     obs, nl = fano(df, 5), fano_null(df, 5, prob, 100, rng)
 
-    docs = ae.load(path, "unit", event)
+    docs = ae.load(path, "unit", event, content)
     gam, tau = ae.fit(docs)
     rg = np.random.default_rng(0)
     fold = np.zeros(len(docs), int)
@@ -74,11 +74,12 @@ def row(path, event):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", nargs="+", required=True, help="task:event:path, e.g. bio:C:data/labs_x.jsonl or summ:notS:data/labs_summ_x.jsonl")
+    ap.add_argument("--content", action="store_true", help="use sentence-text features in the allocation model")
     a = ap.parse_args()
     print(f"{'task/model':<34}{'docs':>5}{'rate':>6}{'lead':>6}{'rest':>6}  {'q1..q5 (non-lead, early->late)':<32}{'Fano5 obs/null':>15}{'tau':>5}{'rarity':>7}  {'static-uniform @10%':<24}{'@30%':<22}{'lead@10':>8}  {'adaptive-static @30%':<24}{'@50%':<22}")
     for spec in a.runs:
         task, event, path = spec.split(":", 2)
-        r = row(path, event)
+        r = row(path, event, a.content)
         name = f"{task}/{os.path.basename(path).replace('labs_', '').replace('summ_', '').replace('.jsonl', '')}"
         s10, s30, a30, a50 = r["st10"], r["st30"], r["ad30"], r["ad50"]
         print(f"{name:<34}{r['docs']:>5}{r['rate']:6.2f}{r['lead']:6.2f}{r['rest']:6.2f}  {' '.join(f'{x:.2f}' for x in r['q']):<32}"

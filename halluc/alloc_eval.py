@@ -15,19 +15,33 @@ fitted on the other folds only. CIs: bootstrap over test documents (policy sets 
 """
 import argparse
 import os
+import re
 
 import numpy as np
 from scipy.optimize import minimize
 from scipy.special import expit, logsumexp
 
 from common import DATA, read_jsonl
+from label_sent import split_sentences
+
+MONTH = re.compile(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\b")
+YEAR = re.compile(r"\b(1[0-9]{3}|20[0-9]{2})\b")
+DIGIT = re.compile(r"\d")
+CAP = re.compile(r"\b[A-Z][\w'’\-]+")
+
+
+def content_feats(sent):
+    """Cheap text features the verifier sees for free: date, other number, proper-noun density, length."""
+    return [float(bool(MONTH.search(sent) or YEAR.search(sent))), float(bool(DIGIT.search(YEAR.sub("", sent)))),
+            float(max(len(CAP.findall(sent)) - 1, 0)), float(np.log(len(sent.split()) + 1))]
 
 GH_X, GH_W = np.polynomial.hermite.hermgauss(21)
 LOGW = np.log(GH_W / np.sqrt(np.pi))
 
 
-def load(path, cost="unit", event="C"):
+def load(path, cost="unit", event="C", content=False):
     docs = []
+    texts = {g["title"]: split_sentences(g["text"]) for g in read_jsonl(path.replace("labs_", "gen_"))} if content else {}
     for r in read_jsonl(path):
         by = {}
         for c in r["claims"]:
@@ -42,6 +56,9 @@ def load(path, cost="unit", event="C"):
         cols = [np.ones(n), (rank == 1).astype(float), pos - 0.5, (pos - 0.5) ** 2, np.full(n, np.log(r["sitelinks"] + 1))]
         if cost == "claims":
             cols.append(np.log(k))
+        if content:
+            sents = texts[r["title"]]
+            cols += list(np.array([content_feats(sents[s - 1]) for s in sorted(by)]).T)
         docs.append({"title": r["title"], "y": y, "X": np.column_stack(cols), "c": k if cost == "claims" else np.ones(n)})
     m = np.mean([d["X"][0, 4] for d in docs])
     for d in docs:
@@ -50,6 +67,12 @@ def load(path, cost="unit", event="C"):
         mk = np.mean(np.concatenate([d["X"][:, 5] for d in docs]))
         for d in docs:
             d["X"][:, 5] -= mk
+    if content:  # standardise the appended content columns
+        j0 = 5 + (1 if cost == "claims" else 0)
+        allx = np.vstack([d["X"][:, j0:] for d in docs])
+        mu, sd = allx.mean(0), allx.std(0) + 1e-9
+        for d in docs:
+            d["X"][:, j0:] = (d["X"][:, j0:] - mu) / sd
     return docs
 
 
@@ -163,8 +186,9 @@ def main():
     ap.add_argument("--cost", choices=["unit", "claims"], default="unit",
                     help="unit: every sentence costs 1; claims: cost = number of claims in the sentence (log k enters the model)")
     ap.add_argument("--event", choices=["C", "notS"], default="C")
+    ap.add_argument("--content", action="store_true", help="add sentence-text features (date, number, proper nouns, length) to the risk model")
     a = ap.parse_args()
-    docs = load(a.lab, a.cost, a.event)
+    docs = load(a.lab, a.cost, a.event, a.content)
     rng = np.random.default_rng(a.seed)
     perm = rng.permutation(len(docs))
     fold = np.zeros(len(docs), int)
