@@ -24,3 +24,10 @@ Design-weighted agreement of coder A with the current scores (key weights; n = 1
 | Luna 5.6 | .56 / .75 | .20 | .29 | .27 | .22 | .99 | .87 |
 
 No human-human reliability exists. Run from `original_session/` data layout (`data/` folder) as in the script header.
+
+## Two-coder result
+
+Second human coder (outside coder, file `data/second_coder_filled.xlsx`) filled the blank sheet. `two_coder_agreement.py` (run from the `original_session/` layout) gives, design-weighted, n=199:
+human-human exact 0.77 (unweighted 0.59), weighted κ 0.42, linear κ 0.49, binary κ 0.55.
+Second coder vs original LLM: κ 0.13; vs Haiku: 0.11 (linear 0.16, PPV 0.54); vs Luna: 0.16.
+Per-row scores: `results/two_coder_scores.csv`.
