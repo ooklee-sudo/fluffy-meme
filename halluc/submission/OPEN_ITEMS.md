@@ -13,7 +13,6 @@
 - `manuscript/MANUSCRIPT.md`: [AUTHORS: verify every entry against the original source and complete missing fields before submission.]  
   context: 
 [AUTHORS: verify every entry against the original source and complete missing fields before submission.]
-- `manuscript/MANUSCRIPT.md`: [AUTHORS: confirm venue; the ACL Anthology lists it as UncertaiNLP 2025 (2025.uncertainlp-main.27), another listing says EMNLP 2025.]  
   context: Tu, L., Meng, R., Joty, S., Zhou, Y., & Yavuz, S. (2025). Investigating factuality in long-form text generatio
 - `manuscript/MANUSCRIPT.md`: [AUTHORS: check the spelling of the fifth-listed name "Hwan Chang" and whether a venue exists.]  
   context: Yang, J., Yoon, S., Chang, H., Kim, B., & Lee, H. (2025). Hallucinate at the last in long response generation:
@@ -21,7 +20,6 @@
   context:     "Catalini C, Hui X, Wu J (2026) Some simple economics of AGI. Preprint, arXiv:2602.20946. [AUTHORS: verify
 - `submission/build_isr.py`: [AUTHORS: update volume and pages if the article has appeared in an issue.]  
   context:     "Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complementary system information dri
-- `submission/build_isr.py`: [AUTHORS: confirm venue (ACL Anthology lists UncertaiNLP 2025; another listing says EMNLP 2025).]  
   context:     "Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The r
 - `submission/build_isr.py`: [AUTHORS: check the spelling of the fifth-listed name \"Hwan Chang\" and whether a venue exists.]  
   context:     "Yang J, Yoon S, Chang H, Kim B, Lee H (2025) Hallucinate at the last in long response generation: A case 
