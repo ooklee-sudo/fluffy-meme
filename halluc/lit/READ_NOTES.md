@@ -132,3 +132,13 @@ Entries in this ISR paper's list follow the pattern `Surname Initials, Surname I
 **What it shows.** Study 1 (laypeople, abstract investment game) and Study 2 (real-estate experts pricing apartments): feature-based explanations (LIME, SHAP) change situational weighting of information and shift mental models, asymmetrically toward explanations that confirm priors (confirmation bias); in Study 1 explanations lowered investment performance by 8.9% (9.8% after explanations were no longer shown); effects spill over to a related market. No feedback on outcomes was given.
 
 **Overlap with us.** Peripheral. Used once in Section 8.4 as a reason to test, not assume, that explanations on flags help reviewers. Not a basis for any claim about verification of generated text.
+
+## Fügener, Grahl, Gupta & Ketter (2021), MIS Quarterly — read (partly)
+
+**Reference.** Fügener A, Grahl J, Gupta A, Ketter W (2021) Will humans-in-the-loop become borgs? Merits and pitfalls of working with AI. *MIS Quart.* 45(3):1527–1556. https://doi.org/10.25300/MISQ/2021/16553.
+
+**What was read.** The supplied PDF (31 pages) as extracted text: abstract, introduction, the discussion, implications and the start of the limitations. The analytical model, the experiments' procedures and the simulation were **not** read in detail. A term search found no occurrence of *hallucination*, *verification*, *audit* or *language model*.
+
+**What it shows.** Analytical model, image-classification experiments and a simulation: AI advice raises individual accuracy but reduces "unique human knowledge", so people's answers converge and a crowd aggregating them does worse than a crowd without advice; personalizing the advice (a threshold rule on expected harm and benefit of advising) mitigates this.
+
+**Overlap with us.** Peripheral. Used once in Section 8.4: shared machine flags may correlate reviewers' misses and lower the value of a second independent check (our extrapolation, not tested by them, flagged as unmodeled).
