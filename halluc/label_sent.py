@@ -6,9 +6,10 @@ import argparse
 import json
 import os
 import re
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
-from common import DATA, chat, read_jsonl, write_jsonl
+from common import DATA, chat, read_jsonl
 
 PROMPT = """You are a careful fact-checker.
 
@@ -56,6 +57,8 @@ def main():
     done = {r["title"] for r in read_jsonl(out)}
     todo = [g for g in read_jsonl(a.gen) if g["title"] not in done and g["title"] in ents]
 
+    lock = threading.Lock()
+
     def run(g):
         e = ents[g["title"]]
         sents = split_sentences(g["text"])
@@ -65,15 +68,18 @@ def main():
             try:
                 cl = parse(chat(a.judge, p, 8000, 0.0), len(sents))
                 if cl:
-                    return {"title": g["title"], "sitelinks": e["sitelinks"], "gen_model": g["model"],
-                            "judge": a.judge, "n_sent": len(sents), "claims": cl}
+                    rec = {"title": g["title"], "sitelinks": e["sitelinks"], "gen_model": g["model"],
+                           "judge": a.judge, "n_sent": len(sents), "claims": cl}
+                    with lock:  # append per item so an interruption or rate limit loses nothing
+                        with open(out, "a") as f:
+                            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                    return rec
             except Exception:
                 pass
         return None
 
     with ThreadPoolExecutor(a.workers) as ex:
         new = [r for r in ex.map(run, todo) if r]
-    write_jsonl(out, read_jsonl(out) + new)
     print(f"{len(new)}/{len(todo)} labelled -> {out}")
 
 
