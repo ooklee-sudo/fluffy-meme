@@ -32,4 +32,4 @@ An audit of published exposure studies (their standard errors, acquisition rates
 the inputs have to be taken from the papers themselves. No published study is included in `examples/`.
 
 ## Audit of published studies
-`PUBLISHED_AUDIT.md`, `examples/published_estimates.csv`, `audit_published.py` and `results/published_audit.csv` apply the bound to six published exposure and adoption studies, with the source (table, figure or text, page) of every number. The audit is small and non-systematic.
+`PUBLISHED_AUDIT.md`, `examples/published_estimates.csv`, `audit_published.py` and `results/published_audit.csv` apply the bound to nine published exposure, adoption and platform studies, with the source (table, figure or text, page) of every number. The audit is small and non-systematic.
