@@ -1,0 +1,13 @@
+labs_summ_gemma-3-27b-it.jsonl (A) vs labsJ2_summ.jsonl (B), event=notS
+docs in B: 250; shared units: 4475; event rate A 0.092, B 0.074
+sentence-event agreement 0.868, Cohen kappa 0.133; A-only 0.075, B-only 0.057
+claim label mix A: {'S': 0.964, 'C': 0.007, 'N': 0.029}  B: {'S': 0.963, 'C': 0.003, 'N': 0.034}
+docs analysed: 249, units: 4475
+judge A: error rate 0.092, lead 0.072, later 0.093, tau 0.43, lead coef -0.53
+judge B: error rate 0.074, lead 0.092, later 0.073, tau 1.01, lead coef +0.31
+
+policy fitted on -> scored on   gain@10% 95% CI              gain@30% 95% CI             lead-only@10
+A -> A                            +0.008 [-0.023,+0.036]      +0.026 [-0.017,+0.072]          0.095
+B -> B                            +0.014 [-0.015,+0.044]      +0.025 [-0.019,+0.070]          0.112
+A -> B                            +0.002 [-0.027,+0.034]      +0.012 [-0.031,+0.057]          0.112
+B -> A                            +0.013 [-0.019,+0.045]      -0.011 [-0.048,+0.031]          0.095
