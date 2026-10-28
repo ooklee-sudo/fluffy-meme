@@ -122,3 +122,13 @@ Entries in this ISR paper's list follow the pattern `Surname Initials, Surname I
 **What it shows.** Image-classification experiments with MTurk workers (humans and an AI classify; either may delegate to the other). The AI delegating uncertain images to humans ("inversion") beats the AI alone; humans delegating to the AI do not benefit, even when taught a good delegation rule, because they lack metaknowledge (cannot judge their own capability and task difficulty). Not explained by algorithm aversion. Combined optimum reported as 89.9% against 77% (AI alone) and 71.7% (humans alone).
 
 **Overlap with us.** No overlap on verification of generated text. It supports the argument that review should be routed by external signals, not by the reviewer's own judgment of where errors lie. Boundaries: images, lay crowd workers, classification, not factual checking.
+
+## Bauer, von Zahn & Hinz (2023), Information Systems Research — read (peripheral)
+
+**Reference.** Bauer K, von Zahn M, Hinz O (2023) Expl(AI)ned: The impact of explainable artificial intelligence on users' information processing. *Inform. Systems Res.* 34(4):1582–1602. https://doi.org/10.1287/isre.2023.1199.
+
+**What was read.** The supplied PDF (22 pages) as extracted text: abstract, introduction, the discussion of results and the limitations. The study designs, hypotheses and regression tables were **not** read in detail. A term search found no occurrence of *hallucination*, *verification*, *language model* or *generative*; *audit* appears once ("noise audits").
+
+**What it shows.** Study 1 (laypeople, abstract investment game) and Study 2 (real-estate experts pricing apartments): feature-based explanations (LIME, SHAP) change situational weighting of information and shift mental models, asymmetrically toward explanations that confirm priors (confirmation bias); in Study 1 explanations lowered investment performance by 8.9% (9.8% after explanations were no longer shown); effects spill over to a related market. No feedback on outcomes was given.
+
+**Overlap with us.** Peripheral. Used once in Section 8.4 as a reason to test, not assume, that explanations on flags help reviewers. Not a basis for any claim about verification of generated text.
