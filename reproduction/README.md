@@ -1,4 +1,4 @@
-# Reproduction of Tables 4-5, Section 7.1 (Canada) and Section 7.4 (public data)
+# Reproduction of Tables 3-5 and Sections 6.2, 7.1 (Canada), 7.3-7.5 (public data)
 
 Pipeline (DATA = any working directory):
 1. `python fetch_data.py DATA`  (Eurostat jvs_a_isco3_r1 and isoc_eb_ai, O*NET 29.1, ESCO->O*NET-SOC crosswalk)
@@ -10,6 +10,7 @@ Pipeline (DATA = any working directory):
    then `python canada_prep.py DATA`, score the duties with `TASK_TEXTS=DATA/noc_duty_texts.json python score_tasks.py DATA DATA/noc_scores.jsonl`
    (scores in `results/noc_duty_scores_claude-haiku-5.5.jsonl`), and `python reproduce_extra.py DATA OUT` (Canada and the Section 7.4 interaction).
 6. `python agreement.py SCORES_A SCORES_B agreement.json`  (agreement between two scorers)
+7. `python reproduce_sections.py DATA OUT`  (Table 3, Section 6.2 correlations, sector exposure, Section 7.3 LFS employment, Section 7.5; writes `OUT/sections_summary.json`)
 
 Choices made because the manuscript does not specify them (the main reasons the numbers differ from the original draft):
 scorer and prompt wording; the language-model-exposure control is our own 0-2 text-work rubric (correlation with visual exposure 0.12);
@@ -18,5 +19,8 @@ standardization over occupations; per-year OLS with country fixed effects, ISCO-
 randomization p from 5,000 permutations of exposure across occupations; pre-trend deviation from a joint stacked model.
 Canada: 312 unit groups (all four 2022 quarters observed, 2022 total >= 1,000), NOC two-digit fixed effects, HC1 standard errors.
 
-Not reproduced: Tables 1-3 and 6 beyond the acquisition inputs (rates 9.6 / 36.2 / 2.1 percent and the Table 2 sector shares match `isoc_eb_ai` / `isoc_eb_ain2`),
-Section 6.2 cross-country and sector correlations, Sections 7.3 and 7.5, human validation of the scores.
+Section 6.2-7.5 choices: sector exposure = employment-weighted mean of one-digit ISCO exposure (2022 LFS, nine NACE sections C,F,G,H,I,J,L,M,N);
+LFS growth = log(mean 2023-25 / mean 2019-21) for EU27, ages 15-74; Section 7.5 uses heteroskedasticity-robust standard errors and 258 country-sector cells.
+
+Not reproduced: Tables 1 and 6 beyond the acquisition inputs (Table 6 follows from equation (5) and the Table 4 standard error; see manuscript),
+the Census BTOS correlation (census.gov returned 403 to plain requests; the sentence was removed from the manuscript), human validation of the scores.
