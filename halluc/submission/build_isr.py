@@ -40,12 +40,40 @@ def fix_citations(text):
     return CITE.sub(lambda m: f"{m.group(1)} {m.group(2)}", text)
 
 
+INFORMS_REFS = [
+    "Border KC, Sobel J (1987) Samurai accountant: A theory of auditing and plunder. *Rev. Econom. Stud.* 54(4):525–540.",
+    "Buçinca Z, Malaya MB, Gajos KZ (2021) To trust or to think: Cognitive forcing functions can reduce overreliance on AI in AI-assisted decision-making. *Proc. ACM Human-Comput. Interaction* 5(CSCW1):Article 188.",
+    "Catalini C, Hui X, Wu J (2026) Some simple economics of AGI. Preprint, arXiv:2602.20946. [AUTHORS: verify authors and status.]",
+    "Cox DR (1955) Some statistical methods connected with series of events. *J. Roy. Statist. Soc. Ser. B* 17(2):129–164.",
+    "Dell'Acqua F, McFowland E III, Mollick ER, Lifshitz-Assaf H, Kellogg K, Rajendran S, Krayer L, Candelon F, Lakhani KR (2023) Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. Working paper 24-013, Harvard Business School, Boston.",
+    "Fügener A, Grahl J, Gupta A, Ketter W (2021) Will humans-in-the-loop become borgs? Merits and pitfalls of working with AI. *MIS Quart.* 45(3):1527–1556.",
+    "Fügener A, Grahl J, Gupta A, Ketter W (2022) Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Inform. Systems Res.* 33(2):678–696.",
+    "Gale D, Hellwig M (1985) Incentive-compatible debt contracts: The one-period problem. *Rev. Econom. Stud.* 52(4):647–663.",
+    "Goel AL, Okumoto K (1979) Time-dependent error-detection rate model for software reliability and other performance measures. *IEEE Trans. Reliability* R-28(3):206–211.",
+    "Goodhue DL, Thompson RL (1995) Task-technology fit and individual performance. *MIS Quart.* 19(2):213–236.",
+    "Hawkes AG (1971) Spectra of some self-exciting and mutually exciting point processes. *Biometrika* 58(1):83–90.",
+    "Ji Z, Lee N, Frieske R, Yu T, Su D, Xu Y, Ishii E, Bang YJ, Madotto A, Fung P (2023) Survey of hallucination in natural language generation. *ACM Comput. Surveys* 55(12):Article 248.",
+    "Leng Y, Yuan Y (2026) SUVA: A probabilistic framework for auditing LLMs with an application to social preferences. *Inform. Systems Res.* 37(3):1805–1830.",
+    "Manakul P, Liusie A, Gales MJF (2023) SelfCheckGPT: Zero-resource black-box hallucination detection for generative large language models. *Proc. 2023 Conf. Empirical Methods Natural Language Processing* (Association for Computational Linguistics).",
+    "Marshall AW, Olkin I, Arnold BC (2011) *Inequalities: Theory of Majorization and Its Applications*, 2nd ed. (Springer, New York).",
+    "Min S, Krishna K, Lyu X, Lewis M, Yih W, Koh PW, Iyyer M, Zettlemoyer L, Hajishirzi H (2023) FActScore: Fine-grained atomic evaluation of factual precision in long form text generation. *Proc. 2023 Conf. Empirical Methods Natural Language Processing* (Association for Computational Linguistics).",
+    "Mitchell M, Wu S, Zaldivar A, Barnes P, Vasserman L, Hutchinson B, Spitzer E, Raji ID, Gebru T (2019) Model cards for model reporting. *Proc. Conf. Fairness, Accountability, Transparency* (ACM, New York), 220–229.",
+    "Niu C, Wu Y, Zhu J, Xu S, Shum K, Zhong R, Song J, Zhang T (2024) RAGTruth: A hallucination corpus for developing trustworthy retrieval-augmented language models. *Proc. 62nd Annual Meeting Assoc. Comput. Linguistics* (Association for Computational Linguistics).",
+    "Parasuraman R, Manzey DH (2010) Complacency and bias in human use of automation: An attentional integration. *Human Factors* 52(3):381–410.",
+    "Si C, et al. (2024) Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proc. 2024 Conf. North Amer. Chapter Assoc. Comput. Linguistics* (Association for Computational Linguistics). arXiv:2310.12558. [AUTHORS: complete author list and venue.]",
+    "Townsend RM (1979) Optimal contracts and competitive markets with costly state verification. *J. Econom. Theory* 21(2):265–293.",
+    "Tu, et al. (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. 2025 Conf. Empirical Methods Natural Language Processing*. arXiv:2411.15993. [AUTHORS: complete author list.]",
+    "Vasconcelos H, Jörke M, Grunde-McLaughlin M, Gerstenberg T, Bernstein MS, Krishna R (2023) Explanations can reduce overreliance on AI systems during decision-making. *Proc. ACM Human-Comput. Interaction* 7(CSCW1):Article 129.",
+    "Wei J, et al. (2024) Long-form factuality in large language models. *Adv. Neural Inform. Processing Systems*, vol. 37. arXiv:2403.18802. [AUTHORS: complete author list.]",
+    "Yang, et al. (2025) Hallucinate at the last in long response generation: A case study on long document summarization. Preprint, arXiv:2505.15291. [AUTHORS: complete author list and venue.]",
+    "Zhang M, Press O, Merrill W, Liu A, Smith NA (2024) How language model hallucinations can snowball. *Proc. 41st Internat. Conf. Machine Learn.* (PMLR).",
+]
+
+
 def sort_references(block):
-    head, *entries = [e for e in re.split(r"\n\s*\n", block.strip()) if e.strip()]
-    keep = [e for e in entries if e.startswith("[AUTHORS")]
-    refs = [e for e in entries if not e.startswith("[AUTHORS")]
     key = lambda e: re.sub(r"[^a-z]", "", e.lower().replace("ç", "c").replace("ü", "u"))
-    return "\n\n".join([head] + keep + sorted(refs, key=key)) + "\n"
+    head = "## References\n\n[AUTHORS: every entry must be verified against the original source. Format follows the pattern of reference lists in published ISR articles (surname and initials, year in parentheses, abbreviated journal names); the official INFORMS reference-style guide has not been read, so abbreviations may need adjustment.]"
+    return head + "\n\n" + "\n\n".join(sorted(INFORMS_REFS, key=key)) + "\n"
 
 
 def build_markdown():
