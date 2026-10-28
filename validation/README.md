@@ -7,3 +7,20 @@ The coding guide matches the narrow rubric of Appendix A of the manuscript. The 
 
 Results: `results/human_validation_results.json`; per-task scores: `results/human_sample_scores.csv`.
 The original draft's kappas (0.18 between coders; 0.11 and 0.04 for the narrow score; 0.31 to 0.41 for the broad rubric) are not reproduced by these data and could not be traced to a source file.
+
+## Correction (session recovery, Oct 2026)
+
+The original draft's κ values (0.18 between coders, 0.04 coder B vs LLM) are **invalid**: that "coder B" file
+(`original_session/`, from branch `claude/cool-hamilton-bi4mzt`) held AI automation-difficulty scores (78/81/41), not human visual-creation codes.
+Only coder A is human. Coder A vs the original LLM scores reproduces exactly with `original_session/agreement_creation.py`
+(design-weighted exact agreement 0.73, weighted κ 0.11, linear κ 0.16, binary κ 0.15, sensitivity 0.12, specificity 0.98).
+
+Design-weighted agreement of coder A with the current scores (key weights; n = 199):
+
+| scorer | exact (unw / wtd) | weighted κ | linear κ | binary κ | sens | spec | PPV |
+|---|---|---|---|---|---|---|---|
+| original LLM | .56 / .73 | .11 | .16 | .15 | .12 | .98 | .75 |
+| Haiku 5.5 | .55 / .75 | .18 | .23 | .21 | .17 | .99 | .82 |
+| Luna 5.6 | .56 / .75 | .20 | .29 | .27 | .22 | .99 | .87 |
+
+No human-human reliability exists. Run from `original_session/` data layout (`data/` folder) as in the script header.
