@@ -54,6 +54,7 @@ INFORMS_REFS = [
     "Goodhue DL, Thompson RL (1995) Task-technology fit and individual performance. *MIS Quart.* 19(2):213–236.",
     "Hawkes AG (1971) Spectra of some self-exciting and mutually exciting point processes. *Biometrika* 58(1):83–90.",
     "Ji Z, Lee N, Frieske R, Yu T, Su D, Xu Y, Ishii E, Bang YJ, Madotto A, Fung P (2023) Survey of hallucination in natural language generation. *ACM Comput. Surveys* 55(12):Article 248.",
+    "Jussupow E, Bauer K, Heigl RM, Vogt B, Hinz O (2026) The indirect disclosure effect: How disclosing generative AI use impacts human creative collaboration with AI. *Inform. Systems Res.* Published online ahead of print August 27, https://doi.org/10.1287/isre.2024.0951.",
     "Leng Y, Yuan Y (2026) SUVA: A probabilistic framework for auditing LLMs with an application to social preferences. *Inform. Systems Res.* 37(3):1805–1830.",
     "Manakul P, Liusie A, Gales MJF (2023) SelfCheckGPT: Zero-resource black-box hallucination detection for generative large language models. *Proc. 2023 Conf. Empirical Methods Natural Language Processing* (Association for Computational Linguistics).",
     "Marshall AW, Olkin I, Arnold BC (2011) *Inequalities: Theory of Majorization and Its Applications*, 2nd ed. (Springer, New York).",

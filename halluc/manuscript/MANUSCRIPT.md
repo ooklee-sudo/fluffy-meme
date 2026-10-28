@@ -215,6 +215,8 @@ In our data the single most valuable signal for allocating effort was the identi
 
 The value of this signal rests on differences in reliability between models, and it falls as those differences shrink. A firm that standardizes on one model forgoes the signal. It then relies on the within-model structure, namely position and, for tasks resting on parametric knowledge, document-level risk.
 
+Provenance metadata kept to route review should not be confused with labels shown to audiences, because disclosure can change the behavior of those who produce content. In creative work with a text-to-image tool, creators who anticipated that their use of generative AI would be disclosed to an audience largely withdrew from the process and left image generation to the tool; the authors suggest that more nuanced, process-level provenance records, in the manner of content-provenance standards, may mitigate this, and they leave open whether the effect extends to writing and to more technical tasks (Jussupow et al. 2026). Whether recording which model produced a text changes how its authors use the tool is, in our setting, an open question that an experiment would have to answer.
+
 ### 8.3 Task–technology fit for verification policy
 
 The central empirical finding is that the structure of errors depends on the task, and hence the appropriate verification policy does too. This is a form of task–technology fit (Goodhue and Thompson, 1995) applied to the verification process, and it echoes field evidence that the usefulness of AI varies sharply across tasks that appear similar, a "jagged" frontier (Dell'Acqua et al., 2023). Table 4 summarizes the policy implications of our evidence.
@@ -337,6 +339,8 @@ Goodhue, D. L., & Thompson, R. L. (1995). Task-technology fit and individual per
 Hawkes, A. G. (1971). Spectra of some self-exciting and mutually exciting point processes. *Biometrika, 58*(1), 83–90.
 
 Ji, Z., Lee, N., Frieske, R., Yu, T., Su, D., Xu, Y., Ishii, E., Bang, Y. J., Madotto, A., & Fung, P. (2023). Survey of hallucination in natural language generation. *ACM Computing Surveys, 55*(12), Article 248.
+
+Jussupow, E., Bauer, K., Heigl, R. M., Vogt, B., & Hinz, O. (2026). The indirect disclosure effect: How disclosing generative AI use impacts human creative collaboration with AI. *Information Systems Research*. Advance online publication (August 27). https://doi.org/10.1287/isre.2024.0951
 
 Leng, Y., & Yuan, Y. (2026). SUVA: A probabilistic framework for auditing LLMs with an application to social preferences. *Information Systems Research, 37*(3), 1805–1830.
 

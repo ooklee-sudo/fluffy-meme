@@ -71,6 +71,22 @@ Only papers whose text was provided or retrieved and read are listed. For each: 
 - Adam M, Diebel C, Goutier M, Benlian A (2024) Navigating autonomy and control in human-AI delegation: User responses to technology- versus user-invoked task allocation. *Decision Support Systems* 180:114193.
 - Dietvorst BJ, Simmons JP, Massey C (2015) Algorithm aversion: People erroneously avoid algorithms after seeing them err. *J. Experiment. Psych. General* 144(1):114–126.
 
+## Jussupow, Bauer, Heigl, Vogt & Hinz (2026), Information Systems Research
+
+**Reference.** Jussupow E, Bauer K, Heigl RM, Vogt B, Hinz O (2026) The indirect disclosure effect: How disclosing generative AI use impacts human creative collaboration with AI. *Inform. Systems Res.* Published online in Articles in Advance August 27, 2026 (pp. 1–21). https://doi.org/10.1287/isre.2024.0951 (received March 1, 2024; accepted June 1, 2026; Senior Editor Ulrike Schultze, Associate Editor Aron Lindberg).
+
+**What was read.** The supplied PDF (22 pages) as extracted text: the abstract, the discussion (summary of findings, theoretical contributions, policy implications, the start of the limitations) and the relevant reference entries. The theory development, the two experiments' procedures and the results were **not** read in detail. A term search found no occurrence of *hallucination*, *factual*, *verify*, *audit*, *oversight* or *detect*.
+
+**What it does.** Two nested mixed-methods experiments in which participants create images with a text-to-image GenAI tool under different disclosure conditions. Drawing on Goffman's impression management, it shows an "indirect disclosure effect": when creators anticipate that GenAI use will be disclosed to an audience, most withdraw from the creative process and leave image generation to the tool, driven by the fear that audiences will not recognize their creative agency; the resulting artifacts are judged more novel but less appealing. The authors read this as a tension in transparency regulation (they mention Article 50 of the EU AI Act) but stress that it does not show that transparency is undesirable.
+
+**Statements in the text that bear on our manuscript.**
+- Policy implications: binary labels may be too coarse; process-level documentation (iterative prompting, selection, revision, post-generation editing) and content-provenance standards (the Coalition for Content Provenance and Authenticity is named, with metadata-based records of content history) point to a nuanced approach that "may mitigate" creator withdrawal.
+- Limitations: image creation only; modalities such as writing may differ; anonymous settings without reputational stakes; open whether the effect persists for "more technical" tasks.
+
+**Overlap with our manuscript.** None on verification or factual errors. It bears on Section 8.2 as a boundary: our recommendation concerns provenance metadata used internally to route review, not labels shown to audiences, and whether recording provenance changes how authors use a tool is, for text generation in organizations, untested.
+
+**How it may be cited (suggested wording, to be checked by the authors).** See Section 8.2 of the manuscript.
+
 ## ISR reference style (evidence from the same paper)
 
 Entries in this ISR paper's list follow the pattern `Surname Initials, Surname Initials (Year) Title in sentence case. Journal abbreviation Volume(Issue):pages.` with abbreviated journal names, for example `Inform. Systems Res.`, `MIS Quart.`, `Proc. Natl. Acad. Sci. USA`, `Amer. Econom. Rev.`; conference papers as `Internat. Conf. Machine Learn. (PMLR, New York), 337–371`; books as `Bratman M (1987) Intention, Plans, and Practical Reason (Harvard University Press, Cambridge, MA)`. In-text citations are `Baird and Maruping (2021)` or `(Baird and Maruping 2021)`. The official INFORMS reference-style PDF itself has not been read.
