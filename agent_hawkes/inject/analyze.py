@@ -13,12 +13,13 @@ import statsmodels.api as sm
 
 HERE = Path(__file__).resolve().parent
 import os
+MAX_REPS = {"deepseek": 2}  # DeepSeek was cut to two repetitions because of upstream rate limits
 W, L, B = 5, 3, int(os.environ.get("B", 1000))
 
 
 def load(m):
     rows = [json.loads(l) for l in open(HERE / "results" / f"{m}.jsonl")]
-    rows = [r for r in rows if r.get("ok")]
+    rows = [r for r in rows if r.get("ok") and r["rep"] < MAX_REPS.get(m, 99)]
     seen = {}
     for r in rows: seen[r["key"]] = r  # keep the last complete record per key
     return list(seen.values())
