@@ -11,6 +11,7 @@ CFG = {
  'ai_level': (8, "Each item is a job posting for a visual or design role: title, then description. Rate how the posting treats generative AI tools (Midjourney, Stable Diffusion, DALL-E, Adobe Firefly, ChatGPT/OpenAI image or video tools, AI image/video generators, 'AI-powered' creation tools): 0 = no mention of AI tools; 1 = mentions AI tools only as a preferred skill, nice-to-have, or general company context; 2 = using generative AI tools to produce or edit visuals is a required skill or a core duty of the role. Output ONLY a JSON array of {\"id\":<id>,\"label\":0|1|2}."),
 }
 BATCH, SYSTEM = CFG[TASK]; WORKERS = 24
+BATCH = int(os.environ.get('CLS_BATCH', BATCH))
 items = json.load(open(ITEMS)); done = set()
 if os.path.exists(OUT):
     for l in open(OUT): done.add(json.loads(l)['id'])

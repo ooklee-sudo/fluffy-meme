@@ -15,7 +15,8 @@ for f in glob.glob(f'{P}/*_agg.pkl'):
 for f in glob.glob(f'{P}/*_cand.pkl'):
     d = pd.read_pickle(f); d['crawl'] = re.search(r'(\d{4})-12', f).group(1); cand.append(d)
 A = pd.concat(agg); C = pd.concat(cand)
-A = A.groupby(['crawl', 'org_key'], as_index=False).agg(n_total=('n_total', 'sum'), n_genai=('n_genai', 'sum'), host=('host', 'first'), org_name=('org_name', 'first'))
+A = A.groupby(['crawl', 'org_key'], as_index=False).agg(n_total=('n_total', 'sum'), n_genai=('n_genai', 'sum'), n_genai_visual_kw=('n_genai_visual', 'sum'), host=('host', 'first'), org_name=('org_name', 'first'))
+A['n_genai_nonvisual'] = A.n_genai - A.n_genai_visual_kw
 C['tl'] = C.title.str.lower().str.strip()
 V = C[C.kind == 'visual'].copy(); V['is_visual'] = V.tl.map(vis_t).fillna(0).astype(int)
 K = C[C.kind == 'comp'].copy(); K['cls'] = K.tl.map(comp_t).fillna(0).astype(int)
@@ -35,7 +36,7 @@ R = {'orgs_by_crawl': O.groupby('crawl').org_key.nunique().to_dict(), 'postings_
      'visual_postings_with_ai_ge1_by_crawl': O.groupby('crawl').n_vis_ai1.sum().astype(int).to_dict(), 'visual_postings_with_ai_ge2_by_crawl': O.groupby('crawl').n_vis_ai2.sum().astype(int).to_dict()}
 # ---- 2024 cross-section: reassignment proxy among acquirers, by complements ----
 c24 = O[(O.crawl == '2024')].copy()
-c24['acq'] = (c24.n_genai > 0).astype(int); c24['comp'] = ((c24.n_comp_legal + c24.n_comp_lead) > 0).astype(int)
+c24['acq'] = (c24.n_genai_nonvisual > 0).astype(int)   # generative-AI mention in postings other than visual roles; c24['comp'] = ((c24.n_comp_legal + c24.n_comp_lead) > 0).astype(int)
 c24['reassign'] = (c24.n_vis_ai1 > 0).astype(int); c24['log_n'] = np.log(c24.n_total)
 v24 = c24[c24.n_vis > 0]
 R['cells_2024_visual_employers'] = {f'acq={a},comp={c}': {'orgs': int(((v24.acq == a) & (v24.comp == c)).sum()), 'with_ai_in_visual_posting': int(((v24.acq == a) & (v24.comp == c) & (v24.reassign == 1)).sum())} for a in (0, 1) for c in (0, 1)}
@@ -44,19 +45,29 @@ if (v24.acq == 1).sum() > 30:
     m = sm.Logit(a24.reassign, sm.add_constant(a24[['comp', 'log_n']])).fit(disp=0, cov_type='HC1')
     R['h3a_logit_reassign_on_complements_among_acquirers'] = {'n': int(len(a24)), 'coef_comp': float(m.params['comp']), 'se_comp': float(m.bse['comp']), 'p_comp': float(m.pvalues['comp']), 'coef_log_n': float(m.params['log_n'])}
 # ---- panel: visual share change 2022 -> 2024 ----
-w = O.pivot_table(index='org_key', columns='crawl', values=['n_total', 'n_vis', 'n_genai', 'n_comp_legal', 'n_comp_lead'], aggfunc='sum')
+w = O.pivot_table(index='org_key', columns='crawl', values=['n_total', 'n_vis', 'n_genai_nonvisual', 'n_comp_legal', 'n_comp_lead'], aggfunc='sum')
 w.columns = [f'{a}_{b}' for a, b in w.columns]
-pn = w.dropna(subset=['n_total_2022', 'n_total_2024']).copy()
-pn = pn[(pn.n_total_2022 >= 3) & (pn.n_total_2024 >= 3)]
-pn['vs22'] = pn.n_vis_2022 / pn.n_total_2022; pn['vs24'] = pn.n_vis_2024 / pn.n_total_2024; pn['d_vs'] = (pn.vs24 - pn.vs22) * 100
-pn['acq'] = (pn.n_genai_2024 > 0).astype(int); pn['comp'] = ((pn.n_comp_legal_2024 + pn.n_comp_lead_2024) > 0).astype(int); pn['log_n22'] = np.log(pn.n_total_2022)
-R['panel_orgs_in_2022_and_2024_min3_postings'] = int(len(pn)); R['panel_orgs_with_visual_in_2022'] = int((pn.n_vis_2022 > 0).sum())
-R['panel_cells'] = {f'acq={a},comp={c}': {'orgs': int(((pn.acq == a) & (pn.comp == c)).sum()), 'orgs_with_visual_2022': int(((pn.acq == a) & (pn.comp == c) & (pn.n_vis_2022 > 0)).sum())} for a in (0, 1) for c in (0, 1)}
-pn['acq_x_comp'] = pn.acq * pn.comp
-m = sm.OLS(pn.d_vs, sm.add_constant(pn[['acq', 'comp', 'acq_x_comp', 'log_n22']])).fit(cov_type='HC1')
-R['h3b_ols_change_in_visual_share_pp'] = {k: {'b': float(m.params[k]), 'se': float(m.bse[k]), 'p': float(m.pvalues[k])} for k in ('acq', 'comp', 'acq_x_comp', 'log_n22')}
-sub = pn[pn.n_vis_2022 > 0]
-if len(sub) > 30:
-    m2 = sm.OLS(sub.d_vs, sm.add_constant(sub[['acq', 'comp', 'acq_x_comp', 'log_n22']])).fit(cov_type='HC1')
-    R['h3b_ols_among_orgs_with_visual_2022'] = {'n': int(len(sub)), **{k: {'b': float(m2.params[k]), 'se': float(m2.bse[k]), 'p': float(m2.pvalues[k])} for k in ('acq', 'comp', 'acq_x_comp')}}
+def run_panel(minn, label):
+    pn = w.dropna(subset=['n_total_2022', 'n_total_2024']).copy()
+    pn = pn[(pn.n_total_2022 >= minn) & (pn.n_total_2024 >= minn)]
+    pn['vs22'] = pn.n_vis_2022 / pn.n_total_2022; pn['vs24'] = pn.n_vis_2024 / pn.n_total_2024; pn['d_vs'] = (pn.vs24 - pn.vs22) * 100
+    pn['acq'] = (pn.n_genai_nonvisual_2024 > 0).astype(int)
+    pn['comp'] = ((pn.n_comp_legal_2024 + pn.n_comp_lead_2024) > 0).astype(int)
+    pn['comp_legal'] = (pn.n_comp_legal_2024 > 0).astype(int); pn['comp_lead'] = (pn.n_comp_lead_2024 > 0).astype(int)
+    pn['log_n22'] = np.log(pn.n_total_2022); pn['acq_x_comp'] = pn.acq * pn.comp
+    pl = pn.dropna(subset=['n_total_2023']); pl = pl[pl.n_total_2023 >= minn].copy()
+    pl['d_vs_placebo'] = (pl.n_vis_2023 / pl.n_total_2023 - pl.n_vis_2022 / pl.n_total_2022) * 100
+    out = {'n_orgs': int(len(pn)), 'n_with_visual_2022': int((pn.n_vis_2022 > 0).sum()),
+           'cells_with_visual_2022': {f'acq={a},comp={c}': int(((pn.acq == a) & (pn.comp == c) & (pn.n_vis_2022 > 0)).sum()) for a in (0, 1) for c in (0, 1)}}
+    def ols(d, y, xs):
+        m = sm.OLS(d[y], sm.add_constant(d[xs])).fit(cov_type='HC1')
+        return {k: {'b': float(m.params[k]), 'se': float(m.bse[k]), 'p': float(m.pvalues[k])} for k in xs}
+    sub = pn[pn.n_vis_2022 > 0]; subp = pl[pl.n_vis_2022 > 0]
+    out['among_visual_2022_2022to2024'] = {'n': int(len(sub)), **ols(sub, 'd_vs', ['acq', 'comp', 'acq_x_comp', 'log_n22'])}
+    out['among_visual_2022_placebo_2022to2023'] = {'n': int(len(subp)), **ols(subp, 'd_vs_placebo', ['acq', 'comp', 'acq_x_comp', 'log_n22'])}
+    sub2 = sub.assign(acq_x_legal=sub.acq * sub.comp_legal, acq_x_lead=sub.acq * sub.comp_lead)
+    out['among_visual_2022_split_complements'] = ols(sub2, 'd_vs', ['acq', 'comp_legal', 'comp_lead', 'acq_x_legal', 'acq_x_lead', 'log_n22'])
+    out['all_orgs_2022to2024'] = ols(pn, 'd_vs', ['acq', 'comp', 'acq_x_comp', 'log_n22'])
+    return out
+R['h3b_panel_min3_postings'] = run_panel(3, 'min3'); R['h3b_panel_min10_postings'] = run_panel(10, 'min10')
 json.dump(R, open(OUT, 'w'), indent=1, default=float); print(json.dumps(R, indent=1, default=float))
