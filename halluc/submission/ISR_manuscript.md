@@ -274,9 +274,9 @@ Cox DR (1955) Some statistical methods connected with series of events. *J. Roy.
 
 Dell'Acqua F, McFowland E III, Mollick ER, Lifshitz-Assaf H, Kellogg K, Rajendran S, Krayer L, Candelon F, Lakhani KR (2023) Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. Working paper 24-013, Harvard Business School, Boston.
 
-Fügener A, Grahl J, Gupta A, Ketter W (2022) Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Inform. Systems Res.* 33(2):678–696.
-
 Fügener A, Grahl J, Gupta A, Ketter W (2021) Will humans-in-the-loop become borgs? Merits and pitfalls of working with AI. *MIS Quart.* 45(3):1527–1556.
+
+Fügener A, Grahl J, Gupta A, Ketter W (2022) Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Inform. Systems Res.* 33(2):678–696.
 
 Gale D, Hellwig M (1985) Incentive-compatible debt contracts: The one-period problem. *Rev. Econom. Stud.* 52(4):647–663.
 

@@ -71,7 +71,10 @@ INFORMS_REFS = [
 
 
 def sort_references(block):
-    key = lambda e: re.sub(r"[^a-z]", "", e.lower().replace("ç", "c").replace("ü", "u"))
+    def key(e):  # first-author surname and initials, then year (same authors in chronological order)
+        authors = e.split(" (")[0].lower().replace("ç", "c").replace("ü", "u")
+        year = re.search(r"\((\d{4})\)", e)
+        return re.sub(r"[^a-z]", "", authors) + (year.group(1) if year else "0000")
     head = "## References\n\n[AUTHORS: every entry must be verified against the original source. Format follows the pattern of reference lists in published ISR articles (surname and initials, year in parentheses, abbreviated journal names); the official INFORMS reference-style guide has not been read, so abbreviations may need adjustment.]"
     return head + "\n\n" + "\n\n".join(sorted(INFORMS_REFS, key=key)) + "\n"
 
