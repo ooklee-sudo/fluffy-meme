@@ -24,6 +24,30 @@ Only papers whose text was provided or retrieved and read are listed. For each: 
 - Adam M, Roethke K, Benlian A (2023) Human vs. automated sales agents: How and why customer responses shift across sales stages. *Inform. Systems Res.* 34(3):1148–1168.
 - Fügener A, Grahl J, Gupta A, Ketter W (2022) Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Inform. Systems Res.* 33(2):678–696. (This entry **confirms the bibliographic data** of the reference used in our manuscript.)
 
+## Bouayad, Padmanabhan & Chari (2019), Information Systems Research
+
+**Reference.** Bouayad L, Padmanabhan B, Chari K (2019) Audit policies under the sentinel effect: Deterrence-driven algorithms. *Inform. Systems Res.* 30(2):466–485. https://doi.org/10.1287/isre.2019.0841 (received November 12, 2015; accepted December 3, 2018; Senior Editor Yong Tan, Associate Editor Ahmed Abbasi).
+
+**What was read.** The PDF supplied by the authors (21 pages), as extracted text: the abstract, introduction, the statement of the audit problem (start of Section 2), the discussion with its limitations, and the conclusions were read; the details of the diffusion model, the survey, the algorithm and the simulation (Sections 2.2–5) were **not** read closely, and the online appendices (analytical model, game) are not part of the PDF.
+
+**What it does.** Audit selection as an algorithm-design problem in health-care claims: given a network of practitioners, choose k practitioners to audit so as to maximize detection of fraudulent ones and the "sentinel effect", the deterrence that arises when audit information diffuses by word of mouth and other practitioners improve their billing. A greedy search selects the k nodes; an agent-based simulation, informed by interviews, a focus group and a physician survey, compares deterrence-driven selection with detection-driven selection and with broadcasting. The paper states that audit cost is not modeled in the simulation (an analytical treatment is in an online appendix).
+
+**Statements in the text that bear on our manuscript.**
+- "Much of the prior work in auditing algorithms has focused on use of scoring to detect fraudulent providers. We call these detection algorithms" (scoring algorithms compute suspicion indices used to select claims for investigation).
+- The benefits of an audit are separated into the direct "audit effect" (detection) and the second-order "sentinel effect" (deterrence through diffusion).
+
+**Overlap with our manuscript.** None on the object of audit: the audited parties are strategic practitioners who respond to audits, the setting is a social network, and the objective includes deterrence. Our problem has the scoring-and-selection structure but the verified content is produced by a model, so (absent retraining on audit outcomes) only the detection benefit remains, and the structure we study lies within a generated text, not across a network.
+
+**How it may be cited (suggested wording, to be checked by the authors).** "Audit selection has been studied as an algorithm-design problem in information systems research: scoring models rank items by suspicion, and when audited parties respond, the objective is extended to include deterrence (Bouayad et al. 2019). Our setting has the scoring but not the deterrence."
+
+**References it cites that look relevant (not read; bibliographic data as printed in its reference list).**
+- Dionne G, Giuliano F, Picard P (2009) Optimal auditing with scoring: Theory and application to insurance fraud. *Management Sci.* 55(1):58–70. (Described in the paper as discussing scoring algorithms within an optimal auditing strategy, including the value of auditing some claims even when investigation cost exceeds the expected benefit; not read.)
+- Tennyson S, Salsas-Forn P (2002) Claims auditing in automobile insurance: Fraud detection and deterrence objectives. *J. Risk Insurance* 69(3):289–308.
+- D'Arcy J, Hovav A, Galletta D (2009) User awareness of security countermeasures and its impact on information systems misuse: A deterrence approach. *Inform. Systems Res.* 20(1):79–98.
+- Van Vlasselaer V, Eliassi-Rad T, Akoglu L, Snoeck M, Baesens B (2017) GOTCHA! Network-based fraud detection for social security fraud. *Management Sci.* 63(9):3090–3110.
+
+**Useful for the manuscript's form.** Contributions are enumerated in the introduction ("first to..."; we should avoid priority claims we cannot support), a mixed-method design is used for realism, and analytical results are placed in online appendices.
+
 ## ISR reference style (evidence from the same paper)
 
 Entries in this ISR paper's list follow the pattern `Surname Initials, Surname Initials (Year) Title in sentence case. Journal abbreviation Volume(Issue):pages.` with abbreviated journal names, for example `Inform. Systems Res.`, `MIS Quart.`, `Proc. Natl. Acad. Sci. USA`, `Amer. Econom. Rev.`; conference papers as `Internat. Conf. Machine Learn. (PMLR, New York), 337–371`; books as `Bratman M (1987) Intention, Plans, and Practical Reason (Harvard University Press, Cambridge, MA)`. In-text citations are `Baird and Maruping (2021)` or `(Baird and Maruping 2021)`. The official INFORMS reference-style PDF itself has not been read.

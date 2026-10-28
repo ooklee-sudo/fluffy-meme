@@ -42,6 +42,7 @@ def fix_citations(text):
 
 INFORMS_REFS = [
     "Border KC, Sobel J (1987) Samurai accountant: A theory of auditing and plunder. *Rev. Econom. Stud.* 54(4):525–540.",
+    "Bouayad L, Padmanabhan B, Chari K (2019) Audit policies under the sentinel effect: Deterrence-driven algorithms. *Inform. Systems Res.* 30(2):466–485.",
     "Buçinca Z, Malaya MB, Gajos KZ (2021) To trust or to think: Cognitive forcing functions can reduce overreliance on AI in AI-assisted decision-making. *Proc. ACM Human-Comput. Interaction* 5(CSCW1):Article 188.",
     "Catalini C, Hui X, Wu J (2026) Some simple economics of AGI. Preprint, arXiv:2602.20946. [AUTHORS: verify authors and status.]",
     "Cox DR (1955) Some statistical methods connected with series of events. *J. Roy. Statist. Soc. Ser. B* 17(2):129–164.",
