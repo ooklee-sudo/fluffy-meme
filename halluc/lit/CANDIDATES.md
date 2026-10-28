@@ -2,6 +2,17 @@
 
 **Status of this list.** Retrieved from Crossref (the INFORMS site is behind a bot challenge). Only titles, authors, years and DOIs were obtained. **None of these papers has been read by the assistant, and a title does not tell what a paper argues.** Filtering is by title keywords only. Use the list to decide what to read through institutional access; cite only what you have read. Search date 2026-10-28; 262 unique records came back from the searches, of which the topic filters below keep the ones shown.
 
+## Status after reading (updated as papers are read; details in READ_NOTES.md)
+
+| Paper | Read? | Outcome |
+| --- | --- | --- |
+| Leng & Yuan (2026, ISR) | Yes (partly) | No overlap (behavioral audit of LLMs before deployment); cited in Section 2 |
+| Bouayad, Padmanabhan & Chari (2019, ISR) | Yes (partly) | No overlap (audit selection with deterrence, strategic audited parties); cited in Sections 2 and 8.1 |
+| Taudien, Fügener, Gupta & Ketter (2026, ISR) | Yes (partly) | Related (signals and feedback in delegation to an image classifier); cited in Section 8.4, Prediction 5 |
+| Jussupow, Bauer, Heigl, Vogt & Hinz (2026, ISR) | Yes (partly) | Related as a boundary for provenance recording; cited in Section 8.2 |
+| Shi & Viswanathan (2023, ISR) | Yes (partly) | **Not relevant** (phone verification of user identity in online dating); the title-based guess was wrong; not cited |
+| All other entries | No | Unread; do not cite |
+
 ## Suggested first reads (a guess from titles only)
 
 Tier A: closest to our problem; read these first because they decide how the contribution is positioned.

@@ -87,6 +87,16 @@ Only papers whose text was provided or retrieved and read are listed. For each: 
 
 **How it may be cited (suggested wording, to be checked by the authors).** See Section 8.2 of the manuscript.
 
+## Shi & Viswanathan (2023), Information Systems Research — read; not relevant; do not cite
+
+**Reference.** Shi L, Viswanathan S (2023) Optional verification and signaling in online matching markets: Evidence from a randomized field experiment. *Inform. Systems Res.* 34(4):1603–1621. https://doi.org/10.1287/isre.2022.1194.
+
+**What was read.** The supplied PDF (20 pages) as extracted text: the abstract, the introduction, and a term search over the whole text.
+
+**What it is.** A randomized field experiment on an online dating platform. "Verification" means **phone verification of a user's identity**, offered as an optional, visible, credible signal; the study asks who opts in, how verified users are treated by others, and the effect on matching, comparing free and paid verification. There is no model of verification effort or cost, no detection of errors, and no treatment of generated content (no occurrence of *hallucination*, *budget*, *verification cost*, *generative*, *language model*).
+
+**Conclusion.** The title-based guess in `CANDIDATES.md` ("modeling conventions for verification costs and signals") was **wrong**: the paper does not bear on our problem. It would be padding to cite it. It is mentioned here only so that nobody cites it on the strength of its title.
+
 ## ISR reference style (evidence from the same paper)
 
 Entries in this ISR paper's list follow the pattern `Surname Initials, Surname Initials (Year) Title in sentence case. Journal abbreviation Volume(Issue):pages.` with abbreviated journal names, for example `Inform. Systems Res.`, `MIS Quart.`, `Proc. Natl. Acad. Sci. USA`, `Amer. Econom. Rev.`; conference papers as `Internat. Conf. Machine Learn. (PMLR, New York), 337–371`; books as `Bratman M (1987) Intention, Plans, and Practical Reason (Harvard University Press, Cambridge, MA)`. In-text citations are `Baird and Maruping (2021)` or `(Baird and Maruping 2021)`. The official INFORMS reference-style PDF itself has not been read.
