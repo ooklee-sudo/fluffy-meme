@@ -61,7 +61,7 @@ def main():
 
     def run(g):
         e = ents[g["title"]]
-        sents = split_sentences(g["text"])
+        sents = g.get("sents") or split_sentences(g["text"])  # "sents": caller-supplied segmentation (human-annotated data)
         numbered = "\n".join(f"[{i}] {s}" for i, s in enumerate(sents, 1))
         p = PROMPT.format(title=g["title"], ref=e["reference"], sents=numbered)
         for _ in range(3):
