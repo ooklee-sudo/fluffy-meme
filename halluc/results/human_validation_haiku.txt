@@ -1,0 +1,16 @@
+judge: haiku
+  InstructGPT  judge event=notS  n= 1056 human 0.764 judge 0.827 agree 0.884 kappa 0.647 [0.58,0.71] sens 0.965 [0.95,0.98] spec 0.622 [0.56,0.69] prec 0.892
+  InstructGPT  judge event=C     n= 1056 human 0.764 judge 0.303 agree 0.486 kappa 0.149 [0.10,0.19] sens 0.362 [0.32,0.39] spec 0.888 [0.83,0.93] prec 0.912
+  ChatGPT      judge event=notS  n= 1146 human 0.626 judge 0.688 agree 0.827 kappa 0.618 [0.57,0.67] sens 0.912 [0.89,0.93] spec 0.685 [0.64,0.73] prec 0.829
+  ChatGPT      judge event=C     n= 1146 human 0.626 judge 0.247 agree 0.583 kappa 0.260 [0.22,0.30] sens 0.364 [0.33,0.40] spec 0.949 [0.93,0.97] prec 0.922
+  PerplexityAI judge event=notS  n= 1347 human 0.292 judge 0.480 agree 0.766 kappa 0.524 [0.47,0.57] sens 0.921 [0.89,0.95] spec 0.702 [0.67,0.73] prec 0.560
+  PerplexityAI judge event=C     n= 1347 human 0.292 judge 0.116 agree 0.753 kappa 0.273 [0.22,0.33] sens 0.275 [0.23,0.32] spec 0.950 [0.94,0.96] prec 0.692
+
+  POOLED over the three sources
+  judge event=notS  n=3549 human 0.540 judge 0.650 agree 0.821 kappa 0.633 [0.60,0.66] sens 0.936 [0.92,0.95] spec 0.686 [0.66,0.71] prec 0.778
+  judge event=C     n=3549 human 0.540 judge 0.214 agree 0.618 kappa 0.270 [0.24,0.30] sens 0.345 [0.32,0.37] spec 0.940 [0.93,0.95] prec 0.871
+
+  HUMAN-label findings (independent of any LLM judge)
+  InstructGPT  docs  24 sentences   208 rate 0.702 | lead 0.589 vs later 0.799 (raw first sentence 0.589) | Fano(w=5) obs 0.45 vs null 0.35 [0.20,0.54] p=0.149
+  ChatGPT      docs  84 sentences   775 rate 0.628 | lead 0.478 vs later 0.657 (raw first sentence 0.478) | Fano(w=5) obs 0.71 vs null 0.41 [0.31,0.50] p=0.005
+  PerplexityAI docs 113 sentences  1153 rate 0.293 | lead 0.141 vs later 0.316 (raw first sentence 0.142) | Fano(w=5) obs 1.32 vs null 0.77 [0.64,0.93] p=0.005
