@@ -1,0 +1,18 @@
+import argparse, json
+from .bound import detectability, earliest_year
+p = argparse.ArgumentParser(prog='python -m detectability', description='Detectability bound for exposure-based designs.')
+p.add_argument('--A', type=float, required=True, help='acquisition share of employers (0-1)')
+p.add_argument('--beta', type=float, required=True, help='log change in demand at an assimilating employer, e.g. -0.19')
+p.add_argument('--se', type=float, required=True, help='standard error of the exposure coefficient (per SD of exposure)')
+g = p.add_mutually_exclusive_group(required=True)
+g.add_argument('--k', type=float, help='SD distance of an occupation with task share 1 (sigma_s = 1/k)')
+g.add_argument('--sigma-s', type=float, help='cross-occupation SD of the true task share')
+p.add_argument('--reliability', type=float, default=1.0, help='reliability R of the exposure measure (default 1)')
+p.add_argument('--assimilated-share', type=float, default=1.0, help='share g of acquirers that assimilated (default 1: complete assimilation)')
+p.add_argument('--alpha', type=float, default=0.05); p.add_argument('--power', type=float, default=0.80)
+p.add_argument('--slope', type=float, help='log-odds slope per year of the adoption path, to report the earliest detection year')
+p.add_argument('--start-year', type=int, default=2025)
+a = p.parse_args()
+r = detectability(a.A, a.beta, a.se, sigma_s=a.sigma_s, k=a.k, R=a.reliability, g=a.assimilated_share, alpha=a.alpha, power=a.power)
+if a.slope is not None: r['earliest_detection_year'] = earliest_year(a.A, r['required_adoption'], a.slope, a.start_year)
+print(json.dumps(r, indent=2))
