@@ -1,7 +1,7 @@
 import sys,json,numpy as np,pandas as pd
 sys.path.insert(0,'.')
 import agreement_creation as ac
-R='/home/user/fluffy-meme/reproduction/results/'
+R='../reproduction/results/'
 A=ac.read('human_creation_sample_filled_coderA.xlsx').rename(columns={'h':'a'})
 C=ac.read('human_creation_sample_filled_coderC.xlsx').rename(columns={'h':'c'})
 d=ac.key.merge(A,on='row').merge(C,on='row'); print(len(d))
@@ -19,4 +19,4 @@ ac.report('A vs haiku',d.a,d.haiku.astype(int),w)
 # spearman-brown reliability of mean of two coders
 from scipy.stats import spearmanr
 print('spearman A,C',spearmanr(d.a,d.c)[0])
-d.to_csv('/home/user/fluffy-meme/validation/results/two_coder_scores.csv',index=False)
+d.to_csv('results/two_coder_scores.csv',index=False)
