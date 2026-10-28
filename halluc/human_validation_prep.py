@@ -20,13 +20,18 @@ HDR = {"User-Agent": "halluc-pilot/0.1 (research; ooklee@hanyang.ac.kr)"}
 
 
 def wiki_extracts(titles):
+    """Plain text of many pages in few requests: wikitext (up to 50 titles per call) -> mwparserfromhell.strip_code.
+    (TextExtracts returns only one full-page extract per request, which is far too slow under the rate limit.)"""
+    import re
+
+    import mwparserfromhell as mw
     out = {}
-    for i in range(0, len(titles), 20):
-        chunk = titles[i:i + 20]
+    for i in range(0, len(titles), 50):
+        chunk = titles[i:i + 50]
         for k in range(12):
             time.sleep(1.5)
-            r = requests.get(API, params=dict(action="query", prop="extracts", explaintext=1, exlimit=20, redirects=1,
-                                              titles="|".join(chunk), format="json"), headers=HDR, timeout=60)
+            r = requests.get(API, params=dict(action="query", prop="revisions", rvprop="content", rvslots="main", redirects=1,
+                                              titles="|".join(chunk), format="json", formatversion=2), headers=HDR, timeout=90)
             if r.status_code == 429:
                 w = float(r.headers.get("retry-after", 20)) + 2
                 print(f"  429; waiting {w:.0f}s", flush=True)
@@ -37,14 +42,18 @@ def wiki_extracts(titles):
             for key in ("normalized", "redirects"):
                 for m in d.get(key, []):
                     alias[m["from"]] = m["to"]
-            pages = {p["title"]: p.get("extract", "") for p in d["pages"].values()}
+            pages = {}
+            for p in d["pages"]:
+                if p.get("revisions"):
+                    wt = p["revisions"][0]["slots"]["main"]["content"]
+                    pages[p["title"]] = re.sub(r"\n{3,}", "\n\n", mw.parse(wt).strip_code(normalize=True, collapse=True)).strip()
             for t in chunk:
                 t2 = alias.get(t, t)
                 t2 = alias.get(t2, t2)
                 if pages.get(t2):
                     out[t] = pages[t2]
             break
-        print(f"  wikipedia {min(i + 20, len(titles))}/{len(titles)}", flush=True)
+        print(f"  wikipedia {min(i + 50, len(titles))}/{len(titles)}", flush=True)
     return out
 
 
