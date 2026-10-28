@@ -8,7 +8,7 @@
 
 Organizations that deploy generative AI cannot have a person verify every sentence it produces, yet the usual summary of reliability, a single hallucination rate, says nothing about where scarce verification effort should go. We treat hallucinations as events of a doubly stochastic (Cox) process over the units of a generated text and characterize their structure by an intensity function and by overdispersion. We show that the excess of an observed Fano factor over its independent benchmark equals the summed covariance of the latent error probabilities, which links a descriptive statistic to the part of the risk that a verifier can learn. Using three public collections of human hallucination annotations (FActScore, WikiBio-GPT3, RAGTruth) we find that clustering depends on the task: it is strong when a model writes biographies from parametric knowledge (Fano factor 0.46 against an independent benchmark of 0.28) and absent in source-grounded summarization once the generating model and source length are controlled (1.03 against 1.03). Risk rises toward the end of a text; a lead-sentence concentration that appears in judge-based analysis is an artifact of how errors are defined. We derive the cost-minimizing verification policy, show that the value of targeting equals the smaller of the total surplus and the total waste across units, and show that adaptive reallocation pays only where documents differ in latent difficulty. On human labels, knowing which model wrote a text is the most valuable allocation signal, whereas position alone adds little. Calibrating a human-in-the-loop extension with published verifier data, we find that an automated screen helps mainly by speeding review, not by improving accuracy. We discuss implications for provenance disclosure and task-specific verification policy.
 
-**Keywords:** generative AI; hallucination; verification; resource allocation; point processes; human–AI collaboration
+**Keywords:** generative AI; hallucination; verification; resource allocation; point processes; human–AI collaboration; IT governance
 
 ---
 
@@ -24,7 +24,7 @@ The second contribution is a set of empirical regularities that are explicitly c
 
 The third contribution is a decision model. We characterize the cost-minimizing policy as a threshold rule, show that the value of targeting over uniform verification equals the smaller of two totals, and show that adaptive reallocation is valuable only when documents differ in latent difficulty and the budget can be moved across them. The fourth is a calibration of a human-in-the-loop extension with published data on human verification accuracy and time. It shows that an automated screen is valuable mainly because it speeds review, and that its value disappears when it fails to improve the reviewer's accuracy.
 
-The remainder of the paper is organized as follows. Section 2 reviews related work. Section 3 presents the model. Section 4 describes the data and the measurement choices. Sections 5 and 6 report the empirical regularities and the performance of allocation policies on human labels. Section 7 introduces human verifiers into the model. Section 8 discusses implications, and Section 9 states the limitations of the evidence.
+These results bear directly on how organizations should design the systems and policies through which people review machine-generated content, and Section 8 draws out implications for provenance, task-specific verification policy, human–AI collaboration, and reporting. The remainder of the paper is organized as follows. Section 2 reviews related work. Section 3 presents the model. Section 4 describes the data and the measurement choices. Sections 5 and 6 report the empirical regularities and the performance of allocation policies on human labels. Section 7 introduces human verifiers into the model. Section 8 discusses implications, and Section 9 states the limitations of the evidence.
 
 ---
 
@@ -35,6 +35,8 @@ The remainder of the paper is organized as follows. Section 2 reviews related wo
 **Position, context, and error propagation.** Recent work reports that unsupported content becomes more common later in long outputs, both in biographies and in long-document summarization (Tu et al., 2025; Yang et al., 2025) [AUTHORS: verify author lists and venues of these two entries]. Another line argues that a model may commit to an early error and then produce further errors it would not otherwise make, a phenomenon called snowballing (Zhang et al., 2024). Our contribution relative to this work is to treat the structure of errors as a statistical object, with an intensity function and a dispersion measure, and to ask what it implies for verification effort.
 
 **Reliability models and resource allocation.** Software reliability growth models describe failures as a non-homogeneous Poisson process whose intensity declines as testing proceeds, and they were used early to formulate optimal release and testing-effort decisions (Goel and Okumoto, 1979). Our setting differs in two respects. The intensity is not necessarily decreasing in the position within a text, and it is random across documents, which places the model in the class of doubly stochastic Poisson processes (Cox, 1955). Self-exciting processes are a natural alternative for contagious events (Hawkes, 1971); we find no support for self-excitation in our data, although the evidence is limited (Section 9).
+
+**Information systems and organizational perspectives.** Research on human–AI collaboration documents that delegating work to AI and reviewing its output involves cognitive challenges and can raise or lower performance depending on the task (Fügener et al., 2021, 2022; Dell'Acqua et al., 2023). The question of how much to verify has an older counterpart in the economics of costly state verification and auditing (Townsend, 1979; Gale and Hellwig, 1985; Border and Sobel, 1987). We bring the second tradition to bear on the first, with the difference that the unit being verified is generated by a stochastic process rather than reported by a strategic agent (Section 8.1).
 
 **Human verification of AI output.** Studies of human–AI decision making show that people tend to rely on AI advice even when it is wrong, and that interface designs that force deliberation can reduce overreliance (Buçinca et al., 2021; Parasuraman and Manzey, 2010). In a study of crowdworkers checking claims, language-model explanations made verification faster than retrieved passages while leaving accuracy similar, and they induced overreliance when the explanation was wrong (Si et al., 2024) [AUTHORS: verify]. Explanations can reduce overreliance when they are cheap to check (Vasconcelos et al., 2023). A recent economic analysis frames the effects of AI progress as a race between cheap automation and costly human verification (Catalini et al., 2026) [AUTHORS: working paper; verify status]. We contribute a model of where verification effort should be placed, connected to the empirical structure of errors and to published parameters of human verification.
 
@@ -201,15 +203,57 @@ The saving depends on the assumption that review of a flagged unit is more accur
 
 ---
 
-## 8. Discussion and Implications
+## 8. Implications for Information Systems Research and Practice
 
-**Provenance as a verification signal.** The most valuable signal for allocating effort was the identity of the generating model, and it is available at no cost whenever the producer of the text is known. In a setting where multiple models are used inside an organization, disclosing which model produced each output, and the observed reliability of that model for the task, is a cheap instrument for focusing human attention. Because the signal's value derives from differences in reliability between models, it diminishes as these differences shrink.
+### 8.1 Verification as a managed resource
 
-**Verification policy should depend on the task.** Our results suggest different policies for different kinds of generation. Where a model writes from parametric knowledge, errors cluster by document, so a short sample of verifications reveals whether a document is a risky one, and adaptive reallocation across documents pays. Where a model summarizes a supplied source, errors are close to independent given the model, a static allocation by model and position is nearly as good as any, and the cost of adaptivity is not repaid. An organization that applies a single policy to both tasks will misallocate effort in one of them.
+Generative AI changes where the cost of producing information lies. The marginal cost of a draft approaches zero, while the cost of establishing that the draft is correct remains with people. The decision studied here, how much of an output to check and which parts, is therefore a management problem that recurs in every deployment, and the budget for checking is a control variable much like an audit budget. The structure of our problem resembles classical theories of costly state verification and auditing (Townsend, 1979; Gale and Hellwig, 1985; Border and Sobel, 1987), in which a principal can observe the true state only by paying to verify it. There is one difference that matters for the form of the optimal policy. In those theories the verified party reports strategically, so optimal verification is typically stochastic and exists to deter misreporting. A language model does not respond strategically to being checked. Its errors arise from a random process whose intensity the organization can estimate, and the optimal policy is a deterministic threshold rule (Proposition 4) rather than a randomized audit. This is both a simplification and a boundary: if users could adapt prompts or workflows in response to known verification practices, the strategic elements of the audit literature would re-enter.
 
-**Automation of verification.** Using a language model to screen another model's output is attractive but not unconditionally beneficial. Its value depends on three quantities that organizations can measure: the discrimination of the screen, the time it saves the reviewer, and whether it changes the reviewer's accuracy. The last of these is the least studied and, in our calibration, the decisive one.
+### 8.2 Provenance as information-system design
 
-**Measurement practice.** The lead-sentence artifact illustrates a general hazard. A judge-based pipeline can produce a structured pattern, here a position effect, that reflects how the event is defined rather than the behavior of the model. Studies that report position or clustering effects with automated judges should validate them against independent human labels.
+In our data the single most valuable signal for allocating effort was the identity of the model that wrote the text. With a ten percent verification budget, a reviewer who prioritized RAGTruth summaries by generating model would have caught about 28 percent of the annotated errors, against 10 percent for a reviewer who sampled at random. At a thirty percent budget the figures are 63 and 30 percent. The signal costs nothing when the system that produced a text records it. This points to a modest but concrete design requirement. Workflow systems that route generated content to reviewers should attach to each output the identity and version of the model, the task type, and whether the generation was grounded in a supplied source, and they should rank review queues by empirically estimated risk. These requirements are close in spirit to documentation practices that report intended uses and measured performance of models (Mitchell et al., 2019), but they are operational: the documentation is used at run time to decide which outputs a person sees first.
+
+The value of this signal rests on differences in reliability between models, and it falls as those differences shrink. A firm that standardizes on one model forgoes the signal. It then relies on the within-model structure, namely position and, for tasks resting on parametric knowledge, document-level risk.
+
+### 8.3 Task–technology fit for verification policy
+
+The central empirical finding is that the structure of errors depends on the task, and hence the appropriate verification policy does too. This is a form of task–technology fit (Goodhue and Thompson, 1995) applied to the verification process, and it echoes field evidence that the usefulness of AI varies sharply across tasks that appear similar, a "jagged" frontier (Dell'Acqua et al., 2023). Table 4 summarizes the policy implications of our evidence.
+
+**Table 4.** Task type, observed error structure, and implied verification policy.
+
+| Task | Observed structure (human labels) | Implied policy |
+|---|---|---|
+| Writing from parametric knowledge (biographies) | Strong document-level clustering; risk rises toward the end of the text | Verify later sentences first; reallocate effort across documents as verified outcomes arrive, because a document's difficulty is learned from a few checks |
+| Summarizing a supplied source | Little residual clustering once the model is known; risk rises toward the end only for weaker models | Allocate by generating model and position; adaptive reallocation is not repaid |
+| Settings with high base error rates | Almost every unit is worth checking | Targeting adds little; the decision is whether to check at all (Proposition 4) |
+
+The last row follows from Proposition 4 and from WikiBio, where 73 percent of sentences contain an inaccuracy under the broad definition. When errors are that common, the practical question is not where to look but whether the output should be used without a rewrite.
+
+### 8.4 Human–AI collaboration in verification
+
+Automating part of verification with another model is an obvious response to the cost problem, and it connects to research on collaboration between people and AI systems, which finds both gains and cognitive pitfalls (Fügener et al., 2021, 2022). Our calibration contributes a specific result. An automated screen is valuable chiefly because it speeds the reviewer's work, a saving of roughly sixty percent of review time in the study we draw on, and it ceases to be valuable if it reduces the reviewer's accuracy (Section 7.2 and Table 3). Because people tend to follow machine advice whether or not it is right (Parasuraman and Manzey, 2010), the design of the interface through which flags are presented is part of the verification system. Designs that require an independent judgment before the flag is revealed can limit overreliance, although they may cost speed and are rated less favorably by users (Buçinca et al., 2021). Our model suggests where such designs matter most: for units of high predicted risk, where the cost of an accepted false flag or a missed error is largest and where direct human verification may dominate screening.
+
+### 8.5 Governance and reporting
+
+A single hallucination rate is a poor reporting standard for assurance and for service agreements. At minimum, a report on the reliability of a generative system should give the error rate by task and by generating model, the profile of the rate over the position within the output, and a measure of the dispersion of errors across documents, such as the excess Fano factor and the estimated document-level standard deviation. These quantities are inexpensive to compute from a labeled sample. They tell a manager whether to expect errors to be spread out or concentrated, whether verification should be adaptive, and where the first checkpoints belong. We did not study how large a labeled sample is needed to estimate them reliably, and we regard this as an important practical question.
+
+### 8.6 Measurement practice
+
+The lead-sentence artifact of Section 5.4 illustrates a general hazard for research that relies on automated judges. A judge-based pipeline can produce a structured pattern, here a position effect, that reflects how the event is defined rather than how the model behaves. Studies that report position or clustering effects based on automated judgments should state the event definition explicitly and validate the pattern against independent human labels. The same applies to organizational monitoring dashboards that rely on automated checkers.
+
+### 8.7 Predictions and a research agenda
+
+The model implies several predictions that we have not tested with human subjects and that we state here as hypotheses for future work in the laboratory and in the field.
+
+*Prediction 1.* Under a fixed verification budget, providing reviewers with the identity of the generating model, and a ranking of outputs by estimated risk, increases the share of errors that they catch, and the increase is larger the greater the differences in reliability between the models in use.
+
+*Prediction 2.* The net effect of an automated flag on the value of verification is mediated by the reviewer's accuracy conditional on whether the flag is right. A flag that speeds review without changing accuracy yields positive value only when the loss from an undetected error is moderate relative to the cost of review.
+
+*Prediction 3.* Adaptive reallocation of effort across documents increases the share of errors caught in tasks with strong document-level clustering and has no effect where clustering is absent.
+
+*Prediction 4.* Verification effort is allocated better by reviewers who see the position within a document than by those who do not, and the effect is larger for tasks in which risk rises toward the end of the text.
+
+These predictions can be tested in experiments in which people verify generated text under controlled conditions. Such experiments would also supply the quantities that we could only borrow from the literature, namely the probability that a person detects an error, the time it takes, and the loss associated with a missed error in a realistic organizational setting.
 
 ---
 
@@ -266,13 +310,25 @@ Agreement between the two judges on summaries was low (κ = 0.13, 4,475 sentence
 
 [AUTHORS: verify every entry against the original source and complete missing fields before submission.]
 
+Border, K. C., & Sobel, J. (1987). Samurai accountant: A theory of auditing and plunder. *Review of Economic Studies, 54*(4), 525–540.
+
 Buçinca, Z., Malaya, M. B., & Gajos, K. Z. (2021). To trust or to think: Cognitive forcing functions can reduce overreliance on AI in AI-assisted decision-making. *Proceedings of the ACM on Human-Computer Interaction, 5*(CSCW1), Article 188.
 
 Catalini, C., Hui, X., & Wu, J. (2026). Some simple economics of AGI. arXiv:2602.20946.
 
 Cox, D. R. (1955). Some statistical methods connected with series of events. *Journal of the Royal Statistical Society: Series B, 17*(2), 129–164.
 
+Dell'Acqua, F., McFowland III, E., Mollick, E. R., Lifshitz-Assaf, H., Kellogg, K., Rajendran, S., Krayer, L., Candelon, F., & Lakhani, K. R. (2023). Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. Harvard Business School Working Paper No. 24-013.
+
+Fügener, A., Grahl, J., Gupta, A., & Ketter, W. (2021). Will humans-in-the-loop become borgs? Merits and pitfalls of working with AI. *MIS Quarterly, 45*(3), 1527–1556.
+
+Fügener, A., Grahl, J., Gupta, A., & Ketter, W. (2022). Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Information Systems Research, 33*(2), 678–696.
+
+Gale, D., & Hellwig, M. (1985). Incentive-compatible debt contracts: The one-period problem. *Review of Economic Studies, 52*(4), 647–663.
+
 Goel, A. L., & Okumoto, K. (1979). Time-dependent error-detection rate model for software reliability and other performance measures. *IEEE Transactions on Reliability, R-28*(3), 206–211.
+
+Goodhue, D. L., & Thompson, R. L. (1995). Task-technology fit and individual performance. *MIS Quarterly, 19*(2), 213–236.
 
 Hawkes, A. G. (1971). Spectra of some self-exciting and mutually exciting point processes. *Biometrika, 58*(1), 83–90.
 
@@ -284,6 +340,8 @@ Marshall, A. W., Olkin, I., & Arnold, B. C. (2011). *Inequalities: Theory of maj
 
 Min, S., Krishna, K., Lyu, X., Lewis, M., Yih, W., Koh, P. W., Iyyer, M., Zettlemoyer, L., & Hajishirzi, H. (2023). FActScore: Fine-grained atomic evaluation of factual precision in long form text generation. *Proceedings of EMNLP 2023*. arXiv:2305.14251.
 
+Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., Spitzer, E., Raji, I. D., & Gebru, T. (2019). Model cards for model reporting. *Proceedings of the Conference on Fairness, Accountability, and Transparency* (FAT* '19), 220–229.
+
 Niu, C., Wu, Y., Zhu, J., Xu, S., Shum, K., Zhong, R., Song, J., & Zhang, T. (2024). RAGTruth: A hallucination corpus for developing trustworthy retrieval-augmented language models. *Proceedings of ACL 2024*. arXiv:2401.00396.
 
 Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410.
@@ -291,6 +349,8 @@ Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of au
 Si, C., et al. (2024). Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proceedings of NAACL 2024*. arXiv:2310.12558. [AUTHORS: complete author list and venue.]
 
 Tu, et al. (2025). Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proceedings of EMNLP 2025*. arXiv:2411.15993. [AUTHORS: complete author list.]
+
+Townsend, R. M. (1979). Optimal contracts and competitive markets with costly state verification. *Journal of Economic Theory, 21*(2), 265–293.
 
 Vasconcelos, H., Jörke, M., Grunde-McLaughlin, M., Gerstenberg, T., Bernstein, M. S., & Krishna, R. (2023). Explanations can reduce overreliance on AI systems during decision-making. *Proceedings of the ACM on Human-Computer Interaction, 7*(CSCW1), Article 129.
 
