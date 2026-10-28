@@ -19,6 +19,8 @@ TEXT (language work): Score 2 if reading, writing, summarizing, translating, or 
 Return ONLY a JSON array, one object per task, in the form {"id": <id>, "visual": 0|1|2, "text": 0|1|2}. No commentary."""
 
 def load_tasks():
+    if os.environ.get('TASK_TEXTS'):          # alternative input: JSON list of statements (e.g. NOC main duties)
+        return sorted(set(json.load(open(os.environ['TASK_TEXTS']))))
     cw = pd.read_excel(os.path.join(DATA, 'esco_onet.xlsx'), header=3)
     cw.columns = ['esco', 'esco_title', 'soc', 'soc_title']
     cw['isco3'] = cw.esco.astype(str).str.extract(r'^(\d{3})')[0]
