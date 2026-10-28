@@ -1,0 +1,68 @@
+
+===== SIM S0 independent (pos+rarity only): 200 docs, 7000 claims, overall rate 0.336 =====
+rate by position quintile (early->late): [0.268 0.322 0.331 0.361 0.399]
+rate by rarity tertile: {'rare': 0.459, 'mid': 0.323, 'popular': 0.218}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   8941.6
+pos                        8884.4   lt=+0.24(+7.3)
+pos+rarity                 8545.8   lt=+0.25(+7.3), lsl_c=-0.45(-18.1)
+pos+rarity+docrate         8547.4   lt=+0.25(+7.3), lsl_c=-0.43(-9.4), loo=+0.19(+0.4)
++prev (contagion)          8545.7   lt=+0.26(+7.3), lsl_c=-0.43(-9.4), loo=+0.30(+0.7), prev=-0.11(-2.0)
++decayed history           8547.6   lt=+0.27(+7.4), lsl_c=-0.43(-9.4), loo=+0.38(+0.9), prev_decay=-0.06(-1.5)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.719      0.742   [0.703,0.783]   0.861
+  5     0.796      0.811   [0.760,0.869]   0.733
+  8     0.911      0.920   [0.840,1.000]   0.584
+
+===== SIM S1 + doc heterogeneity (sd=1): 200 docs, 7000 claims, overall rate 0.378 =====
+rate by position quintile (early->late): [0.309 0.364 0.384 0.41  0.423]
+rate by rarity tertile: {'rare': 0.501, 'mid': 0.347, 'popular': 0.27}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   9286.1
+pos                        9230.7   lt=+0.23(+7.9)
+pos+rarity                 8927.8   lt=+0.24(+7.9), lsl_c=-0.43(-7.2)
+pos+rarity+docrate         7959.0   lt=+0.28(+8.1), lsl_c=-0.07(-6.1), loo=+4.10(+43.9)
++prev (contagion)          7955.6   lt=+0.29(+8.0), lsl_c=-0.07(-6.1), loo=+4.24(+37.9), prev=-0.14(-2.5)
++decayed history           7959.0   lt=+0.31(+7.5), lsl_c=-0.07(-6.1), loo=+4.30(+26.3), prev_decay=-0.07(-1.5)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.856      0.686   [0.654,0.719]   0.010
+  5     1.099      0.745   [0.694,0.794]   0.010
+  8     1.491      0.840   [0.776,0.918]   0.010
+
+===== SIM S2 + contagion gamma=1.0: 200 docs, 7000 claims, overall rate 0.428 =====
+rate by position quintile (early->late): [0.322 0.428 0.424 0.457 0.511]
+rate by rarity tertile: {'rare': 0.593, 'mid': 0.414, 'popular': 0.266}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   9562.1
+pos                        9451.4   lt=+0.31(+9.0)
+pos+rarity                 8867.0   lt=+0.34(+9.1), lsl_c=-0.57(-19.4)
+pos+rarity+docrate         8823.4   lt=+0.34(+9.1), lsl_c=-0.35(-8.5), loo=+1.68(+5.6)
++prev (contagion)          8586.9   lt=+0.26(+7.7), lsl_c=-0.36(-8.5), loo=+0.96(+3.2), prev=+0.84(+15.7)
++decayed history           8729.4   lt=+0.17(+5.1), lsl_c=-0.35(-8.5), loo=+0.62(+2.0), prev_decay=+0.36(+12.9)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.839      0.687   [0.653,0.722]   0.010
+  5     0.983      0.790   [0.733,0.833]   0.010
+  8     1.173      0.955   [0.869,1.027]   0.010
+
+===== SIM S3 doc heterogeneity + contagion: 200 docs, 7000 claims, overall rate 0.470 =====
+rate by position quintile (early->late): [0.37  0.469 0.489 0.502 0.519]
+rate by rarity tertile: {'rare': 0.616, 'mid': 0.43, 'popular': 0.344}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                   9680.8
+pos                        9584.5   lt=+0.29(+9.3)
+pos+rarity                 9170.1   lt=+0.30(+9.3), lsl_c=-0.49(-7.1)
+pos+rarity+docrate         7737.6   lt=+0.39(+9.4), lsl_c=-0.06(-5.6), loo=+4.39(+48.0)
++prev (contagion)          7518.0   lt=+0.28(+7.8), lsl_c=-0.06(-5.5), loo=+3.63(+36.2), prev=+0.91(+14.8)
++decayed history           7638.2   lt=+0.16(+4.1), lsl_c=-0.06(-5.2), loo=+3.23(+24.9), prev_decay=+0.41(+11.8)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.934      0.610   [0.587,0.638]   0.010
+  5     1.228      0.678   [0.630,0.725]   0.010
+  8     1.676      0.792   [0.727,0.843]   0.010

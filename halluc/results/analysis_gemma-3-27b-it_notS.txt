@@ -1,0 +1,17 @@
+
+===== lab_gemma-3-27b-it.jsonl: 486 docs, 18671 claims, overall rate 0.820 =====
+rate by position quintile (early->late): [0.779 0.848 0.818 0.803 0.85 ]
+rate by rarity tertile: {'rare': 0.962, 'mid': 0.886, 'popular': 0.673}
+
+model                         AIC   coefficients (cluster-robust z)
+constant                  17623.6
+pos                       17596.0   lt=-0.12(-4.2)
+pos+rarity                15055.2   lt=+0.14(+4.6), lsl_c=-0.92(-24.7)
+pos+rarity+docrate        14485.9   lt=+0.19(+6.4), lsl_c=-0.32(-8.7), loo=+4.81(+20.5)
++prev (contagion)         14385.7   lt=+0.14(+5.1), lsl_c=-0.32(-8.6), loo=+4.33(+18.4), prev=+0.49(+9.0)
++decayed history          14277.6   lt=-0.06(-1.9), lsl_c=-0.31(-8.4), loo=+3.42(+14.2), prev_decay=+0.44(+15.5)
+
+  w  Fano obs  null mean            null 95%       p
+  3     0.272      0.233   [0.222,0.243]   0.003
+  5     0.357      0.287   [0.273,0.301]   0.003
+  8     0.478      0.368   [0.345,0.389]   0.003
