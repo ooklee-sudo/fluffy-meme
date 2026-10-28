@@ -30,3 +30,6 @@ no adoption share up to 100 percent reaches the MDE for any beta in the manuscri
 Derivation and simulation validate the bound under the stated assumptions (see `DERIVATION.md`); they do not show that real labor markets satisfy them.
 An audit of published exposure studies (their standard errors, acquisition rates and effect sizes) is not done: `audit.py` and the CSV template are ready, but
 the inputs have to be taken from the papers themselves. No published study is included in `examples/`.
+
+## Audit of published studies
+`PUBLISHED_AUDIT.md`, `examples/published_estimates.csv`, `audit_published.py` and `results/published_audit.csv` apply the bound to six published exposure and adoption studies, with the source (table, figure or text, page) of every number. The audit is small and non-systematic.
