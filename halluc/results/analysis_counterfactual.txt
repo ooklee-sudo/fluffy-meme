@@ -1,0 +1,18 @@
+250 entities run; 232 kept (clean prefix really clean and corrupt prefix really wrong); 18 excluded
+
+-- main (kept pairs) --
+all continuation sentences                   n=232  corrupt=0.182 clean=0.198 diff=-0.017 [-0.034,+0.001] p=0.0965
+first 5 continuation sentences               n=232  corrupt=0.257 clean=0.279 diff=-0.022 [-0.059,+0.013] p=0.213
+sentences 6-10                               n=232  corrupt=0.175 clean=0.202 diff=-0.027 [-0.068,+0.014] p=0.177
+sentences 11+                                n=232  corrupt=0.150 clean=0.164 diff=-0.014 [-0.039,+0.011] p=0.355
+
+-- repetition vs new errors --
+dependent errors flagged (corrupt arm): 16 claims in 14 entities
+all, dependent errors removed                n=232  corrupt=0.177 clean=0.198 diff=-0.022 [-0.039,-0.005] p=0.0213
+
+-- by where the first error was --
+lead sentence was wrong                      n=198  corrupt=0.183 clean=0.201 diff=-0.018 [-0.037,+0.001] p=0.0941
+a later sentence (2-8) was wrong             n=34   corrupt=0.176 clean=0.185 diff=-0.010 [-0.047,+0.024] p=0.959
+
+-- sensitivity: no exclusions --
+all continuation sentences                   n=250  corrupt=0.182 clean=0.197 diff=-0.016 [-0.033,+0.001] p=0.127
