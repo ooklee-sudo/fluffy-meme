@@ -36,7 +36,8 @@ R = {'orgs_by_crawl': O.groupby('crawl').org_key.nunique().to_dict(), 'postings_
      'visual_postings_with_ai_ge1_by_crawl': O.groupby('crawl').n_vis_ai1.sum().astype(int).to_dict(), 'visual_postings_with_ai_ge2_by_crawl': O.groupby('crawl').n_vis_ai2.sum().astype(int).to_dict()}
 # ---- 2024 cross-section: reassignment proxy among acquirers, by complements ----
 c24 = O[(O.crawl == '2024')].copy()
-c24['acq'] = (c24.n_genai_nonvisual > 0).astype(int)   # generative-AI mention in postings other than visual roles; c24['comp'] = ((c24.n_comp_legal + c24.n_comp_lead) > 0).astype(int)
+c24['acq'] = (c24.n_genai_nonvisual > 0).astype(int)   # generative-AI mention in postings other than visual roles
+c24['comp'] = ((c24.n_comp_legal + c24.n_comp_lead) > 0).astype(int)
 c24['reassign'] = (c24.n_vis_ai1 > 0).astype(int); c24['log_n'] = np.log(c24.n_total)
 v24 = c24[c24.n_vis > 0]
 R['cells_2024_visual_employers'] = {f'acq={a},comp={c}': {'orgs': int(((v24.acq == a) & (v24.comp == c)).sum()), 'with_ai_in_visual_posting': int(((v24.acq == a) & (v24.comp == c) & (v24.reassign == 1)).sum())} for a in (0, 1) for c in (0, 1)}
