@@ -17,3 +17,17 @@ file-viewer output excluded. 22% of steps are errors; 84% of trajectories do not
 Caveats: errors are tool-misuse events, not task failure; final failure (84%) is dominated by other causes; step index used as time;
 cross-excitation model between edit and non-edit errors did not converge cleanly. Next: heterogeneity-adjusted Hawkes
 (random baseline per trajectory), fault-injection experiment for causal excitation, tau-bench outcome where failures matter.
+
+## Step 2: heterogeneity-adjusted Hawkes (`hawkes_re.py`, results in `hawkes_re_results.json`)
+lambda_t = mu_i (1+t)^gamma + alpha S_t, mu_i ~ Gamma integrated out; first 60 steps; up to 1,200 trajectories per model.
+
+| Model | Trajectories | Branching, Hawkes only | Branching, Hawkes + heterogeneity | LR test of excitation given heterogeneity (df 2) |
+|---|---|---|---|---|
+| Llama-8B | 814 | 1.96 | 0.49 | 568.8 |
+| Llama-70B | 1,200 | 1.49 | 0.35 (bootstrap 0.29-0.48, 12 reps of 1,000) | 330.8 |
+| Llama-405B | 240 | 2.12 | 0.62 | 132.8 |
+
+Reading: ignoring heterogeneity overstates the branching ratio about fourfold; after controlling for it, excitation remains
+highly significant but subcritical (an error triggers on average 0.35-0.62 further errors), so cascades die out rather than run away.
+The ordering across model sizes is not monotone and the 405B sample is small. Optimisation by L-BFGS-B from one start;
+for Llama-70B the full model barely improves on Hawkes-only, so local optima should be checked with multiple starts.
