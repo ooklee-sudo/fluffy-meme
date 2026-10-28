@@ -112,3 +112,13 @@ Entries in this ISR paper's list follow the pattern `Surname Initials, Surname I
 **Overlap with us.** A threshold rule on an estimated risk score is not new: it is the scoring-based audit rule. Ours is the no-deterrence counterpart (the generator does not respond to checks), where the direct benefit-cost rule is optimal. Our novelty lies in the Cox/overdispersion measurement link, the value-of-targeting identity, adaptivity result and the empirical structure, not in the threshold form.
 
 **Suggested wording.** "In audit settings with scoring, the optimal rule refers a case when its suspicion index exceeds a threshold, and deterrence can justify audits whose direct expected gain is negative (Dionne et al. 2009)."
+
+## Fügener, Grahl, Gupta & Ketter (2022), Information Systems Research — read
+
+**Reference.** Fügener A, Grahl J, Gupta A, Ketter W (2022) Cognitive challenges in human–artificial intelligence collaboration: Investigating the path toward productive delegation. *Inform. Systems Res.* 33(2):678–696. https://doi.org/10.1287/isre.2021.1079.
+
+**What was read.** The supplied PDF (20 pages) as extracted text: abstract, introduction, theory (Sections 2.1–2.3, start of 2.4), the discussion and limitations (Section 5). The experimental procedures (Studies 1–4) and tables were **not** read in detail. A term search found no occurrence of *hallucination*, *verif-*, *audit*, *language model* or *generative*.
+
+**What it shows.** Image-classification experiments with MTurk workers (humans and an AI classify; either may delegate to the other). The AI delegating uncertain images to humans ("inversion") beats the AI alone; humans delegating to the AI do not benefit, even when taught a good delegation rule, because they lack metaknowledge (cannot judge their own capability and task difficulty). Not explained by algorithm aversion. Combined optimum reported as 89.9% against 77% (AI alone) and 71.7% (humans alone).
+
+**Overlap with us.** No overlap on verification of generated text. It supports the argument that review should be routed by external signals, not by the reviewer's own judgment of where errors lie. Boundaries: images, lay crowd workers, classification, not factual checking.
