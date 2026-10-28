@@ -15,7 +15,10 @@ NUM = json.load(open(ROOT / "theory" / "numerics.json"))
 HS = json.load(open(ROOT / "theory" / "h_sensitivity.json"))
 OBS = json.load(open(ROOT / "hawkes_re_results_all.json"))
 PIL = json.load(open(ROOT / "pilot_results.json"))
-LAB = {"llama8b": "Llama-3.1-8B", "llama70b": "Llama-3.1-70B", "deepseek": "DeepSeek-V3.1"}
+CODE = json.load(open(ROOT / "inject_code" / "code_results.json"))
+THA = json.load(open(ROOT / "theory" / "theta_all.json"))
+LAB = {"llama8b": "Llama-3.1-8B", "llama70b": "Llama-3.1-70B", "deepseek": "DeepSeek-V3.1", "gpt61terra": "GPT-6.1-terra", "sonnet55": "Claude Sonnet 5.5"}
+MODELS = list(LAB); DOMS = {"service": ("Customer service", INJ), "coding": ("Code repair", CODE)}
 OBSM = {"swe-agent-llama-8b": "Llama-3.1-8B", "swe-agent-llama-70b": "Llama-3.1-70B", "swe-agent-llama-405b": "Llama-3.1-405B"}
 TITLE = "When Should the Firm Take the Task Back? Error Dynamics and the Economics of Monitoring Autonomous AI Agents"
 
@@ -93,7 +96,9 @@ def PAGEBREAK(): d.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 f2 = lambda x: f"{x:.2f}"; f3 = lambda x: f"{x:.3f}"
 ci = lambda c, k=3: f"[{c[0]:.{k}f}, {c[1]:.{k}f}]"
 S = {m: INJ[m]["success"] for m in INJ}; Wn = {m: INJ[m]["window"] for m in INJ}; LG = {m: INJ[m]["lag_logit"] for m in INJ}
-TH = DER["theta"]; n_runs = sum(INJ[m]["n_runs"] for m in INJ)
+TH = DER["theta"]; n_tau = sum(INJ[m]["n_runs"] for m in INJ); n_code = sum(CODE[m]["n_runs"] for m in CODE); n_runs = n_tau + n_code
+SC = {m: CODE[m]["success"] for m in CODE}
+pp = lambda x: f"{abs(x) * 100:.0f}"
 re = {m: OBS[m]["re_hawkes"] for m in OBSM}; ho = {m: OBS[m]["hawkes_only"] for m in OBSM}
 bt = {m: OBS["bootstrap_branching_" + m] for m in OBSM}
 cal = {(r["model"], r["F"]): r for r in DER["calibrated"]}
@@ -102,17 +107,17 @@ cal = {(r["model"], r["F"]): r for r in DER["calibrated"]}
 P(TITLE, indent=False, align=WD_ALIGN_PARAGRAPH.CENTER, bold=True)
 P("Abstract", indent=False, align=WD_ALIGN_PARAGRAPH.CENTER, bold=True)
 P("Firms increasingly delegate multistep work to autonomous AI agents while keeping the option to hand a task back to a person. "
-  "We ask when that option should be exercised. We model delegation as an optimal stopping problem in which agent errors may excite "
-  "further errors, tasks differ in difficulty, and an error may derail a task so that its output is wrong. The model yields simple "
-  "hand-off rules and shows that the signal a monitoring system should track depends on which of these channels operates. "
-  "Recency-weighted intensity matters only under strong contagion, error rates matter under heterogeneity, and the error count "
-  "suffices under derailment. The value of monitoring peaks for tasks at the margin of delegation. We then estimate the channels. "
-  "In 80,036 public software-engineering trajectories, errors cluster strongly, but most clustering reflects heterogeneity. In a "
-  f"randomized fault-injection experiment with {n_runs:,} agent runs, injected errors do not trigger lasting error cascades, yet a "
-  f"single error lowers task success by up to {abs(S['deepseek']['single_minus_control']['diff'])*100:.0f} percentage points. "
-  "The economic cost of agent errors therefore lies less in cascades than in derailment, and the hand-off rules that follow are "
-  "simple to implement.", indent=False, spacing=2.0)
-P("Keywords: AI agents; delegation; human–AI collaboration; monitoring; optimal stopping; Hawkes process; field experiment",
+  "We ask when that option should be exercised and what a monitoring system should track. We model delegation as an optimal "
+  "stopping problem in which agent errors may excite further errors, tasks differ in difficulty, and an error may derail a task so "
+  "that its output is wrong. Each channel calls for a different statistic: recency-weighted intensity under contagion, the error "
+  "rate under heterogeneity, and a weighted error count under derailment, for which we derive the optimal threshold in closed form. "
+  "Monitoring is most valuable for tasks at the margin of delegation. We then estimate the channels with 80,036 public "
+  "software-engineering trajectories and two randomized fault-injection experiments, in customer service and code repair, with "
+  f"five agents and {n_runs:,} runs. Most observed clustering reflects heterogeneity. Transient failures rarely harm recent models, "
+  "whereas errors that misreport the state of the environment derail them, lowering task success by up to "
+  f"{pp(S['gpt61terra']['blame_minus_control']['diff'])} percentage points. What an error says matters more than how many errors "
+  "occur, and hand-off rules should count errors by type.", indent=False, spacing=2.0)
+P("Keywords: AI agents; delegation; human–AI collaboration; monitoring; optimal stopping; Hawkes process; randomized experiment",
   indent=False, italic=True)
 PAGEBREAK()
 
@@ -133,8 +138,8 @@ P("The design problem is economic. Letting the agent continue is cheap per step 
 P("The answer depends on why errors occur. Practitioners often describe agent failures as cascades: one mistake leads the agent "
   "into a confused state, and further mistakes follow. If that is how errors arise, a monitoring system should weight recent errors "
   "heavily and react quickly to bursts. Errors may instead cluster because some tasks are simply harder than others, in which case "
-  "the burst is a symptom of a difficult task rather than a cause of further trouble. A third possibility, which our experiment "
-  "brings to the fore, is that an error does its damage not by producing more errors but by derailing the task, so that the agent "
+  "the burst is a symptom of a difficult task rather than a cause of further trouble. A third possibility, which our experiments "
+  "bring to the fore, is that an error does its damage not by producing more errors but by derailing the task, so that the agent "
   "carries on and completes the job incorrectly. These three channels, which we call contagion, heterogeneity, and derailment, have "
   "different implications for what should be monitored and when control should be withdrawn.")
 P("We develop a model of delegation in which a firm assigns a task to an agent and, at every step, chooses between letting the agent "
@@ -150,24 +155,27 @@ P("The analysis delivers three results that matter for design. First, the suffic
   "far from critical and grows without bound as the process approaches criticality. Third, whatever the channel, the value of "
   "monitoring is greatest for tasks at the margin of delegation, where handing the task back costs about as much as letting the "
   "agent finish. This last result gives managers a way to decide where monitoring infrastructure is worth building.")
-P(f"We then bring two sources of evidence to bear on the channels. The first is a corpus of 80,036 public trajectories of an "
+P(f"We then bring three sources of evidence to bear on the channels. The first is a corpus of 80,036 public trajectories of an "
   f"open-source software-engineering agent driven by three sizes of an open-weight model. Errors in these trajectories cluster "
   f"strongly, and a naive self-exciting model implies that each error triggers more than one further error. Once task "
   f"heterogeneity is modeled, the implied branching ratio falls to between {re['swe-agent-llama-70b']['branching']:.2f} and "
   f"{re['swe-agent-llama-405b']['branching']:.2f}, well below the critical value of one. Observational data cannot, however, "
-  f"separate contagion from persistence within a run. The second source is therefore a randomized experiment. Using a public "
-  f"benchmark of customer-service tasks, we ran {n_runs:,} agent conversations with three models and injected errors at random "
-  f"points, either as system failures or as failures that read like the agent's own mistake. Injected system failures did not raise "
-  f"later error rates, and errors that read like the agent's own mistakes raised the error rate only on the next call. Injected "
-  f"errors did, however, lower task success, by as much as {abs(S['deepseek']['single_minus_control']['diff'])*100:.0f} percentage "
-  f"points for the strongest model. The evidence thus points away from cascades and toward derailment.")
+  f"separate contagion from persistence within a run. The second and third sources are therefore randomized experiments in two "
+  f"task domains, customer service and the repair of real software bugs. With five agents, including two recent commercial "
+  f"models, we ran {n_runs:,} tasks and injected errors at random points, either as transient system failures or as messages "
+  f"that misreport the state of the environment, such as a statement that an existing reservation cannot be found. Transient "
+  f"failures rarely raised later error rates and left the success of the commercial models unchanged. Misleading errors produced "
+  f"short bursts of further errors and, more importantly, derailed the task: in customer service they lowered the success of "
+  f"GPT-6.1-terra by {pp(S['gpt61terra']['blame_minus_control']['diff'])} and of Claude Sonnet 5.5 by "
+  f"{pp(S['sonnet55']['blame_minus_control']['diff'])} percentage points. The evidence points away from cascades and toward "
+  f"derailment, and it shows that the derailment probability depends on what the error says, on the agent, and on the task.")
 P("The paper makes three contributions. For research on human–AI delegation in information systems (Baird and Maruping 2021, "
   "Fügener et al. 2022), it offers a formal account of when control should be withdrawn from an agentic system and shows that the "
   "answer turns on an identifiable property of the agent's error process. For research on IS control (Kirsch 1997), it connects the "
   "choice of what to monitor to the informativeness principle: a monitoring signal is worth collecting only to the extent that it is "
-  "informative about the state that drives costs. For practice, it shows that simple count-based escalation rules, which are already "
-  "common, are not merely convenient but optimal under the channel that our experiment finds to dominate, and it shows how the "
-  "threshold can be calibrated from a modest experiment of the kind we report.")
+  "informative about the state that drives costs. For practice, it shows that count-based escalation rules, which are already common, are "
+  "optimal under the channel that our experiments find to dominate, provided that errors are counted by type, and it shows how the "
+  "weights and the threshold can be calibrated from a modest experiment of the kind we report.")
 P("The remainder of the paper is organized as follows. Section 2 reviews related work. Section 3 presents the model, and Section 4 "
   "derives the results. Section 5 reports the observational and experimental evidence and calibrates the model. Section 6 discusses "
   "implications and limitations, and Section 7 concludes. Proofs and experimental details are in the appendices.")
@@ -291,12 +299,20 @@ P("The proof (Appendix A) uses the monotone case of optimal stopping. Because th
   "already used in practice and shows how to set the bound. The threshold falls as θ and F rise and as H falls. It does not depend "
   "on when the errors occurred, which is the opposite of the conclusion under contagion. Value iteration on the count reproduces "
   "the closed form in every parameter configuration we examined.")
+P("Errors differ in kind, and our experiments show that different kinds derail a task with different probabilities. Suppose that "
+  "errors of type k = 1, …, K arrive at rates μ_k and derail the task with probabilities θ_k.")
+PROP("Corollary 1.", "With several error types, the optimal policy hands the task back as soon as the weighted count "
+     "Σ_k w_k N_k reaches a threshold, where N_k is the number of errors of type k and w_k = −ln(1 − θ_k). The threshold is given "
+     "by Equation (3) with ln(1 − θ)·N replaced by −Σ_k w_k N_k and μθ replaced by Σ_k μ_k θ_k.")
+P("The corollary follows because the probability that the task is still on track is Π_k (1 − θ_k)^{N_k}, so the log of that "
+  "probability is linear in the counts. An error type that never derails a task receives a weight of zero and should not be "
+  "counted at all, however often it occurs.")
 H2("4.4. Combining the Channels")
 PROP("Proposition 7.", "When contagion and derailment operate together, the state is (x, N). The minimum expected cost is "
      "nondecreasing in both arguments, the stopping region is an upper set, and the critical count N*(x) is nonincreasing in x.")
 P("When both channels are present, the optimal rule is a count threshold that is lowered temporarily after a burst of errors. "
-  "How much the burst matters depends on δ. When excitation decays within one or two steps, as our experiment suggests, the "
-  "adjustment applies only to the step immediately after an error, and the rule is close to a pure count rule.")
+  "How much the burst matters depends on δ. When excitation decays within a few steps, as our experiments suggest, the "
+  "adjustment applies only to the steps immediately after an error, and the rule is close to a pure count rule.")
 H2("4.5. Where Monitoring Is Worth Building")
 PROP("Proposition 8.", "For each channel and for their combination, let C̄ be the expected cost of never handing off and let "
      "V(H) = min{H, C̄} − W(0; H) be the value of monitoring as a function of the hand-off cost. Then V is nondecreasing on "
@@ -317,8 +333,8 @@ H1("5. Empirical Evidence")
 P("The theory makes the design of a monitoring system depend on three quantities: the strength and persistence of contagion (α "
   "and δ), the dispersion of task difficulty, and the probability that an error derails a task (θ). We estimate them in two "
   "steps. Observational data on a large number of agent runs tell us how much errors cluster and how much of the clustering can be "
-  "attributed to heterogeneity. A randomized experiment then identifies the causal effect of an error on later errors and on task "
-  "success.")
+  "attributed to heterogeneity. Two randomized experiments, in different task domains, then identify the causal effect of an error "
+  "on later errors and on task success.")
 H2("5.1. Observational Evidence from Software-Engineering Trajectories")
 P("We use a public corpus of trajectories produced by SWE-agent (Yang et al. 2024), an open-source agent that resolves GitHub "
   "issues, driven by three sizes of Llama-3.1 (Nebius 2024). The corpus contains 80,036 trajectories. We code an error whenever the "
@@ -348,97 +364,121 @@ TABLE("Table 1. Self-Exciting Models of Agent Errors in SWE-Agent Trajectories",
       "trajectory with at least six steps. Up to 3,000 trajectories per model. n = α/(1 − δ). The likelihood ratio (LR) tests excitation "
       "given heterogeneity (two degrees of freedom). Bootstrap intervals use 15 resamples warm-started at the estimate and may understate "
       "uncertainty. Estimates in the subcritical range are robust to five starting values.")
-H2("5.2. A Randomized Fault-Injection Experiment")
-H3("Design.")
-P(f"To separate contagion from persistence, we injected errors at random into agent runs. We used τ²-bench (Barres et al. 2025), a "
-  f"public benchmark in which an agent serves simulated customers of an airline (50 tasks) and a retailer (114 tasks) through tool "
-  f"calls on a database and in which success is verified by comparing the final database with the correct one. We ran three agents: "
-  f"Llama-3.1-8B and Llama-3.1-70B, which match the observational data, and DeepSeek-V3.1, a stronger open-weight model. The "
-  f"simulated customer was played by GPT-4.1-mini. Each task was run in four arms. In the control arm nothing was changed. In the "
-  f"single arm the agent's j-th tool call, with j drawn uniformly from {{1, 2, 3}}, was not executed and returned a message stating "
-  f"that the service was temporarily unavailable. In the blame arm the call returned instead a message of the form "
-  f"“<argument> ‘<value>’ not found,” which reads like the agent's own mistake and mimics the benchmark's genuine error "
-  f"messages. In the multi arm each call after the first was replaced by the unavailability message with probability 0.25, up to "
-  f"three times. Control runs carry a virtual injection point drawn in the same way. Injected calls never changed the database. "
-  f"Each task–arm cell was run three times for the Llama models and twice for DeepSeek-V3.1, whose provider limited request rates, "
-  f"giving {n_runs:,} runs. Appendix B gives further details.")
+H2("5.2. Two Randomized Fault-Injection Experiments")
+H3("Design common to both experiments.")
+P("To separate contagion from persistence, we injected errors at random into agent runs. We ran five agents: Llama-3.1-8B and "
+  "Llama-3.1-70B, which match the observational data; DeepSeek-V3.1, a stronger open-weight model; and two recent commercial models, "
+  "GPT-6.1-terra (OpenAI) and Claude Sonnet 5.5 (Anthropic), both with low reasoning effort. Each task was run in four arms. In the "
+  "control arm nothing was changed. In the transient arm the agent's j-th tool call, with j drawn uniformly from {1, 2, 3}, was not "
+  "executed and returned a message stating that the service was temporarily unavailable. In the misleading arm the call returned "
+  "instead a message of the form “<argument> ‘<value>’ not found,” which mimics the environment's genuine error "
+  "messages; it reads like the agent's own mistake and asserts, falsely, that the requested object does not exist. In the repeated "
+  "arm each call after the first was replaced by the unavailability message with probability 0.25, up to three times. Control runs "
+  "carry a virtual injection point drawn in the same way. Injected calls were never executed, so they could not change the state "
+  "of the environment.")
 P("We measure agent errors as tool calls that the real environment rejects, excluding the injected calls themselves. Because the "
   "injected errors are randomized, a comparison of later error rates between injected and control runs identifies the causal effect "
-  "of an error on subsequent errors, which is the quantity α in the model. The comparison of success rates identifies the total "
-  "effect of an error on the outcome, which maps into θ.")
-H3("Results.")
+  "of an error on subsequent errors, the quantity α in the model, and the comparison of success rates identifies the total effect "
+  "of an error on the outcome, which maps into θ.")
+H3("Study 1: customer service.")
+P(f"We used τ²-bench (Barres et al. 2025), a public benchmark in which an agent serves simulated customers of an airline (50 tasks) "
+  f"and a retailer (114 tasks) through tool calls on a database. Success is verified by comparing the final database with the one "
+  f"produced by the correct actions. The simulated customer was played by GPT-4.1-mini. Each task–arm cell was run three times for "
+  f"the Llama models and twice for the other agents, giving {n_tau:,} runs.")
+H3("Study 2: code repair.")
+P(f"We used 87 real bugs from seven open-source Python projects in BugsInPy (Widyasari et al. 2020), selected because the "
+  f"developer's test fails on the buggy version and passes after the developer's fix in our environment. The agent receives the "
+  f"failing test and its output and can list directories, view files, search, edit a file by replacing a unique string, run the "
+  f"failing test, and submit, for at most 30 turns. The environment rejects calls on missing paths, edits whose target string is "
+  f"absent or ambiguous, edits that would break Python syntax, attempts to edit test files, and malformed calls. Success requires "
+  f"that every failing developer test passes and that no test that passed before fails. Each bug–arm cell was run twice, giving "
+  f"{n_code:,} runs.")
+H2("5.3. Experimental Results")
 rows = []
-for m in ("llama8b", "llama70b", "deepseek"):
-    s = S[m]
-    rows.append([LAB[m], INJ[m]["n_runs"], f"{s['control']['rate']:.3f}"] +
-                [f"{s[a + '_minus_control']['diff']:+.3f} {ci(s[a + '_minus_control']['ci'])}" for a in ("single", "blame", "multi")])
-TABLE("Table 2. Task Success by Experimental Arm", ["Agent", "Runs", "Control success", "Single − control", "Blame − control", "Multi − control"],
-      rows, note="Notes. Success is the benchmark's database check. Differences are paired by task and repetition; 95% intervals from "
-      "1,000 bootstrap resamples of tasks.")
+for dk, (dl, res) in DOMS.items():
+    for m in MODELS:
+        s = res[m]["success"]
+        rows.append([dl, LAB[m], f"{s['control']['rate']:.2f}"] +
+                    [f"{s[a + '_minus_control']['diff']:+.3f} {ci(s[a + '_minus_control']['ci'])}" for a in ("single", "blame", "multi")])
+TABLE("Table 2. Task Success by Experimental Arm", ["Domain", "Agent", "Control success", "Transient − control", "Misleading − control", "Repeated − control"],
+      rows, note="Notes. Differences are paired by task (or bug) and repetition; 95% intervals from 1,000 bootstrap resamples of tasks.")
 rows = []
-for m in ("llama8b", "llama70b", "deepseek"):
-    g = lambda k: f"{LG[m][k]['b']:+.2f} ({LG[m][k]['se']:.2f})"
-    w = Wn[m]
-    rows.append([LAB[m], f"{INJ[m]['lag_logit_n']['base_rate']:.3f}", g("inj1"), g("blm1"), g("err1"), g("err2"),
-                 f"{w['single_post']['diff']:+.3f} {ci(w['single_post']['ci'])}", f"{w['blame_post']['diff']:+.3f} {ci(w['blame_post']['ci'])}"])
+for dk, (dl, res) in DOMS.items():
+    for m in MODELS:
+        lg, w = res[m]["lag_logit"], res[m]["window"]
+        g = lambda k: (f"{lg[k]['b']:+.2f} ({lg[k]['se']:.2f})" if lg[k]["se"] < 3 else "n.i.")
+        rows.append([dl, LAB[m], f"{res[m]['lag_logit_n']['base_rate']:.3f}", g("inj1"), g("blm1"), g("blm2"), g("err1"),
+                     f"{w['single_post']['diff']:+.3f}", f"{w['blame_post']['diff']:+.3f} {ci(w['blame_post']['ci'])}"])
 TABLE("Table 3. Effect of Errors on Subsequent Agent Errors",
-      ["Agent", "Base error rate", "Injected, unavailable (lag 1)", "Injected, not found (lag 1)", "Own error (lag 1)", "Own error (lag 2)",
-       "Δ error rate, 5 calls (single)", "Δ error rate, 5 calls (blame)"], rows,
-      note="Notes. Columns 3–6: logit of an agent error on indicators of injected and own errors one or two calls earlier, with task fixed "
-      "effects and the log position of the call; coefficients with standard errors. Injected errors are randomized, so their coefficients "
-      "are causal. Columns 7–8: difference in the agent error rate over the five calls after the (virtual) injection point; 95% intervals "
-      "from a task-clustered bootstrap.")
-P(f"Three findings stand out. First, system failures did not cause further errors. After an injected unavailability message, the "
-  f"log-odds of an error on the next call fell for every model, and the error rate over the following five calls was unchanged or "
-  f"lower. The agents retried, and the retry usually succeeded. Second, errors that read like the agent's own mistake produced a "
-  f"short burst in two of the three models. The lag-one coefficient was {LG['llama8b']['blm1']['b']:+.2f} for Llama-3.1-8B and "
-  f"{LG['deepseek']['blm1']['b']:+.2f} for DeepSeek-V3.1, but the effect was gone by the second or third call, and Llama-3.1-70B "
-  f"showed none. In terms of the model, α is positive for some agents but δ is close to zero, which implies a small branching "
-  f"ratio. Third, the coefficients on the agent's own past errors are much larger than the causal coefficients on injected errors. "
-  f"Most of the clustering seen in uncontrolled data therefore reflects persistence of difficulty within a run rather than errors "
-  f"causing errors, consistent with the heterogeneity-adjusted estimates in Table 1.")
-P(f"The effect of errors on success tells a different story (Table 2 and Figure 2). A single injected error lowered DeepSeek-V3.1's "
-  f"success rate from {S['deepseek']['control']['rate']:.2f} to {S['deepseek']['single']['rate']:.2f}, a fall of "
-  f"{abs(S['deepseek']['single_minus_control']['diff'])*100:.0f} percentage points, even though the model made almost no further "
-  f"errors. Repeated unavailability messages lowered Llama-3.1-70B's success by {abs(S['llama70b']['multi_minus_control']['diff'])*100:.0f} "
-  f"points. Llama-3.1-8B succeeded on only {S['llama8b']['control']['rate']*100:.0f}% of tasks in any arm and had little to lose. "
-  f"Because the stronger model's later calls were almost all accepted by the environment, the loss of success must come from "
-  f"what it did after the failure rather than from further failed calls; a plausible mechanism, which we did not code "
-  f"systematically, is that the agent abandons or changes the requested action once a call has failed. In the terms of the model, "
-  f"the error derailed the task rather than the agent.")
-FIG(ROOT / "inject" / "fig_inject.png",
-    "Figure 2. Fault-injection experiment. (a) Logit coefficients of a later agent error on an error one, two, and three calls "
-    "earlier (left to right within each color), with 95% intervals; injected errors are randomized. (b) Task success by arm with "
-    "95% intervals.", width=6.3)
-H2("5.3. Calibrating the Hand-Off Rule")
-P("The experiment allows us to estimate θ directly. If each error derails a task with probability θ and derailment turns a success "
-  "into a failure, the ratio of success rates in the single and control arms is 1 − θ. Table 4 reports the estimates and the "
-  "thresholds implied by Proposition 6 for three values of the cost of a wrong output F, holding the other costs at the values used "
-  "above (k = 1, c = 5, q = 0.06, H = 40, μ = 0.054). For DeepSeek-V3.1 the firm should take the task back after the second error "
-  "when F is 40 or 60 and after the first when F is 100. For Llama-3.1-70B, whose estimated θ is smaller and less precise, the "
-  "threshold is two to six errors. For Llama-3.1-8B the estimate is not distinguishable from zero, and the model recommends no "
-  "count-based intervention because the agent's outcome is poor whether or not it errs.")
+      ["Domain", "Agent", "Base error rate", "Transient, lag 1", "Misleading, lag 1", "Misleading, lag 2", "Own error, lag 1",
+       "Δ 5 calls, transient", "Δ 5 calls, misleading"], rows,
+      note="Notes. Columns 4–7: logit of an agent error on indicators of injected and own errors one or two calls earlier, with task fixed "
+      "effects and the log position of the call, estimated on tasks with variation in the outcome; coefficients (standard errors) are "
+      "relative effects. n.i.: not identified because almost no errors follow this event. Columns 8–9: difference in the agent error "
+      "rate over the five calls after the (virtual) injection point, an absolute effect; 95% interval from a task-clustered bootstrap.")
+P(f"Four findings stand out (Tables 2 and 3, Figures 2 and 3). First, transient failures rarely caused further errors. After an "
+  f"injected unavailability message, the log-odds of an error on the next call fell or did not change in nine of the ten "
+  f"agent–domain cells. The exception is GPT-6.1-terra in customer service ({LG['gpt61terra']['inj1']['b']:+.2f}), where the "
+  f"base rate is about 1% and the five-call error rate rose by {INJ['gpt61terra']['window']['single_post']['diff']*100:.1f} "
+  f"percentage points. The agents typically retried, and the retry usually succeeded.")
+P(f"Second, misleading errors produced bursts of further errors in the more capable agents. The lag-one coefficients range from "
+  f"{CODE['gpt61terra']['lag_logit']['blm1']['b']:+.1f} to {LG['gpt61terra']['blm1']['b']:+.1f} for DeepSeek-V3.1 and GPT-6.1-terra in "
+  f"code repair and for both commercial models in customer service, and the effect persists for two or three calls. In absolute terms the bursts "
+  f"are small, because these agents rarely err: the error rate over the five calls after the injection rose by between "
+  f"{INJ['gpt61terra']['window']['blame_post']['diff']*100:.0f} and {CODE['deepseek']['window']['blame_post']['diff']*100:.0f} "
+  f"percentage points. A plausible mechanism is that the agent, told that an object it needs does not exist, searches for "
+  f"alternatives that do not exist either. Third, for the weaker agents the coefficients on their own past errors are larger than "
+  f"the causal coefficients on injected errors, so most of the clustering seen in uncontrolled data reflects persistence of "
+  f"difficulty within a run, consistent with the heterogeneity-adjusted estimates in Table 1.")
+P(f"Fourth, and most consequential, errors derailed tasks, and how much they did so depended on what the error said, on the "
+  f"agent, and on the domain. In customer service, a single misleading error lowered the success of GPT-6.1-terra from "
+  f"{S['gpt61terra']['control']['rate']:.2f} to {S['gpt61terra']['blame']['rate']:.2f} and that of Claude Sonnet 5.5 from "
+  f"{S['sonnet55']['control']['rate']:.2f} to {S['sonnet55']['blame']['rate']:.2f}, whereas a transient failure left both "
+  f"unchanged. DeepSeek-V3.1 lost {pp(S['deepseek']['single_minus_control']['diff'])} points after either kind of error. Because "
+  f"these agents made almost no further errors, the loss must come from what they did after the injected message rather than from "
+  f"further failed calls; a plausible mechanism, which we did not code systematically, is that the agent accepts the false report "
+  f"and acts on it, for example by telling the customer that the reservation does not exist. In code repair the effects were "
+  f"smaller: DeepSeek-V3.1 and Claude Sonnet 5.5 lost between {pp(SC['sonnet55']['single_minus_control']['diff'])} and "
+  f"{pp(SC['deepseek']['single_minus_control']['diff'])} points, and GPT-6.1-terra, which repaired "
+  f"{SC['gpt61terra']['control']['rate']*100:.0f}% of the bugs, was unaffected. One reason may be that a coding agent can run the "
+  f"tests and discover that something is wrong, whereas a customer-service agent receives no comparable feedback. The two Llama "
+  f"models succeeded rarely in either domain and had little to lose.")
+FIG(HERE / "fig2_success.png",
+    "Figure 2. Change in task success relative to the control arm after one injected transient (503) or misleading (not found) error, "
+    "with 95% intervals, by agent and domain.", width=6.3)
+FIG(HERE / "fig3_lag.png",
+    "Figure 3. Logit coefficients of an agent error on the next call after an injected transient error, an injected misleading error, "
+    "and the agent's own error, with 95% intervals. Injected errors are randomized. Coefficients that are not identified are omitted.", width=6.3)
+H2("5.4. Calibrating the Hand-Off Rule")
+P("The experiments allow us to estimate θ directly. If an error derails a task with probability θ and derailment turns a success "
+  "into a failure, the ratio of success rates in the injected and control arms is 1 − θ. Table 4 reports θ for each agent, domain, "
+  "and kind of error, together with the thresholds implied by Proposition 6 for two values of the cost of a wrong output F, holding "
+  "the other costs at the values used above (k = 1, c = 5, q = 0.06, H = 40, μ = 0.054). Where θ cannot be distinguished from zero "
+  "the rule recommends no count-based intervention for that kind of error.")
 rows = []
-for m, lab, key in (("llama8b", "Llama-3.1-8B", "Llama-8B"), ("llama70b", "Llama-3.1-70B", "Llama-70B"), ("deepseek", "DeepSeek-V3.1", "DeepSeek-V3.1")):
-    t = TH[m]
-    r40, r60, r100 = cal[(key, 40.0)], cal[(key, 60.0)], cal[(key, 100.0)]
-    ns = lambda r: "none" if r["n_star_dp"] is None else str(r["n_star_dp"])
-    rows.append([lab, f"{t['single']['theta']:.2f} {ci(t['single']['ci'], 2)}", f"{t['multi_per_injection']['theta']:.2f} {ci(t['multi_per_injection']['ci'], 2)}",
-                 ns(r40), ns(r60), ns(r100), f"{r60['value_vs_static']:.2f}"])
+nsf = lambda e, F: ("none" if not e.get("n_star") or e["n_star"].get(F) is None or (e["ci"] and e["ci"][0] <= 0) else str(e["n_star"][F]))
+for dk, (dl, _) in DOMS.items():
+    for m in MODELS:
+        r = THA[f"{dk}|{m}"]
+        if r["control_success"] < 0.05: rows.append([dl, LAB[m], f"{r['control_success']:.2f}", "—", "—", "—", "—"]); continue
+        cell = lambda e: f"{e['theta']:.2f} {ci(e['ci'], 2)}"
+        rows.append([dl, LAB[m], f"{r['control_success']:.2f}", cell(r["transient"]), cell(r["misleading"]),
+                     f"{nsf(r['transient'], '60')} / {nsf(r['transient'], '100')}", f"{nsf(r['misleading'], '60')} / {nsf(r['misleading'], '100')}"])
 TABLE("Table 4. Derailment Probability and Optimal Hand-Off Thresholds",
-      ["Agent", "θ from single arm", "θ per injection, multi arm", "N*, F = 40", "N*, F = 60", "N*, F = 100", "Value of rule, F = 60"], rows,
-      note="Notes. θ = 1 − success(single)/success(control); the multi-arm estimate divides the log success ratio by the mean number of "
-      "injections. N* from Proposition 6 with the single-arm θ (set to zero where negative); value relative to the better static choice, "
-      "in units of step cost. Value iteration reproduces every closed-form threshold.")
-P(f"Two qualifications apply. The estimates treat an injected system failure as representative of the agent's own errors, which "
-  f"need not be the case, and the blame arm gives similar values ({TH['deepseek']['blame']['theta']:.2f} for DeepSeek-V3.1 and "
-  f"{TH['llama70b']['blame']['theta']:.2f} for Llama-3.1-70B). And the value of the rule depends on F: for DeepSeek-V3.1 it rises "
-  f"from {cal[('DeepSeek-V3.1', 40.0)]['value_vs_static']:.1f} to {cal[('DeepSeek-V3.1', 100.0)]['value_vs_static']:.1f} units of "
-  f"step cost as F rises from 40 to 100, as Figure 3 shows. Monitoring is thus most valuable for capable agents deployed on tasks "
-  f"where an undetected wrong output is expensive.")
+      ["Domain", "Agent", "Control success", "θ, transient", "θ, misleading", "N*, transient (F = 60 / 100)", "N*, misleading (F = 60 / 100)"], rows,
+      note="Notes. θ = 1 − success(injected)/success(control), with 95% task-clustered bootstrap intervals. N* from Proposition 6; "
+      "“none” where the interval for θ includes zero. Dashes mark agents whose control success is below 5%, for which θ is not estimable. Value iteration "
+      "reproduces every closed-form threshold.")
+P(f"The calibrated rules differ sharply by kind of error. For GPT-6.1-terra in customer service, a single misleading error should "
+  f"prompt a hand-off when F = 60, whereas transient failures should not be counted at all; by Corollary 1, an escalation rule that "
+  f"adds up errors of both kinds would be badly miscalibrated. For DeepSeek-V3.1 in customer service, two errors of either kind "
+  f"suffice. In code repair the thresholds are higher, between four and seven errors at F = 60, reflecting the smaller derailment "
+  f"probabilities in that domain. Figure 4 shows how the value of the rule rises with θ and with the cost of a wrong output: "
+  f"monitoring is most valuable for capable agents deployed on tasks where an undetected wrong output is expensive and the agent "
+  f"cannot check its own work.")
 FIG(ROOT / "theory" / "fig_derail.png",
-    "Figure 3. Value of the optimal count rule relative to the better static choice, as a function of the derailment probability θ, "
-    "for three costs of a wrong output F. Dotted lines mark the experimental estimates for Llama-3.1-70B and DeepSeek-V3.1.", width=4.6)
+    "Figure 4. Value of the optimal count rule relative to the better static choice, as a function of the derailment probability θ, "
+    "for three costs of a wrong output F. Dotted lines mark the customer-service estimates for Llama-3.1-70B and DeepSeek-V3.1.", width=4.6)
 
 # ---------------------------------------------------------------- 6 Discussion
 H1("6. Discussion")
@@ -448,45 +488,54 @@ P("The central implication is that the design of human oversight for agentic sys
   "persistent difficulty, and these mechanisms call for different signals. Research on human–AI delegation has concentrated on "
   "whether and how much people should rely on AI (Fügener et al. 2022). Once agents act over many steps, the analogous question is "
   "dynamic: under what evidence should a delegation be revoked? Our model shows that the answer can be stated in terms of a few "
-  "estimable parameters, and our experiment shows that these parameters can be measured with a design that any firm deploying an "
+  "estimable parameters, and our experiments show that these parameters can be measured with a design that any firm deploying an "
   "agent could replicate.")
 P("The results also qualify an influential intuition about agent failure. The image of an agent that spirals after its first "
-  "mistake is supported by the raw data, which show strong clustering, but not by the randomized evidence, which shows that injected "
-  "errors leave later error rates largely unchanged. What the evidence does support is that errors change outcomes. A theory of "
-  "agent reliability that counts errors without asking what they do to the result will therefore misjudge risk. For IS research on "
-  "control, the derailment channel suggests that outcome controls, such as verification of the final result, deserve attention "
-  "alongside the behavior controls that monitoring represents.")
+  "mistake is supported by the raw data, which show strong clustering, but only partly by the randomized evidence. Transient "
+  "failures leave later error rates largely unchanged, and misleading errors raise them for a few calls, by a few percentage "
+  "points. What the evidence supports more strongly is that errors change outcomes, and that the change depends on what the error "
+  "says. A theory of agent reliability that counts errors without asking what they convey will misjudge risk.")
+P("This last point connects agent oversight to a familiar concern of the IS field, the quality of the information that systems "
+  "provide (Wang and Strong 1996). The commercial models in our experiments shrugged off a service outage but acted on a false "
+  "statement that a record did not exist, and they did so more readily than the weaker open models. Capable agents appear to trust "
+  "their tools. As firms connect agents to enterprise data, the accuracy of tool outputs therefore becomes a determinant of agent "
+  "performance, and data governance becomes part of AI governance. For research on control, the derailment channel also suggests "
+  "that outcome controls, such as verification of the final result, deserve attention alongside the behavior controls that "
+  "monitoring represents.")
 P("Finally, the analysis illustrates the value of combining econometric decomposition with experimentation in research on AI "
   "systems. Agent behavior can be manipulated at low cost and with full control over the treatment, which makes experiments of the "
-  f"kind we report inexpensive; the {n_runs:,} runs reported here cost less than US$200 in model usage. This opens a path to "
+  f"kind we report inexpensive; the {n_runs:,} runs reported here cost about US$330 in model usage. This opens a path to "
   "testing behavioral claims about AI agents with the same standards that the field applies to claims about people.")
 H2("6.2. Implications for Practice")
-P("Three design principles follow. First, before building elaborate monitoring, a firm should establish whether its agent's "
-  "errors are contagious. If, as in our experiment, the excitation from an error fades within a step, then recency-weighted alarms "
-  "add little, and a count of errors per task is the right statistic. Second, the threshold should be set from the probability that "
-  "an error derails a task and from the cost of a wrong output, both of which can be estimated with a small injection experiment on "
-  "the firm's own tasks; Proposition 6 then gives the threshold in closed form. Our estimates suggest that capable agents may need "
-  "tighter thresholds than weak ones, because they have more to lose from derailment. Third, monitoring investment should be "
-  "targeted at tasks near the margin of delegation, where the cost of taking the task back is close to the expected cost of letting "
-  "the agent finish (Proposition 8).")
+P("Three design principles follow. First, before building elaborate monitoring, a firm should classify the errors its agent "
+  "encounters and establish how each kind affects outcomes. In our experiments transient failures were nearly harmless for recent "
+  "models, whereas errors that misreported the environment were not; by Corollary 1, the former should carry little or no weight "
+  "in an escalation rule and the latter a large one. Second, the weights and the threshold should be set from the derailment "
+  "probabilities and the cost of a wrong output, which can be estimated with a small injection experiment on the firm's own tasks. "
+  "The estimates must be domain specific: the same model was derailed far more often in customer service, where it relayed a false "
+  "statement to the customer, than in code repair, where running the tests exposed the problem. Third, monitoring investment should "
+  "be targeted at tasks near the margin of delegation, where the cost of taking the task back is close to the expected cost of "
+  "letting the agent finish (Proposition 8).")
 H2("6.3. Limitations and Future Research")
-P("Several limitations qualify our conclusions. The experiment covers a single family of customer-service tasks, one simulated "
-  "customer, and two kinds of injected error; agents on other tasks, such as long software-engineering sessions, may show stronger "
-  "and more persistent excitation. The injected errors are exogenous by design and may differ from the agent's own errors, which "
-  "arise when the agent is already confused. The models we study are open-weight models available through a commercial router, and "
-  "requests were served by more than one provider. Llama-3.1-8B frequently produced malformed tool arguments; we parsed them "
-  "leniently so that runs could continue, which differs from the benchmark's default behavior. On the theoretical side, the costs k, "
-  "c, H, and F are illustrative, and the model treats the firm as a single decision maker. A natural extension would let the "
-  "vendor of the agent choose its reliability, or let the person who takes over exert unobserved effort, turning the hand-off rule "
-  "into an element of a contract. We leave these extensions to future work.")
+P("Several limitations qualify our conclusions. The experiments cover two task domains, customer service with a simulated "
+  "customer and the repair of bugs in seven open-source Python projects, and two kinds of injected error. The misleading message "
+  "reads like the agent's own mistake and at the same time asserts something false about the environment; our design does not "
+  "separate these two features, and a message that is accurate but blames the agent might act differently. The injected errors "
+  "are exogenous by design and may differ from the agent's own errors, which arise when the agent is already confused. Model "
+  "versions change quickly, the commercial models were run with low reasoning effort, and requests were served by more than one "
+  "provider. Llama-3.1-8B frequently produced malformed tool arguments; we parsed them leniently so that runs could continue. On "
+  "the theoretical side, the costs k, c, H, and F are illustrative, and the model treats the firm as a single decision maker. A "
+  "natural extension would let the vendor of the agent choose its reliability, or let the person who takes over exert unobserved "
+  "effort, turning the hand-off rule into an element of a contract. We leave these extensions to future work.")
 
 # ---------------------------------------------------------------- 7 Conclusion
 H1("7. Conclusion")
 P("Firms that deploy autonomous agents must decide when to take tasks back. We have shown that the optimal decision rule depends "
   "on whether errors are contagious, whether tasks differ in difficulty, and whether errors derail outcomes, and that each "
-  "mechanism points to a different monitoring signal. Large observational data and a randomized experiment indicate that, for the "
-  "agents we study, contagion is weak and short-lived while derailment is substantial. Under these conditions, a simple rule that "
-  "hands a task back after a small, calibrated number of errors is not a crude approximation but the optimal policy.")
+  "mechanism points to a different monitoring signal. Large observational data and randomized experiments in two task domains "
+  "indicate that, for the agents we study, contagion is limited while derailment is substantial and depends on what the error "
+  "says. Under these conditions, a rule that hands a task back after a small, calibrated number of errors, counted by type, is "
+  "not a crude approximation but the optimal policy.")
 
 # ---------------------------------------------------------------- References
 PAGEBREAK()
@@ -507,6 +556,8 @@ refs = [
     "Puterman ML (1994) Markov Decision Processes: Discrete Stochastic Dynamic Programming (Wiley, New York).",
     "Shiryaev AN (1963) On optimum methods in quickest detection problems. Theory Probab. Appl. 8(1):22–46.",
     "Wald A (1947) Sequential Analysis (Wiley, New York).",
+    "Wang RY, Strong DM (1996) Beyond accuracy: What data quality means to data consumers. J. Management Inform. Systems 12(4):5–33.",
+    "Widyasari R, Sim SQ, Lok C, Qi H, Phan J, Tay Q, Tan C, et al. (2020) BugsInPy: A database of existing bugs in Python programs to enable controlled testing and debugging studies. Proc. 28th ACM Joint Meeting European Software Engrg. Conf. Sympos. Foundations Software Engrg. (ACM, New York), 1556–1560.",
     "Yang J, Jimenez CE, Wettig A, Lieret K, Yao S, Narasimhan K, Press O (2024) SWE-agent: Agent-computer interfaces enable automated software engineering. Adv. Neural Inform. Processing Systems 37.",
     "Yao S, Shinn N, Razavi P, Narasimhan K (2024) τ-bench: A benchmark for tool-agent-user interaction in real-world domains. Preprint, submitted June 17, https://arxiv.org/abs/2406.12045.",
 ]
@@ -546,6 +597,10 @@ RICH([("Proof of Proposition 6. ", "b"), ("With α = 0 and μ known, the posteri
       "(3). The right-hand side of this inequality is nondecreasing in N, and N never decreases, so once the inequality holds it "
       "holds at all later states. The problem is therefore monotone in the sense of Chow et al. (1971, Theorem 3.5), and the "
       "one-step look-ahead rule is optimal. The boundary cases follow directly from the inequality. ∎", "")], indent=False)
+RICH([("Proof of Corollary 1. ", "b"), ("With independent derailment by type, the probability that the task is not derailed after "
+      "counts (N_1, …, N_K) is Π_k (1 − θ_k)^{N_k} = exp(−Σ_k w_k N_k), and the expected factor contributed by one more step is "
+      "exp(−Σ_k μ_k θ_k). The one-step look-ahead comparison of the proof of Proposition 6 then holds with these substitutions, the "
+      "weighted count never decreases, and the monotone case applies as before. ∎", "")], indent=False)
 RICH([("Proof of Proposition 7. ", "b"), ("With both channels the state is (x, N) and the Bellman operator is "
       "TW(x, N) = min{H, k + c(μ + x) + E[q F π' + (1 − q) W(δx + αe, N + e)]}, where π' = 1 − (1 − θ)^{N+e} and e ~ Poisson(μ + x). "
       "The operator is a contraction with modulus 1 − q. If W is nondecreasing in (x, N), the integrand is nondecreasing in e, x, "
@@ -558,23 +613,30 @@ RICH([("Proof of Proposition 8. ", "b"), ("Every policy π has expected cost A_�
       "V(H) = C̄ − W(0; H) is nonincreasing. Hence V is maximized at H = C̄. ∎", "")], indent=False)
 
 # ---------------------------------------------------------------- Appendix B
-H1("Appendix B. Details of the Experiment")
-P("Implementation. We used τ²-bench version 2.0 in text mode with its original airline and retail task sets, the default "
-  "language-model agent, and the default user simulator. Agents and the user simulator were accessed through OpenRouter with "
-  "temperature 0.5. Success is the benchmark's environment check, which compares the final database with the database produced by "
-  "the correct sequence of actions; we did not use the language-model judges. The injection was implemented by intercepting the "
-  "environment's response to the agent's tool calls. Injected calls were not executed, and the benchmark's evaluation replays them "
-  "with the same injected response, so that injections cannot change the database.", indent=False)
-P("Providers and malformed output. Requests to a given model may be served by several providers. We excluded two providers for the "
-  "Llama models that rejected histories containing parallel tool calls, and one provider for DeepSeek-V3.1 whose tool template "
-  "failed. Llama-3.1-8B often returned tool arguments that were not valid JSON, for example two objects concatenated; we kept the "
-  "first object and recorded the event, rather than ending the run as the benchmark would. Failures caused by the provider were "
-  "retried; failures caused by the agent's output were kept as outcomes.", indent=False)
+H1("Appendix B. Details of the Experiments")
+P("Models and access. All agents were accessed through OpenRouter with temperature 0.5. The commercial models were run with low "
+  "reasoning effort, and prompt caching was enabled for Claude Sonnet 5.5. Requests to a given model may be served by several "
+  "providers. We excluded two providers for the Llama models that rejected histories containing parallel tool calls, and providers "
+  "for DeepSeek-V3.1 whose tool templates failed. Llama-3.1-8B often returned tool arguments that were not valid JSON, for example "
+  "two objects concatenated; in both studies we kept the first object and recorded the event, rather than ending the run. Failures "
+  "caused by the provider were retried; failures caused by the agent's output were kept as outcomes.", indent=False)
+P("Study 1. We used τ²-bench version 2.0 in text mode with its original airline and retail task sets, the default language-model "
+  "agent, and the default user simulator, played by GPT-4.1-mini. Success is the benchmark's environment check, which compares the "
+  "final database with the database produced by the correct sequence of actions; we did not use the language-model judges. The "
+  "injection intercepts the environment's response to the agent's tool calls. Injected calls are not executed, and the benchmark's "
+  "evaluation replays them with the same injected response, so that injections cannot change the database. DeepSeek-V3.1 and the "
+  "commercial models were run with two repetitions because of provider rate limits and cost.", indent=False)
+P("Study 2. The 87 bugs come from youtube-dl (38), thefuck (32), tqdm (7), httpie (5), fastapi (3), cookiecutter (1), and tornado (1). "
+  "For each bug we built the buggy version with its dependencies in a separate environment, added the developer's test files from "
+  "the fixed version, and recorded the fail-to-pass and pass-to-pass tests by running them before and after applying the developer's "
+  "patch. Each run starts from a clean copy of the buggy version and is reverted afterwards; runs on the same bug are serialized "
+  "across agents. The agent's prompt contains the identifiers of the failing tests and the last lines of their output. Tool outputs "
+  "are truncated to 4,000 characters, file views to 150 lines, and test runs to 300 seconds.", indent=False)
 P(f"Analysis. Agent errors are tool calls that the real environment rejected. The window analysis compares the error rate over the "
   f"five calls after the injection point with the same window in control runs, using runs that reached the injection point. The "
   f"lag regressions pool all arms, include task fixed effects and the log of the call position, and are estimated on tasks with "
   f"variation in the outcome. Intervals use 1,000 bootstrap resamples of tasks. The total cost of the {n_runs:,} runs, including "
-  f"pilots, was about US$180. Code and run-level data are available in the replication package.", indent=False)
+  f"pilots, was about US$330. Code and run-level data are available in the replication package.", indent=False)
 
 d.save(HERE / "ISR_Manuscript.docx")
 
