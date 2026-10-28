@@ -26,13 +26,13 @@ GH_X, GH_W = np.polynomial.hermite.hermgauss(21)
 LOGW = np.log(GH_W / np.sqrt(np.pi))
 
 
-def load(path, cost="unit"):
+def load(path, cost="unit", event="C"):
     docs = []
     for r in read_jsonl(path):
         by = {}
         for c in r["claims"]:
             by.setdefault(c["sent"], []).append(c["label"])
-        y = np.array([int("C" in by[s]) for s in sorted(by)])
+        y = np.array([int(any(l != "S" for l in by[s])) if event == "notS" else int("C" in by[s]) for s in sorted(by)])
         k = np.array([len(by[s]) for s in sorted(by)], float)
         n = len(y)
         if n < 6:
@@ -162,8 +162,9 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--cost", choices=["unit", "claims"], default="unit",
                     help="unit: every sentence costs 1; claims: cost = number of claims in the sentence (log k enters the model)")
+    ap.add_argument("--event", choices=["C", "notS"], default="C")
     a = ap.parse_args()
-    docs = load(a.lab, a.cost)
+    docs = load(a.lab, a.cost, a.event)
     rng = np.random.default_rng(a.seed)
     perm = rng.permutation(len(docs))
     fold = np.zeros(len(docs), int)

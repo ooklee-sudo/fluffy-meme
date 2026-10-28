@@ -18,7 +18,7 @@ from analyze import analyze, to_frame
 from common import read_jsonl
 
 
-def sentence_docs(docs, mode):
+def sentence_docs(docs, mode, event="C"):
     out = []
     for d in docs:
         by = {}
@@ -28,6 +28,8 @@ def sentence_docs(docs, mode):
         for s in sorted(by):
             labs = by[s]
             lab = "C" if "C" in labs else ("S" if "S" in labs else "N")
+            if event == "notS":  # source-grounded task: anything the source does not support is a hallucination
+                lab = "S" if all(x == "S" for x in labs) else "C"
             if mode != "all" and lab == "N":
                 continue
             units.append({"label": lab, "k": len(labs)})

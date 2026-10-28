@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 from common import DATA, chat, read_jsonl
 
+SUMM = ("Below is a Wikipedia article about {t}. Write a detailed summary of about 500 words covering its main facts, "
+        "using only information in the article. Plain prose, no headings.\n\nARTICLE:\n{ref}")
 PROMPT = ("Write a detailed, factual biography of {t} in about 600 words. Cover early life, career, "
           "achievements and later life, with specific dates, places, names and numbers. Plain prose, no headings.")
 
@@ -19,8 +21,9 @@ def main():
     ap.add_argument("--out", default=None)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--task", choices=["bio", "summ"], default="bio")
     a = ap.parse_args()
-    out = a.out or os.path.join(DATA, "gen_" + a.model.split("/")[-1] + ".jsonl")
+    out = a.out or os.path.join(DATA, "gen_" + ("summ_" if a.task == "summ" else "") + a.model.split("/")[-1] + ".jsonl")
     ents = read_jsonl(a.entities)[: a.limit or None]
     done = {r["title"] for r in read_jsonl(out)}
     todo = [e for e in ents if e["title"] not in done]
@@ -28,7 +31,7 @@ def main():
 
     def run(e):
         try:
-            r = {"title": e["title"], "model": a.model, "text": chat(a.model, PROMPT.format(t=e["title"]), 1400, a.temperature)}
+            r = {"title": e["title"], "model": a.model, "text": chat(a.model, (SUMM.format(t=e["title"], ref=e["reference"]) if a.task == "summ" else PROMPT.format(t=e["title"])), 1400, a.temperature)}
         except RuntimeError as err:
             print("  skip", e["title"], str(err)[:80], flush=True)
             return None
