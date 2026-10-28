@@ -20,14 +20,21 @@ CATS = ["American male film actors", "English footballers", "American novelists"
 
 
 def get(url, **p):
+    """GET with a polite delay and Retry-After handling (the shared egress IP is rate limited by Wikimedia)."""
     p["format"] = "json"
-    for k in range(6):
+    for k in range(12):
+        time.sleep(1.5)
         r = requests.get(url, params=p, headers=HDR, timeout=60)
+        if r.status_code == 429:
+            wait = float(r.headers.get("retry-after", 20)) + 2
+            print(f"  429; waiting {wait:.0f}s (attempt {k})", flush=True)
+            time.sleep(wait)
+            continue
         try:
             return r.json()
         except ValueError:
-            print(f"  non-JSON ({r.status_code}): {r.text[:80]!r}; retry {k}")
-            time.sleep(3 * 2 ** k)
+            print(f"  non-JSON ({r.status_code}); retry {k}", flush=True)
+            time.sleep(5)
     raise RuntimeError("API keeps failing: " + url)
 
 
