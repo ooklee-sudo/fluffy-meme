@@ -16,7 +16,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 os.environ.setdefault("OPENROUTER_API_KEY", "proxy-injected")  # the sandbox proxy adds the real credential
 os.environ.setdefault("TAU2_DATA_DIR", str(HERE / "tau2-bench" / "data"))
-MODELS = {"llama8b": "openrouter/meta-llama/llama-3.1-8b-instruct",
+MODELS = {"gpt61terra": "openrouter/openai/gpt-6.1-terra", "sonnet55": "openrouter/anthropic/claude-sonnet-5.5",
+          "llama8b": "openrouter/meta-llama/llama-3.1-8b-instruct",
           "llama70b": "openrouter/meta-llama/llama-3.1-70b-instruct",
           "deepseek": "openrouter/deepseek/deepseek-chat-v3.1"}
 USER_LLM = "openrouter/openai/gpt-4.1-mini"
@@ -27,7 +28,9 @@ TEMP = 0.5
 import threading
 _TLS = threading.local()
 _PATCH_LOCK = threading.Lock()
-IGNORE = {"llama8b": ["Cerebras", "Groq"], "llama70b": ["Cerebras", "Groq"], "deepseek": ["CoreWeave"]}
+IGNORE = {"llama8b": ["Cerebras", "Groq"], "llama70b": ["Cerebras", "Groq"], "deepseek": ["CoreWeave"], "gpt61terra": [], "sonnet55": []}
+# commercial models: low reasoning effort so that they are comparable with the non-reasoning open models
+EXTRA = {"gpt61terra": {"reasoning": {"effort": "low"}}, "sonnet55": {"reasoning": {"effort": "low"}, "cache_control": {"type": "ephemeral"}}}
 
 
 class _State:  # injection state of the run executing in the current thread
@@ -81,6 +84,16 @@ def _patch():
         return r
     Environment.get_response = get_response
     import tau2.utils.llm_utils as lu
+    _orig_cost = lu.get_response_cost
+
+    def get_response_cost(response):  # OpenRouter reports the billed cost in usage.cost
+        try:
+            c = getattr(response.usage, "cost", None)
+            if c is None and isinstance(response.usage, dict): c = response.usage.get("cost")
+            if c is not None: return float(c)
+        except Exception: pass
+        return _orig_cost(response)
+    lu.get_response_cost = get_response_cost
     import json as _json
 
     class _LenientJSON:  # tool-call arguments: keep the first JSON object if the model appends extra text
@@ -119,13 +132,16 @@ def run_one(job):
     STATE.clear(); STATE.update(arm=arm, j=rng.choice([1, 2, 3]), n=0, n_inj=0, calls=[], rng=rng, inj_ids=set(), seen={}, phase="run")
     task = get_tasks(dom, task_ids=[tid])[0]
     cfg = TextRunConfig(domain=dom, agent="llm_agent", user="user_simulator", llm_agent=MODELS[m],
-                        llm_args_agent={"temperature": TEMP, "extra_body": {"provider": {"ignore": IGNORE[m]}}}, llm_user=USER_LLM, llm_args_user={"temperature": TEMP},
+                        llm_args_agent={"temperature": TEMP, "extra_body": {"provider": {"ignore": IGNORE[m]}, **EXTRA.get(m, {})}}, llm_user=USER_LLM, llm_args_user={"temperature": TEMP},
                         max_steps=100, max_errors=10, seed=seed)
     t0 = time.time()
     try:
         sim = run_single_task(cfg, task, seed=seed, evaluation_type=EvaluationType.ENV)
         rew = sim.reward_info.reward if sim.reward_info else None
-        out = dict(ok=1, reward=rew, termination=str(sim.termination_reason), agent_cost=sim.agent_cost, user_cost=sim.user_cost,
+        from tau2.data_model.message import AssistantMessage, UserMessage
+        ac = sum(m_.cost or 0 for m_ in (sim.messages or []) if isinstance(m_, AssistantMessage))
+        uc = sum(m_.cost or 0 for m_ in (sim.messages or []) if isinstance(m_, UserMessage))
+        out = dict(ok=1, reward=rew, termination=str(sim.termination_reason), agent_cost=ac, user_cost=uc,
                    n_messages=len(sim.messages or []))
     except Exception as e:
         mod = type(e).__module__ or ""

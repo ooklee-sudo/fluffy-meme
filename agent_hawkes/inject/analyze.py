@@ -17,8 +17,14 @@ MAX_REPS = {"deepseek": 2}  # DeepSeek was cut to two repetitions because of ups
 W, L, B = 5, 3, int(os.environ.get("B", 1000))
 
 
+RESDIR = Path(os.environ.get("RESULTS_DIR", HERE / "results"))  # RESULTS_DIR=../inject_code/results for the coding experiment
+OUTFILE = Path(os.environ.get("OUT_FILE", HERE / "inject_results.json"))
+
+
 def load(m):
-    rows = [json.loads(l) for l in open(HERE / "results" / f"{m}.jsonl")]
+    rows = [json.loads(l) for l in open(RESDIR / f"{m}.jsonl")]
+    for r in rows:
+        if "bug" in r and "domain" not in r: r["domain"], r["task"] = r["bug"].split("/")  # coding experiment: project / bug
     rows = [r for r in rows if r.get("ok") and r["rep"] < MAX_REPS.get(m, 99)]
     seen = {}
     for r in rows: seen[r["key"]] = r  # keep the last complete record per key
@@ -109,6 +115,6 @@ def analyse(m):
 
 
 if __name__ == "__main__":
-    models = sys.argv[1:] or ["llama8b", "llama70b", "deepseek"]
-    res = {m: analyse(m) for m in models if (HERE / "results" / f"{m}.jsonl").exists()}
-    json.dump(res, open(HERE / "inject_results.json", "w"), indent=1); print(json.dumps(res, indent=1))
+    models = sys.argv[1:] or ["llama8b", "llama70b", "deepseek", "gpt61terra", "sonnet55"]
+    res = {m: analyse(m) for m in models if (RESDIR / f"{m}.jsonl").exists()}
+    json.dump(res, open(OUTFILE, "w"), indent=1); print(json.dumps(res, indent=1))

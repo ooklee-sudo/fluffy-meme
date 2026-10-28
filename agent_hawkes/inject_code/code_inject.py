@@ -20,13 +20,26 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, "/home/user/fluffy-meme/reach_pilot/bugsinpy")
 import bip_lib as B
 
-MODELS = {"llama8b": "meta-llama/llama-3.1-8b-instruct", "llama70b": "meta-llama/llama-3.1-70b-instruct",
+MODELS = {"gpt61terra": "openai/gpt-6.1-terra", "sonnet55": "anthropic/claude-sonnet-5.5",
+          "llama8b": "meta-llama/llama-3.1-8b-instruct", "llama70b": "meta-llama/llama-3.1-70b-instruct",
           "deepseek": "deepseek/deepseek-chat-v3.1"}
-IGNORE = {"llama8b": ["Cerebras", "Groq"], "llama70b": ["Cerebras", "Groq"], "deepseek": ["CoreWeave", "SiliconFlow"]}
+EXTRA = {"gpt61terra": {"reasoning": {"effort": "low"}}, "sonnet55": {"reasoning": {"effort": "low"}, "cache_control": {"type": "ephemeral"}}}
+IGNORE = {"gpt61terra": [], "sonnet55": [], "llama8b": ["Cerebras", "Groq"], "llama70b": ["Cerebras", "Groq"], "deepseek": ["CoreWeave", "SiliconFlow"]}
 INJECT_MSG = "Error: service temporarily unavailable (503). The request was not processed."
 P_MULTI, MAX_MULTI, MAX_TURNS, TEMP = 0.25, 3, 30, 0.5
 META = json.load(open(HERE / "bug_meta.json"))
 LOCKS = {k: threading.Lock() for k in META}
+LOCKDIR = Path("/home/user/bipruns/locks"); LOCKDIR.mkdir(parents=True, exist_ok=True)
+
+
+class BugLock:  # one run per bug worktree across threads and across processes (one process per model)
+    def __init__(self, key): self.key = key; self.path = LOCKDIR / (key.replace("/", "_") + ".lock")
+    def __enter__(self):
+        import fcntl
+        LOCKS[self.key].acquire(); self.f = open(self.path, "w"); fcntl.flock(self.f, fcntl.LOCK_EX); return self
+    def __exit__(self, *a):
+        import fcntl
+        fcntl.flock(self.f, fcntl.LOCK_UN); self.f.close(); LOCKS[self.key].release()
 
 TOOLS = [
     {"name": "list_dir", "description": "List files and directories at a path relative to the repository root.",
@@ -121,9 +134,9 @@ class Env:
         return dict(f2p_pass=f2p, p2p_pass=p2p, reward=float(f2p and p2p))
 
 
-def chat(model, messages, ignore):
+def chat(model, messages, ignore, extra=None):
     body = dict(model=model, messages=messages, tools=TOOLS, temperature=TEMP, max_tokens=2000,
-                provider={"ignore": ignore}, usage={"include": True})
+                provider={"ignore": ignore}, usage={"include": True}, **(extra or {}))
     req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json"})
     last = None
@@ -159,11 +172,11 @@ def run_one(job):
     msgs = [{"role": "system", "content": "You are a careful software engineer. Work only through the provided tools."},
             {"role": "user", "content": prompt}]
     t0 = time.time(); end = "max_turns"; idle = 0
-    with LOCKS[key]:
+    with BugLock(key):
         env.reset()
         try:
             for turn in range(MAX_TURNS):
-                r = chat(MODELS[model], msgs, IGNORE[model]); cost += float((r.get("usage") or {}).get("cost") or 0)
+                r = chat(MODELS[model], msgs, IGNORE[model], EXTRA.get(model)); cost += float((r.get("usage") or {}).get("cost") or 0)
                 m = r["choices"][0]["message"]; tcs = m.get("tool_calls") or []
                 parsed = []
                 for tc in tcs:  # keep the history valid for the provider: malformed arguments are stored as {}
@@ -217,7 +230,7 @@ def main():
     bugs = sorted(META)[: a.bugs] if a.bugs else sorted(META)
     jobs = [dict(model=a.model, bug=b, arm=arm, rep=r, seed=(1000003 * r + sum(map(ord, b))) % 2 ** 31, key=f"{a.model}|{b}|{arm}|{r}")
             for r in range(a.reps) for arm in a.arms.split(",") for b in bugs]
-    random.Random(7).shuffle(jobs)
+    random.Random(sum(map(ord, a.model))).shuffle(jobs)
     out = HERE / "results" / f"{a.model}.jsonl"; out.parent.mkdir(exist_ok=True)
     done = {json.loads(l)["key"] for l in open(out) if json.loads(l).get("ok")} if out.exists() else set()
     todo = [x for x in jobs if x["key"] not in done]; spent = 0.0
