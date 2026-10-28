@@ -231,7 +231,7 @@ The last row follows from Proposition 4 and from WikiBio, where 73 percent of se
 
 ### 8.4 Human–AI collaboration in verification
 
-Automating part of verification with another model is an obvious response to the cost problem, and it connects to research on collaboration between people and AI systems, which finds both gains and cognitive pitfalls (Fügener et al., 2021, 2022). Our calibration contributes a specific result. An automated screen is valuable chiefly because it speeds the reviewer's work, a saving of roughly sixty percent of review time in the study we draw on, and it ceases to be valuable if it reduces the reviewer's accuracy (Section 7.2 and Table 3). Because people tend to follow machine advice whether or not it is right (Parasuraman and Manzey, 2010), the design of the interface through which flags are presented is part of the verification system. Designs that require an independent judgment before the flag is revealed can limit overreliance, although they may cost speed and are rated less favorably by users (Buçinca et al., 2021). Our model suggests where such designs matter most: for units of high predicted risk, where the cost of an accepted false flag or a missed error is largest and where direct human verification may dominate screening.
+Automating part of verification with another model is an obvious response to the cost problem, and it connects to research on collaboration between people and AI systems, which finds both gains and cognitive pitfalls (Fügener et al., 2021, 2022). Our calibration contributes a specific result. An automated screen is valuable chiefly because it speeds the reviewer's work, a saving of roughly sixty percent of review time in the study we draw on, and it ceases to be valuable if it reduces the reviewer's accuracy (Section 7.2 and Table 3). Because people tend to follow machine advice whether or not it is right (Parasuraman and Manzey, 2010), the design of the interface through which flags are presented is part of the verification system. Designs that require an independent judgment before the flag is revealed can limit overreliance, although they may cost speed and are rated less favorably by users (Buçinca et al., 2021). Our model suggests where such designs matter most: for units of high predicted risk, where the cost of an accepted false flag or a missed error is largest and where direct human verification may dominate screening. Experimental work on delegation to an image classifier found that a probability-of-correctness signal shown before a decision and feedback on outcomes shown afterwards helped users judge when to rely on the machine only in combination, each alone having no effect or a negative effect on combined performance (Taudien et al. 2026). The authors caution that such signals help only if they reflect actual performance and vary meaningfully across tasks. The analogue in our setting is the predicted risk of a unit, whose usefulness depends on its calibration and on its dispersion (Proposition 2), with the results of earlier checks playing the role of outcome feedback.
 
 ### 8.5 Governance and reporting
 
@@ -252,6 +252,8 @@ The model implies several predictions that we have not tested with human subject
 *Prediction 3.* Adaptive reallocation of effort across documents increases the share of errors caught in tasks with strong document-level clustering and has no effect where clustering is absent.
 
 *Prediction 4.* Verification effort is allocated better by reviewers who see the position within a document than by those who do not, and the effect is larger for tasks in which risk rises toward the end of the text.
+
+*Prediction 5.* Showing reviewers the predicted risk of each unit together with the outcomes of their earlier checks improves their allocation of effort more than showing either alone. This extends to verification the finding that certainty and outcome information help users decide when to rely on a machine only in combination (Taudien et al. 2026).
 
 These predictions can be tested in experiments in which people verify generated text under controlled conditions. Such experiments would also supply the quantities that we could only borrow from the literature, namely the probability that a person detects an error, the time it takes, and the loss associated with a missed error in a realistic organizational setting.
 
@@ -351,6 +353,8 @@ Niu, C., Wu, Y., Zhu, J., Xu, S., Shum, K., Zhong, R., Song, J., & Zhang, T. (20
 Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410.
 
 Si, C., et al. (2024). Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proceedings of NAACL 2024*. arXiv:2310.12558. [AUTHORS: complete author list and venue.]
+
+Taudien, A., Fügener, A., Gupta, A., & Ketter, W. (2026). Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Information Systems Research*. Advance online publication (Just Accepted, September 4). https://doi.org/10.1287/isre.2024.1330
 
 Tu, et al. (2025). Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proceedings of EMNLP 2025*. arXiv:2411.15993. [AUTHORS: complete author list.]
 

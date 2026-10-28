@@ -48,6 +48,29 @@ Only papers whose text was provided or retrieved and read are listed. For each: 
 
 **Useful for the manuscript's form.** Contributions are enumerated in the introduction ("first to..."; we should avoid priority claims we cannot support), a mixed-method design is used for realism, and analytical results are placed in online appendices.
 
+## Taudien, Fügener, Gupta & Ketter (2026), Information Systems Research ("Just Accepted")
+
+**Reference.** Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Inform. Systems Res.* Published online in Just Accepted, September 4, 2026. https://doi.org/10.1287/isre.2024.1330. This is the unedited accepted manuscript; volume, issue and pages do not exist yet and the text may change in production.
+
+**What was read.** The supplied PDF (40 pages) as extracted text: the abstract, the introduction with its contributions, and the discussion subsections "Practical Implications" and "Limitations and Future Research". The hypotheses, the experimental procedure, the measures and the results sections were **not** read in detail. A term search found no occurrence of *hallucination*, *language model*, *generative*, *LLM*, or *audit*.
+
+**What it does.** An online experiment (n = 560, image classification, a 2×2 between-subjects design) in which people decide which tasks to delegate to an AI classifier. It manipulates ex-ante "AI certainty" (the AI's estimated probability of being correct, shown before the decision) and ex-post "AI outcome" information (whether the AI was right, shown afterwards). Reported findings (from the abstract and introduction): either signal alone has no or a negative effect on combined human–AI performance (outcome information alone lowers delegation frequency and effectiveness; certainty alone raises frequency but not effectiveness); both together raise delegation frequency and effectiveness and yield performance above that of humans or the AI alone. The authors explain this by users' mental models of the AI's capabilities, using expectation confirmation theory and situation awareness theory.
+
+**Statements in the text that bear on our manuscript.**
+- Limitations: certainty scores help "only if" they accurately reflect the AI's actual performance; effectiveness "may depend on both the level and variance" of the scores, since low variance limits the ability to distinguish tasks; providing outcome information for every decision "may not always be feasible."
+- Practical implications mention content moderation, diagnostic pre-screening and fraud flagging as settings where humans decide whether to hand over individual tasks, and link the discussion to human oversight in the EU AI Act.
+
+**Overlap with our manuscript.** None on the object of study (delegation of tasks to an image classifier versus allocation of verification to generated text), but the two share the structure of a machine signal about correctness, human reliance on it, and feedback on outcomes. Their caveats about calibration and variance correspond to our dependence on the calibration and the dispersion of predicted risk (Proposition 2).
+
+**How it may be cited (suggested wording, to be checked by the authors).** "Experimental work on delegation to an image classifier finds that a probability-of-correctness signal shown before a decision and feedback on outcomes shown afterwards help users decide when to rely on the machine only in combination (Taudien et al. 2026)." Update the reference if the article has appeared in an issue before submission.
+
+**References it cites that look relevant (not read; bibliographic data as printed in its reference list).**
+- Bauer K, von Zahn M, Hinz O (2023) Expl(AI)ned: The impact of explainable artificial intelligence on users' information processing. *Inform. Systems Res.* 34(4):1582–1602.
+- Hemmer P, Schemmer M, Kühl N, Vössing M, Satzger G (2025) Complementarity in human-AI collaboration: Concept, sources, and evidence. *Eur. J. Inform. Systems* 34(6):979–1002.
+- Vaccaro M, Almaatouq A, Malone T (2024) When combinations of humans and AI are useful: A systematic review and meta-analysis. *Nature Human Behav.* 8(12):2293–2303.
+- Adam M, Diebel C, Goutier M, Benlian A (2024) Navigating autonomy and control in human-AI delegation: User responses to technology- versus user-invoked task allocation. *Decision Support Systems* 180:114193.
+- Dietvorst BJ, Simmons JP, Massey C (2015) Algorithm aversion: People erroneously avoid algorithms after seeing them err. *J. Experiment. Psych. General* 144(1):114–126.
+
 ## ISR reference style (evidence from the same paper)
 
 Entries in this ISR paper's list follow the pattern `Surname Initials, Surname Initials (Year) Title in sentence case. Journal abbreviation Volume(Issue):pages.` with abbreviated journal names, for example `Inform. Systems Res.`, `MIS Quart.`, `Proc. Natl. Acad. Sci. USA`, `Amer. Econom. Rev.`; conference papers as `Internat. Conf. Machine Learn. (PMLR, New York), 337–371`; books as `Bratman M (1987) Intention, Plans, and Practical Reason (Harvard University Press, Cambridge, MA)`. In-text citations are `Baird and Maruping (2021)` or `(Baird and Maruping 2021)`. The official INFORMS reference-style PDF itself has not been read.
