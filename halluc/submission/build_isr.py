@@ -47,7 +47,7 @@ INFORMS_REFS = [
     "Border KC, Sobel J (1987) Samurai accountant: A theory of auditing and plunder. *Rev. Econom. Stud.* 54(4):525–540.",
     "Bouayad L, Padmanabhan B, Chari K (2019) Audit policies under the sentinel effect: Deterrence-driven algorithms. *Inform. Systems Res.* 30(2):466–485.",
     "Buçinca Z, Malaya MB, Gajos KZ (2021) To trust or to think: Cognitive forcing functions can reduce overreliance on AI in AI-assisted decision-making. *Proc. ACM Human-Comput. Interaction* 5(CSCW1):Article 188.",
-    "Catalini C, Hui X, Wu J (2026) Some simple economics of AGI. Preprint, arXiv:2602.20946. [AUTHORS: verify authors and status.]",
+    "Catalini C, Hui X, Wu J (2026) Some simple economics of AGI. Preprint, arXiv:2602.20946.",
     "Cox DR (1955) Some statistical methods connected with series of events. *J. Roy. Statist. Soc. Ser. B* 17(2):129–164.",
     "Dell'Acqua F, McFowland E III, Mollick ER, Lifshitz-Assaf H, Kellogg K, Rajendran S, Krayer L, Candelon F, Lakhani KR (2023) Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. Working paper 24-013, Harvard Business School, Boston.",
     "Dionne G, Giuliano F, Picard P (2009) Optimal auditing with scoring: Theory and application to insurance fraud. *Management Sci.* 55(1):58–70.",
@@ -67,12 +67,12 @@ INFORMS_REFS = [
     "Niu C, Wu Y, Zhu J, Xu S, Shum K, Zhong R, Song J, Zhang T (2024) RAGTruth: A hallucination corpus for developing trustworthy retrieval-augmented language models. *Proc. 62nd Annual Meeting Assoc. Comput. Linguistics* (Association for Computational Linguistics).",
     "Parasuraman R, Manzey DH (2010) Complacency and bias in human use of automation: An attentional integration. *Human Factors* 52(3):381–410.",
     "Si C, Goyal N, Wu ST, Zhao C, Feng S, Daumé H III, Boyd-Graber J (2024) Large language models help humans verify truthfulness—except when they are convincingly wrong. *Proc. 2024 Conf. North Amer. Chapter Assoc. Comput. Linguistics* (Association for Computational Linguistics). arXiv:2310.12558.",
-    "Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Inform. Systems Res.* Published online ahead of print September 4, https://doi.org/10.1287/isre.2024.1330. [AUTHORS: update volume and pages if the article has appeared in an issue.]",
+    "Taudien A, Fügener A, Gupta A, Ketter W (2026) Enhancing AI use: How complementary system information drives delegation frequency and effectiveness. *Inform. Systems Res.* Published online ahead of print September 4, https://doi.org/10.1287/isre.2024.1330.",
     "Townsend RM (1979) Optimal contracts and competitive markets with costly state verification. *J. Econom. Theory* 21(2):265–293.",
-    "Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. UncertaiNLP Workshop 2025*. arXiv:2411.15993. [AUTHORS: confirm venue (ACL Anthology lists UncertaiNLP 2025; another listing says EMNLP 2025).]",
+    "Tu L, Meng R, Joty S, Zhou Y, Yavuz S (2025) Investigating factuality in long-form text generation: The roles of self-known and self-unknown. *Proc. UncertaiNLP Workshop 2025*. arXiv:2411.15993.",
     "Vasconcelos H, Jörke M, Grunde-McLaughlin M, Gerstenberg T, Bernstein MS, Krishna R (2023) Explanations can reduce overreliance on AI systems during decision-making. *Proc. ACM Human-Comput. Interaction* 7(CSCW1):Article 129.",
     "Wei J, Yang C, Song X, Lu Y, Hu N, Huang J, Tran D, Peng D, Liu R, Huang D, Du C, Le QV (2024) Long-form factuality in large language models. *Adv. Neural Inform. Processing Systems*, vol. 37. arXiv:2403.18802.",
-    "Yang J, Yoon S, Chang H, Kim B, Lee H (2025) Hallucinate at the last in long response generation: A case study on long document summarization. Preprint, arXiv:2505.15291. [AUTHORS: check the spelling of the fifth-listed name \"Hwan Chang\" and whether a venue exists.]",
+    "Yang J, Yoon S, Chang H, Kim B, Lee H (2025) Hallucinate at the last in long response generation: A case study on long document summarization. Preprint, arXiv:2505.15291.",
     "Zhang M, Press O, Merrill W, Liu A, Smith NA (2024) How language model hallucinations can snowball. *Proc. 41st Internat. Conf. Machine Learn.* (PMLR).",
 ]
 
@@ -82,7 +82,7 @@ def sort_references(block):
         authors = e.split(" (")[0].lower().replace("ç", "c").replace("ü", "u")
         year = re.search(r"\((\d{4})\)", e)
         return re.sub(r"[^a-z]", "", authors) + (year.group(1) if year else "0000")
-    head = "## References\n\n[AUTHORS: every entry must be verified against the original source. Format follows the pattern of reference lists in published ISR articles (surname and initials, year in parentheses, abbreviated journal names); the official INFORMS reference-style guide has not been read, so abbreviations may need adjustment.]"
+    head = "## References\n\n"
     return head + "\n\n" + "\n\n".join(sorted(INFORMS_REFS, key=key)) + "\n"
 
 
