@@ -86,7 +86,7 @@ We recorded the date on which weights of each new main-line version of six open-
 
 The pooled rate is 1.97 per year. A likelihood-ratio test does not reject a common primary rate across families ($\chi^2(5)=3.43$, $p=0.63$). The rate was 2.18 before 2025 and 1.82 after ($p=0.62$). Under the broad definition the pooled rate rises to 3.40 and family rates differ ($p=0.04$). Gaps are more regular than exponential: the mean coefficient of variation is 0.46. Platforms can also stop. Llama has had no subsequent open-weight main-line release for 17.8 months as of the window end.
 
-*[Figure 2 here: open-weight release histories, 2023 to September 2026. Reuse the figure from the original submission.]*
+![Figure 2. Open-weight release histories, 2023–September 2026. Filled circles are primary or origin releases; diamonds are counted only under the broad definition.](figures/fig2.jpg)
 
 ### 3.3 Stylized fact 2: recovery collapses with upgrade size
 
@@ -152,9 +152,9 @@ Easier transfer lowers the marginal burden of a release. The owner internalizes 
 
 *Table 5. Monopoly intensity by recovery rate ($\rho=0.10$, $C_N=1$, $v\sim U[0,40]$, $b=7$, $\psi=6$, $c=2$, $\theta=0.5$).*
 
-*[Figure 1 here: change in firm surplus when $R$ rises from 0.5 to 0.7 under the monopoly best response. Retraining firms with $v\gtrsim 9.57$ lose through the cadence effect. Reuse the figure from the original submission.]*
+![Figure 1. Change in firm surplus when $R$ rises from 0.5 to 0.7 under the monopoly best response. Retraining firms with $v\gtrsim 9.57$ lose through the cadence effect.](figures/fig1.jpg)
 
-*[Figure 3 here: equilibrium intensity as a function of $R$ under monopoly and symmetric duopoly. Reuse the figure from the original submission.]*
+![Figure 3. Equilibrium intensity as a function of $R$. Complementarity is positive under both monopoly and symmetric duopoly; the slope is an order of magnitude flatter under competition.](figures/fig3.jpg)
 
 ## 6. Competing Platform Owners and the One-Third Rule
 
@@ -172,7 +172,7 @@ Raising $R$ from 0.5 to 0.7 raises $\mu^*$ only from 0.928 to 0.952, against 2.5
 
 With $z=0.1$ and $\eta=10$ the asymmetric pair at $H=20$ is approximately $(\mu,R)=(2.50,0.96)$ versus $(1.38,0.08)$. Prices in that illustration are 26.4 and 17.3. Mean customer value is 18.2 on the frontier platform and 22.8 on the stable platform.
 
-*[Figure 4 here: probability of choosing the frontier owner in the $H=20$ asymmetric illustration. Reuse the figure from the original submission.]*
+![Figure 4. Logit probability of choosing the frontier owner in the $H=20$ asymmetric illustration. Mid-value firms lean frontier; high-value retraining firms lean stable.](figures/fig4.jpg)
 
 ## 7. Robustness and Extensions
 
