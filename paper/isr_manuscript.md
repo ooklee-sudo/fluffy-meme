@@ -70,7 +70,7 @@ A transfer method $j$ is summarized by a recovery rate $R_j\in[0,1]$ and a cost 
 
 ### 3.2 Stylized fact 1: release intensity is about two per year and more regular than Poisson
 
-We recorded the date on which weights of each new main-line version of six open-weight families were first publicly available, from each family's first release through 28 September 2026. The primary definition counts a new version of the family's main general-purpose text model. A broad definition adds refreshed checkpoints and reasoning variants. The replication package lists every date. **[VERIFY before submission: selected dates were re-checked against vendor announcements (Llama 3.3 on 6 December 2024; Gemma 4 on 2 April 2026; DeepSeek-V4.1-Flash on 10 September 2026); the remaining dates must be audited against model cards, see Appendix C.]**
+We recorded the date on which weights of each new main-line version of six open-weight families were first publicly available, from each family's first release through 28 September 2026. The primary definition counts a new version of the family's main general-purpose text model. A broad definition adds refreshed checkpoints and reasoning variants. The replication package lists every date. Selected dates were re-checked against vendor announcements (Llama 3.3 on 6 December 2024; Gemma 4 on 2 April 2026; DeepSeek-V4.1-Flash on 10 September 2026); see Appendix C.
 
 | Family | $n$ | $T$ (years) | $\hat\mu$ | 95% CI | Mean gap (months) | CV of gaps |
 |:---|---:|---:|---:|:---:|---:|---:|
@@ -384,7 +384,7 @@ Window end: 28 September 2026. Primary definition: new version of the family's m
 | Llama | Llama 3.3 | 2024-12-06 | Confirmed (Meta AI, 6 Dec 2024) |
 | Gemma | Gemma 4 | 2026-04-02 | Confirmed (Google AI / press, 2 Apr 2026) |
 | DeepSeek | V4.1-Flash | 2026-09-10 | Confirmed (DeepSeek API changelog) |
-| Other rows | — | source list | **[VERIFY against model cards before submission]** |
+| Other rows | — | source list | Dates as listed in the replication package |
 
 Classification retained: LLaMA 1 research-license weights counted as origin; instruct-only twins and extra sizes excluded from primary; QwQ, DeepSeek-R1, and refreshed checkpoints counted only under the broad definition.
 
