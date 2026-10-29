@@ -82,3 +82,13 @@ python run_pairs.py
 - Recovery is `R = (L_none − L_method) / (L_none − L_retrain)`, where L is test MSE (toy) or held-out response NLL (LLM), and `none` is the target model without an adapter.
 - `act_llama.py` reports `C_A/C_N` from compute time only. The paper argues C_N should also include data acquisition and revalidation labor. Add those before drawing conclusions.
 - In `act_llama.py`, calibration inputs are task prompts without answers (Appendix A.4). α is chosen per module from 13 values in [1e-3, 1e3] on an 80/20 split, using a Gram-only validation error. Decoder layers are corrected sequentially from the input side.
+
+## Multi-seed and sensitivity analyses (ISR revision)
+
+| Script | What it does |
+| --- | --- |
+| `run_seeds.py` | Repeats the five model-pair experiments over seeds (`--seed` in `act_llama.py` resamples train/calibration rows and training order; eval rows fixed). `--fp32` keeps float32 on a GPU. |
+| `aggregate_seeds.py` | Mean, SD and 95% t-intervals of R_C, R_A per pair: `python aggregate_seeds.py results/seeds_gpu` |
+| `vendor_sensitivity.py` | Monopoly-owner model on a parameter grid and six value distributions; reproduces Tables 5 and 7 (static columns) with `--check`. |
+
+Results: `results/seeds_gpu/` (25 runs, RTX 4090, float32), `results/seeds/` (CPU, seed 0), `results/sensitivity.json`. Wall-clock cost ratios C_A/C_N are only meaningful from CPU runs.

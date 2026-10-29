@@ -1,5 +1,5 @@
 ---
-title: "Compatibility Tools and Platform Release Cadence: Maintaining Complementary Assets on Foundation-Model Platforms"
+title: "Building on Shifting Ground: Real Options, Compatibility Tools, and Release Cadence in Foundation-Model Platforms"
 ---
 
 **Target journal:** *Information Systems Research* (anonymized manuscript; no author information)
@@ -34,7 +34,7 @@ We ask three questions. First, given an exogenous release intensity, when should
 
 *Table 1. Summary of results.*
 
-Two empirical inputs discipline the model; they are not the contribution. Public release dates for Llama, Gemma, Phi, Qwen, Mistral, and DeepSeek through 28 September 2026 imply a pooled primary-definition intensity of 1.97 main-line versions per year. Recovery rates measured on five small open model pairs show that upgrade size, not the brand of transfer method, is the first-order determinant of $R$: a naive copy recovered about 94 percent of the retraining gain after small continued-training upgrades and about 5 percent after a large one. These facts are used as $(R,C,\mu)$ inputs. A particular converter used only to measure one $(R,C)$ pair is confined to the online appendix and is not a contribution of this paper.
+Two empirical inputs discipline the model; they are not the contribution. Public release dates for Llama, Gemma, Phi, Qwen, Mistral, and DeepSeek through 28 September 2026 imply a pooled primary-definition intensity of 1.97 main-line versions per year. Recovery rates measured on five small open model pairs show that upgrade size, not the brand of transfer method, is the first-order determinant of $R$: a naive copy recovered about 95 percent of the retraining gain after small continued-training upgrades and about 40 percent after a large one (mean of five seeds). These facts are used as $(R,C,\mu)$ inputs. A particular converter used only to measure one $(R,C)$ pair is confined to the online appendix and is not a contribution of this paper.
 
 **Contribution.** The paper makes three contributions to information systems research. First, it moves the real-options view of IT platforms (Fichman 2004, Taudes et al. 2000, Benaroch and Kauffman 1999) from the adoption decision to *post-adoption maintenance* of complementary assets, and it characterizes the resulting policy regions without reference to any named algorithm. Second, it treats the platform owner as the agent that sets the rate at which the adopter's options are destroyed, and it identifies a complementarity between compatibility support and release speed with a sharp distributional implication: tools that help some customers hurt others through the cadence they induce. This extends platform-evolution research (Tiwana et al. 2010) with an explicit maintenance channel. Third, it shows how much of the change in customer surplus competing owners internalize and that the speed–compatibility bundle is a dimension along which platforms can separate, which links platform governance to platform competition (Parker and Van Alstyne 2018, Rochet and Tirole 2003). The paper also offers managers a maintenance policy whose qualitative regions do not depend on any named algorithm.
 
@@ -90,9 +90,9 @@ The pooled rate is 1.97 per year. A likelihood-ratio test does not reject a comm
 
 ![Figure 2. Open-weight release histories, 2023–September 2026. Filled circles are primary or origin releases; diamonds are counted only under the broad definition.](figures/fig2.jpg)
 
-### 3.3 Stylized fact 2: recovery collapses with upgrade size
+### 3.3 Stylized fact 2: recovery falls sharply with upgrade size
 
-On five open model pairs that share a tokenizer, a rank-8 adapter was trained on the source, retrained on the target, copied, and transferred with a calibration method that reduces to copy as its regularization diverges (Online Appendix B). After two small Pythia continued-training upgrades, copy recovered 0.945 and 0.940 of the retraining gain. After a large Pythia upgrade, copy recovered 0.051 and the calibration method 0.500. Base-to-instruct upgrades sat in between. Compute-only cost ratios for the calibration method were 0.33 to 0.61 of retraining and overstate the economic ratio because they omit data acquisition and revalidation. Small upgrades look like high-$R$ free copy; large upgrades open a gap that a costly method can fill if and only if its cost is below $\Gamma$.
+On five open model pairs that share a tokenizer, a rank-8 adapter was trained on the source, retrained on the target, copied, and transferred with a calibration method that reduces to copy as its regularization diverges (Online Appendix C). Each pair was run with five seeds that resample the training and calibration rows and the training order. After two small Pythia continued-training upgrades, copy recovered 0.948 and 0.923 of the retraining gain (means of five seeds; 95% intervals [0.93, 0.97] and [0.90, 0.94]). After a large Pythia upgrade, copy recovered 0.404 (95% interval [0.31, 0.50]) and the calibration method 0.725 ([0.64, 0.81]); the calibration method beat copy in all five seeds. Base-to-instruct upgrades sat in between, at 0.73 to 0.75 for copy, with a gain from the calibration method of at most 0.04. Compute-only cost ratios for the calibration method were 0.35 to 0.61 of retraining and overstate the economic ratio because they omit data acquisition and revalidation. Small upgrades look like high-$R$ free copy; large upgrades open a gap that a costly method can fill if and only if its cost is below $\Gamma$.
 
 ## 4. Microfoundation: The Firm's Maintenance Option
 
@@ -117,7 +117,7 @@ At $\rho=0.10$, $g=0.20$, $\sigma=0.40$, $\mu=2$ one has $\beta\approx 4.43$ and
 
 *Table 4. Firm policy regions at family-specific $\mu$ ($R_{\text{copy}}=0.57$, $R_{\text{transfer}}=0.78$, $C_A=0.05\,C_N$).*
 
-The platform a firm has already chosen is itself an input to the maintenance rule. Feeding the five measured $(R,C)$ pairs into the same formulas produces an actual transfer-optimal region only for the large Pythia upgrade, where $\Gamma=0.39$ exceeds the compute-only cost ratio 0.33.
+The platform a firm has already chosen is itself an input to the maintenance rule. Feeding the five measured $(R,C)$ pairs into the same formulas produces an actual transfer-optimal region only for the large Pythia upgrade. There the bound is $\Gamma=0.45$ at the seed-mean recovery rates and exceeds the compute-only cost ratio 0.36, and the transfer-optimal band is $v\in[2.2,4.5]$ in units of retraining cost. The ordering is the same in each of the five seeds ($\Gamma$ between 0.37 and 0.50), but it is sensitive to measurement error: at the least favorable corner of the two 95% intervals $\Gamma=0.22$, below the cost ratio. For the two small upgrades and the two base-to-instruct pairs $\Gamma$ is between 0 and 0.12 and no costly method has a market.
 
 ## 5. A Monopoly Platform Owner Chooses Cadence and Compatibility
 
@@ -246,7 +246,7 @@ Five implications do not depend on a named transfer algorithm.
 
 ### 8.3 Limitations and future research
 
-Value is taken as linear in $R$; the owner's problem is solved in the static limit, with a dynamic-threshold proxy in Section 7.4; the asymmetric compatibility equilibrium is numerical; the switching game is characterized only to first order; the recovery measurements are small-scale (160M to 0.5B parameters, one task, one seed); and open lines can be discontinued. The first empirical priority is $(g,\sigma)$ from service logs and a historical cost accounting of copy versus retrain-every-time on a real adapter portfolio. A natural field-data test of Proposition 4(a) is whether the introduction of owner-provided migration tooling predicts a subsequent change in release frequency.
+Value is taken as linear in $R$; the owner's problem is solved in the static limit, with a dynamic-threshold proxy in Section 7.4; the asymmetric compatibility equilibrium is numerical; the switching game is characterized only to first order; the recovery measurements are small-scale (160M to 0.5B parameters, one task, five seeds); and open lines can be discontinued. The first empirical priority is $(g,\sigma)$ from service logs and a historical cost accounting of copy versus retrain-every-time on a real adapter portfolio. A natural field-data test of Proposition 4(a) is whether the introduction of owner-provided migration tooling predicts a subsequent change in release frequency.
 
 ## 9. Conclusion
 
@@ -362,17 +362,17 @@ Numerical Finding 1 is a grid search, not a proof. The two-period switching exte
 
 ## Appendix C. Online Appendix: Calibration Pairs
 
-The following table is the measurement used to pin $(R,C)$ in Section 3.3. Models have 160M to 0.5B parameters, one task (GSM8K), one seed, and a short CPU training budget. Recovery is $R=(L_0-L_m)/(L_0-L_{\text{retrain}})$ on held-out negative log-likelihood. These are calibration inputs, not production estimates.
+The following table is the measurement used to pin $(R,C)$ in Section 3.3. Models have 160M to 0.5B parameters, one task (GSM8K), and a short training budget (500 training problems, 300 steps). Each pair was run with five seeds (0 to 4) on a single GPU in float32; the seed resamples the training and calibration rows and the training order, and the 200 evaluation rows are fixed. Recovery is $R=(L_0-L_m)/(L_0-L_{\text{retrain}})$ on held-out negative log-likelihood. These are calibration inputs, not production estimates.
 
-| Pair | $R_C$ | $R_A$ | $C_A/C_N$ |
-|:---|---:|---:|---:|
-| Pythia-160M, +10k steps | 0.945 | 0.941 | 0.358 |
-| Pythia-160M, +30k steps | 0.940 | 0.952 | 0.348 |
-| Pythia-160M, +70k steps | 0.051 | 0.500 | 0.334 |
-| SmolLM2-360M, Base → Instruct | 0.703 | 0.698 | 0.612 |
-| Qwen2.5-0.5B, Base → Instruct | 0.630 | 0.658 | 0.433 |
+| Pair | $R_C$ mean [95% CI] | $R_A$ mean [95% CI] | Seeds with $R_A>R_C$ | $C_A/C_N$ |
+|:---|:---:|:---:|:---:|---:|
+| Pythia-160M, +10k steps | 0.948 [0.929, 0.967] | 0.944 [0.921, 0.967] | 0 of 5 | 0.377 |
+| Pythia-160M, +30k steps | 0.923 [0.902, 0.944] | 0.936 [0.916, 0.956] | 5 of 5 | 0.348 |
+| Pythia-160M, +70k steps | 0.404 [0.309, 0.499] | 0.725 [0.643, 0.806] | 5 of 5 | 0.359 |
+| SmolLM2-360M, Base → Instruct | 0.734 [0.702, 0.767] | 0.734 [0.694, 0.775] | 1 of 5 | 0.612 |
+| Qwen2.5-0.5B, Base → Instruct | 0.745 [0.571, 0.919] | 0.782 [0.613, 0.951] | 5 of 5 | 0.433 |
 
-*Table B.1. Recovery rates and compute-only cost ratios on five open model pairs.*
+*Table C.1. Recovery rates over five seeds and compute-only cost ratios on five open model pairs.* The cost ratios are wall-clock ratios from CPU runs (seed 0 for the Pythia +10k and +70k pairs; the other three from a single earlier CPU run), because on a GPU the fixed overhead of the calibration method dominates and the ratio is not informative. Recovery on CPU with seed 0 is 0.940 and 0.941 for Pythia +10k and 0.242 and 0.584 for Pythia +70k (copy and calibration method), so the recovery estimates do not depend on the device beyond the sampling spread; the large-upgrade copy recovery has the widest spread across seeds (0.31 to 0.51 on GPU).
 
 The calibration method matches, at each layer, the change in hidden activations that the source adapter produces on unlabeled inputs, with a ridge term that anchors the solution to naive copy. As the ridge diverges the method equals copy. Cost is forward passes plus per-layer linear algebra. Full protocol: public checkpoints from EleutherAI/pythia-160m (steps 73000, 113000, 133000 → 143000), HuggingFaceTB/SmolLM2-360M, and Qwen/Qwen2.5-0.5B; rank-8 LoRA on every linear layer in the decoder; 500 GSM8K training problems; 300 AdamW steps; 128 unlabeled calibration prompts.
 
@@ -391,7 +391,7 @@ Classification retained: LLaMA 1 research-license weights counted as origin; ins
 
 ## Appendix E. Replication Materials
 
-The replication package contains the release-history file, the intensity-estimation script, the robustness script, the owner-model and dynamic-threshold scripts, the figure script, and saved numerical output. It does not contain weights or training logs from the five small-model pairs; those are calibration inputs described in Appendix B. No proprietary or subscription data are used. An anonymized copy of the package will be provided to reviewers on request.
+The replication package contains the release-history file, the intensity-estimation script, the robustness script, the owner-model and dynamic-threshold scripts, the figure script, and saved numerical output. It does not contain weights or training logs from the five small-model pairs; those are calibration inputs described in Appendix C. The package also contains the multi-seed driver, the aggregation script, the parameter-grid script of Appendix F, and the per-seed result files. No proprietary or subscription data are used. An anonymized copy of the package will be provided to reviewers on request.
 
 ## Appendix F. Parameter Grid and Alternative Distributions
 

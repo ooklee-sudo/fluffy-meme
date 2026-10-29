@@ -1,1 +1,38 @@
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3518.61it/s]
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1965.26it/s]
+device=cpu train=500 eval=200 calib=128
+[1] train source adapter
+  step 60/300 loss 1.3449
+  step 120/300 loss 1.3987
+  step 180/300 loss 0.9840
+  step 240/300 loss 1.2406
+  step 300/300 loss 1.2767
+[2] retrain on target (upper bound, C_N)
+  step 60/300 loss 1.3566
+  step 120/300 loss 1.5196
+  step 180/300 loss 1.0711
+  step 240/300 loss 1.5052
+  step 300/300 loss 0.9225
+[3] evaluate on target
+  none     nll=2.7611
+  retrain  nll=1.3711
+  copy     nll=2.4253
+[4] ACT
+  ACT layer 0: alphas 3e-01, 3e-01, 1e-01, 3e-01
+  ACT layer 1: alphas 1e-01, 1e-01, 1e-01, 1e+00
+  ACT layer 2: alphas 1e-01, 3e-01, 1e-01, 3e-01
+  ACT layer 3: alphas 3e-02, 1e-01, 1e-01, 1e-01
+  ACT layer 4: alphas 1e-01, 1e-01, 1e-01, 3e-01
+  ACT layer 5: alphas 3e-02, 3e-01, 1e-01, 3e-01
+  ACT layer 6: alphas 3e-02, 1e-01, 1e-01, 3e-01
+  ACT layer 7: alphas 3e-02, 1e-01, 1e-01, 3e-01
+  ACT layer 8: alphas 1e-02, 1e-01, 1e-01, 3e-01
+  ACT layer 9: alphas 1e-02, 1e-01, 1e-01, 3e-01
+  ACT layer 10: alphas 3e-03, 3e-01, 1e-01, 3e-01
+  ACT layer 11: alphas 3e-03, 1e-01, 1e-01, 1e-01
+  act      nll=1.9489
+
+R_C=0.2416  R_A=0.5843  (NLL-based)   C_A/C_N=0.359 (compute time only; add data and revalidation labor to C_N)
+saved /home/user/fluffy-meme/results/seeds/pythia_160m_70k_s0.json
+[done] pythia-160m +70k seed 0 in 21.8 min
