@@ -15,6 +15,14 @@ import time
 
 from run_pairs import PAIRS, slug
 
+PAIRS_LARGE = [
+    ("pythia-1.4b +10k",   "EleutherAI/pythia-1.4b",        "step133000", "EleutherAI/pythia-1.4b",              "step143000"),
+    ("pythia-1.4b +70k",   "EleutherAI/pythia-1.4b",        "step73000",  "EleutherAI/pythia-1.4b",              "step143000"),
+    ("qwen2.5-1.5b instr", "Qwen/Qwen2.5-1.5B",             None,         "Qwen/Qwen2.5-1.5B-Instruct",          None),
+    ("smollm2-1.7b instr", "HuggingFaceTB/SmolLM2-1.7B",    None,         "HuggingFaceTB/SmolLM2-1.7B-Instruct", None),
+    ("qwen2.5-3b instr",   "Qwen/Qwen2.5-3B",               None,         "Qwen/Qwen2.5-3B-Instruct",            None),
+]
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -22,12 +30,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     ap.add_argument("--only", default="")
+    ap.add_argument("--large", action="store_true", help="use the 1.4B-3B pairs instead of the 160M-0.5B pairs")
     ap.add_argument("--fp32", action="store_true", help="pass --fp32 to act_llama.py (GPU runs at CPU precision)")
     ap.add_argument("--outdir", default=os.path.join(HERE, "results", "seeds"))
     a = ap.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
     for seed in a.seeds:
-        for name, src, srev, tgt, trev in PAIRS:
+        for name, src, srev, tgt, trev in (PAIRS_LARGE if a.large else PAIRS):
             if a.only and a.only not in name:
                 continue
             out = os.path.join(a.outdir, f"{slug(name)}_s{seed}.json")
