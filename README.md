@@ -92,3 +92,7 @@ python run_pairs.py
 | `vendor_sensitivity.py` | Monopoly-owner model on a parameter grid and six value distributions; reproduces Tables 5 and 7 (static columns) with `--check`. |
 
 Results: `results/seeds_gpu/` (25 runs, RTX 4090, float32), `results/seeds/` (CPU, seed 0), `results/sensitivity.json`. Wall-clock cost ratios C_A/C_N are only meaningful from CPU runs.
+
+### Additional tasks (summarization, text-to-SQL)
+
+`python run_seeds.py --task dialogsum|sql [--large --only ...]` runs the same pairs on DialogSum or sql-create-context (see `TASKS` in `run_seeds.py`). Results are in `results/tasks_small_gpu/` (five seeds) and `results/tasks_large_gpu/` (three seeds, Pythia-1.4B +70k and Qwen2.5-1.5B). `aggregate_seeds.py` drops a seed whose retraining gain is below half the pair's median gain (reported when it happens); `analysis_all.py` combines every result set into the 24-cell table (`results/all_tasks_summary.json`).

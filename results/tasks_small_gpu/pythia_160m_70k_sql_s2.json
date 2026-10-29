@@ -1,0 +1,262 @@
+{
+  "pair": "pythia-160m +70k [sql]",
+  "args": {
+    "source": "EleutherAI/pythia-160m",
+    "target": "EleutherAI/pythia-160m",
+    "pair_name": "pythia-160m +70k [sql]",
+    "dataset": "b-mc2/sql-create-context",
+    "dataset_config": "none",
+    "eval_split": "heldout",
+    "prompt_template": "Schema: {context}\nQuestion: {question}\nSQL:",
+    "response_field": "answer",
+    "n_train": 500,
+    "n_eval": 200,
+    "n_cal": 128,
+    "max_len": 256,
+    "rank": 8,
+    "lora_alpha": 16,
+    "source_revision": "step73000",
+    "target_revision": "step143000",
+    "target_modules": [
+      "auto"
+    ],
+    "preset": "cpu",
+    "threads": null,
+    "steps": 300,
+    "bs": 4,
+    "lr": 0.0005,
+    "gen_eval": 0,
+    "gen_max_new": 256,
+    "gpu_price": 2.0,
+    "fp32": true,
+    "seed": 2,
+    "out": "/workspace/out/seeds/pythia_160m_70k_sql_s2.json",
+    "tiny": false,
+    "tiny_arch": "llama",
+    "tiny_vocab": 64,
+    "tiny_drift": 0.3,
+    "tiny_pretrain": 200
+  },
+  "time_train_source_s": 18.80348253250122,
+  "time_retrain_s": 17.472812175750732,
+  "none": {
+    "nll": 1.458471240442216
+  },
+  "retrain": {
+    "nll": 0.5668150675790047
+  },
+  "copy": {
+    "nll": 0.7097407788291966
+  },
+  "act_info": {
+    "base_model.model.gpt_neox.layers.0.attention.query_key_value": {
+      "alpha": 0.1,
+      "drift": 0.37642889205956137
+    },
+    "base_model.model.gpt_neox.layers.0.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.46104241483216407
+    },
+    "base_model.model.gpt_neox.layers.0.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.27758747671635003
+    },
+    "base_model.model.gpt_neox.layers.0.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.37288967237239284
+    },
+    "base_model.model.gpt_neox.layers.1.attention.query_key_value": {
+      "alpha": 0.1,
+      "drift": 0.342799856128867
+    },
+    "base_model.model.gpt_neox.layers.1.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.41309099418328304
+    },
+    "base_model.model.gpt_neox.layers.1.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.37632271805551726
+    },
+    "base_model.model.gpt_neox.layers.1.mlp.dense_4h_to_h": {
+      "alpha": 1.0,
+      "drift": 0.4978335985007607
+    },
+    "base_model.model.gpt_neox.layers.2.attention.query_key_value": {
+      "alpha": 0.1,
+      "drift": 0.4067347165421944
+    },
+    "base_model.model.gpt_neox.layers.2.attention.dense": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.47467357637053625
+    },
+    "base_model.model.gpt_neox.layers.2.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.3880465550335718
+    },
+    "base_model.model.gpt_neox.layers.2.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.36614255589163025
+    },
+    "base_model.model.gpt_neox.layers.3.attention.query_key_value": {
+      "alpha": 0.1,
+      "drift": 0.46816257463745903
+    },
+    "base_model.model.gpt_neox.layers.3.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.4427833635281793
+    },
+    "base_model.model.gpt_neox.layers.3.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.43096779461569645
+    },
+    "base_model.model.gpt_neox.layers.3.mlp.dense_4h_to_h": {
+      "alpha": 0.1,
+      "drift": 0.2861562072273531
+    },
+    "base_model.model.gpt_neox.layers.4.attention.query_key_value": {
+      "alpha": 0.1,
+      "drift": 0.5138128784874056
+    },
+    "base_model.model.gpt_neox.layers.4.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.4990833805229031
+    },
+    "base_model.model.gpt_neox.layers.4.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.456018994780851
+    },
+    "base_model.model.gpt_neox.layers.4.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.5293247726028486
+    },
+    "base_model.model.gpt_neox.layers.5.attention.query_key_value": {
+      "alpha": 0.03162277660168379,
+      "drift": 0.6303148681318069
+    },
+    "base_model.model.gpt_neox.layers.5.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.6767537215409086
+    },
+    "base_model.model.gpt_neox.layers.5.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.4699606661247984
+    },
+    "base_model.model.gpt_neox.layers.5.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.542412727112612
+    },
+    "base_model.model.gpt_neox.layers.6.attention.query_key_value": {
+      "alpha": 0.03162277660168379,
+      "drift": 0.8205528908374384
+    },
+    "base_model.model.gpt_neox.layers.6.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.7622518065871611
+    },
+    "base_model.model.gpt_neox.layers.6.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.5141633332767745
+    },
+    "base_model.model.gpt_neox.layers.6.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.5960677945151981
+    },
+    "base_model.model.gpt_neox.layers.7.attention.query_key_value": {
+      "alpha": 0.03162277660168379,
+      "drift": 1.1163901637148723
+    },
+    "base_model.model.gpt_neox.layers.7.attention.dense": {
+      "alpha": 0.1,
+      "drift": 0.920119640726279
+    },
+    "base_model.model.gpt_neox.layers.7.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.5754417884599192
+    },
+    "base_model.model.gpt_neox.layers.7.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.6785592736389512
+    },
+    "base_model.model.gpt_neox.layers.8.attention.query_key_value": {
+      "alpha": 0.01,
+      "drift": 1.4235836312243748
+    },
+    "base_model.model.gpt_neox.layers.8.attention.dense": {
+      "alpha": 0.31622776601683794,
+      "drift": 1.3652087042121588
+    },
+    "base_model.model.gpt_neox.layers.8.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.6324621162269025
+    },
+    "base_model.model.gpt_neox.layers.8.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.8224296284538558
+    },
+    "base_model.model.gpt_neox.layers.9.attention.query_key_value": {
+      "alpha": 0.01,
+      "drift": 2.452485288120937
+    },
+    "base_model.model.gpt_neox.layers.9.attention.dense": {
+      "alpha": 0.1,
+      "drift": 1.6027654219424674
+    },
+    "base_model.model.gpt_neox.layers.9.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.7815937905971413
+    },
+    "base_model.model.gpt_neox.layers.9.mlp.dense_4h_to_h": {
+      "alpha": 0.31622776601683794,
+      "drift": 0.9186491900012772
+    },
+    "base_model.model.gpt_neox.layers.10.attention.query_key_value": {
+      "alpha": 0.0031622776601683794,
+      "drift": 3.305597760667527
+    },
+    "base_model.model.gpt_neox.layers.10.attention.dense": {
+      "alpha": 0.1,
+      "drift": 1.5750845085706666
+    },
+    "base_model.model.gpt_neox.layers.10.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.8678291543968089
+    },
+    "base_model.model.gpt_neox.layers.10.mlp.dense_4h_to_h": {
+      "alpha": 0.1,
+      "drift": 1.178373546972175
+    },
+    "base_model.model.gpt_neox.layers.11.attention.query_key_value": {
+      "alpha": 0.0031622776601683794,
+      "drift": 2.7335657544629126
+    },
+    "base_model.model.gpt_neox.layers.11.attention.dense": {
+      "alpha": 0.1,
+      "drift": 1.6263680366419462
+    },
+    "base_model.model.gpt_neox.layers.11.mlp.dense_h_to_4h": {
+      "alpha": 0.1,
+      "drift": 0.7602290416198663
+    },
+    "base_model.model.gpt_neox.layers.11.mlp.dense_4h_to_h": {
+      "alpha": 0.1,
+      "drift": 1.2394476624903257
+    }
+  },
+  "time_act_s": 19.593039512634277,
+  "act": {
+    "nll": 0.528546201099478
+  },
+  "recovery": [
+    {
+      "drift": "pythia-160m +70k [sql]",
+      "metric": "nll",
+      "R_C": 0.839707596268592,
+      "R_A": 1.0429188600317103
+    }
+  ],
+  "C_A_over_C_N": 1.1213443672121683,
+  "cost_usd": {
+    "retrain": 0.009707117875417073,
+    "act": 0.010885021951463488
+  }
+}

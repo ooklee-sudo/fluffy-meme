@@ -48,8 +48,14 @@ def load_examples(args, tok):
         return mk(args.n_train), mk(args.n_eval), [(p, []) for p, _ in mk(args.n_cal)]
 
     from datasets import load_dataset
-    ds = load_dataset(args.dataset, args.dataset_config)
-    tr, te = ds["train"].shuffle(seed=args.seed), ds[args.eval_split].shuffle(seed=0)  # eval rows fixed across seeds
+    ds = load_dataset(args.dataset, None if args.dataset_config in ("", "none") else args.dataset_config)
+    if args.eval_split in ds:
+        tr, te = ds["train"].shuffle(seed=args.seed), ds[args.eval_split].shuffle(seed=0)  # eval rows fixed across seeds
+    else:  # no held-out split: reserve a fixed pool of train rows for evaluation, disjoint from every seed's training rows
+        base = ds["train"].shuffle(seed=0)
+        n_hold = 2000
+        te = base.select(range(len(base) - n_hold, len(base)))
+        tr = base.select(range(len(base) - n_hold)).shuffle(seed=args.seed)
 
     def enc(row, with_resp=True):
         p = tok(args.prompt_template.format(**row), add_special_tokens=True)["input_ids"]

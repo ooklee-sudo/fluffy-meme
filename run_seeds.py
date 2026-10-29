@@ -15,6 +15,15 @@ import time
 
 from run_pairs import PAIRS, slug
 
+TASKS = {  # extra act_llama.py arguments per task; gsm8k is the act_llama.py default
+    "gsm8k": [],
+    "dialogsum": ["--dataset", "knkarthick/dialogsum", "--dataset-config", "none", "--eval-split", "test",
+                  "--prompt-template", "Summarize the dialogue.\n{dialogue}\nSummary:", "--response-field", "summary",
+                  "--max-len", "512"],
+    "sql": ["--dataset", "b-mc2/sql-create-context", "--dataset-config", "none", "--eval-split", "heldout",
+            "--prompt-template", "Schema: {context}\nQuestion: {question}\nSQL:", "--response-field", "answer"],
+}
+
 PAIRS_LARGE = [
     ("pythia-1.4b +10k",   "EleutherAI/pythia-1.4b",        "step133000", "EleutherAI/pythia-1.4b",              "step143000"),
     ("pythia-1.4b +70k",   "EleutherAI/pythia-1.4b",        "step73000",  "EleutherAI/pythia-1.4b",              "step143000"),
@@ -29,7 +38,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
-    ap.add_argument("--only", default="")
+    ap.add_argument("--only", nargs="*", default=[], help="keep pairs whose name contains any of these texts")
+    ap.add_argument("--task", choices=list(TASKS), default="gsm8k")
     ap.add_argument("--large", action="store_true", help="use the 1.4B-3B pairs instead of the 160M-0.5B pairs")
     ap.add_argument("--fp32", action="store_true", help="pass --fp32 to act_llama.py (GPU runs at CPU precision)")
     ap.add_argument("--outdir", default=os.path.join(HERE, "results", "seeds"))
@@ -37,14 +47,16 @@ def main():
     os.makedirs(a.outdir, exist_ok=True)
     for seed in a.seeds:
         for name, src, srev, tgt, trev in (PAIRS_LARGE if a.large else PAIRS):
-            if a.only and a.only not in name:
+            if a.only and not any(o in name for o in a.only):
                 continue
-            out = os.path.join(a.outdir, f"{slug(name)}_s{seed}.json")
+            tag = "" if a.task == "gsm8k" else f"_{a.task}"
+            out = os.path.join(a.outdir, f"{slug(name)}{tag}_s{seed}.json")
             if os.path.exists(out):
                 print(f"[skip] {name} seed {seed}")
                 continue
             cmd = [sys.executable, os.path.join(HERE, "act_llama.py"), "--preset", "cpu", "--source", src,
-                   "--target", tgt, "--pair-name", name, "--seed", str(seed), "--out", out]
+                   "--target", tgt, "--pair-name", name + ("" if a.task == "gsm8k" else f" [{a.task}]"), "--seed", str(seed), "--out", out]
+            cmd += TASKS[a.task]
             cmd += ["--fp32"] if a.fp32 else []
             cmd += ["--source-revision", srev] if srev else []
             cmd += ["--target-revision", trev] if trev else []
