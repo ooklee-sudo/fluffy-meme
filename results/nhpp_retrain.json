@@ -1,0 +1,84 @@
+{
+  "params": {
+    "c_r": 5000.0,
+    "c_e": 1.0,
+    "days": 730,
+    "seeds": 30,
+    "world": {
+      "traffic": 20000.0,
+      "rho0": 0.01,
+      "k": 1.5,
+      "tau_median": 60.0,
+      "tau_sd_log": 0.4,
+      "overdisp": 50.0
+    }
+  },
+  "policies": {
+    "NHPP (proposed)": {
+      "cost_per_day_mean": 351.3916438356165,
+      "cost_per_day_se": 1.8169614278216728,
+      "retrains_mean": 12.733333333333333,
+      "regret_vs_oracle_pct": -0.030450175445750904
+    },
+    "Oracle": {
+      "cost_per_day_mean": 351.4986757990868,
+      "cost_per_day_se": 1.9782626178539753,
+      "retrains_mean": 13.2,
+      "regret_vs_oracle_pct": 0.0
+    },
+    "Per-cycle T*": {
+      "cost_per_day_mean": 357.00196347031965,
+      "cost_per_day_se": 2.6702417329470465,
+      "retrains_mean": 13.5,
+      "regret_vs_oracle_pct": 1.5656638417546942
+    },
+    "Fixed 30d": {
+      "cost_per_day_mean": 398.65922374429226,
+      "cost_per_day_se": 0.7767249381118612,
+      "retrains_mean": 24.0,
+      "regret_vs_oracle_pct": 13.416991639582143
+    },
+    "Fixed 60d": {
+      "cost_per_day_mean": 376.95018264840184,
+      "cost_per_day_se": 2.9106326531695,
+      "retrains_mean": 12.0,
+      "regret_vs_oracle_pct": 7.24085426252441
+    },
+    "Fixed 90d": {
+      "cost_per_day_mean": 435.7623744292237,
+      "cost_per_day_se": 6.239808352665189,
+      "retrains_mean": 8.0,
+      "regret_vs_oracle_pct": 23.972693051709015
+    },
+    "Fixed 180d": {
+      "cost_per_day_mean": 772.0567579908676,
+      "cost_per_day_se": 28.230292911583543,
+      "retrains_mean": 4.0,
+      "regret_vs_oracle_pct": 119.64713131157501
+    },
+    "Threshold 1.5x": {
+      "cost_per_day_mean": 358.2028767123289,
+      "cost_per_day_se": 1.9969711540763848,
+      "retrains_mean": 16.233333333333334,
+      "regret_vs_oracle_pct": 1.9073189672766055
+    },
+    "Never": {
+      "cost_per_day_mean": 4464.255981735159,
+      "cost_per_day_se": 427.6778523164897,
+      "retrains_mean": 0.0,
+      "regret_vs_oracle_pct": 1170.0633854697319
+    }
+  },
+  "fit_check": {
+    "shape": "loglinear",
+    "b": 0.0157,
+    "trend_p": 3.1e-06,
+    "phi": 5.94,
+    "t_star_hat": 47.1,
+    "t_star_80pct": [
+      42.1,
+      56.4
+    ],
+    "t_star_true": 51.9
+  }
+}

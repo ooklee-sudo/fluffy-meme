@@ -7,6 +7,7 @@ Code for the three experiments in the paper.
 | `real_options.py` | 4, 6 | CPU, seconds | Propositions 1–4: β, retraining thresholds v*, policy costs W_j(v), ACT-optimal region, Γ; tables 6.2 and 6.3; Monte Carlo check of Prop. 1 |
 | `act_toy.py` | 5.2, Appendix B | CPU (numpy), ~minutes | Toy MLP upgrade simulation: recovery of copy vs. ACT (sequential, independent, full-output), calibration size, α sweep, drift–α correlation |
 | `act_llama.py`, `run_pairs.py` | 7.1, Appendix A | GPU or CPU | Real model pair (e.g. Llama 3.2 1B Base → Instruct): train, retrain, copy, ACT; recovery R_C, R_A and cost ratio C_A/C_N |
+| `nhpp_retrain.py` | (new) | CPU, ~20 s | Retraining timing from production error logs: NHPP (Poisson GLM) fit, optimal retrain age T*, simulation vs. fixed-interval and threshold policies |
 
 ## Setup
 
@@ -76,6 +77,37 @@ python run_pairs.py
 - 쌍 하나를 직접: `python act_llama.py --preset cpu --source EleutherAI/pythia-160m --source-revision step113000 --target EleutherAI/pythia-160m --target-revision step143000`
 
 모델과 GSM8K 데이터는 처음 실행할 때 Hugging Face에서 자동으로 내려받습니다.
+
+## 운영 로그로 재학습 시점 정하기 (`nhpp_retrain.py`)
+
+**모형.** 일별 로그를 씁니다. 재학습 후 t일째 요청 수가 n, 오류 수가 y이면 y ~ Poisson(n·ρ(t))로 둡니다(비동질 포아송 과정). ρ(t)는 요청당 오류율이고, 두 가지 모양을 적합한 뒤 AIC가 작은 쪽을 씁니다.
+- log-linear: log ρ = a + b·t
+- power-law(Crow-AMSAA): log ρ = a + b·log t
+
+b > 0이면 모델 성능이 떨어지고 있다는 뜻입니다. 과분산은 quasi-Poisson 방식(φ = Pearson χ²/df)으로 표준오차를 보정합니다.
+
+**결정 규칙.** 재학습 비용이 C_r, 오류 1건 비용이 C_e이면 T일마다 재학습할 때 하루 비용은 g(T) = (C_r + C_e·Λ(T)) / T입니다. 이를 최소화하는 T*는 T·λ(T) − Λ(T) = C_r / C_e의 해입니다. 매일 재학습 이후 데이터로 다시 적합하고, 추세가 유의하고(단측 p < 0.05) 현재 나이가 T* 이상이면 재학습합니다.
+
+**시뮬레이션 결과** (30 seeds × 730일, C_r = 5000, C_e = 1, 과분산 있음, 드리프트 속도 τ가 사이클마다 바뀜)
+
+| 정책 | 하루 비용 | 오라클 대비 |
+| --- | --- | --- |
+| NHPP (제안) | 351.4 ± 1.8 | 0.0% |
+| 오라클 (τ를 앎, 전역 최적) | 351.5 ± 2.0 | — |
+| 사이클별 T* (τ를 앎) | 357.0 ± 2.7 | +1.6% |
+| 임계값 1.5배 | 358.2 ± 2.0 | +1.9% |
+| 고정 60일 | 377.0 ± 2.9 | +7.2% |
+| 고정 30일 | 398.7 ± 0.8 | +13.4% |
+| 고정 90일 | 435.8 ± 6.2 | +24.0% |
+
+τ가 사이클마다 바뀌면 사이클별 T*는 전역 최적이 아닙니다. 갱신-보상(renewal-reward) 최적해는 모든 사이클에서 현재 비용률 C_e·n·ρ(t)가 하나의 공통 수준 g*에 도달할 때 재학습하는 것입니다. 오라클은 이 규칙을 씁니다.
+
+```bash
+python nhpp_retrain.py                              # 시뮬레이션 + results/nhpp_retrain.{json,png}
+python nhpp_retrain.py --csv logs.csv --cr 5000 --ce 1   # 실제 로그: 오늘 재학습할지 출력
+```
+
+CSV 열: `requests`, `errors`, 선택적으로 `retrained`(재학습 다음 날 1).
 
 ## Notes
 
