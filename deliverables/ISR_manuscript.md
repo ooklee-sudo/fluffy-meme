@@ -443,7 +443,7 @@ Classification retained: LLaMA 1 research-license weights counted as origin; ins
 
 ## Appendix E. Replication Materials
 
-The replication package contains the release-history file, the intensity-estimation script, the robustness script, the owner-model and dynamic-threshold scripts, the figure script, the multi-seed driver, the aggregation script, the parameter-grid script of Appendix F, the task-combination script, and the saved numerical output, including the per-seed result files. It does not contain weights or training logs from the model pairs; those are calibration inputs described in Appendix C. No proprietary or subscription data are used. An anonymized copy of the package will be provided to reviewers on request.
+The replication package reproduces Tables 3 to 7 and the figures that come from the model, the parameter grid of Appendix F, and the summaries of Appendix C. It contains the scripts for the model and the numerical analysis, the multi-seed driver and aggregation scripts for the model-pair experiments, the family-level release counts behind Table 3, the saved numerical output including the per-seed result files, and a script that compares 62 numbers with those printed in the paper. It does not contain model weights or training logs; those can be regenerated from public checkpoints with the supplied scripts. No proprietary or subscription data are used. An anonymized copy of the package will be provided to reviewers on request.
 
 ## Appendix F. Parameter Grid and Alternative Distributions
 
