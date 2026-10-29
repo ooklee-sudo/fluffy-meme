@@ -8,6 +8,7 @@ Code for the three experiments in the paper.
 | `act_toy.py` | 5.2, Appendix B | CPU (numpy), ~minutes | Toy MLP upgrade simulation: recovery of copy vs. ACT (sequential, independent, full-output), calibration size, α sweep, drift–α correlation |
 | `act_llama.py`, `run_pairs.py` | 7.1, Appendix A | GPU or CPU | Real model pair (e.g. Llama 3.2 1B Base → Instruct): train, retrain, copy, ACT; recovery R_C, R_A and cost ratio C_A/C_N |
 | `nhpp_retrain.py` | (new) | CPU, ~20 s | Retraining timing from production error logs: NHPP (Poisson GLM) fit, optimal retrain age T*, simulation vs. fixed-interval and threshold policies |
+| `ro_nhpp.py` | (new) | CPU, ~1 min | Real options + NHPP: optimal retrain age when new base models arrive at Poisson rate μ; HJB closed form, smooth-pasting and Monte Carlo checks, simulation with upgrades |
 
 ## Setup
 
@@ -108,6 +109,44 @@ python nhpp_retrain.py --csv logs.csv --cr 5000 --ce 1   # 실제 로그: 오늘
 ```
 
 CSV 열: `requests`, `errors`, 선택적으로 `retrained`(재학습 다음 날 1).
+
+## 실물옵션 + NHPP 결합 모형 (`ro_nhpp.py`)
+
+`nhpp_retrain.py`의 오류 NHPP와 `real_options.py`의 업그레이드 포아송 과정(μ)을 하나로 묶은 모형입니다.
+
+**모형.** 상태는 재학습 후 경과일 t이고, 오류 강도 λ(t)는 적합한 NHPP × 트래픽입니다.
+- 재학습: 회사가 선택하며 비용 C_r을 내고 t → 0이 됩니다.
+- 새 기반모델 도착: 비율 μ로 외생적으로 일어나며, 마이그레이션 비용 C_U를 내고 t → 0이 됩니다.
+
+할인율이 ρ일 때 기대 할인 비용 V(t)는 다음을 만족합니다.
+
+ρV = c_e·λ(t) + V′(t) + μ(C_U + V(0) − V(t)),  V(T) = C_r + V(0),  V′(T) = 0
+
+**결과(명제).**
+1. 닫힌 형태: r = ρ+μ, I_r(T) = ∫₀ᵀ e^{−rs} c_e λ(s) ds 이면 V(0;T) = r[I_r(T) + μC_U(1−e^{−rT})/r + e^{−rT}C_r] / (ρ(1−e^{−rT}))
+2. 최적 임계점: c_e·λ(T*) = (ρ+μ)C_r + ρV(0) − μC_U. μ = 0, ρ → 0이면 평균비용 규칙(c_e·λ = g*)으로 돌아갑니다.
+3. 업그레이드가 잦을수록(μ↑) T*가 늦어집니다. 곧 새 모델이 오면 재학습 비용이 낭비되기 때문이며, 이것이 기다림의 옵션가치입니다.
+4. 마이그레이션 비용 C_U는 T*에 영향을 주지 않습니다(어떤 정책에서도 내는 비용이므로).
+
+**수치 결과** (τ = 60일, ρ = 10%/년)
+
+| C_r | μ = 0 → 4/년일 때 T* | 업그레이드를 무시할 때 손실 (μ = 4) |
+| --- | --- | --- |
+| 5,000 | 52 → 57일 | 0.2% |
+| 20,000 | 91 → 105일 | 0.9% |
+| 50,000 | 131 → 163일 | 2.1% |
+
+- 검증: smooth pasting 양변이 일치(388.35 = 388.35)하고, Monte Carlo 136,793 ± 63이 닫힌 형태 136,748과 맞습니다.
+- 시뮬레이션(30 seeds × 730일, μ = 4/년, 로그에서 온라인 추정):
+  - C_r = 5,000: 정책 간 차이가 오차 범위 안입니다. 고정 60일보다는 4.4% 저렴합니다.
+  - C_r = 50,000: myopic이 2.4%(± 2.4), 오라클 myopic이 3.5% 더 비쌉니다. 방향은 이론과 같지만 표본 잡음이 큽니다.
+- 해석: 옵션가치는 재학습 비용이 크고 업그레이드가 잦을 때 의미가 커집니다. 대형 모델 파인튜닝처럼 C_r이 큰 경우가 해당합니다.
+
+```bash
+python ro_nhpp.py                       # 표, 검증, 시뮬레이션, results/ro_nhpp.{json,png}
+python ro_nhpp.py --cr 50000 --mu 4     # 재학습 비용이 큰 경우
+python ro_nhpp.py --csv logs.csv --mu 2 # 실제 로그: 업그레이드를 고려한 T*와 오늘의 결정
+```
 
 ## Notes
 
