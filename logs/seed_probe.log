@@ -1,0 +1,40 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2463.06it/s]
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1782.54it/s]
+Generating train split:   0%|          | 0/7473 [00:00<?, ? examples/s]Generating train split:  13%|█▎        | 1000/7473 [00:00<00:00, 8458.22 examples/s]Generating train split: 100%|██████████| 7473/7473 [00:00<00:00, 35320.52 examples/s]
+Generating test split:   0%|          | 0/1319 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1319/1319 [00:00<00:00, 247341.48 examples/s]
+device=cpu train=500 eval=200 calib=128
+[1] train source adapter
+  step 60/300 loss 1.4514
+  step 120/300 loss 1.5931
+  step 180/300 loss 1.2141
+  step 240/300 loss 1.4494
+  step 300/300 loss 1.5786
+[2] retrain on target (upper bound, C_N)
+  step 60/300 loss 1.3295
+  step 120/300 loss 1.5152
+  step 180/300 loss 1.1228
+  step 240/300 loss 1.4930
+  step 300/300 loss 0.8881
+[3] evaluate on target
+  none     nll=2.7611
+  retrain  nll=1.3367
+  copy     nll=1.4216
+[4] ACT
+  ACT layer 0: alphas 3e-01, 3e-01, 1e-01, 1e+00
+  ACT layer 1: alphas 1e-01, 1e-01, 1e-01, 1e+00
+  ACT layer 2: alphas 1e-01, 3e-01, 3e-01, 3e-01
+  ACT layer 3: alphas 1e-01, 1e-01, 3e-01, 1e-01
+  ACT layer 4: alphas 1e-01, 3e-01, 1e-01, 3e-01
+  ACT layer 5: alphas 1e-01, 1e+00, 3e-01, 3e-01
+  ACT layer 6: alphas 1e-01, 3e-01, 1e-01, 1e+00
+  ACT layer 7: alphas 1e-01, 3e-01, 1e-01, 3e-01
+  ACT layer 8: alphas 1e-01, 3e-01, 1e-01, 3e-01
+  ACT layer 9: alphas 1e-01, 1e+00, 1e-01, 3e-01
+  ACT layer 10: alphas 3e-02, 1e+00, 3e-01, 3e-01
+  ACT layer 11: alphas 3e-02, 3e-01, 1e-01, 3e-01
+  act      nll=1.4210
+
+R_C=0.9404  R_A=0.9408  (NLL-based)   C_A/C_N=0.377 (compute time only; add data and revalidation labor to C_N)
+saved /home/user/fluffy-meme/results/seeds/pythia_160m_10k_s0.json
+[done] pythia-160m +10k seed 0 in 30.2 min

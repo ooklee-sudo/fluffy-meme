@@ -1,5 +1,5 @@
 ---
-title: "Who Sets the Clock? Release Cadence, Compatibility Tools, and the Maintenance of Complementary Assets on Foundation-Model Platforms"
+title: "Compatibility Tools and Platform Release Cadence: Maintaining Complementary Assets on Foundation-Model Platforms"
 ---
 
 **Target journal:** *Information Systems Research* (anonymized manuscript; no author information)
@@ -24,13 +24,13 @@ We ask three questions. First, given an exogenous release intensity, when should
 
 | Result | Intuition | Implication for IS |
 |:---|:---|:---|
-| The retraining threshold is proportional to $1/(1-R)$ and rises with upgrade intensity and volatility; a free copy weakly dominates immediate retraining (Props. 1–3) | Waiting is valuable when the asset can be partly rescued and may be rescued again | Triage assets by value relative to retraining cost; do not retrain by default |
-| A costly tool is optimal only in an intermediate band of values and only if its cost is below $\Gamma$ (Prop. 3) | Low-value assets are served by copy and high-value assets are retrained anyway | Buy compatibility tools by measured $C<\Gamma$, not by vendor claims |
-| A revenue-sharing owner over-releases iff the average customer is harmed at the margin (Props. 4–5) | The owner internalizes only share $\theta$ of the burden it imposes | Release cadence is a governance variable with welfare consequences |
-| Compatibility and cadence are strategic complements for any distribution of values (Prop. 6) | Easier transfer lowers the marginal burden of a release | Owner-provided migration tools should be read as a signal of faster release |
-| Better transfer helps mid-value transferring firms and hurts firms that retrain anyway (Prop. 7) | The cadence effect dominates for firms that cannot use the tool | Contractual release caps or long-term-support lines can be worth more than a better converter for high-value assets |
-| Under logit duopoly each owner internalizes exactly one-third of the marginal change in customer surplus (Props. 9–11) | A logit price response splits a quality shock one-third to price and one-third to share | Competition does not remove over-release; it caps internalization |
-| A numerical intermediate race yields a fast, compatible frontier owner and a slow, stable one (Prop. 12) | Cadence and compatibility are a bundle along which owners can separate | Segment assets across frontier and stable platforms |
+| The retraining threshold is proportional to $1/(1-R)$ and rises with upgrade intensity and volatility; a free copy weakly dominates immediate retraining (Props. 1–2) | Waiting is valuable when the asset can be partly rescued and may be rescued again | Triage assets by value relative to retraining cost; do not retrain by default |
+| A costly tool is optimal only in an intermediate band of values and only if its cost is below $\Gamma$ (Prop. 2b) | Low-value assets are served by copy and high-value assets are retrained anyway | Buy compatibility tools by measured $C<\Gamma$, not by vendor claims |
+| A revenue-sharing owner over-releases iff the average customer is harmed at the margin (Prop. 3) | The owner internalizes only share $\theta$ of the burden it imposes | Release cadence is a governance variable with welfare consequences |
+| Compatibility and cadence are strategic complements for any distribution of values (Props. 4a, 6) | Easier transfer lowers the marginal burden of a release | Owner-provided migration tools should be read as a signal of faster release |
+| Better transfer helps mid-value transferring firms and hurts firms that retrain anyway (Prop. 4b) | The cadence effect dominates for firms that cannot use the tool | Contractual release caps or long-term-support lines can be worth more than a better converter for high-value assets |
+| Under logit duopoly each owner internalizes exactly one-third of the marginal change in customer surplus (Prop. 5) | A logit price response splits a quality shock one-third to price and one-third to share | Competition does not remove over-release; it caps internalization |
+| A numerical intermediate race yields a fast, compatible frontier owner and a slow, stable one (Numerical Finding 1) | Cadence and compatibility are a bundle along which owners can separate | Segment assets across frontier and stable platforms |
 
 *Table 1. Summary of results.*
 
@@ -45,6 +45,8 @@ The remainder of the paper is organized as follows. Section 2 positions the pape
 *Real options and IT investment.* McDonald and Siegel (1986) and Dixit and Pindyck (1994) established that the right to delay an irreversible investment has value. Technology investments fit this logic because implementation costs are partly sunk while standards keep moving (Dos Santos 1991, Grenadier and Weiss 1997, Benaroch and Kauffman 1999, Taudes et al. 2000, Benaroch 2001, Fichman 2004, Kauffman and Li 2005, Santiago and Bifano 2005). Closest in structure are models of adoption when a further innovation is anticipated (Rajagopalan 1999) and of modular upgradeability as insurance against technological change (Kamrad et al. 2013). Recent work applies the same lens to enterprise AI adoption (Tewari 2026). We move the lens from whether to adopt to how to *renew* an already deployed complementary asset when the platform underneath it is replaced at a rate the asset owner does not choose, and we make that rate endogenous.
 
 *Platform evolution, compatibility, and planned obsolescence.* Compatibility choices shape adoption and competition (Katz and Shapiro 1985, Farrell and Saloner 1985). Platform owners trade off openness against control over complements (Parker and Van Alstyne 2018), and platform architecture and governance coevolve with the environment (Tiwana et al. 2010, Ghazawneh and Henfridsson 2013, Yoo et al. 2010). Competing platforms can relax price competition through differentiation (Shaked and Sutton 1982) and compete in two-sided markets (Rochet and Tirole 2003, Armstrong 2006). We add a maintenance channel: the platform's release cadence destroys options held by complementors, compatibility tools partly restore them, and the restoration feeds back into the cadence. The resulting speed–compatibility bundle is a dimension along which competing platforms can separate.
+
+*What the paper changes in IS theory.* Three conceptual moves connect the model to established IS constructs. First, digital options (Sambamurthy et al. 2003, Fichman 2004) are usually treated as assets the adopter accumulates; here they are assets the platform owner can extinguish, so the option's life is a choice variable of the owner. Second, compatibility tools such as migration kits, converters, and long-term-support promises are boundary resources in the sense of Ghazawneh and Henfridsson (2013). The literature treats them as instruments for attracting third-party development; we show that they also change the owner's incentive to change the platform, so that resource provision and platform evolution (Tiwana et al. 2010) cannot be analyzed separately. Third, generativity (Yoo et al. 2010) is the capacity of a platform to be changed by many uncoordinated actors; our model shows its cost side, since a platform whose owner changes it often imposes a maintenance burden that falls unevenly on the actors that build on it.
 
 *Maintenance of IT and learning systems.* Maintenance has long been recognized as a central cost of IT assets (Swanson 1976). Work on when to retrain a machine-learning model attributes the need to data drift and considers two actions, retrain or keep (Mahadevan and Mathioudakis 2023, Regol et al. 2025). We attribute the need to platform replacement and add transfer as an intermediate action.
 
@@ -96,15 +98,13 @@ On five open model pairs that share a tokenizer, a rank-8 adapter was trained on
 
 Let $k(R)=(1-R)/(\rho+\mu-g)$ be the expected present-value multiplier on lost flow until Poisson expiry. The underlying asset of the retraining option is $k(R)v$, the strike is $C_N$, and expiry is the next upgrade. Let $\beta>1$ be the positive root of $\tfrac12\sigma^2\beta(\beta-1)+g\beta-(\rho+\mu)=0$.
 
-**Proposition 1 (Retraining threshold).** For a firm operating at recovery $R<1$, it is optimal to retrain the first time $v$ reaches
+**Proposition 1 (Maintenance option).** (a) For a firm operating at recovery $R<1$, it is optimal to retrain the first time $v$ reaches
 $$v^*(R)=\frac{\beta}{\beta-1}\,\frac{C_N}{k(R)}.$$
-For $v<v^*$ the option value is $F(v)=(kv^*-C_N)(v/v^*)^{\beta}$.
-
-**Proposition 2 (Comparative statics).** $v^*(R)$ is increasing in $R$, in $\mu$, and in $\sigma$, and strictly exceeds the NPV threshold $C_N/k(R)$.
+For $v<v^*$ the option value is $F(v)=(kv^*-C_N)(v/v^*)^{\beta}$. (b) $v^*(R)$ is increasing in $R$, in $\mu$, and in $\sigma$, and strictly exceeds the NPV threshold $C_N/k(R)$.
 
 At $\rho=0.10$, $g=0.20$, $\sigma=0.40$, $\mu=2$ one has $\beta\approx 4.43$ and $\beta/(\beta-1)\approx 1.29$. Write $W_j(v)$ for the expected total cost of transferring with method $j$ and then following the optimal retraining rule. For $v<v_j^*$, $W_j(v)=C_j+k_jv-F_j(v)$; otherwise $W_j(v)=C_j+C_N$.
 
-**Proposition 3 (Weak dominance of copy and the costly-transfer region).** (a) For all $v$, $W_C(v)\le C_N$, with equality only on $v\ge v_C^*$. Immediate retraining is therefore optimal only above the copy threshold. (b) A method $A$ with $R_A>R_C$ has a nonempty set of $v$ at which it is uniquely optimal only if $C_A<\Gamma(R_A,R_C)$, the maximum reduction in expected cost that $A$ can deliver relative to copy and to immediate retraining. That set, when it exists, lies strictly between the copy region and the immediate-retraining region.
+**Proposition 2 (Copy dominance and the costly-transfer band).** (a) For all $v$, $W_C(v)\le C_N$, with equality only on $v\ge v_C^*$. Immediate retraining is therefore optimal only above the copy threshold. (b) A method $A$ with $R_A>R_C$ has a nonempty set of $v$ at which it is uniquely optimal only if $C_A<\Gamma(R_A,R_C)$, the maximum reduction in expected cost that $A$ can deliver relative to copy and to immediate retraining. That set, when it exists, lies strictly between the copy region and the immediate-retraining region.
 
 | Family | $\hat\mu$ | $v^*$ copy | $v^*$ transfer | Transfer-optimal band | $\Gamma$ |
 |:---|---:|---:|---:|:---:|---:|
@@ -129,19 +129,13 @@ A transferring firm's burden is concave in $\mu$ and saturates at $(1-R)v/\rho$.
 
 The owner earns a direct return $\psi\mu$ from the general market, bears development cost $\tfrac12 c\mu^2$, and captures a share $\theta\in(0,1]$ of expected enterprise surplus. The planner has the same objective with $\theta=1$.
 
-**Proposition 4 (Cadence).** The owner's intensity $\mu_V$ solves $\psi-c\mu+\theta n\,(b-\partial E[m]/\partial\mu)=0$. Movement of $\hat v$ has no first-order effect on $E[m]$ because the two options have equal burden at $\hat v$. Under $v\sim U[0,\bar v]$ with some retraining and $\kappa(\rho+\mu)\le 1$,
+**Proposition 3 (Cadence and over-release).** (a) The owner's intensity $\mu_V$ solves $\psi-c\mu+\theta n\,(b-\partial E[m]/\partial\mu)=0$. Movement of $\hat v$ has no first-order effect on $E[m]$ because the two options have equal burden at $\hat v$. Under $v\sim U[0,\bar v]$ with some retraining and $\kappa(\rho+\mu)\le 1$,
 $$E[m]=\frac{\mu C_N}{\rho}\left(1-\frac{\kappa(\rho+\mu)}{2}\right),\qquad \kappa=\frac{C_N}{(1-R)\bar v},$$
-and $\mu_V=(\psi+\theta X)/(c-\theta Y)$ with $X=n\left[b-(C_N/\rho)(1-\kappa\rho/2)\right]$ and $Y=nC_N\kappa/\rho$, provided $c>\theta Y$.
+and $\mu_V=(\psi+\theta X)/(c-\theta Y)$ with $X=n\left[b-(C_N/\rho)(1-\kappa\rho/2)\right]$ and $Y=nC_N\kappa/\rho$, provided $c>\theta Y$. (b) If the planner's objective is concave, $\mu_V>\mu_P$ if and only if $E[s_\mu(\mu_V,v)]<0$, that is, if and only if the average customer is harmed at the margin. Under the uniform specification this is equivalent to $cX+\psi Y<0$. Because $\kappa$ rises with $R$, better transfer shrinks the region of over-release.
 
-**Proposition 5 (Over-release).** If the planner's objective is concave, $\mu_V>\mu_P$ if and only if $E[s_\mu(\mu_V,v)]<0$. Under the uniform specification this is equivalent to $cX+\psi Y<0$. Because $\kappa$ rises with $R$, better transfer shrinks the region of over-release.
+**Proposition 4 (Complementarity and distribution).** Suppose $F$ puts positive mass on both sides of $\hat v$, so that some firms transfer and some retrain. (a) *Strategic complementarity:* $d\mu_V/dR>0$ for any such $F$. If all firms retrain or all transfer, $R$ has no effect on the owner's problem and $d\mu_V/dR=0$. (b) *Distribution:* a small increase in $R$ has a direct effect and a cadence effect. A firm that retrains before and after the change has no direct effect; if $b<C_N/\rho$ it is made strictly worse off. A transferring firm with $v\to 0$ gains from both effects. In the over-release region the cadence effect is negative on average, so mean surplus can fall even as $R$ improves.
 
-**Proposition 6 (Strategic complementarity).** For any $F$, $d\mu_V/dR>0$.
-
-Easier transfer lowers the marginal burden of a release. The owner internalizes share $\theta$ of that reduction and therefore releases more often.
-
-**Proposition 7 (Distribution).** A small increase in $R$ has a direct effect and a cadence effect. (a) A firm that retrains before and after the change has no direct effect; if $b<C_N/\rho$ it is made strictly worse off. (b) A transferring firm with $v\to 0$ gains from both effects. (c) In the over-release region the cadence effect is negative on average, so mean surplus can fall even as $R$ improves.
-
-**Proposition 8 (Endogenous compatibility).** If the owner also chooses $R$ at an increasing convex cost $Z(R)$, the objective is supermodular in $(\mu,R)$ and has increasing differences in $(\mu,\psi)$. The largest and smallest optimizers $(\mu^*,R^*)$ are therefore nondecreasing in $\psi$.
+Easier transfer lowers the marginal burden of a release. The owner internalizes share $\theta$ of that reduction and therefore releases more often. The firms that cannot use the tool bear the faster clock.
 
 | $R$ | $\mu_V$ | $\mu_P$ | Retrain boundary | Over-release? |
 |:---:|---:|---:|---:|:---:|
@@ -160,15 +154,13 @@ Easier transfer lowers the marginal burden of a release. The owner internalizes 
 
 Owners first choose intensities (and, later, compatibilities) simultaneously, then set enterprise prices, then firms choose an owner and stay with it. A firm of value $v$ obtains $s(\mu_i,v;R_i)-p_i+\eta\varepsilon_i$ from owner $i$, with $\varepsilon_i$ i.i.d. Gumbel. A general-market prize $H$ is split by a Tullock contest (Tullock 1980) in intensities. Let $a\ge 0$ denote the planner's marginal valuation of the general-market benefit of intensity.
 
-**Proposition 9 (One-third rule).** Let $R$ be exogenous and common. In a symmetric subgame-perfect equilibrium, (a) prices are $p^*=2\eta$, independent of $\mu$ and $R$; (b) $\mu^*$ satisfies $\dfrac{H}{4\mu^*}+\dfrac{n}{3}E[s_\mu]-c\mu^*=0$; (c) each owner internalizes the marginal change in enterprise surplus with weight exactly one-third, regardless of $\eta$ and of $F$.
+**Proposition 5 (One-third rule and efficiency).** Let $R$ be exogenous and common. In a symmetric subgame-perfect equilibrium, (a) prices are $p^*=2\eta$, independent of $\mu$ and $R$; (b) $\mu^*$ satisfies $\dfrac{H}{4\mu^*}+\dfrac{n}{3}E[s_\mu]-c\mu^*=0$; (c) each owner internalizes the marginal change in enterprise surplus with weight exactly one-third, regardless of $\eta$ and of $F$. (d) If the planner's objective is concave, the symmetric equilibrium over-releases if and only if $a+(n/6)E[s_\mu]-H/(4\mu^*)<0$. Over-release has two sources: rent-seeking in the race and under-internalization of enterprise surplus (weight 1/3 against the planner's per-owner weight 1/2).
 
-**Proposition 10 (Efficiency under competition).** If the planner's objective is concave, the symmetric equilibrium over-releases if and only if $a+(n/6)E[s_\mu]-H/(4\mu^*)<0$. Over-release has two sources: rent-seeking in the race and under-internalization of enterprise surplus (weight 1/3 against the planner's per-owner weight 1/2).
-
-**Proposition 11 (Complementarity under competition).** For any $F$, $d\mu^*/dR>0$ in the symmetric equilibrium. If $b<C_N/\rho$, firms that keep retraining lose when $R$ improves. Evaluated at the same $\mu$, the rebound $d\mu^*/dR$ is smaller than the monopoly rebound whenever $\theta\ge 1/3$.
+**Proposition 6 (Complementarity under competition).** Under the condition of Proposition 4, $d\mu^*/dR>0$ in the symmetric equilibrium. If $b<C_N/\rho$, firms that keep retraining lose when $R$ improves. Evaluated at the same $\mu$, the rebound $d\mu^*/dR$ is smaller than the monopoly rebound whenever $\theta\ge 1/3$.
 
 Raising $R$ from 0.5 to 0.7 raises $\mu^*$ only from 0.928 to 0.952, against 2.58 to 2.86 under monopoly.
 
-**Proposition 12 (Numerical differentiation).** When each owner also chooses $R_i$ at cost $Z(R)=zR^2/(1-R)$, the symmetric candidate is an equilibrium at weak race intensity and fails at intermediate race intensity. At the latter, an asymmetric equilibrium appears: a frontier owner that is fast and compatible and a stable owner that is slow and sparse. Mid-value transferring firms sort to the frontier owner; the highest-value retraining firms lean to the stable owner. When the race is very intense both owners become fast and compatible. These are grid-search findings at one parameterization. Multiple equilibria exist at some $H$.
+**Numerical Finding 1 (Differentiation).** When each owner also chooses $R_i$ at cost $Z(R)=zR^2/(1-R)$, the symmetric candidate is an equilibrium at weak race intensity and fails at intermediate race intensity. At the latter, an asymmetric equilibrium appears: a frontier owner that is fast and compatible and a stable owner that is slow and sparse. Mid-value transferring firms sort to the frontier owner; the highest-value retraining firms lean to the stable owner. When the race is very intense both owners become fast and compatible. This is a grid-search finding at one parameterization, not a theorem, and multiple equilibria exist at some $H$.
 
 With $z=0.1$ and $\eta=10$ the asymmetric pair at $H=20$ is approximately $(\mu,R)=(2.50,0.96)$ versus $(1.38,0.08)$. Prices in that illustration are 26.4 and 17.3. Mean customer value is 18.2 on the frontier platform and 22.8 on the stable platform.
 
@@ -206,7 +198,7 @@ Write $V_i(v)$ for the period-1 continuation, including the option to switch. Th
 
 *Portability reduces the return to compatibility investment.* The demand derivative $\partial D_i/\partial R_i$ splits into an own-customer maintenance effect (the Section 5 channel) and a switching-in effect. The second effect is business-stealing. In a symmetric equilibrium business-stealing is a transfer and does not enter welfare, but it does enter the owner's private return to $R$. As $\omega\to 0$, differentiation in $R$ cannot support a price gap, so $Z'(R)$ is harder to recoup. Compatibility investment therefore falls even as the social return to $R$, a lower maintenance burden, remains.
 
-The one-third weight is consequently an upper bound on under-internalization only inside the no-switching game. Treating transfer purely as a maintenance tool and ignoring portability will overstate the case for owner-provided compatibility as a customer-friendly investment. We do not claim a closed-form analogue of Proposition 9 under switching.
+The one-third weight is consequently an upper bound on under-internalization only inside the no-switching game. Treating transfer purely as a maintenance tool and ignoring portability will overstate the case for owner-provided compatibility as a customer-friendly investment. We do not claim a closed-form analogue of Proposition 5 under switching.
 
 ### 7.4 Owner's first-order condition with the dynamic threshold
 
@@ -227,13 +219,18 @@ Intensities move by less than one percent. The slope $d\mu_V/dR$ from $R=0.3$ to
 
 The one-third weight uses two logit facts: the own-price markup $p=2\eta$ at symmetry, and a quality shock that splits one-third into price and one-third into share. Under Hotelling the analogous weight differs. Pure-strategy price equilibria fail when $\eta$ is small relative to value heterogeneity. The one-third rule should be read as: competing owners internalize a constant that is strictly less than one-half, and in the standard discrete-choice workhorse that constant is one-third.
 
+### 7.6 Parameter grid and alternative value distributions
+
+The numerical illustrations use one parameter vector and uniform values. To check that Propositions 3 to 4 do not depend on them, we solved the monopoly problem on a grid of $\rho\in\{0.05,0.10,0.20\}$, $b\in\{2,4,7,10,14\}$, $\psi\in\{0,3,6,9\}$, $c\in\{1,2,4\}$, $\theta\in\{0.25,0.5,0.75\}$ and $R\in\{0.1,0.3,0.5,0.7,0.8\}$, under six value distributions with the same mean as $U[0,40]$ (uniform, exponential, gamma with shape 3, lognormal with $s=0.5$ and $s=1$, and Pareto with tail index 2.5). The code reproduces Tables 5 and 7 (static columns) exactly. Of the 16,200 cells, 6,505 satisfy the hypotheses of the propositions: the owner's and the planner's objectives are globally concave on the grid and both have interior maximizers (Appendix F reports the breakdown). Three results follow. First, strategic complementarity (Proposition 4a) holds in every one of them: $d\mu_V/dR>0$ in 5,212 cells, equals zero in 392 cells, and is negative in none. In every zero cell essentially no firm transfers (the threshold $\hat v$ lies below the support of $F$, or the mass below it is at most $4\times 10^{-8}$), which is the degenerate case excluded in the statement of Proposition 4. Second, the over-release criterion of Proposition 3(b), $E[s_\mu(\mu_V)]<0$, agrees with the direct comparison of $\mu_V$ and $\mu_P$ in all 6,505 cells, with 31 exact ties at $\mu_V=\mu_P$. Third, over-release is not an artifact of one parameter vector: it occurs in 23 to 34 percent of valid cells depending on the distribution, and in the uniform case it arises when $b$ is below roughly $C_N/\rho$ (Figure 5b), the region in which firms that retrain are harmed at the margin.
+
+![Figure 5. Robustness of the monopoly results. (a) Equilibrium intensity as a function of $R$ under six value distributions with common mean (baseline parameters $\rho=0.10$, $b=7$, $\psi=6$, $c=2$, $\theta=0.5$). (b) Difference between owner and planner intensity for uniform $F$; the black line is the over-release boundary.](figures/fig5.png)
 ## 8. Implications for Research and Practice
 
 ### 8.1 Implications for research
 
 *Post-adoption IS value.* The real-options view of IT platforms has concentrated on when to adopt. Our results show that the maintenance decision has its own option structure, with a free partial transfer (copy) knocking out blanket retraining and a costly tool surviving only in a bounded intermediate band. Empirical work on IT asset value should therefore measure recovery under upgrades, not only adoption timing.
 
-*Platform governance.* Release cadence and compatibility support are governance instruments that the platform owner sets jointly. Treating them separately misses their complementarity and the distributional consequence that follows. A testable implication is that, across platforms, announcements of migration or compatibility tooling should be followed by higher release frequency, and that the customers with the highest-value retrained assets should be the most likely to object.
+*Platform governance.* Release cadence and compatibility support are governance instruments that the platform owner sets jointly, and boundary-resource provision (Ghazawneh and Henfridsson 2013) should be modeled as endogenous to platform evolution rather than as a fixed offer. Treating them separately misses their complementarity and the distributional consequence that follows. A testable implication is that, across platforms, announcements of migration or compatibility tooling should be followed by higher release frequency, and that the customers with the highest-value retrained assets should be the most likely to object.
 
 *Platform competition.* Platforms can separate on the speed–compatibility bundle, and customers sort across them by asset value. This suggests studying asset-level heterogeneity, not only customer-level heterogeneity, in platform choice.
 
@@ -249,7 +246,7 @@ Five implications do not depend on a named transfer algorithm.
 
 ### 8.3 Limitations and future research
 
-Value is taken as linear in $R$; the owner's problem is solved in the static limit, with a dynamic-threshold proxy in Section 7.4; the asymmetric compatibility equilibrium is numerical; the switching game is characterized only to first order; the recovery measurements are small-scale (160M to 0.5B parameters, one task, one seed); and open lines can be discontinued. The first empirical priority is $(g,\sigma)$ from service logs and a historical cost accounting of copy versus retrain-every-time on a real adapter portfolio. A natural field-data test of Proposition 6 is whether the introduction of owner-provided migration tooling predicts a subsequent change in release frequency.
+Value is taken as linear in $R$; the owner's problem is solved in the static limit, with a dynamic-threshold proxy in Section 7.4; the asymmetric compatibility equilibrium is numerical; the switching game is characterized only to first order; the recovery measurements are small-scale (160M to 0.5B parameters, one task, one seed); and open lines can be discontinued. The first empirical priority is $(g,\sigma)$ from service logs and a historical cost accounting of copy versus retrain-every-time on a real adapter portfolio. A natural field-data test of Proposition 4(a) is whether the introduction of owner-provided migration tooling predicts a subsequent change in release frequency.
 
 ## 9. Conclusion
 
@@ -323,43 +320,47 @@ Xia F, Liao M, Fang Y, Li D, Xie Y, Li W, Li Y, Xia D, Huang J (2025) Cross-LoRA
 
 Yoo Y, Henfridsson O, Lyytinen K (2010) The new organizing logic of digital innovation: An agenda for information systems research. *Inform. Systems Res.* 21(4):724–735.
 
-## Appendix A. Proofs
+## Appendix A. Proofs of Propositions 1 to 6
 
-**Proof of Proposition 1.** In the continuation region the option satisfies the Bellman equation $\rho F=gvF'+\tfrac12\sigma^2v^2F''+\mu(0-F)$. The Euler equation is $\tfrac12\sigma^2\beta(\beta-1)+g\beta-(\rho+\mu)=0$. Of the two roots, the negative root is discarded by $F(0)=0$. Value matching $F(v^*)=kv^*-C_N$ and smooth pasting $F'(v^*)=k$ with $F=Av^\beta$ yield
+**Proof of Proposition 1.** (a) In the continuation region the option satisfies the Bellman equation $\rho F=gvF'+\tfrac12\sigma^2v^2F''+\mu(0-F)$. The Euler equation is $\tfrac12\sigma^2\beta(\beta-1)+g\beta-(\rho+\mu)=0$. Of the two roots, the negative root is discarded by $F(0)=0$. Value matching $F(v^*)=kv^*-C_N$ and smooth pasting $F'(v^*)=k$ with $F=Av^\beta$ yield
 $$A(v^*)^\beta=kv^*-C_N,\qquad A\beta(v^*)^{\beta-1}=k,$$
-hence $v^*=[\beta/(\beta-1)]\,C_N/k$. The quadratic identity $\rho+\mu-g=(\beta-1)(g+\tfrac12\sigma^2\beta)$ gives the equivalent writing in terms of $\rho+\mu-g$. $\square$
+hence $v^*=[\beta/(\beta-1)]\,C_N/k$. The quadratic identity $\rho+\mu-g=(\beta-1)(g+\tfrac12\sigma^2\beta)$ gives the equivalent writing in terms of $\rho+\mu-g$.
 
-**Proof of Proposition 2.** Since $v^*=h(K)\,C_N/(1-R)$ with $K=\rho+\mu$ and $h(K)=(K-g)\beta/(\beta-1)$: (i) $v^*$ is proportional to $1/(1-R)$, hence increasing in $R$. (ii) By the implicit function theorem $\beta'(K)=1/Q'(\beta)$ with $Q'(\beta)=(g+\tfrac12\sigma^2\beta)+\tfrac12\sigma^2(\beta-1)>0$. Substituting $K-g=(\beta-1)(g+\tfrac12\sigma^2\beta)$ shows $h'(K)>0$, so $v^*$ is increasing in $\mu$. (iii) At any fixed $\beta>1$, $Q$ is increasing in $\sigma$ and $Q'>0$ at the root, so $\beta$ is decreasing in $\sigma$. Since $\beta/(\beta-1)$ is decreasing in $\beta$, the threshold increases in $\sigma$. (iv) $\beta/(\beta-1)>1$ gives the strict excess over the NPV threshold. $\square$
+(b) Since $v^*=h(K)\,C_N/(1-R)$ with $K=\rho+\mu$ and $h(K)=(K-g)\beta/(\beta-1)$: (i) $v^*$ is proportional to $1/(1-R)$, hence increasing in $R$. (ii) By the implicit function theorem $\beta'(K)=1/Q'(\beta)$ with $Q'(\beta)=(g+\tfrac12\sigma^2\beta)+\tfrac12\sigma^2(\beta-1)>0$. Substituting $K-g=(\beta-1)(g+\tfrac12\sigma^2\beta)$ shows $h'(K)>0$, so $v^*$ is increasing in $\mu$. (iii) At any fixed $\beta>1$, $Q$ is increasing in $\sigma$ and $Q'>0$ at the root, so $\beta$ is decreasing in $\sigma$. Since $\beta/(\beta-1)$ is decreasing in $\beta$, the threshold increases in $\sigma$. (iv) $\beta/(\beta-1)>1$ gives the strict excess over the NPV threshold. $\square$
 
-**Proof of Proposition 3.** An option is worth at least its immediate exercise value, so $F_C(v)\ge k_Cv-C_N$, that is $W_C(v)\le C_N$. Equality holds only on $v\ge v_C^*$. Any $v$ at which $A$ is uniquely optimal must satisfy $W_A(v)<\min\{W_C(v),C_N\}$. Because $W_A(v)=C_A+\left(k_Av-F_A(v)\right)$, the highest $C_A$ that can satisfy the inequality for some $v$ is
+**Proof of Proposition 2.** (a) An option is worth at least its immediate exercise value, so $F_C(v)\ge k_Cv-C_N$, that is $W_C(v)\le C_N$. Equality holds only on $v\ge v_C^*$. (b) Any $v$ at which $A$ is uniquely optimal must satisfy $W_A(v)<\min\{W_C(v),C_N\}$. Because $W_A(v)=C_A+\left(k_Av-F_A(v)\right)$, the highest $C_A$ that can satisfy the inequality for some $v$ is
 $$\Gamma=\sup_v\left(\min\{W_C(v),C_N\}-\left(k_Av-F_A(v)\right)\right).$$
 The optimizer cannot lie in $v\ge v_C^*$, where both copy and immediate retraining cost $C_N$ and $W_A\ge C_A$, nor at $v=0$, where $W_A=C_A>W_C=0$ whenever $C_A>0$. Hence the $A$-region, when nonempty, is intermediate. $\square$
 
-**Proof of Proposition 4.** The owner's first-order condition is $\psi-c\mu+\theta n\left(b-\partial E[m]/\partial\mu\right)=0$. At $\hat v$ the two instruments have equal burden, so the Leibniz term from moving $\hat v$ vanishes. Under the uniform law with $\kappa(\rho+\mu)\le 1$,
+**Proof of Proposition 3.** (a) The owner's first-order condition is $\psi-c\mu+\theta n\left(b-\partial E[m]/\partial\mu\right)=0$. At $\hat v$ the two instruments have equal burden, so the Leibniz term from moving $\hat v$ vanishes. Under the uniform law with $\kappa(\rho+\mu)\le 1$,
 $$E[m]=\int_0^{\hat v}\frac{(1-R)v\mu}{\rho(\rho+\mu)}\frac{dv}{\bar v}+\int_{\hat v}^{\bar v}\frac{\mu C_N}{\rho}\frac{dv}{\bar v}=\frac{\mu C_N}{\rho}\left(1-\frac{\kappa(\rho+\mu)}{2}\right).$$
-Then $\partial E[m]/\partial\mu=(C_N/\rho)(1-\kappa\rho/2)-\mu C_N\kappa/\rho$, which produces $X$ and $Y$ and the closed form. Concavity requires $c>\theta Y$. $\square$
+Then $\partial E[m]/\partial\mu=(C_N/\rho)(1-\kappa\rho/2)-\mu C_N\kappa/\rho$, which produces $X$ and $Y$ and the closed form. Concavity requires $c>\theta Y$.
 
-**Proof of Proposition 5.** Substituting the owner's first-order condition into the planner's derivative gives $\mathcal W'(\mu_V)=(1-\theta)\,n\,E[s_\mu(\mu_V)]$, which is negative if and only if $\mu_P<\mu_V$ when $\mathcal W$ is concave. For the uniform case write $\mu(\theta)=(\psi+\theta X)/(c-\theta Y)$. Then $d\mu/d\theta$ has the sign of $cX+\psi Y$, which does not depend on $\theta$. Thus $\mu(\theta)>\mu(1)$ for $\theta<1$ if and only if $cX+\psi Y<0$. $\square$
+(b) Substituting the owner's first-order condition into the planner's derivative gives $\mathcal W'(\mu_V)=(1-\theta)\,n\,E[s_\mu(\mu_V)]$, which is negative if and only if $\mu_P<\mu_V$ when $\mathcal W$ is concave. For the uniform case write $\mu(\theta)=(\psi+\theta X)/(c-\theta Y)$. Then $d\mu/d\theta$ has the sign of $cX+\psi Y$, which does not depend on $\theta$. Thus $\mu(\theta)>\mu(1)$ for $\theta<1$ if and only if $cX+\psi Y<0$. $\square$
 
-**Proof of Proposition 6.** $d\mu_V/dR=-\Pi_{\mu R}/\Pi_{\mu\mu}$ with $\Pi_{\mu\mu}<0$. Differentiating the first-order condition with respect to $R$,
+**Proof of Proposition 4.** (a) $d\mu_V/dR=-\Pi_{\mu R}/\Pi_{\mu\mu}$ with $\Pi_{\mu\mu}<0$. Differentiating the first-order condition with respect to $R$,
 $$\Pi_{\mu R}=-\theta n\cdot\frac{\partial^2E[m]}{\partial\mu\,\partial R}.$$
-The first term in that cross-partial, holding $\hat v$ fixed, is negative because a higher $R$ lowers the marginal burden of transferring firms. The second term comes from $\partial\hat v/\partial R=C_N(\rho+\mu)/(1-R)^2>0$. At $\hat v$ a transferring firm's marginal burden $C_N/(\rho+\mu)$ lies below a retraining firm's $C_N/\rho$. Raising $\hat v$ therefore replaces a high marginal burden with a lower one, which again lowers $\partial E[m]/\partial\mu$. Hence $\Pi_{\mu R}>0$ and $d\mu_V/dR>0$. $\square$
+The first term in that cross-partial, holding $\hat v$ fixed, is negative because a higher $R$ lowers the marginal burden of transferring firms. The second term comes from $\partial\hat v/\partial R=C_N(\rho+\mu)/(1-R)^2>0$. At $\hat v$ a transferring firm's marginal burden $C_N/(\rho+\mu)$ lies below a retraining firm's $C_N/\rho$. Raising $\hat v$ therefore replaces a high marginal burden with a lower one, which again lowers $\partial E[m]/\partial\mu$. Both terms vanish if no firm transfers or no firm retrains. Hence $\Pi_{\mu R}>0$ and $d\mu_V/dR>0$ when $F$ puts mass on both sides of $\hat v$.
 
-**Proof of Proposition 7.** Differentiate $s(\mu_V(R),v;R)$ and use Proposition 6. A retraining firm has $\partial s/\partial R|_\mu=0$ and $s_\mu=b-C_N/\rho$, which is negative under the maintained condition. A transferring firm with $v\to 0$ has $s_\mu\to b>0$ and a strictly positive direct effect. Average surplus moves with $E[s_\mu]\,d\mu_V/dR$ plus the average direct effect; the first term is negative in the over-release region. $\square$
+(b) Differentiate $s(\mu_V(R),v;R)$ and use part (a). A retraining firm has $\partial s/\partial R|_\mu=0$ and $s_\mu=b-C_N/\rho$, which is negative under the maintained condition. A transferring firm with $v\to 0$ has $s_\mu\to b>0$ and a strictly positive direct effect. Average surplus moves with $E[s_\mu]\,d\mu_V/dR$ plus the average direct effect; the first term is negative in the over-release region. $\square$
 
-**Proof of Proposition 8.** $\Pi(\mu,R;\psi)=\psi\mu-\tfrac12c\mu^2-Z(R)+\theta nE[s(\mu,v;R)]$ is supermodular in $(\mu,R)$ by Proposition 6, has increasing differences in $(\mu,\psi)$, and has zero cross-partial in $(R,\psi)$. Topkis's theorem (Milgrom and Shannon 1994) yields monotonicity of the extremal optimizers in $\psi$. Holding $\mu$ fixed, $\Pi_{R\theta}=-n\,\partial E[m]/\partial R>0$. $\square$
-
-**Proof of Proposition 9.** At the symmetric point every type chooses each owner with probability $\varphi(v)=1/2$, so the price first-order condition $p=\eta E[\varphi]/E[\varphi(1-\varphi)]$ gives $p=2\eta$. Raising $\mu_1$ slightly gives
+**Proof of Proposition 5.** (a), (b), (c) At the symmetric point every type chooses each owner with probability $\varphi(v)=1/2$, so the price first-order condition $p=\eta E[\varphi]/E[\varphi(1-\varphi)]$ gives $p=2\eta$. Raising $\mu_1$ slightly gives
 $$\frac{\partial E[\varphi]}{\partial\mu_1}=\frac{E[s_\mu]}{4\eta},\qquad\frac{\partial E[\varphi(1-\varphi)]}{\partial\mu_1}=0.$$
-To first order the price subgame responds as if every firm received the same quality advantage $d\delta=E[s_\mu]\,d\mu_1$. In a logit duopoly a quality advantage $d\delta$ yields $d(p_1-p_2)=(2/3)d\delta$, $dp_1=d\delta/3$ and $d\varphi_1=d\delta/(12\eta)$. Enterprise profit therefore changes by $\varphi\,dp_1+p_1\,d\varphi_1=d\delta/3$. The race term contributes $H/(4\mu)$ at the symmetric point. $\square$
+To first order the price subgame responds as if every firm received the same quality advantage $d\delta=E[s_\mu]\,d\mu_1$. In a logit duopoly a quality advantage $d\delta$ yields $d(p_1-p_2)=(2/3)d\delta$, $dp_1=d\delta/3$ and $d\varphi_1=d\delta/(12\eta)$. Enterprise profit therefore changes by $\varphi\,dp_1+p_1\,d\varphi_1=d\delta/3$. The race term contributes $H/(4\mu)$ at the symmetric point.
 
-**Proof of Proposition 10.** At the symmetric point the planner's marginal welfare per owner is $a+(n/2)E[s_\mu]-c\mu$. Substituting $c\mu^*$ from Proposition 9 gives $a+(n/6)E[s_\mu]-H/(4\mu^*)$, which is negative if and only if $\mu^*>\mu_P$ when the planner's objective is concave. $\square$
+(d) At the symmetric point the planner's marginal welfare per owner is $a+(n/2)E[s_\mu]-c\mu$. Substituting $c\mu^*$ from part (b) gives $a+(n/6)E[s_\mu]-H/(4\mu^*)$, which is negative if and only if $\mu^*>\mu_P$ when the planner's objective is concave. $\square$
 
-**Proof of Proposition 11.** Let $\Phi(\mu,R)$ be the left-hand side of the duopoly first-order condition. $\Phi_R=-(n/3)\,\partial^2E[m]/\partial\mu\,\partial R>0$ by the proof of Proposition 6. Apply the implicit function theorem with $\Phi_\mu<0$. The comparison of slopes follows from $E[s_{\mu\mu}]>0$ (convexity of $s$ in $\mu$ for retraining firms, and the race term). $\square$
+**Proof of Proposition 6.** Let $\Phi(\mu,R)$ be the left-hand side of the duopoly first-order condition. $\Phi_R=-(n/3)\,\partial^2E[m]/\partial\mu\,\partial R>0$ by the proof of Proposition 4. Apply the implicit function theorem with $\Phi_\mu<0$. The comparison of slopes follows from $E[s_{\mu\mu}]>0$ (convexity of $s$ in $\mu$ for retraining firms, and the race term). $\square$
 
-Proposition 12 is a grid search, not a proof. The two-period switching extension in Section 7.3 is a first-order characterization, not an equilibrium existence theorem.
+Numerical Finding 1 is a grid search, not a proof. The two-period switching extension in Section 7.3 is a first-order characterization, not an equilibrium existence theorem.
 
-## Appendix B. Online Appendix: Calibration Pairs
+## Appendix B. Additional Results
+
+**Proposition B1 (Endogenous compatibility).** If the owner also chooses $R$ at an increasing convex cost $Z(R)$, the objective is supermodular in $(\mu,R)$ and has increasing differences in $(\mu,\psi)$. The largest and smallest optimizers $(\mu^*,R^*)$ are therefore nondecreasing in $\psi$.
+
+*Proof.* $\Pi(\mu,R;\psi)=\psi\mu-\tfrac12c\mu^2-Z(R)+\theta nE[s(\mu,v;R)]$ is supermodular in $(\mu,R)$ by Proposition 4(a), has increasing differences in $(\mu,\psi)$, and has zero cross-partial in $(R,\psi)$. Topkis's theorem (Milgrom and Shannon 1994) yields monotonicity of the extremal optimizers in $\psi$. Holding $\mu$ fixed, $\Pi_{R\theta}=-n\,\partial E[m]/\partial R>0$. $\square$
+
+## Appendix C. Online Appendix: Calibration Pairs
 
 The following table is the measurement used to pin $(R,C)$ in Section 3.3. Models have 160M to 0.5B parameters, one task (GSM8K), one seed, and a short CPU training budget. Recovery is $R=(L_0-L_m)/(L_0-L_{\text{retrain}})$ on held-out negative log-likelihood. These are calibration inputs, not production estimates.
 
@@ -375,7 +376,7 @@ The following table is the measurement used to pin $(R,C)$ in Section 3.3. Model
 
 The calibration method matches, at each layer, the change in hidden activations that the source adapter produces on unlabeled inputs, with a ridge term that anchors the solution to naive copy. As the ridge diverges the method equals copy. Cost is forward passes plus per-layer linear algebra. Full protocol: public checkpoints from EleutherAI/pythia-160m (steps 73000, 113000, 133000 → 143000), HuggingFaceTB/SmolLM2-360M, and Qwen/Qwen2.5-0.5B; rank-8 LoRA on every linear layer in the decoder; 500 GSM8K training problems; 300 AdamW steps; 128 unlabeled calibration prompts.
 
-## Appendix C. Date Verification
+## Appendix D. Date Verification
 
 Window end: 28 September 2026. Primary definition: new version of the family's main general-purpose text model.
 
@@ -388,6 +389,21 @@ Window end: 28 September 2026. Primary definition: new version of the family's m
 
 Classification retained: LLaMA 1 research-license weights counted as origin; instruct-only twins and extra sizes excluded from primary; QwQ, DeepSeek-R1, and refreshed checkpoints counted only under the broad definition.
 
-## Appendix D. Replication Materials
+## Appendix E. Replication Materials
 
 The replication package contains the release-history file, the intensity-estimation script, the robustness script, the owner-model and dynamic-threshold scripts, the figure script, and saved numerical output. It does not contain weights or training logs from the five small-model pairs; those are calibration inputs described in Appendix B. No proprietary or subscription data are used. An anonymized copy of the package will be provided to reviewers on request.
+
+## Appendix F. Parameter Grid and Alternative Distributions
+
+Grid: $\rho\in\{0.05,0.10,0.20\}$, $b\in\{2,4,7,10,14\}$, $\psi\in\{0,3,6,9\}$, $c\in\{1,2,4\}$, $\theta\in\{0.25,0.5,0.75\}$, $R\in\{0.1,0.3,0.5,0.7,0.8\}$, $C_N=1$, $n=1$; all value distributions have mean 20. A cell is valid if the owner's and the planner's objectives are concave on the whole intensity grid and both maximizers are interior. Cells that fail concavity violate the hypothesis of Propositions 3(b) and 5(d); cells with a corner solution are those in which the owner prefers no release at all or the maximizer lies at the upper end of the grid. Slopes are computed between adjacent $R$ values; "Zero" means an absolute slope below $10^{-6}$.
+
+| Distribution | Valid cells | $d\mu_V/dR>0$ | Zero | Negative | Over-release share | Criterion agrees |
+|:---|---:|---:|---:|---:|---:|---:|
+| Uniform [0,40] | 1455 of 2700 | 1203 | 0 | 0 | 0.34 | 1455 of 1455 |
+| Exponential | 1300 of 2700 | 1134 | 0 | 0 | 0.30 | 1300 of 1300 |
+| Gamma, shape 3 | 1185 of 2700 | 987 | 0 | 0 | 0.28 | 1185 of 1185 |
+| Lognormal, $s=0.5$ | 1095 of 2700 | 922 | 38 | 0 | 0.29 | 1095 of 1095 |
+| Lognormal, $s=1.0$ | 1098 of 2700 | 948 | 0 | 0 | 0.23 | 1098 of 1098 |
+| Pareto, tail index 2.5 | 372 of 2700 | 18 | 354 | 0 | 0.31 | 372 of 372 |
+
+*Table F.1. Monopoly results on the parameter grid.* The Pareto row has few valid cells because its heavy tail makes the planner's objective nonconcave in most of the grid; its zero cells are those in which $\hat v$ lies below the Pareto lower bound, so that every firm retrains.
