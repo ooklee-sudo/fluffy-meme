@@ -1,27 +1,2 @@
-Traceback (most recent call last):
-  File "/home/user/fluffy-meme/heldout_validation/wildchat_arrivals.py", line 160, in <module>
-    main()
-    ~~~~^^
-  File "/home/user/fluffy-meme/heldout_validation/wildchat_arrivals.py", line 103, in main
-    ts = collect()
-  File "/home/user/fluffy-meme/heldout_validation/wildchat_arrivals.py", line 37, in collect
-    np.save(npy, t["timestamp"].astype("datetime64[s]").astype("int64").to_numpy())
-                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/generic.py", line 6529, in astype
-    new_data = self._mgr.astype(dtype=dtype, errors=errors)
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/internals/managers.py", line 627, in astype
-    return self.apply("astype", dtype=dtype, errors=errors)
-           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/internals/managers.py", line 445, in apply
-    applied = getattr(b, f)(**kwargs)
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/internals/blocks.py", line 607, in astype
-    new_values = astype_array_safe(values, dtype, errors=errors)
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/dtypes/astype.py", line 240, in astype_array_safe
-    new_values = astype_array(values, dtype, copy=copy)
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/dtypes/astype.py", line 182, in astype_array
-    values = values.astype(dtype, copy=copy)
-  File "/usr/local/lib/python3.13/dist-packages/pandas/core/arrays/datetimes.py", line 745, in astype
-    raise TypeError(
-    ...<3 lines>...
-    )
-TypeError: Cannot use .astype to convert from timezone-aware dtype to timezone-naive dtype. Use obj.tz_localize(None) or obj.tz_convert('UTC').tz_localize(None) instead.
+shard 0 59857
+shard 1 59857

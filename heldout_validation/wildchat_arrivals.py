@@ -34,7 +34,7 @@ def collect():
             if not os.path.exists(p):
                 subprocess.run(["curl", "-sL", "-m", "900", "-o", p, BASE.format(k)], check=True)
             t = pq.read_table(p, columns=["timestamp", "toxic"], use_threads=False).to_pandas()
-            np.save(npy, t["timestamp"].astype("datetime64[s]").astype("int64").to_numpy())
+            np.save(npy, t["timestamp"].dt.tz_convert("UTC").dt.tz_localize(None).astype("datetime64[s]").astype("int64").to_numpy())
             os.remove(p)
         ts.append(np.load(npy))
         print("shard", k, len(ts[-1]), flush=True)
