@@ -8,6 +8,8 @@ RES = os.path.join(HERE, "results")
 GENS = ["qwen0.5b", "smollm360m", "qwen1.5b"]
 NAMES = {"qwen0.5b": "Qwen2.5-0.5B", "smollm360m": "SmolLM2-360M", "qwen1.5b": "Qwen2.5-1.5B"}
 JUDGE = sys.argv[1] if len(sys.argv) > 1 else "qwen1.5b"
+CREDIT = len(sys.argv) > 2 and sys.argv[2] == "credit"   # exploratory: wait for slow verdicts and credit them (cf. Section 5.4)
+TAG = JUDGE + ("_credit" if CREDIT else "")
 QPD = 200
 B = 1000
 # original 300-question results (Tables 5, 7 and Section 5.2 of the manuscript)
@@ -40,7 +42,9 @@ def arrays(g, j):
     z = lambda key: np.array([bool(g[i].get(key, False)) for i in ids])
     l1, l2 = z("l1_block"), z("l2_block")
     score = np.array([g[i].get("l2_score", 1.0) for i in ids])
-    l3 = np.array([bool(j[i]["unsupported"] and not j[i]["failure"]) if i in j else False for i in ids])
+    def _uns(r):  # generation was cut at 4 tokens, so SmolLM2 writes "UNSUPPORT"; classify by prefix (fix made after seeing outputs)
+        return r["raw"].upper().replace(" ", "").startswith("UNSUP")
+    l3 = np.array([bool(_uns(j[i]) and (CREDIT or not j[i]["failure"])) if i in j else False for i in ids])
     fail = np.array([bool(j[i]["failure"]) if i in j else False for i in ids])
     routed = (~l2) & (score < 0.9) & ~ab
     return dict(n=n, ab=ab, H=H, ok=ok, l1=l1, l2=l2, l3=l3, fail=fail, routed=routed)
@@ -82,7 +86,7 @@ def boot(a, rng):
 
 
 out = {}
-lines = [f"# Held-out replication (N = 1,000 fresh SQuAD 2.0 questions); judge = {JUDGE}\n"]
+lines = [f"# Held-out replication (N = 1,000 fresh SQuAD 2.0 questions); judge = {JUDGE}{' (slow verdicts credited; exploratory)' if CREDIT else ''}\n"]
 for gname in GENS:
     try:
         g, j = load(gname)
@@ -112,6 +116,6 @@ for gname in GENS:
               f"| ratio observed/independence (routed) | {f('ratio_routed',2)} | {c('ratio_routed',2)} | {o['ratio_routed']} |",
               f"| k* none / L2 / L2+L3 routed (200 q/day) | {s['k_none']} / {s['k_l2']} / {s['k_routed']} | {c('k_none',0)} / {c('k_l2',0)} / {c('k_routed',0)} | {o['k'][0]} / {o['k'][1]} / {o['k'][2]} |",
               f"| capacity reduction by L2 % | {f('red_l2')} | {c('red_l2')} | |\n"]
-json.dump(out, open(os.path.join(RES, f"analysis_{JUDGE}.json"), "w"), indent=1, default=float)
-open(os.path.join(RES, f"analysis_{JUDGE}.md"), "w").write("\n".join(lines))
+json.dump(out, open(os.path.join(RES, f"analysis_{TAG}.json"), "w"), indent=1, default=float)
+open(os.path.join(RES, f"analysis_{TAG}.md"), "w").write("\n".join(lines))
 print("\n".join(lines))
