@@ -1,5 +1,5 @@
 """Analysis fixed in PREREG.md. Usage: python analyze_heldout.py [judge]  (judge: qwen1.5b | smollm1.7b)"""
-import json, os, sys
+import json, os, re, sys
 import numpy as np
 from scipy import stats
 
@@ -42,8 +42,9 @@ def arrays(g, j):
     z = lambda key: np.array([bool(g[i].get(key, False)) for i in ids])
     l1, l2 = z("l1_block"), z("l2_block")
     score = np.array([g[i].get("l2_score", 1.0) for i in ids])
-    def _uns(r):  # generation was cut at 4 tokens, so SmolLM2 writes "UNSUPPORT"; classify by prefix (fix made after seeing outputs)
-        return r["raw"].upper().replace(" ", "").startswith("UNSUP")
+    def _uns(r):  # verdict = first SUPPORT / UNSUPPORT token in the reply (handles truncation "UNSUPPORT", leading newlines, markdown); fix made after seeing outputs
+        m = re.search(r"(UN\s*SUPPORT|SUPPORT)", r["raw"].upper())
+        return bool(m) and m.group(1).startswith("UN")
     l3 = np.array([bool(_uns(j[i]) and (CREDIT or not j[i]["failure"])) if i in j else False for i in ids])
     fail = np.array([bool(j[i]["failure"]) if i in j else False for i in ids])
     routed = (~l2) & (score < 0.9) & ~ab
