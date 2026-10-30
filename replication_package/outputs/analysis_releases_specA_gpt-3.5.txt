@@ -1,0 +1,15 @@
+exposure model: gpt-3.5 | tags: 50
+
+release            access     beta/SD       se       t | placebo(-1y)    beta
+ChatGPT            free        +0.006    0.017    0.35 | placebo  -0.046 (t -2.57)   mean change -0.082
+GPT-4              paid        -0.048    0.011   -4.45 | placebo  -0.017 (t -2.12)   mean change -0.321
+Claude 2           free        -0.019    0.009   -2.15 | placebo  -0.011 (t -1.22)   mean change -0.012
+GPT-4 Turbo        paid        -0.016    0.018   -0.91 | placebo  -0.000 (t -0.05)   mean change -0.071
+Claude 3           partial     +0.001    0.011    0.07 | placebo  -0.034 (t -3.40)   mean change -0.034
+GPT-4o             free        -0.026    0.012   -2.19 | placebo  -0.037 (t -2.22)   mean change -0.178
+Claude 3.5 Sonnet  free        -0.002    0.014   -0.11 | placebo  -0.028 (t -1.62)   mean change -0.148
+o1-preview         paid        -0.028    0.019   -1.46 | placebo  -0.051 (t -4.27)   mean change -0.150
+
+Stacked (release fixed effects, clustered by tag; partial-access release excluded):
+  accuracy x paid release (beta/SD):  -0.027 (se 0.007)
+  accuracy x free-vs-paid difference: +0.018 (se 0.009, t 2.01)   [H2 predicts a more negative effect for free releases]

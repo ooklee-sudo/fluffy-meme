@@ -1,0 +1,12 @@
+tags with >=15 judged questions for both models: 50
+mean seasonal-adjusted change in ln(1+n): -0.082  (SD across tags 0.103)
+Acc gpt-3.5: mean 0.567 SD 0.102 | Acc llama-3.1-8b: mean 0.223 SD 0.085 | corr(A,Z) = 0.39
+
+OLS  y ~ std(Acc_gpt3.5):  beta = +0.008  (se 0.017, t 0.47, R2 0.01)  -> per +1 SD of accuracy
+IV   (instrument: Acc_llama-3.1-8b): beta = +0.025 per +1 SD of accuracy  (first-stage corr 0.39)
+IV bootstrap 95% interval: [-0.057, +0.131]
+
+Placebo: same regression on prior-year changes (seasonal pattern should not depend on AI accuracy)
+  year -1: beta -0.006 (se 0.007, t -0.76)
+  year -2: beta +0.008 (se 0.011, t 0.73)
+  year -3: beta -0.002 (se 0.011, t -0.21)
