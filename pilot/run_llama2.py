@@ -1,5 +1,5 @@
 """Run Llama 2 chat (7B, 13B; pretraining cutoff Sep 2022) on the v2 questions via a vLLM server on RunPod,
-grade with the same OpenRouter judge as run_v2.py. Usage: run_llama2.py <pod_id> <api_key_file>"""
+grade with the same OpenRouter judge as run_v2.py. Usage: run_llama2.py <pod_id> <api_key_file> [llama2-13b,llama2-7b]"""
 import json, re, html, os, sys, time, urllib.request, concurrent.futures as cf, threading
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 POD, KEY = sys.argv[1], open(sys.argv[2]).read().strip()
@@ -28,7 +28,7 @@ def gen(model, prompt):
     p = f"<s>[INST] <<SYS>>\n{SYS}\n<</SYS>>\n\n{prompt} [/INST]"
     d = post(f"https://{POD}-{PORTS[model]}.proxy.runpod.net/v1/completions",
              dict(model=model, prompt=p, temperature=0, max_tokens=1024),
-             {"Content-Type": "application/json", "Authorization": f"Bearer {KEY}"})
+             {"Content-Type": "application/json", "Authorization": f"Bearer {KEY}", "User-Agent": "research-pilot/1.0"})
     if "choices" not in d: return "ERROR", None
     c = d["choices"][0]; return c["text"], c.get("finish_reason")
 
@@ -53,7 +53,8 @@ qs = json.load(open("questions_v2.json"))
 done = set()
 if os.path.exists(OUT):
     for l in open(OUT): x = json.loads(l); done.add((x["qid"], x["model"]))
-jobs = [(q, m) for q in qs for m in PORTS if (q["qid"], m) not in done]
+only = sys.argv[3].split(",") if len(sys.argv) > 3 else list(PORTS)
+jobs = [(q, m) for q in qs for m in only if (q["qid"], m) not in done]
 print("jobs", len(jobs), flush=True)
 with cf.ThreadPoolExecutor(24) as ex: list(ex.map(one, jobs))
 print("finished")
