@@ -14,8 +14,10 @@ def call(model, system, user, tries=6):
                        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}).encode()
     for k in range(tries):
         try:
-            req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=body,
-                                         headers={"Content-Type": "application/json"})
+            headers = {"Content-Type": "application/json"}
+            if os.environ.get("OPENROUTER_API_KEY"):          # set this variable when running outside a proxy that adds credentials
+                headers["Authorization"] = "Bearer " + os.environ["OPENROUTER_API_KEY"]
+            req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions", data=body, headers=headers)
             t0 = time.time()
             with urllib.request.urlopen(req, timeout=60) as r:
                 j = json.load(r)

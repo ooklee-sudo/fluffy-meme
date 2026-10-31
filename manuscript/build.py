@@ -1,4 +1,5 @@
-import json,re
+import json,re,os
+BLIND=os.environ.get('BLIND')=='1'   # BLIND=1: no author line, no declarations (they go on the title page)
 from docx import Document
 from docx.shared import Pt,Inches,RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -439,10 +440,10 @@ for kind,t in decl:
     if kind=='para':
         h,rest=t.split(': ',1); segs=[[h+': ',True,False],[rest,False,False]]
     ins.append({'kind':kind,'segs':segs})
-B[i:i]=ins
+if not BLIND: B[i:i]=ins
 log.append(('AOR','Statements and Declarations (new section)','added with [placeholders]',"Springer/AOR requires funding, competing-interest, data/code availability statements; fill in the bracketed items.",1))
 # 7 title block
-B[0:1]=[B[0],{'kind':'author','segs':[['[Author names]  ·  [Affiliations]  ·  [Corresponding author e-mail]',False,True]]}]
+if not BLIND: B[0:1]=[B[0],{'kind':'author','segs':[['[Author names]  ·  [Affiliations]  ·  [Corresponding author e-mail]',False,True]]}]
 
 # ---- post-fixes
 def allseg(f):
@@ -472,7 +473,7 @@ for b in B:
         b['segs']=[[t,False,False]]
 
 S("All simulations and bootstrap draws are seeded.","All simulations and bootstrap draws are seeded. [Editorial note, delete before submission: the scripts named in the second sentence of this appendix belong to the original pipeline and were not among the files used to prepare this revision; please confirm that they are in the repository.]")
-S("the three ticket logs and the AI Hallucination Cases database","the three ticket logs, the WildChat-1M corpus and the AI Hallucination Cases database")
+if not BLIND: S("the three ticket logs and the AI Hallucination Cases database","the three ticket logs, the WildChat-1M corpus and the AI Hallucination Cases database")
 # ---- final reference formatting and Springer ordering
 import unicodedata as _ud
 def _inrefs():
@@ -567,5 +568,5 @@ for k,b in enumerate(B):
         doc.add_paragraph().paragraph_format.space_after=Pt(2)
     elif kind=='image':
         p=doc.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; p.add_run().add_picture(b['file'],width=Inches(6.0)); p.paragraph_format.keep_with_next=True
-doc.save('manuscript_AOR.docx')
+doc.save('manuscript_AOR_blinded.docx' if BLIND else 'manuscript_AOR.docx')
 for c,o,n,w,k in log: print(k,c,o[:60])
