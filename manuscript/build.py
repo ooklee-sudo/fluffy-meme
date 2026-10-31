@@ -360,7 +360,7 @@ S("The public datasets are not redistributed;","The tables of Section 3 can be r
 # ---- AOR adaptation
 # 1 anonymity
 B=[b for b in B if not (b['kind']=='para' and txt(b).strip()=='Manuscript for double-blind review')]
-log.append(('AOR','"Manuscript for double-blind review"','removed',"AOR uses single-blind review; author information goes on the title page.",1))
+log.append(('AOR','"Manuscript for double-blind review"','removed',"Not verified whether Annals of Operations Research is single- or double-blind (the public guidelines pages could not be read); author information is kept on a separate title page in either case.",1))
 # 2 design-science framing
 old="The paper sits in the design-science tradition in IS (Hevner et al. 2004; Gregor and Hevner 2013). The artifact is a planning method, grounded in a formal model and evaluated on measured system outputs. In Gregor and Hevner's (2013) terms the contribution is an exaptation, in which known solutions are carried into a new problem domain. The evaluation"
 new="The paper sits in the operations research tradition of stochastic inventory and workforce-capacity models. Its contribution is a planning method, grounded in a formal model and evaluated on measured system outputs, in which known solutions are carried into a new problem domain, namely standby labour for machine errors. The evaluation"

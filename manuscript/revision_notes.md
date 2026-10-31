@@ -86,7 +86,7 @@
 
 | 항목 | 변경 | 사유 |
 |---|---|---|
-| "Manuscript for double-blind review" | removed | AOR uses single-blind review; author information goes on the title page. |
+| "Manuscript for double-blind review" | removed | Not verified whether Annals of Operations Research is single- or double-blind (the public guidelines pages could not be read); author information is kept on a separate title page in either case. |
 | design-science / exaptation paragraph (Hevner; Gregor and Hevner) | reframed as OR contribution (stochastic inventory and capacity planning) | IS design-science positioning is specific to MIS Quarterly; AOR readers expect the OR lineage and contribution. |
 | References: Gregor and Hevner (2013); Hevner et al. (2004) | removed | No longer cited after the reframing. |
 | Appendix D: anonymised repository | public repository placeholder | Single-blind review needs no anonymisation; Springer asks for a data/code availability link. |
