@@ -1,5 +1,7 @@
+import os
+DATA=os.environ.get('DATA','/tmp/wc')
 import pandas as pd, numpy as np, statsmodels.formula.api as smf, warnings; warnings.filterwarnings('ignore')
-d=pd.read_parquet('/tmp/wc/all.parquet')
+d=pd.read_parquet(DATA+'/all.parquet')
 d['wk']=d.ts.dt.tz_localize(None).dt.to_period('W').dt.start_time.dt.strftime('%Y-%m-%d')
 d['g4']=d.model.str.startswith('gpt-4').astype(int)
 CUT={'gpt-3.5-turbo-0301':'2021-09','gpt-3.5-turbo-0613':'2021-09','gpt-3.5-turbo-0125':'2021-09','gpt-4-0314':'2021-09','gpt-4-1106-preview':'2023-04','gpt-4-0125-preview':'2023-12'}
@@ -33,4 +35,4 @@ for y in ['y1','y2']:
         print(f"  DiD {k} - g4_0314: {100*e:.2f} pp (se {100*se:.2f}) p={float(np.squeeze(t.pvalue)):.3f}")
     r2=smf.ols(f"{y} ~ g4 + g4:cutdiff + code + lfp + n_user + C(wk)",m).fit(cov_type='cluster',cov_kwds={'groups':grp})
     k='g4:cutdiff'; c=r2.conf_int().loc[k]; print(f"  per month of cutoff advantage: {100*r2.params[k]:.3f} pp [{100*c[0]:.3f},{100*c[1]:.3f}] p={r2.pvalues[k]:.3f}  (H3 predicts < 0)")
-m.to_parquet('/tmp/wc/design_sample.parquet')
+m.to_parquet(DATA+'/design_sample.parquet')

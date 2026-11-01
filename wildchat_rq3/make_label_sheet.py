@@ -1,6 +1,5 @@
 # Builds a blinded labeling sheet (text!) -> labeling_private/ (git-ignored). Usage: make_label_sheet.py OUTDIR shard1 shard2 ...
 import sys, re, random, hashlib, pyarrow.parquet as pq, pandas as pd
-sys.path.insert(0,'/tmp/scripts'); 
 V1 = re.compile(r"^\W*(no\b|nope\b|wrong\b|incorrect\b|that'?s (wrong|not|incorrect)|that (doesn'?t|isn'?t|is not|does not)|this (doesn'?t|isn'?t|is not|does not)|try again|you misunderstood|you didn'?t|not what i|that is not|it'?s not|it is not|still (not|wrong)|actually\b)", re.I)
 V2X = re.compile(r"(\bi meant\b|still not working|\bdoesn'?t work\b|\bnot working\b|traceback \(most recent|\berror:|\bexception\b|you (are|were) wrong|that'?s not what)", re.I)
 WEAK = re.compile(r"(error|wrong|i meant|doesn'?t|again)", re.I)
