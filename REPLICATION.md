@@ -11,3 +11,5 @@
 Requirements: Python 3, numpy, scipy, pandas, pyarrow, statsmodels, scikit-learn, requests.
 No conversation text is stored. The human-labelling workbook and the blinded labelling sheet contain text and are not distributed.
 `wildchat_rq3/results.txt` and `placebo_results.txt` are outputs of the included code.
+
+Figures: `python wildchat_rq3/fig3_data.py` (with `DATA` set to the WildChat feature folder) then `python figures_code/make_figures.py` writes Fig 1 to Fig 4 (PNG and TIFF) to `figures/`. Figure 2 uses the slopes in Table 1 and the pooled estimates printed by `retraining_rust/diagnostics_real.py`; Figure 1 uses `retraining_rust/results.json`.

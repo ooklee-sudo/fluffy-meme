@@ -7,5 +7,6 @@ for i in $(seq 0 13); do n=$(printf %05d $i)
   python3 -I extract.py "$DATA/s$i.parquet" "$DATA/f$i.parquet"
 done
 python3 -I build_all.py "$DATA"
+DATA="$DATA" python3 -I fig3_data.py
 python3 -I design.py  | tee results.txt
 python3 -I placebo.py | tee placebo_results.txt
