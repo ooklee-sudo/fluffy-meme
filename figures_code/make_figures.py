@@ -9,6 +9,8 @@ import os; DATA=os.environ.get('DATA','/tmp/wc'); OUT=os.environ.get('OUT','figu
 def save(fig,name):
     fig.savefig(f'{OUT}/{name}.png',dpi=300,bbox_inches='tight',facecolor='white')
     fig.savefig(f'{OUT}/{name}.tif',dpi=300,bbox_inches='tight',facecolor='white',pil_kwargs={'compression':'tiff_lzw'})
+    from PIL import Image  # PLOS: RGB TIFF without alpha channel
+    im=Image.open(f'{OUT}/{name}.tif').convert('RGB'); im.save(f'{OUT}/{name}.tif',dpi=(300,300),compression='tiff_lzw')
     plt.close(fig)
 
 # ---------------- Fig 1: forest plots (Table 1 + pooled estimates from the manuscript)
