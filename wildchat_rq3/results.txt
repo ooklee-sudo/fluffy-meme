@@ -1,27 +1,27 @@
-rows 478498 after dedupe 326032
-overlap weeks 38 multi-turn convs 99625
+rows 478498 after dedupe 327188
+overlap weeks 38 multi-turn convs 100362
                         n  weeks  gap_med     y1     y2   code
 model                                                         
-gpt-3.5-turbo-0125   4913     12     30.0  0.030  0.050  0.030
-gpt-3.5-turbo-0301  35688     12     20.0  0.029  0.050  0.033
-gpt-3.5-turbo-0613  16632     15     26.0  0.019  0.037  0.038
-gpt-4-0125-preview  12998      8      4.0  0.026  0.057  0.059
-gpt-4-0314          10188     12     20.0  0.016  0.050  0.081
-gpt-4-1106-preview  19206     19      9.0  0.026  0.057  0.058
+gpt-3.5-turbo-0125   4959     12     30.0  0.037  0.095  0.088
+gpt-3.5-turbo-0301  35910     12     20.0  0.038  0.101  0.082
+gpt-3.5-turbo-0613  16740     15     26.0  0.025  0.080  0.091
+gpt-4-0125-preview  13091      8      4.0  0.037  0.109  0.129
+gpt-4-0314          10249     12     20.0  0.025  0.099  0.159
+gpt-4-1106-preview  19413     19      9.0  0.036  0.110  0.142
 tox mean 0.0
 
  y1 LPM, week FE, SE clustered by week; effects in percentage points vs gpt-3.5 same week
-  g4_0314: -1.12 pp [-1.48,-0.75] p=0.000
-  g4_1106: -0.15 pp [-0.44,0.15] p=0.333
-  g4_0125: -0.59 pp [-1.34,0.16] p=0.121
-  DiD g4_1106 - g4_0314: 0.97 pp (se 0.24) p=0.000
-  DiD g4_0125 - g4_0314: 0.53 pp (se 0.43) p=0.216
-  per month of cutoff advantage: 0.033 pp [0.008,0.058] p=0.009  (H3 predicts < 0)
+  g4_0314: -1.08 pp [-1.51,-0.65] p=0.000
+  g4_1106: 0.23 pp [-0.16,0.63] p=0.242
+  g4_0125: -0.43 pp [-1.09,0.23] p=0.201
+  DiD g4_1106 - g4_0314: 1.31 pp (se 0.30) p=0.000
+  DiD g4_0125 - g4_0314: 0.65 pp (se 0.39) p=0.095
+  per month of cutoff advantage: 0.043 pp [0.016,0.070] p=0.002  (H3 predicts < 0)
 
  y2 LPM, week FE, SE clustered by week; effects in percentage points vs gpt-3.5 same week
-  g4_0314: -0.40 pp [-1.03,0.24] p=0.219
-  g4_1106: 0.59 pp [0.09,1.08] p=0.020
-  g4_0125: -0.08 pp [-1.10,0.95] p=0.884
-  DiD g4_1106 - g4_0314: 0.98 pp (se 0.41) p=0.018
-  DiD g4_0125 - g4_0314: 0.32 pp (se 0.63) p=0.609
-  per month of cutoff advantage: 0.029 pp [-0.011,0.068] p=0.151  (H3 predicts < 0)
+  g4_0314: -0.76 pp [-1.61,0.09] p=0.078
+  g4_1106: 0.47 pp [-0.22,1.17] p=0.183
+  g4_0125: -0.22 pp [-1.62,1.17] p=0.754
+  DiD g4_1106 - g4_0314: 1.24 pp (se 0.56) p=0.028
+  DiD g4_0125 - g4_0314: 0.54 pp (se 0.80) p=0.498
+  per month of cutoff advantage: 0.039 pp [-0.010,0.089] p=0.121  (H3 predicts < 0)

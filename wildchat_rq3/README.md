@@ -12,4 +12,4 @@ Run `./run_all.sh` (downloads WildChat-1M from Hugging Face, extracts binary per
 | `placebo.py` | GPT-3.5 same-cutoff placebo; writes `placebo_results.txt` |
 | `make_label_sheet.py`, `codebook.md`, `kappa.py` | human-labeling kit (the sheet contains text and is not distributed) |
 
-Notes: the v1/v2 detector patterns are a reconstruction; assumed cutoffs: GPT-3.5 and gpt-4-0314 = 2021-09, gpt-4-1106 = 2023-04, gpt-4-0125 = 2023-12. Not included: GitHub collection and Bellman-model simulation code for RQ1/RQ2.
+Notes: detector patterns are the original ones (detectors.py, copied from ../retraining_rust/wildchat_drift.py). Assumed cutoffs: GPT-3.5 and gpt-4-0314 = 2021-09, gpt-4-1106 = 2023-04, gpt-4-0125 = 2023-12. GitHub collection and Bellman simulation are in ../retraining_rust.
