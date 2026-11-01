@@ -63,7 +63,29 @@ for t,txt in (('begin',None),('instr',' PAGE '),('end',None)):
         e=OxmlElement('w:fldChar'); e.set(qn('w:fldCharType'),t)
     r._r.append(e)
 
+
+import re as _re
+_SPECIAL=[
+ ("I labeled a random subsample of 100 of these 350 turns myself, using","one of the authors labeled a random subsample of 100 of these 350 turns, using"),
+ ("its labels were compared with mine, and the differences","its labels were compared with those of the human labeler, and the differences"),
+ ("I marked 55 turns as corrections","the human labeler marked 55 turns as corrections"),
+ ("that both of us considered clear","that both labelers considered clear"),
+ ("were corrections for me and not for the AI annotator","were corrections for the human labeler and not for the AI annotator"),
+ ("I appear to have applied a broader criterion","The human labeler appears to have applied a broader criterion"),
+ ("Because my labels are more inclusive","Because the human labels are more inclusive"),
+ ("The author declares","The authors declare"),("The author received","The authors received"),("The author has declared","The authors have declared"),
+ ("The author also used","The authors also used"),
+]
+def firstperson(t):
+    for a,b in _SPECIAL: t=t.replace(a,b)
+    t=t.replace("Type I","Type\u00a0IROMAN")
+    t=_re.sub(r"(^|[.!?:]\s+|\*\*\s*)I\b",lambda m:m.group(1)+"We",t)
+    t=_re.sub(r"\bI am\b","we are",t); t=_re.sub(r"\bI\b","we",t)
+    t=_re.sub(r"\bmy\b","our",t)
+    return t.replace("Type\u00a0IROMAN","Type I")
+
 def runs(p,text,size=None,bold=False):
+    text=firstperson(text)
     # markup: **bold**, *italic*, _{sub}, ^{sup}
     text=cite_sub(text)
     for tok in re.split(r"(\*\*[^*]+\*\*|\*[^*]+\*|_\{[^}]*\}|\^\{[^}]*\})",text):
@@ -127,8 +149,9 @@ def table(cap,header,rows,widths=None,note=None):
 # ------------------------------------------------------------------ front matter
 p=d.add_paragraph(); runs(p,"Does Release Timing in the LLM Software Ecosystem Respond to Accumulating Degradation? An Empirical Study of Open-Source Repositories and Public Chat Logs",size=16,bold=True)
 p=d.add_paragraph(); runs(p,"Short title: Release timing and degradation in the LLM software ecosystem")
-p=d.add_paragraph(); runs(p,"Ook Lee^{1*}",bold=True)
+p=d.add_paragraph(); runs(p,"Ook Lee^{1,*}, Yeeun Nam^{2}",bold=True)
 p=d.add_paragraph(); runs(p,"^{1} Department of Information System, Hanyang University, Seoul, Republic of Korea")
+p=d.add_paragraph(); runs(p,"^{2} [Affiliation of Yeeun Nam]")
 p=d.add_paragraph(); runs(p,"* Corresponding author")
 p=d.add_paragraph(); runs(p,"E-mail: ooklee@hanyang.ac.kr")
 d.add_page_break()
