@@ -294,7 +294,7 @@ P("I asked whether the public record of the LLM software ecosystem shows the sig
 
 H1("Supporting information")
 p=d.add_paragraph(); runs(p,"**S1 Appendix. Numerical comparative statics.** Optimal drift threshold for the simulated model as a function of the refresh cost, the speed of drift and the discount factor.")
-p=d.add_paragraph(); runs(p,"**S2 File. Replication package.** Collection, measurement, simulation and analysis code; weekly aggregates for the 19 repositories; per-conversation binary features; labeling codebook and labels without conversation text.")
+p=d.add_paragraph(); runs(p,"**S2 File. Replication package.** Collection, measurement, simulation and analysis code; weekly aggregates for the 19 repositories; per-conversation binary features; labeling codebook and labels without conversation text. Available at https://doi.org/10.5281/zenodo.23863950.")
 
 H1("Acknowledgments")
 P("[Add acknowledgments, or delete this section.]",indent=False)
@@ -308,12 +308,5 @@ for i,k in enumerate(order,1):
 missing=[k for k in REFS if k not in order]
 print("uncited references:",missing)
 
-# ------------------------------------------------------------------ S1 appendix
-d.add_page_break()
-H1("S1 Appendix. Numerical comparative statics")
-P("Optimal drift threshold (number of drift units at which the policy refreshes), computed by value iteration in the simulated model (*γ* = 0.5, *λ*_{0} = 5; other parameters as in the benchmark unless varied). These are numerical regularities, not proved results.",indent=False)
-table("Table A. Refresh cost",["Refresh cost *RC*","10","20","40","80","160"],[("Optimal drift threshold","7","10","14","21","32")])
-table("Table B. Drift speed",["Drift speed *μ*","0.5","1.0","1.5","2.0"],[("Optimal drift threshold","11","14","17","19")])
-table("Table C. Discount factor",["Discount factor *β*","0.90","0.95","0.99"],[("Optimal drift threshold","16","14","13")])
 d.save('/home/user/fluffy-meme/submission_plos/PLOS_ONE_Manuscript.docx')
 print("refs:",len(order))
