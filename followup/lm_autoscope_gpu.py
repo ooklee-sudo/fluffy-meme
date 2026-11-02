@@ -49,6 +49,26 @@ def get_launch(args, seed, cache, dev):
     cache[seed] = dict(tok=tok, vals=vals, lk=lk, lv=lv, nk=nk, nv=nv, launch=launch, model=merged, teacher_lp=tl, acc=acc, ep=ep)
     return cache[seed]
 
+def run_update_ce(launch_model, launch, stream, anchors, lam, args, gen, dev):
+    """Baseline: replay the launch answers of the anchor facts with cross-entropy (no teacher/KL)."""
+    model = G.lora_wrap(launch_model, args)
+    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=args.update_lr, weight_decay=0.0)
+    SX, SM, Spos, Stgt = stream; LX, LM, Lpos, Ltgt = launch; n = len(SX); na = len(anchors); bs = args.bs
+    for ep in range(args.update_epochs):
+        model.train(); perm = torch.randperm(n, generator=gen).to(dev)
+        for i in range(0, n, bs):
+            b = perm[i:i+bs]
+            with torch.autocast(device_type=dev.type, dtype=torch.bfloat16, enabled=dev.type == "cuda"):
+                lg = G.logits_at(model, SX[b], SM[b], Spos[b])
+            loss = F.cross_entropy(lg, Stgt[b])
+            if lam > 0 and na > 0:
+                a = anchors[torch.randint(na, (bs,), generator=gen).to(dev)]
+                with torch.autocast(device_type=dev.type, dtype=torch.bfloat16, enabled=dev.type == "cuda"):
+                    la = G.logits_at(model, LX[a], LM[a], Lpos[a])
+                loss = loss + lam * F.cross_entropy(la, Ltgt[a])
+            opt.zero_grad(); loss.backward(); opt.step()
+    return model
+
 def one(args, seed, rho, cov, method, lam, match, cache, dev):
     c = get_launch(args, seed, cache, dev); tok = c["tok"]; N = args.n_launch
     rng = random.Random(seed * 1000 + int(rho * 100) + int(cov * 10)); gen = torch.Generator().manual_seed(seed * 7 + int(rho * 100) + int(cov * 10))
@@ -60,13 +80,14 @@ def one(args, seed, rho, cov, method, lam, match, cache, dev):
     stream = G.enc(tok, [c["lk"][i] for i in s_idx] + c["nk"],
                    [v1[i] if i in v1 else c["lv"][i] for i in s_idx] + c["nv"], dev)
     in_stream = set(s_idx)
-    if method == "ss":
+    if method in ("ss", "ss_ce"):
         mrng = random.Random(seed * 31 + int(rho * 100) + int(cov * 10) + int(match * 100))
         detected = {i for i in in_stream if mrng.random() < match}     # stream facts the matcher links to launch facts
         anchors = torch.tensor([i for i in range(N) if i not in detected], dtype=torch.long, device=dev)
     elif method == "unscoped": anchors = torch.arange(N, device=dev)
     else: anchors = torch.arange(N, device=dev)
-    model = G.run_update(c["model"], c["launch"], c["teacher_lp"], stream, anchors, lam if method != "none" else 0.0, args, gen, dev)
+    if method == "ss_ce": model = run_update_ce(c["model"], c["launch"], stream, anchors, lam, args, gen, dev)
+    else: model = G.run_update(c["model"], c["launch"], c["teacher_lp"], stream, anchors, lam if method != "none" else 0.0, args, gen, dev)
     pred = G.predict(model, c["launch"])
     v0t = torch.tensor([G.tid(tok, v) for v in c["lv"]], device=dev); v1t = v0t.clone()
     for i in sup: v1t[i] = G.tid(tok, v1[i])
@@ -89,7 +110,7 @@ if __name__ == "__main__":
     ap.add_argument("--update-epochs", type=int, default=25); ap.add_argument("--update-lr", type=float, default=1e-4)
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2])
     ap.add_argument("--rhos", type=float, nargs="+", default=[0.3, 0.7]); ap.add_argument("--covs", type=float, nargs="+", default=[1.0, 0.6])
-    ap.add_argument("--reaff", type=float, default=0.2); ap.add_argument("--ss-matches", type=float, nargs="*", default=[]); ap.add_argument("--out", default="autoscope.json")
+    ap.add_argument("--reaff", type=float, default=0.2); ap.add_argument("--ss-matches", type=float, nargs="*", default=[]); ap.add_argument("--ss-lams", type=float, nargs="*", default=[]); ap.add_argument("--replay-lams", type=float, nargs="*", default=[]); ap.add_argument("--out", default="autoscope.json")
     args = ap.parse_args()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu"); print("device:", dev, flush=True)
     rows = json.load(open(args.out)) if os.path.exists(args.out) else []
@@ -98,7 +119,7 @@ if __name__ == "__main__":
     for s in args.seeds:
         for rho in args.rhos:
             for cov in args.covs:
-                for method, lam, match in CONFIGS + [("ss", 10.0, m) for m in args.ss_matches]:
+                for method, lam, match in CONFIGS + [("ss", 10.0, m) for m in args.ss_matches] + [("ss", l, 1.0) for l in args.ss_lams] + [("ss_ce", l, 1.0) for l in args.replay_lams]:
                     if (s, rho, cov, method, lam, match) in done: continue
                     r = one(args, s, rho, cov, method, lam, match, cache, dev); rows.append(r); json.dump(rows, open(args.out, "w"), indent=1)
                     print(f"[{time.time()-t0:5.0f}s] seed={s} rho={rho} cov={cov} {method:8s} lam={lam:<4} m={match:<3} cur={r['currency']:.2f} "
