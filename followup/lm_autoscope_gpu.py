@@ -27,7 +27,7 @@ import torch, torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import lm_supersession_gpu as G
 
-CONFIGS = [("none", 0.0), ("unscoped", 1.0), ("unscoped", 10.0), ("ss", 10.0)]
+CONFIGS = [("none", 0.0, 1.0), ("unscoped", 1.0, 1.0), ("unscoped", 10.0, 1.0), ("ss", 10.0, 1.0)]  # (method, lam, match)
 
 def get_launch(args, seed, cache, dev):
     if seed in cache: return cache[seed]
@@ -49,7 +49,7 @@ def get_launch(args, seed, cache, dev):
     cache[seed] = dict(tok=tok, vals=vals, lk=lk, lv=lv, nk=nk, nv=nv, launch=launch, model=merged, teacher_lp=tl, acc=acc, ep=ep)
     return cache[seed]
 
-def one(args, seed, rho, cov, method, lam, cache, dev):
+def one(args, seed, rho, cov, method, lam, match, cache, dev):
     c = get_launch(args, seed, cache, dev); tok = c["tok"]; N = args.n_launch
     rng = random.Random(seed * 1000 + int(rho * 100) + int(cov * 10)); gen = torch.Generator().manual_seed(seed * 7 + int(rho * 100) + int(cov * 10))
     idx = list(range(N)); rng.shuffle(idx); ns = int(round(rho * N)); sup = idx[:ns]; val = idx[ns:]
@@ -60,7 +60,10 @@ def one(args, seed, rho, cov, method, lam, cache, dev):
     stream = G.enc(tok, [c["lk"][i] for i in s_idx] + c["nk"],
                    [v1[i] if i in v1 else c["lv"][i] for i in s_idx] + c["nv"], dev)
     in_stream = set(s_idx)
-    if method == "ss": anchors = torch.tensor([i for i in range(N) if i not in in_stream], dtype=torch.long, device=dev)
+    if method == "ss":
+        mrng = random.Random(seed * 31 + int(rho * 100) + int(cov * 10) + int(match * 100))
+        detected = {i for i in in_stream if mrng.random() < match}     # stream facts the matcher links to launch facts
+        anchors = torch.tensor([i for i in range(N) if i not in detected], dtype=torch.long, device=dev)
     elif method == "unscoped": anchors = torch.arange(N, device=dev)
     else: anchors = torch.arange(N, device=dev)
     model = G.run_update(c["model"], c["launch"], c["teacher_lp"], stream, anchors, lam if method != "none" else 0.0, args, gen, dev)
@@ -70,7 +73,7 @@ def one(args, seed, rho, cov, method, lam, cache, dev):
     def frac(ids, tgt): return (pred[ids] == tgt[ids]).float().mean().item() if len(ids) else float("nan")
     ti = lambda l: torch.tensor(l, dtype=torch.long, device=dev)
     nd = G.enc(tok, c["nk"], c["nv"], dev)
-    row = dict(seed=seed, rho=rho, cov=cov, method=method, lam=lam, n_anchor=int(len(anchors)),
+    row = dict(seed=seed, rho=rho, cov=cov, method=method, lam=lam, match=match, n_anchor=int(len(anchors)),
                currency=(pred == v1t).float().mean().item(), ceiling=(1 - rho) + rho * cov,
                continuity=frac(ti(val), v0t), cov_sup_new=frac(ti(covered), v1t), uncov_sup_old=frac(ti(uncovered), v0t),
                acquisition=(G.predict(model, nd) == nd[3]).float().mean().item(), launch_acc=c["acc"])
@@ -86,18 +89,18 @@ if __name__ == "__main__":
     ap.add_argument("--update-epochs", type=int, default=25); ap.add_argument("--update-lr", type=float, default=1e-4)
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 2])
     ap.add_argument("--rhos", type=float, nargs="+", default=[0.3, 0.7]); ap.add_argument("--covs", type=float, nargs="+", default=[1.0, 0.6])
-    ap.add_argument("--reaff", type=float, default=0.2); ap.add_argument("--out", default="autoscope.json")
+    ap.add_argument("--reaff", type=float, default=0.2); ap.add_argument("--ss-matches", type=float, nargs="*", default=[]); ap.add_argument("--out", default="autoscope.json")
     args = ap.parse_args()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu"); print("device:", dev, flush=True)
     rows = json.load(open(args.out)) if os.path.exists(args.out) else []
-    done = {(r["seed"], r["rho"], r["cov"], r["method"], r["lam"]) for r in rows}
+    done = {(r["seed"], r["rho"], r["cov"], r["method"], r["lam"], r.get("match", 1.0)) for r in rows}
     cache = {}; t0 = time.time()
     for s in args.seeds:
         for rho in args.rhos:
             for cov in args.covs:
-                for method, lam in CONFIGS:
-                    if (s, rho, cov, method, lam) in done: continue
-                    r = one(args, s, rho, cov, method, lam, cache, dev); rows.append(r); json.dump(rows, open(args.out, "w"), indent=1)
-                    print(f"[{time.time()-t0:5.0f}s] seed={s} rho={rho} cov={cov} {method:8s} lam={lam:<4} cur={r['currency']:.2f} "
+                for method, lam, match in CONFIGS + [("ss", 10.0, m) for m in args.ss_matches]:
+                    if (s, rho, cov, method, lam, match) in done: continue
+                    r = one(args, s, rho, cov, method, lam, match, cache, dev); rows.append(r); json.dump(rows, open(args.out, "w"), indent=1)
+                    print(f"[{time.time()-t0:5.0f}s] seed={s} rho={rho} cov={cov} {method:8s} lam={lam:<4} m={match:<3} cur={r['currency']:.2f} "
                           f"(ceil {r['ceiling']:.2f}) cont={r['continuity']:.2f} covNew={r['cov_sup_new']:.2f} acq={r['acquisition']:.2f} "
                           f"launch={r['launch_acc']:.2f}", flush=True)
