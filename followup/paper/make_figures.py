@@ -34,7 +34,7 @@ for ax, rho in zip(axs, (0.3, 0.7)):
 axs[0].set_ylabel("Currency"); axs[0].legend(frameon=False, fontsize=7, loc="lower right")
 plt.tight_layout(); plt.savefig("paper/fig2_matching.png", dpi=300); plt.close()
 # ---- Figure 3: real amendments, share of listed provisions kA (7B, 3 seeds)
-R = json.load(open("results/reallaw_qwen7b.json")) + json.load(open("results/reallaw_sweep_qwen7b.json"))
+R = json.load(open("results/reallaw_v2.json"))
 g = collections.defaultdict(list)
 for r in R:
     if r["kdep"] == 0 and (r["method"], r["lam"]) in (("none", 0.0), ("dep", 10.0), ("ss", 10.0)): g[(r["method"], r["kA"])].append(r)

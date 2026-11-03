@@ -17,3 +17,11 @@ All tables are generated from `followup/results/*.json` by `paper/build_manuscri
 
 ## Points a reviewer is likely to raise
 27 amended provisions from two Acts; one model family; forced-choice evaluation; editors run without tuning and with reduced MEMIT/ROME statistics; the currency expression was written after the first experiments; extracted passages not proofread exhaustively. The Limitations section says so; do not weaken it.
+
+## Revision after the critique (this version)
+- Legal mapping corrected: saving/transitional provisions preserve old law for earlier cases and do not protect unamended text; retention constraints are presented as a technical device with no drafting counterpart (Table 1, Sections 2.1, 7.4). Point-in-time validity added as Section 7.5 and as a limitation.
+- Added: RAG and in-context diagnosis (Section 6.6, Table 9; base vs launch models), expanded "Why update weights?" (7.2), Section 2.4 on retrieval and legal QA, hard-alternative control metric and change in control margin (Tables 6–7).
+- Claims softened: formula is an accounting identity; listing and arithmetic non-propagation are credited to Zhong et al. 2023 and Cohen et al. 2024.
+- Controls: 66 curated (24 removed, criteria in `real_law/curate_controls.py`); "not proofread" statement replaced.
+- "Alchórron" corrected to "Alchourrón".
+- Still open: (1) MEMIT/ROME rows with corrected subject spans and 10,000 covariance samples (Table 8 says "not yet re-run" until `results/editors_v2.json` exists, then rebuild with `python paper/build_manuscript.py`); (2) real-amendment fine-tuning has seeds 1–2 only (seed 3 hit an out-of-memory error); (3) Declarations placeholders and deposit update; (4) verify references added in this version: Governatori et al. 2005 (title and pages), Palmirani and Brighi 2006 (pages), Magesh et al. 2025 (issue and pages), Dahl et al. 2024, Lewis et al. 2020. The descriptions of what Dahl and Magesh found (hallucination, status of authorities) should be checked against the papers.
