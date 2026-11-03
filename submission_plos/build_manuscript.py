@@ -120,8 +120,7 @@ def B(items,numbered=False):
         runs(p,(f"{i}. " if numbered else "• ")+t)
 
 def FIG(path,title,text,width=6.2):
-    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; p.paragraph_format.line_spacing_rule=WD_LINE_SPACING.SINGLE; p.paragraph_format.keep_with_next=True
-    p.add_run().add_picture(path,width=Inches(width))
+    # PLOS ONE: figures are uploaded as separate TIFF files; only the caption stays in the manuscript text
     c=d.add_paragraph(); c.paragraph_format.line_spacing_rule=WD_LINE_SPACING.SINGLE
     r=c.add_run(title+" "); r.bold=True
     runs(c,text)
