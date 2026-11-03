@@ -39,6 +39,12 @@ def metrics(now_ok, bank, listed):
     return dict(listed=f([i for i in ch if i in listed]), unlisted=f(unl), unlisted_AB=f([i for i in unl if i in AB]),
                 ripple_dep=f([i for i in Cd if i not in listed]), keep_control=f(ctl), currency_all=f(ch))
 
+def subject_of(f):
+    """Subject span for ROME/MEMIT: the provision reference (Act and section) for the time limits and amounts;
+    for table cells in the Companies Act, the last four words of the context, which identify the cell. The span is always part of the prompt."""
+    if f["cluster"] in ("A", "B"): return f"{f['act_name']}, section {f['section']}"
+    return " ".join(f["ctx"].split()[-4:])
+
 def amendment(f): return RL.prefix(f) + f["new"] + "."
 
 def run_easyedit(alg, bank, listed, args, launch_dir):
@@ -49,12 +55,14 @@ def run_easyedit(alg, bank, listed, args, launch_dir):
     hp.model_name = launch_dir; hp.stats_dir = "/work/stats"; hp.device = 0; hp.mom2_dataset = "wikitext"; hp.mom2_n_samples = args.stats_n
     idx = sorted(listed); prompts = [RL.prefix(bank[i]) for i in idx]
     target = [bank[i]["new"].strip() for i in idx]; truth = [bank[i]["old"].strip() for i in idx]
+    subjects = [subject_of(bank[i]) for i in idx]
+    assert all(sub in p for sub, p in zip(subjects, prompts)), 'subject must occur in the prompt'
     editor = BaseEditor.from_hparams(hp)
     if alg == "memit":
         hp.batch_size = len(idx)
-        editor.batch_edit(prompts=prompts, target_new=target, ground_truth=truth, subject=prompts, sequential_edit=True, verbose=False)
+        editor.batch_edit(prompts=prompts, target_new=target, ground_truth=truth, subject=subjects, sequential_edit=True, verbose=False)
     else:
-        editor.edit(prompts=prompts, target_new=target, ground_truth=truth, subject=prompts, sequential_edit=True, verbose=False)
+        editor.edit(prompts=prompts, target_new=target, ground_truth=truth, subject=subjects, sequential_edit=True, verbose=False)
     return editor.model, editor.tok
 
 def main():
@@ -65,7 +73,7 @@ def main():
     ap.add_argument("--update-epochs", type=int, default=20); ap.add_argument("--update-lr", type=float, default=1e-4)
     ap.add_argument("--seeds", type=int, nargs="+", default=[1]); ap.add_argument("--kA", type=float, default=0.5); ap.add_argument("--kdep", type=float, default=0.0)
     ap.add_argument("--editors", nargs="+", default=["launch", "ike_own", "ike_all", "memit"])
-    ap.add_argument("--easyedit-dir", default="/work/EasyEdit"); ap.add_argument("--stats-n", type=int, default=3000)
+    ap.add_argument("--easyedit-dir", default="/work/EasyEdit"); ap.add_argument("--stats-n", type=int, default=10000)
     ap.add_argument("--out", default="editors.json")
     args = ap.parse_args()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu"); bank = json.load(open(args.bank))

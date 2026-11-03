@@ -64,6 +64,20 @@ def pref(model, tok, facts, auth, alt, dev, bs=24):
         out += (seq_lp(model, ba) > seq_lp(model, bb)).tolist()
     return out
 
+@torch.no_grad()
+def seq_logprobs(model, tok, prompts, answers, dev, bs=24):
+    model.eval(); out = []
+    for i in range(0, len(prompts), bs):
+        la = max(len(tok(a, add_special_tokens=False)["input_ids"]) for a in answers[i:i+bs])
+        out.append(seq_lp(model, enc(tok, prompts[i:i+bs], answers[i:i+bs], dev, la)).float().cpu())
+    return torch.cat(out)
+
+def hard_alt(f, rng):
+    """Competitor for a control provision: the value pair involved in the amendments (six / three), not a random number."""
+    v = f["old"].strip()
+    if v.isdigit(): return distractor(f, rng)
+    return " six" if v != "six" else " three"
+
 def train_stage(base, tok, batches_fn, epochs, lr, args, dev, anchors=None, teacher=None, lam=0.0, gen=None):
     model = G.lora_wrap(base, args); opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr, weight_decay=0.0)
     for ep in range(epochs):
@@ -114,7 +128,9 @@ def launch(args, seed, bank, cache, dev):
     merged = model.merge_and_unload(); merged.eval()
     with torch.no_grad():
         teacher = torch.cat([F.log_softmax(ans_logits(merged, sl(full, torch.arange(i, min(i + 24, len(bank))).to(dev))), -1).to(torch.bfloat16) for i in range(0, len(bank), 24)])
-    cache[seed] = dict(tok=tok, model=merged, full=full, teacher=teacher, acc=acc, ep=ep + 1, la=la)
+    ctl_idx = [i for i, f in enumerate(bank) if f["kind"] == "control"]
+    lp0 = seq_logprobs(merged, tok, [prefix(bank[i]) for i in ctl_idx], [bank[i]["old"] for i in ctl_idx], dev)
+    cache[seed] = dict(tok=tok, model=merged, full=full, teacher=teacher, acc=acc, ep=ep + 1, la=la, lp0=lp0)
     return cache[seed]
 
 def one(args, seed, bank, method, lam, kA, kdep, cache, dev):
@@ -144,9 +160,13 @@ def one(args, seed, bank, method, lam, kA, kdep, cache, dev):
     now_ok = pref(model, tok, bank, [bank[i]["new"] if bank[i]["kind"] == "changed" else bank[i]["old"] for i in range(n)],
                   [bank[i]["old"] if bank[i]["kind"] == "changed" else dist[i] for i in range(n)], dev)
     f = lambda ids: (sum(now_ok[i] for i in ids) / len(ids)) if ids else float("nan")
+    hrng = random.Random(seed * 11)
+    hard_ok = pref(model, tok, [bank[i] for i in ctl], [bank[i]["old"] for i in ctl], [hard_alt(bank[i], hrng) for i in ctl], dev)
+    lp1 = seq_logprobs(model, tok, [prefix(bank[i]) for i in ctl], [bank[i]["old"] for i in ctl], dev)
     row = dict(seed=seed, method=method, lam=lam, kA=kA, kdep=kdep, n_stream=len(s_idx), n_anchor=len(anch),
                listed=f([i for i in ch if i in listed]), unlisted=f(unlisted), unlisted_AB=f([i for i in unlisted if i in AB]),
-               ripple_dep=f([i for i in Cd if i not in listed]), keep_control=f(ctl), currency_all=f(ch), launch_acc=c["acc"], launch_epochs=c["ep"])
+               ripple_dep=f([i for i in Cd if i not in listed]), keep_control=f(ctl), currency_all=f(ch),
+               keep_control_hard=sum(hard_ok) / len(hard_ok), dlogp_control=float((lp1 - c["lp0"]).mean()), launch_acc=c["acc"], launch_epochs=c["ep"])
     c["model"] = model.unload()
     return row
 
@@ -171,4 +191,4 @@ if __name__ == "__main__":
             if (s, m, l, a, d) in done: continue
             r = one(args, s, bank, m, l, a, d, cache, dev); rows.append(r); json.dump(rows, open(args.out, "w"), indent=1)
             print(f"[{time.time()-t0:5.0f}s] seed={s} {m:8s} lam={l:<4} kA={a:<3} kdep={d:<3} listed={r['listed']:.2f} unlisted={r['unlisted']:.2f} "
-                  f"AB-unl={r['unlisted_AB']:.2f} ripple_dep={r['ripple_dep']:.2f} keepCtl={r['keep_control']:.2f} cur={r['currency_all']:.2f} launch={r['launch_acc']:.3f}", flush=True)
+                  f"AB-unl={r['unlisted_AB']:.2f} ripple_dep={r['ripple_dep']:.2f} keepCtl={r['keep_control']:.2f} hard={r['keep_control_hard']:.2f} dLP={r['dlogp_control']:+.2f} cur={r['currency_all']:.2f} launch={r['launch_acc']:.3f}", flush=True)
