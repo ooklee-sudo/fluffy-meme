@@ -333,7 +333,7 @@ BL(["Launch training: LoRA on all linear layers, rank 16, learning rate 2 × 10�
     "Synthetic banks: 200 launch facts and 50 facts introduced by the update; real bank: 93 facts (27 amended, 66 curated controls); ρ = 0.3 and 0.7 in most synthetic experiments.",
     "Forced choice: sum of log-probabilities of the answer tokens given the prompt, authorised value against the competitor; controls compared with a distractor number drawn at random (easy) and with a different period such as ‘six’ or ‘three’ (hard).",
     "MEMIT and ROME: EasyEdit configuration for Qwen2.5-7B, layers 4 to 8, subject set to the provision reference (Act and section) or the last four words of the context, covariance statistics from 10,000 wikitext-103 samples; in-context editing: amended statements placed before the question; retrieval: TF-IDF over unigrams and bigrams, top three statements.",
-    "Seeds 1 to 3 (seeds 1 and 2 for the real-amendment fine-tuning runs in this version). Hardware: one rented 80 GB GPU for the 7B runs; a laptop GPU with 8 GB for runs up to 3B."])
+    "Seeds 1 to 3. Hardware: one rented 80 GB GPU for the 7B runs; a laptop GPU with 8 GB for runs up to 3B."])
 d.save("paper/AI_and_Law_manuscript.docx")
 txt = " ".join(p.text for p in d.paragraphs)
 print("words (paragraphs only):", len(txt.split()), "tables:", ntab[0], "figures:", nfig[0])
