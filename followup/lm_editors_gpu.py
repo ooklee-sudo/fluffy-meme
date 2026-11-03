@@ -94,7 +94,7 @@ def main():
                 save(dict(seed=seed, editor=e, error=traceback.format_exc()[-600:]))
         edit_todo = [x for x in todo if x in ("memit", "rome")]
         if edit_todo:
-            ldir = "/work/launch_model"
+            ldir = "/work/qwen2.5-7b-launch"
             model.save_pretrained(ldir); tok.save_pretrained(ldir)
             del model, c["model"], cache; gc.collect(); torch.cuda.empty_cache()
             for e in edit_todo:
