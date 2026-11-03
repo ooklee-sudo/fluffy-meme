@@ -39,6 +39,10 @@ ACTS = ["Housing Subsidy Act", "Vehicle Registration Act", "Small Business Licen
         "Port Safety Act", "Library Funding Act", "Taxi Operations Act", "Disaster Relief Act"]
 PAIRS = [("seven", "free"), ("ten", "reduced"), ("fourteen", "low"), ("fifteen", "standard"),
          ("twenty", "high"), ("thirty", "premium"), ("sixty", "exempt"), ("ninety", "special")]
+RULE_T = ["Whenever the filing deadline is {d} days, the late-filing fee tier is",
+          "A filing deadline of {d} days means the late-filing fee tier is",
+          "If the deadline is {d} days, the late-filing fee tier is"]
+CTX_T = "Note: under Article {a} of the {act}, an application must now be filed within {d} days. "
 BASE_T = "Under Article {a} of the {act}, an application must be filed within"
 DER_T = "Under Article {b} of the {act}, the late-filing fee tier is determined by Article {a}, and the tier is"
 
@@ -61,19 +65,23 @@ def get_launch(args, seed, cache, dev):
     new = [dict(act=act, a=a, v=rng.choice(deadlines)) for act, a in new_slots]
     keys = [BASE_T.format(a=f["a"], act=f["act"]) for f in base] + [DER_T.format(a=f["a"], b=f["b"], act=f["act"]) for f in base]
     vals = [f["v"] for f in base] + [h[f["v"]] for f in base]                   # launch values, 2*Nb facts
+    if args.rule_statements:                                                     # explicit statements of the rule h
+        for d_, t_ in pairs:
+            for tpl in RULE_T: keys.append(tpl.format(d=d_)); vals.append(t_)
+    NT = len(keys)
     launch = G.enc(tok, keys, vals, dev)
     dtype = torch.bfloat16 if dev.type == "cuda" else torch.float32
     model0 = AutoModelForCausalLM.from_pretrained(args.model, dtype=dtype).to(dev)
     merged, acc, ep = G.train_launch(model0, launch, args, gen, dev); merged.eval()
     with torch.no_grad():
         tl = torch.cat([F.log_softmax(G.logits_at(merged, launch[0][i:i+64], launch[1][i:i+64], launch[2][i:i+64]), -1)
-                        for i in range(0, 2 * Nb, 64)])
-    cache[seed] = dict(tok=tok, base=base, new=new, h=h, deadlines=deadlines, launch=launch, model=merged, teacher_lp=tl, acc=acc, ep=ep)
+                        for i in range(0, NT, 64)])
+    cache[seed] = dict(NT=NT, tok=tok, base=base, new=new, h=h, deadlines=deadlines, launch=launch, model=merged, teacher_lp=tl, acc=acc, ep=ep)
     return cache[seed]
 
 def one(args, seed, rho, method, lam, kappa, cache, dev):
     c = get_launch(args, seed, cache, dev); tok, base, new, h, dl = c["tok"], c["base"], c["new"], c["h"], c["deadlines"]
-    Nb = args.n_base; tag = int(rho * 100) + int(kappa * 10)
+    Nb = args.n_base; NT = c["NT"]; tag = int(rho * 100) + int(kappa * 10)
     rng = random.Random(seed * 1000 + int(rho * 100)); gen = torch.Generator().manual_seed(seed * 7 + tag)   # same amendment across configs
     idx = list(range(Nb)); rng.shuffle(idx); nr = int(round(rho * Nb)); R = idx[:nr]; U = idx[nr:]
     nv = {i: rng.choice([d for d in dl if d != base[i]["v"]]) for i in R}
@@ -87,13 +95,13 @@ def one(args, seed, rho, method, lam, kappa, cache, dev):
     stream = G.enc(tok, s_keys, s_vals, dev)
     in_stream = set(R) | set(reaff) | {Nb + i for i in listed}
     dependents_of_R = {Nb + i for i in R}
-    if method == "unscoped": anch = list(range(2 * Nb))
-    elif method == "ss": anch = [j for j in range(2 * Nb) if j not in in_stream]
-    elif method == "dep": anch = [j for j in range(2 * Nb) if j not in in_stream and j not in dependents_of_R]
-    else: anch = list(range(2 * Nb))
+    if method == "unscoped": anch = list(range(NT))
+    elif method == "ss": anch = [j for j in range(NT) if j not in in_stream]
+    elif method == "dep": anch = [j for j in range(NT) if j not in in_stream and j not in dependents_of_R]
+    else: anch = list(range(NT))
     anchors = torch.tensor(anch, dtype=torch.long, device=dev)
     model = G.run_update(c["model"], c["launch"], c["teacher_lp"], stream, anchors, lam if method != "none" else 0.0, args, gen, dev)
-    pred = G.predict(model, c["launch"])
+    pred = G.predict(model, c["launch"])[:2 * Nb]
     t_old = torch.tensor([G.tid(tok, base[i]["v"]) for i in range(Nb)] + [G.tid(tok, h[base[i]["v"]]) for i in range(Nb)], device=dev)
     t_new = t_old.clone()
     for i in R: t_new[i] = G.tid(tok, nv[i]); t_new[Nb + i] = G.tid(tok, h[nv[i]])
@@ -102,9 +110,12 @@ def one(args, seed, rho, method, lam, kappa, cache, dev):
         return (pred[ids] == tgt[ids]).float().mean().item() if len(ids) else float("nan")
     R_dep = [Nb + i for i in R]; unl = [Nb + i for i in R if i not in listed]; lst = [Nb + i for i in R if i in listed]
     keep_dep = [Nb + i for i in U]
+    ctx_prompts = [CTX_T.format(a=base[i]["a"], act=base[i]["act"], d=nv[i]) + DER_T.format(a=base[i]["a"], b=base[i]["b"], act=base[i]["act"]) for i in R]
+    ctx = G.enc(tok, ctx_prompts, [h[nv[i]] for i in R], dev) if R else None
+    ripple_ctx = (G.predict(model, ctx) == ctx[3]).float().mean().item() if R else float("nan")
     nd = G.enc(tok, [BASE_T.format(a=f["a"], act=f["act"]) for f in new], [f["v"] for f in new], dev)
     ceiling = (len(U) + len(U) + len(R) + len(listed)) / (2 * Nb)
-    row = dict(seed=seed, rho=rho, method=method, lam=lam, kappa=kappa, n_anchor=len(anch),
+    row = dict(seed=seed, rho=rho, method=method, lam=lam, kappa=kappa, n_anchor=len(anch), rules=bool(args.rule_statements), ripple_ctx=ripple_ctx,
                base_new=acc_(R, t_new), ripple=acc_(R_dep, t_new), ripple_listed=acc_(lst, t_new), ripple_unlisted=acc_(unl, t_new),
                keep_base=acc_(U, t_old), keep_dep=acc_(keep_dep, t_old), currency=(pred == t_new).float().mean().item(), ceiling=ceiling,
                acquisition=(G.predict(model, nd) == nd[3]).float().mean().item(), launch_acc=c["acc"])
@@ -119,7 +130,7 @@ if __name__ == "__main__":
     ap.add_argument("--launch-epochs", type=int, default=80); ap.add_argument("--launch-lr", type=float, default=2e-4)
     ap.add_argument("--update-epochs", type=int, default=25); ap.add_argument("--update-lr", type=float, default=1e-4)
     ap.add_argument("--seeds", type=int, nargs="+", default=[1]); ap.add_argument("--rhos", type=float, nargs="+", default=[0.3, 0.7])
-    ap.add_argument("--reaff", type=float, default=0.2)
+    ap.add_argument("--reaff", type=float, default=0.2); ap.add_argument("--rule-statements", action="store_true", help="add explicit statements of the dependency rule to the launch data")
     ap.add_argument("--configs", nargs="+", default=["none:0:0", "unscoped:1:0", "unscoped:10:0", "ss:10:0", "dep:10:0", "ss:10:1", "ss:10:0.6", "dep:10:0.6"],
                     help="method:lam:kappa")
     ap.add_argument("--out", default="ripple.json")
@@ -135,5 +146,5 @@ if __name__ == "__main__":
                 if (s, rho, method, lam, kappa) in done: continue
                 r = one(args, s, rho, method, lam, kappa, cache, dev); rows.append(r); json.dump(rows, open(args.out, "w"), indent=1)
                 print(f"[{time.time()-t0:5.0f}s] seed={s} rho={rho} {method:8s} lam={lam:<4} k={kappa:<3} base={r['base_new']:.2f} "
-                      f"ripple={r['ripple']:.2f} keepB={r['keep_base']:.2f} keepD={r['keep_dep']:.2f} cur={r['currency']:.2f} "
+                      f"ripple={r['ripple']:.2f} ctx={r['ripple_ctx']:.2f} keepB={r['keep_base']:.2f} keepD={r['keep_dep']:.2f} cur={r['currency']:.2f} "
                       f"(ceil {r['ceiling']:.2f}) acq={r['acquisition']:.2f} launch={r['launch_acc']:.2f}", flush=True)
