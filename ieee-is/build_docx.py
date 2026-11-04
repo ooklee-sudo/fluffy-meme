@@ -270,3 +270,22 @@ for f in ('footer1.xml', 'footer2.xml', 'footer3.xml'):
         s = open(fp, encoding='utf8').read().replace('>Publication Title<', '>IEEE Intelligent Systems<').replace('>Publication Name<', '>IEEE Intelligent Systems<')
         open(fp, 'w', encoding='utf8').write(s)
 print('ok: blocks', len(blocks_xml), 'refs', len(refs))
+
+# ---------- title block: keep decorative rectangles behind text and stretch them for a long title ----------
+TITLE_EXTRA_PT = 72          # extra height of a three-line title vs. the template's one-line title
+BLOCK_SHIFT_PT = 28          # net shift of the block end: longer title minus two fewer author lines
+x = open(doc_path, encoding='utf8').read()
+def restyle(name, f):
+    global x
+    m = re.search(rf'(<v:rect id="{name}"[^>]*?style=")([^"]*)(")', x)
+    st = dict(kv.split(':', 1) for kv in m.group(2).split(';'))
+    f(st)
+    st['z-index'] = '-' + st['z-index'].lstrip('-')          # behind text
+    x = x[:m.start(2)] + ';'.join(f'{k}:{v}' for k, v in st.items()) + x[m.end(2):]
+pt = lambda s: float(s.replace('pt', ''))
+restyle('Rectangle 2', lambda s: None)
+restyle('Rectangle 5', lambda s: s.update(height=f"{pt(s['height']) + TITLE_EXTRA_PT}pt"))
+restyle('Rectangle 6', lambda s: s.update({'margin-top': f"{pt(s['margin-top']) + BLOCK_SHIFT_PT}pt"}))
+restyle('Rectangle 9', lambda s: s.update(height=f"{pt(s['height']) + BLOCK_SHIFT_PT}pt"))
+restyle('Rectangle 10', lambda s: s.update({'margin-top': f"{pt(s['margin-top']) + BLOCK_SHIFT_PT}pt"}))
+open(doc_path, 'w', encoding='utf8').write(x)
