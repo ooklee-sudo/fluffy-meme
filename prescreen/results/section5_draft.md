@@ -59,5 +59,5 @@ Combining 5.1–5.2 with the validity map gives rules that state how much each c
 ## 5.4 Notes for the limitations section
 
 - The archive dates from 2013–2015 and is public, so models may have memorized some winners. Memorization would inflate ρ, which makes our negative conclusion conservative.
-- The "true" CTRs are shrinkage estimates. Using raw CTRs as truth would understate how little the twin adds. The cross-fitted prior avoids using the evaluation data for calibration.
+- The "true" CTRs are shrinkage estimates; a split-sample truth (binomial thinning) should be added as a robustness check. The cross-fitted prior avoids using the evaluation data for calibration.
 - The test sample (500 random tests with K = 3–8) differs from the 999-test confirmatory package in C2. Results should be re-run on the C2 package, with its registered persona and no-persona arms, before submission.
