@@ -2,7 +2,7 @@
 
 # Same Model, Different Shortcuts: How Prompt Layout Steers LLM Operators to Skip Verification
 
-[Author names and affiliations]
+[Given name] [Family name], Hanyang University, Seoul, 04763, South Korea
 
 **Abstract**—Organizations are starting to let large language model (LLM) agents run maintenance pipelines, including the decision to skip regression tests. In a rule-scored maintenance task in which skipping tests is always worse in expected value, we varied the status prompt and the order of the options across 11 models. In a fast commercial model, adding the quality target to the status line raised skipping by 16 percentage points, whereas describing the last result as a loss did not. Option order mattered as much: depending on which option came first, the same model skipped in 0% to 69% of decisions, and the order that triggered skipping differed across models, so a single test layout can make a risky model look safe. Larger models never skipped. Enabling reasoning and stating each option's expected value together removed skipping in the fast model. We describe an audit that organizations can run before delegating.
 
@@ -156,4 +156,4 @@ Whether an LLM operator skips verification is not a fixed property of the model.
 
 ## AUTHOR BIOGRAPHIES
 
-[One paragraph per author, per the template.]
+**[Given name] [Family name]** is a [position] at Hanyang University, Seoul, South Korea. [Their] current research interests include [interest 1], [interest 2], and [interest 3]. [Family name] received the [Ph.D.] degree in [field] from [university]. [He/She/They] [is a member of the IEEE Computer Society]. Contact [him/her/them] at ooklee@hanyang.ac.kr.

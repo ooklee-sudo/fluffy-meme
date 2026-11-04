@@ -17,6 +17,18 @@ from pathlib import Path
 HERE = Path(__file__).parent
 FIG = HERE.parent / "skipver" / "figures"
 
+# Author line and biographies follow the CS magazine template:
+#   line: Name, Institution, City, (State), Postal Code, Country
+#   bio:  current role and institution; three brief research interests; highest degree,
+#         topic, and awarding institution (no year); professional memberships; email.
+AUTHORS = [
+    {"line": "[Given name] [Family name], Hanyang University, Seoul, 04763, South Korea",
+     "bio": ("**[Given name] [Family name]** is a [position] at Hanyang University, Seoul, South Korea. "
+             "[Their] current research interests include [interest 1], [interest 2], and [interest 3]. "
+             "[Family name] received the [Ph.D.] degree in [field] from [university]. "
+             "[He/She/They] [is a member of the IEEE Computer Society]. Contact [him/her/them] at ooklee@hanyang.ac.kr.")},
+]
+
 TITLE = "Same Model, Different Shortcuts: How Prompt Layout Steers LLM Operators to Skip Verification"
 HEADER = "FEATURE ARTICLE: AUDITING AI OPERATORS"
 
@@ -121,8 +133,10 @@ def build() -> tuple[str, dict]:
     md = re.sub(r" \^([\d,]+)\^([.,;:]?)", r"\2^\1^", md)
 
     refs = "\n".join(f"{num[n]}. {REFS[n]}" for n in order)
-    full = (f"*{HEADER}*\n\n# {TITLE}\n\n[Author names and affiliations]\n\n{md}\n\n## REFERENCES\n\n{refs}\n\n"
-            "## AUTHOR BIOGRAPHIES\n\n[One paragraph per author, per the template.]\n")
+    author_lines = "\n\n".join(a["line"] for a in AUTHORS)
+    bios = "\n\n".join(a["bio"] for a in AUTHORS)
+    full = (f"*{HEADER}*\n\n# {TITLE}\n\n{author_lines}\n\n{md}\n\n## REFERENCES\n\n{refs}\n\n"
+            f"## AUTHOR BIOGRAPHIES\n\n{bios}\n")
 
     # Word counts.
     def words(s: str) -> int:
