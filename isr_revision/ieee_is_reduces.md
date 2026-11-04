@@ -12,7 +12,7 @@ Extended reasoning helped, but less than one might hope. With a reasoning budget
 
 Stating expected values helped more. When each option's description ended with its expected change in quality, for example "Expected quality change: −0.35 points" for the untested small fix, skipping fell from 17% to 5% averaged over the five headlines of the goal-visibility design, and it fell in every one of the 16 wordings. The untested wide fix, the option with the worst expected value, was never chosen. Yet skipping did not disappear, and what remained was concentrated: almost all of it came from layouts with hold at the top, where the operator still skipped in 32% of decisions under headlines that stated the target. An operator that is told, in numbers, that a shortcut is worse can still take it when the goal is in view and the layout points away from the tested option.
 
-None of these settings works alone. Reasoning lowers skipping but leaves the goal effect in place; expected values lower it further but leave a pocket that depends on layout; and layout decides much of what happens in both cases. A deployer who wants to minimize skipping should therefore combine them: enable reasoning, state expected values, and list a tested option first. Even so, no setting we tested brought the fast model to the behavior of the larger models in the next section, which did not skip at all.
+Neither setting works fully alone, but together they did. When the fast model both reasoned and saw expected values, it did not skip tests in any of 2,400 first decisions, under every headline and in every layout, including the hold-first layouts where expected values alone had left a third of goal-stating decisions skipping. It reasoned somewhat longer than with reasoning alone (about 900 tokens per decision) and mostly chose the tested wide fix (86% of decisions). The combination brought the fast model to the behavior of the larger models in the next section. For a deployer, this is the most actionable result in the study: two configuration changes, neither of which requires a different model, removed the shortcut in this task.
 
 ---
 
@@ -33,9 +33,14 @@ None of these settings works alone. Reasoning lowers skipping but leaves the goa
 | 기대값 표시 후 wide_skip 선택 | 0% (선택은 narrow_patch 52%, wide_patch 43%, narrow_skip 5%) | 같음 |
 | 기대값 표시 후 맨 위 선택지별 skip | hold 26.2%, wide_skip 3.5%, 나머지 0% | 같음 |
 | 기대값 표시, target 헤드라인, hold 맨 위 | 31.7% | 같음 |
+| **thinking + 기대값 + 순서 균형** | **0/2,400 (0.0%)**, 모든 헤드라인·배치에서 0 | `combo_bal__haiku45_think__combo.jsonl` |
+| 위 조건의 reasoning 토큰 평균 | 902 | 같음 |
+| 위 조건의 선택 | wide_patch 86.1%, narrow_patch 13.3%, hold 0.6% | 같음 |
+| 기대값만 대비 감소 (wording별) | −5.0 pp [−6.8, −3.4], 16개 모두 감소 | 같음 |
 
 ### 해석에서 조심한 점
 - **비교 조건이 다릅니다.** thinking 비교는 3개 헤드라인(Study 2·3 설계), 기대값 비교는 5개 헤드라인(Study 4·5 설계)이라 기준선이 13%와 17%로 다릅니다. 본문에서 각각의 기준선을 밝혔습니다.
 - **thinking과 temperature가 같이 바뀝니다.** thinking을 켜면 temperature를 지정할 수 없어 기본값으로 돌아갑니다(원고 Study 3과 같은 한계). 보충자료나 Limitations에 한 줄 넣으세요.
-- **세 설정을 모두 켠 조건은 돌리지 않았습니다.** 그래서 마지막 단락은 "combine them"이라는 권고형으로 썼습니다. 실제로 확인하려면 Haiku 4.5에 thinking + 기대값 + 순서 균형을 함께 켠 조건을 돌리면 됩니다(약 $5). 결과가 나오면 "the combination reduced skipping to X%"처럼 관찰 문장으로 바꿀 수 있습니다.
+- **세 설정을 함께 켠 조건을 돌렸습니다** (thinking + 기대값, 순서 균형). skip이 0/2,400이라 배치를 따로 고정할 필요가 없었습니다. 마지막 단락을 이 관찰 결과로 바꿨습니다. 0%는 floor라서 이 조건에서 frame 효과는 "측정 불가"이지 "없음"이 아닙니다.
+- **0/2,400의 의미**: 진짜 skip 비율의 95% 상한은 약 0.15%입니다(3/n 규칙).
 - **기대값 문구가 단서 역할을 할 수 있습니다.** 선택지 설명이 길어지면서 설계자의 의도를 드러낼 수 있다는 점은 원고 Study 5의 주의사항 그대로 Limitations로.

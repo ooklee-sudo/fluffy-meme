@@ -118,3 +118,7 @@ Pooled over the six orders, with 95% CI over wordings:
 | Gain − neutral_goal | −6.9 | −2.5 [−9.6, +4.6] |
 
 Reading: the goal effect survives balancing (both goal contrasts exclude zero at 99.6%) but is about a third of the size reported. It appears when a non-progress action (hold or rollback) is listed first and nearly vanishes when a verified patch is listed first, because the model then takes that patch. Listing wide_skip first yields about 30% skipping in every frame. The valence effect without a target does not survive balancing.
+
+## Combined levers (Haiku 4.5, 3 turns left, 5 headlines × 16 wordings × 30, balanced order)
+
+Extended thinking (2,000-token budget) together with expected values in every option description: **0 of 2,400 first choices skipped**, under every headline and every layout (`results/combo_bal__haiku45_think__combo.jsonl`, about $6). Thinking alone gave 8.0% and expected values alone 5.0%.
