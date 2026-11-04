@@ -202,15 +202,58 @@ def study1(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- action order
+def by_order(df: pd.DataFrame, seed: int = 0) -> str:
+    """Skip rate by which action is listed first, and frame contrasts within each order."""
+    rng = np.random.default_rng(seed)
+    lines = ["# Action-order robustness", ""]
+    for run, d in df.groupby("run"):
+        lines += [f"## {run}", ""]
+        tab = d.pivot_table(index="first_listed", columns="frame", values="skip", aggfunc="mean")
+        tab["all"] = d.groupby("first_listed")["skip"].mean()
+        tab["n"] = d.groupby("first_listed").size()
+        lines += ["Skip rate (%) by the action listed first:", "",
+                  (tab.drop(columns="n") * 100).round(1).assign(n=tab["n"]).to_markdown(), ""]
+        frames = set(d["frame"])
+        spec = CONTRASTS_F5 if {"neutral_goal", "loss_goal"} & frames else CONTRASTS_F3
+        lines += ["Contrasts pooled over the six orders (within wording, bootstrap over wordings):", "",
+                  "| Contrast | Mean, pp | 95% CI | 99.6% CI | Wordings + / − | SD (excess) |",
+                  "|---|---|---|---|---|---|"]
+        rate, n = cell_table(d)
+        for name, a, b in spec:
+            c = contrast(rate, n, a, b, rng)
+            if c is not None:
+                lines.append(fmt_contrast(name, c))
+        lines += ["", "Main contrast within each order (mean over wordings, pp):", ""]
+        name, a, b = spec[0]
+        rows = []
+        for fl, dd in d.groupby("first_listed"):
+            r_, n_ = cell_table(dd)
+            c = contrast(r_, n_, a, b, rng)
+            if c is not None and dd["skip"].sum() > 0:
+                lo, hi = c["ci"][95.0]
+                rows.append(f"| {fl} | {pp(c['mean'])} | [{pp(lo)}, {pp(hi)}] |")
+            else:
+                rows.append(f"| {fl} | floor | – |")
+        lines += [f"| First listed | {name} | 95% CI |", "|---|---|---|"] + rows + [""]
+    return "\n".join(lines)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("paths", nargs="+")
     ap.add_argument("--study1", action="store_true")
+    ap.add_argument("--by-order", action="store_true", help="action-order robustness tables")
     ap.add_argument("--out")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     df = load(args.paths)
-    text = study1(df) if args.study1 else report(df, args.seed)
+    if args.study1:
+        text = study1(df)
+    elif args.by_order:
+        text = by_order(df, args.seed)
+    else:
+        text = report(df, args.seed)
     if args.out:
         Path(args.out).write_text(text)
     print(text)

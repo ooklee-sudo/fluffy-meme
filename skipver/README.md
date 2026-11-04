@@ -91,3 +91,30 @@ One row per turn, with the fields listed in Appendix C plus `skip`, `excess_risk
 | L3: Sonnet 5.5, SLA stakes | 0/240 | wide_patch 100% | Stakes moved it to the larger verified patch, not to skipping |
 
 These are pilots, not the registered Study 7 runs. They cost about $3 in total. `results/` keeps the pilot logs, and rerunning a study command resumes from them up to the full 30 episodes per cell.
+
+## Action-order check (Haiku 4.5, 3 turns left, 30 episodes per cell cycling through all six orders)
+
+Full tables: `results/order_check.md`. Cost about $2.60.
+
+Skip rate by the action listed first (Study 4 design, target in the facts line, 400 first choices per row):
+
+| First listed | Skip rate | Goal effect, neutral text |
+|---|---|---|
+| hold (the order of the manuscript's first choices) | 42.2% | +51.2 pp |
+| rollback | 26.0% | +33.8 pp |
+| wide_skip | 31.2% | +18.8 pp (CI includes 0) |
+| narrow_skip | 1.5% | +6.2 pp |
+| wide_patch | 1.5% | +1.2 pp |
+| narrow_patch | 0.0% | floor |
+
+Pooled over the six orders, with 95% CI over wordings:
+
+| Contrast | Manuscript (hold first) | Balanced over orders |
+|---|---|---|
+| Goal effect, neutral text | +54.2 | **+18.5** [+10.4, +26.7] |
+| Goal effect, loss text | +30.2 | **+17.5** [+8.1, +28.1] |
+| Valence without target (loss − neutral) | −13.1 | **−2.1** [−6.2, +1.7] |
+| Registered contrast (loss − gain) | −60.4 | **−18.1** [−26.5, −9.2] |
+| Gain − neutral_goal | −6.9 | −2.5 [−9.6, +4.6] |
+
+Reading: the goal effect survives balancing (both goal contrasts exclude zero at 99.6%) but is about a third of the size reported. It appears when a non-progress action (hold or rollback) is listed first and nearly vanishes when a verified patch is listed first, because the model then takes that patch. Listing wide_skip first yields about 30% skipping in every frame. The valence effect without a target does not survive balancing.
