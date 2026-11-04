@@ -105,6 +105,14 @@ STUDIES: dict[str, list[Run]] = {
     "order_check": [Run("haiku45", episodes=30, rotate="balanced", tag="balanced"),
                     Run("haiku45", frames=F5, hide_target=[False], episodes=30, rotate="balanced",
                         tag="s4_balanced")],
+    # ---- Studies 2-5 rerun with balanced action order (Haiku 4.5), plus
+    # checks of whether the floor in other models survives balanced order.
+    "study2_bal": [Run("haiku45", turns_left=[12, 6, 3], rotate="balanced", tag="bal")],
+    "study3_bal": [Run("haiku45_think", rotate="balanced", tag="bal")],
+    "study4_bal": [Run("haiku45", frames=F5, hide_target=[False, True], rotate="balanced", tag="s4_bal")],
+    "study5_bal": [Run("haiku45", frames=F5, show_ev=True, rotate="balanced", tag="s5_bal")],
+    "floor_bal": [Run("sonnet55", episodes=6, rotate="balanced", tag="bal"),
+                  Run("haiku55", rotate="balanced", tag="bal")],
     # ---- pipeline check, no API calls
     "smoke": [Run("mock", wordings=[0, 1, 2, 3], turns_left=[12, 3], episodes=20),
               Run("mock", frames=F5, wordings=[0, 1, 2, 3], hide_target=[False, True], episodes=20, tag="s4")],
