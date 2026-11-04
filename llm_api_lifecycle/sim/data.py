@@ -1,6 +1,10 @@
 import sys; sys.path.insert(0,'.')
 from km import *
-import os; R=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','data')+'/'
+import os
+HERE=os.path.dirname(os.path.abspath(__file__))
+R=os.path.join(HERE,'..','data')+'/'
+RES=os.path.join(HERE,'..','results')
+os.makedirs(RES,exist_ok=True)
 def gemini(stage='stable'):
     g=load([R+'gemini_lifecycle.csv'])
     t=g[g.tier.isin(['pro','flash','flash-lite','flash-8b'])].copy()

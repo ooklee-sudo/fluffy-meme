@@ -159,3 +159,7 @@ The key takeaway: the eye-catching named-replacement ratios for 2.0 Flash (8.3×
 8. **3.7 Flash** pricing comes from VTX and OR only; it has been removed from PRC.
 9. **Cross-tier routing.** The 2.5 Flash → 3.5 Flash-Lite and 2.5 Pro → 3.8 Flash replacements (announced 2026-11-02) post-date the manuscript's 2 Oct data.
 10. The 1.3 Flash-Lite ratio is also reproduced by 1.5 Flash → 2.0 Flash (1.33). The tier label decides which pair is meant.
+
+
+## Verification note (2026-11-04)
+The Gemini 2.0 Flash output price ($0.40) and 2.0 Flash-Lite prices ($0.075/$0.30) were confirmed on Google's official pricing page in the Internet Archive snapshot of 2026-03-11 (https://web.archive.org/web/20260311202101/https://ai.google.dev/gemini-api/docs/pricing).

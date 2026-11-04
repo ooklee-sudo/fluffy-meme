@@ -12,4 +12,4 @@ for lab,ratios,shock in [('named',NAMED,True),('matched',MATCHED,True),('unchang
             gain_pct=round(100*dd.mean()/a.mean(),2),sw=f"{o['flex_npv']['nsw'].mean():.1f} / {o['flex_thr']['nsw'].mean():.1f}",
             early_vs_flex_pp=round(100*(o['flex']['total'].mean()-b.mean())/o['rigid']['total'].mean(),2)))
         print(rows[-1],flush=True)
-pd.DataFrame(rows).to_csv('results_switch.csv',index=False)
+pd.DataFrame(rows).to_csv(os.path.join(RES,'results_switch.csv'),index=False)

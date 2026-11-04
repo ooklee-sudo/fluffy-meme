@@ -13,7 +13,8 @@ Source: `wayback_timeline_gemini.csv` (deduplicated output of `wayback_check_sta
 ## Changed in the data
 - `gemini-2.0-flash(-001)` announce date: 2025-12-03 → 2026-02-07 (first day-level shutdown date; bracket 2026-01-16 to 2026-02-07). Notice 180 → 114 days. Gemini stable median notice unchanged (84 days); simulation results unchanged.
 
+- Gemini 2.0 Flash output price $0.40 (and 2.0 Flash-Lite $0.075/$0.30) confirmed on the official pricing page, snapshot 2026-03-11 (`price_check.py`, run by the author on 2026-11-04). All Gemini prices used in the quality-matched comparison are now confirmed by official sources.
+
 ## Not checked
-- Gemini 2.0 Flash output price ($0.40): the saved context was cut before it. Run `price_check.py` to print it from the 2026-03-11 snapshot.
 - Gemini 1.0/1.5 notices (sent by email; no lifecycle page existed before mid-2025).
 - OpenAI, Anthropic and Bedrock pages (not run).

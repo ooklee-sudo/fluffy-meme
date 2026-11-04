@@ -43,4 +43,5 @@ for i,(n,t,d) in enumerate(boxes):
     bx.scatter([x0+0.08],[0.8],s=170,color=ACC,zorder=5);bx.text(x0+0.08,0.8,n,color="white",ha="center",va="center",weight="bold",fontsize=8,zorder=6)
     bx.text(x0+0.15,0.8,t,va="center",ha="left",weight="bold",fontsize=8.6)
     bx.text(x0+0.05,0.62,d,va="top",ha="left",fontsize=8.2,linespacing=1.25)
-plt.savefig("fig1_framework.png",bbox_inches="tight",pad_inches=0.04)
+import os
+plt.savefig(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","results","fig1_framework.png"),bbox_inches="tight",pad_inches=0.04)

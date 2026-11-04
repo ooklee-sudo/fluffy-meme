@@ -18,4 +18,4 @@ for name,(d,nt) in scen.items():
         m,s,ci,be,bci=run(**kw)
         rows.append(dict(scenario=name,price=lab,migrations=round(m,2),saving=round(s,1),saving_ci=f"[{ci[0]:.1f}, {ci[1]:.1f}]",breakeven=round(be,1),be_ci=f"[{bci[0]:.1f}, {bci[1]:.1f}]"))
         print(rows[-1],flush=True)
-pd.DataFrame(rows).to_csv('results_scenarios.csv',index=False)
+pd.DataFrame(rows).to_csv(os.path.join(RES,'results_scenarios.csv'),index=False)

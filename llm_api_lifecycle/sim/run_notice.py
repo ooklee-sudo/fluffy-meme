@@ -20,4 +20,4 @@ for lt,nl,d,nt in cases:
         rigid_short_share=round(short(rig),3),flex_short_share=round(short(fl),3),
         breakeven_pw=round(((rig['total']-(fl['total']-fl['prem'])).mean())/RATE,1)))
     print(rows[-1],flush=True)
-pd.DataFrame(rows).to_csv('../results/results_notice.csv',index=False)
+pd.DataFrame(rows).to_csv(os.path.join(RES,'results_notice.csv'),index=False)
