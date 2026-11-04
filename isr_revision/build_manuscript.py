@@ -22,11 +22,11 @@ FIG = HERE.parent / "skipver" / "figures"
 #   bio:  current role and institution; three brief research interests; highest degree,
 #         topic, and awarding institution (no year); professional memberships; email.
 AUTHORS = [
-    {"line": "[Given name] [Family name], Hanyang University, Seoul, 04763, South Korea",
-     "bio": ("**[Given name] [Family name]** is a [position] at Hanyang University, Seoul, South Korea. "
-             "[Their] current research interests include [interest 1], [interest 2], and [interest 3]. "
-             "[Family name] received the [Ph.D.] degree in [field] from [university]. "
-             "[He/She/They] [is a member of the IEEE Computer Society]. Contact [him/her/them] at ooklee@hanyang.ac.kr.")},
+    {"line": "Ook Lee, Hanyang University, Seoul, 04763, South Korea",
+     "bio": ("**Ook Lee** is a professor in the Department of Information Systems at Hanyang University, "
+             "Seoul, South Korea. His current research interests include artificial intelligence, large language "
+             "models, and the management of IT. Lee received the Ph.D. degree from Claremont Graduate University, "
+             "Claremont, CA, USA. He is a Member of IEEE. Contact him at ooklee@hanyang.ac.kr.")},
 ]
 
 TITLE = "Same Model, Different Shortcuts: How Prompt Layout Steers LLM Operators to Skip Verification"
