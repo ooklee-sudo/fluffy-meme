@@ -15,7 +15,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "..", "..", "data")
 OUT = os.path.join(HERE, "wayback_timeline.csv")
 UA = {"User-Agent": "lifecycle-data-verification/1.0 (academic research)"}
-DELAY = 3.0
+DELAY = 2.0
+SINCE = "2024"  # earliest snapshot year needed for these models
 
 PAGES = {
     "gemini_deprecations": ["ai.google.dev/gemini-api/docs/deprecations", "aistudio.google.com/docs/deprecations"],
@@ -44,11 +45,16 @@ def get(url, tries=5):
     raise RuntimeError(f"failed: {url}")
 
 def snapshots(url):
-    q = ("https://web.archive.org/cdx/search/cdx?url=" + url +
-         "&output=json&fl=timestamp,original,digest&filter=statuscode:200&collapse=digest")
+    # one capture per day from SINCE onward; identical content is skipped later by digest
+    q = ("https://web.archive.org/cdx/search/cdx?url=" + url + "&from=" + SINCE +
+         "&output=json&fl=timestamp,original,digest&filter=statuscode:200&collapse=timestamp:8")
     body = get(q)
-    rows = json.loads(body) if body else []
-    return rows[1:] if rows else []
+    rows = json.loads(body)[1:] if body and body.strip() else []
+    out, seen = [], set()
+    for ts, orig, dig in rows:
+        if dig in seen: continue
+        seen.add(dig); out.append((ts, orig, dig))
+    return out
 
 def text_of(page):
     page = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", page)
@@ -78,8 +84,9 @@ def main():
             vendor = group[page.split("_")[0]]
             last = {}
             snaps = sorted({(ts, orig) for u in urls for ts, orig, _ in snapshots(u)})
-            print(f"{page}: {len(snaps)} distinct snapshots", flush=True)
-            for ts, orig in snaps:
+            print(f"{page}: {len(snaps)} distinct snapshots, about {len(snaps) * (DELAY + 1) / 60:.0f} min", flush=True)
+            for k, (ts, orig) in enumerate(snaps, 1):
+                if k % 10 == 0: print(f"  {page}: {k}/{len(snaps)} ({ts[:8]})", flush=True)
                 url = f"https://web.archive.org/web/{ts}id_/{orig}"
                 page_html = get(url)
                 if not page_html: continue
