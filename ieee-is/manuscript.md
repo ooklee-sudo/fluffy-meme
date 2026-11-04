@@ -10,7 +10,7 @@ author:
 
 ---
 
-Digital platforms run experiments continuously. They test defaults in sign-up flows, price displays, recommendation layouts, and headlines. Each experiment costs traffic and time, and many candidate designs never reach a test. LLMs offer a tempting shortcut. A "digital twin" conditions a model on a person's profile and asks how that person would respond [1]–[3]. If twins behaved like users, a platform could screen thousands of designs before spending human traffic.
+Today, digital platforms run experiments continuously. They test defaults in sign-up flows, price displays, recommendation layouts, and headlines. Each experiment costs traffic and time, and many candidate designs never reach a test. LLMs offer a tempting shortcut. A "digital twin" conditions a model on a person's profile and asks how that person would respond [1]–[3]. If twins behaved like users, a platform could screen thousands of designs before spending human traffic.
 
 Most evaluations ask whether twins reproduce known behavioral effects *on average* [4]–[6]. An engineer building a pipeline needs answers to different questions:
 
@@ -28,7 +28,7 @@ We derived seven propositions from these conditions and tested them on new data 
 > **Sidebar: Study design at a glance**
 >
 > - **Exploratory (not registered):** twin simulations of 772 panelists; a reasoning-by-temperature pilot. These generated the propositions.
-> - **Confirmatory twin study:** 600 new respondents, 9 items (framing, anchoring, attraction, fairness, and a canonical and a novel default), 5 model families, 3 persona formats; 9,000 calls.
+> - **Confirmatory twin study:** 600 new respondents, nine items (framing, anchoring, attraction, fairness, and a canonical and a novel default), five model families, and three persona formats; 9,000 calls.
 > - **Confirmatory reasoning grid:** 4 models × 3 reasoning-effort levels × 3 temperatures, with a bias battery and factual batteries; 10,800 calls.
 > - **Stability study (exploratory):** 13 model versions × 2 prompt templates; 5,200 calls.
 > - **Field evaluation:** 500 Upworthy headline tests × 4 current models × 3 draws; 6,000 calls (this article).
@@ -74,13 +74,13 @@ Filtering trades two forces. Fewer arms mean more traffic per arm and less sampl
 2. If ρ > 0, there is a break-even budget N\*. Filtering lowers expected loss only when N < N\*, and N\* grows with ρ and with the spread of true effects.
 3. A prior calibrated on held-out tests does not increase expected loss in expectation. Its benefit shrinks as N grows and the data dominate.
 
-Figure 1b shows N\* in a model calibrated to Upworthy (base click-through rate 1.5%, logit standard deviation of true headline effects 0.30, K = 5, m = 2). For ρ ≤ 0.1, filtering never pays. At ρ = 0.3, it pays only below about 1,200 impressions per test. Even at ρ = 0.7, N\* is under 10,000. A typical Upworthy test used about 20,000 impressions.
+Figure 1(b) shows N\* in a model calibrated to Upworthy (base click-through rate 1.5%, logit standard deviation of true headline effects 0.30, K = 5, m = 2). For ρ ≤ 0.1, filtering never pays. At ρ = 0.3, it pays only below about 1,200 impressions per test. Even at ρ = 0.7, N\* is under 10,000. A typical Upworthy test used about 20,000 impressions.
 
 ![Figure 1. (a) Expected click-through-rate (CTR) loss, relative to the best headline, for five ways of using twins, averaged over 500 Upworthy tests (ensemble of four models). (b) Break-even budget N\* below which filtering beats testing all candidates, as a function of the twin–outcome correlation ρ. The shaded band marks the ρ values observed for the four models.](figure1.png)
 
 ## Field evaluation on 500 Upworthy tests
 
-The Upworthy Research Archive contains 32,487 headline experiments run on a news site in 2013–2015, with impressions and clicks for every variant [10]. We drew 500 tests at random from the confirmatory release. Each had three to eight distinct headlines with at least 1,000 impressions each. To separate true differences from sampling noise, we estimated each headline's click-through rate with empirical-Bayes shrinkage: the standard deviation of true headline effects is 0.30 on the logit scale, and the average sampling standard deviation is 0.20. Four current low-cost models scored all headlines of each test three times, in shuffled order. They used the same no-persona prompt that performed best in our confirmatory field study. For budgets from 2,000 to 64,000 impressions, we then simulated 400 A/B tests per test and policy. A random-filter policy served as a placebo for the gain from simply testing fewer arms. The prior's calibration was cross-fitted across two halves of the tests.
+The Upworthy Research Archive contains 32,487 headline experiments run on a news site in 2013–2015, with impressions and clicks for every variant [10]. We drew 500 tests at random from the confirmatory release. Each had three to eight distinct headlines with at least 1,000 impressions each. To separate true differences from sampling noise, we estimated each headline's click-through rate (CTR) with empirical-Bayes shrinkage: the standard deviation of true headline effects is 0.30 on the logit scale, and the average sampling standard deviation is 0.20. Four current low-cost models scored all headlines of each test three times, in shuffled order. They used the same no-persona prompt that performed best in our confirmatory field study. For budgets from 2,000 to 64,000 impressions, we then simulated 400 A/B tests per test and policy. A random-filter policy served as a placebo for the gain from simply testing fewer arms. The prior's calibration was cross-fitted across two halves of the tests.
 
 **Table 2. What synthetic pre-screening is worth (500 tests; CTR loss at 16,000 impressions).**
 
@@ -94,7 +94,7 @@ The Upworthy Research Archive contains 32,487 headline experiments run on a news
 
 *A random filter discards the best headline in 50% of tests and has a loss of 11.4% (ensemble). Relying on the twin alone yields a loss of 16.7%.*
 
-The results line up with the model (Table 2, Figure 1a).
+The results line up with the model (Table 2 and Figure 1(a)).
 
 **The signal is real.** Every model discards the best headline less often than chance (38–42% vs. 50%), and every twin filter beats the random filter at every budget.
 
@@ -116,7 +116,7 @@ The validity map and the decision model together yield five rules:
 4. **Otherwise, use twin scores only as a calibrated prior, and expect savings of a few percent.** Never ship on twin evidence alone.
 5. **Report the configuration.** Record the model identifier and access date, the persona format, the prompt, the reasoning setting, the estimated ρ, and the share of unusable outputs. Synthetic evidence that cannot be audited should not drive design decisions.
 
-The rules are deliberately quantitative. A team that wants to use synthetic agents more aggressively needs to show a higher ρ for its configuration, not argue that LLMs "think like humans" [11], [12].
+The rules are deliberately quantitative. A team that wants to use synthetic agents more aggressively needs to show a higher ρ for its configuration, not argue that LLMs "think like humans." [11], [12]
 
 ## Limitations
 
@@ -142,7 +142,7 @@ Synthetic agents are neither valid nor invalid in general. In our data, they kne
 
 [5] M. Binz et al., "A foundation model to predict and capture human cognition," *Nature*, vol. 644, pp. 1002–1009, 2025.
 
-[6] T. Peng, G. Gui, M. Brucks et al., "Digital twins are funhouse mirrors: Five systematic distortions," arXiv:2509.19088, 2026.
+[6] T. Peng, G. Gui, M. Brucks et al., "Digital twins are funhouse mirrors: Five systematic distortions," arXiv:2509.19088, 2026, doi: 10.48550/arXiv.2509.19088.
 
 [7] J. M. Jachimowicz, S. Duncan, E. U. Weber, and E. J. Johnson, "When and why defaults influence decisions: A meta-analysis of default effects," *Behavioural Public Policy*, vol. 3, no. 2, pp. 159–186, 2019.
 
@@ -152,13 +152,13 @@ Synthetic agents are neither valid nor invalid in general. In our data, they kne
 
 [10] J. N. Matias, K. Munger, M. Aubin Le Quere, and C. Ebersole, "The Upworthy Research Archive, a time series of 32,487 experiments in U.S. media," *Scientific Data*, vol. 8, art. 195, 2021.
 
-[11] J. Hullman, D. Broska, H. Sun, and A. Shaw, "This human study did not involve human subjects: Validating LLM simulations as behavioral evidence," arXiv:2602.15785, 2026.
+[11] J. Hullman, D. Broska, H. Sun, and A. Shaw, "This human study did not involve human subjects: Validating LLM simulations as behavioral evidence," arXiv:2602.15785, 2026, doi: 10.48550/arXiv.2602.15785.
 
-[12] S. Wang, K. Hunt, S. Tang, and K. Joseph, "When can LLM digital twins reduce human measurement? From behavioral fidelity to statistical substitutability," arXiv:2609.07987, 2026.
+[12] S. Wang, K. Hunt, S. Tang, and K. Joseph, "When can LLM digital twins reduce human measurement? From behavioral fidelity to statistical substitutability," arXiv:2609.07987, 2026, doi: 10.48550/arXiv.2609.07987.
 
-[13] J. Persson, M. Schultzberg, and S. Ankargren, "Statistical foundations of LLM-based A/B testing: A surrogacy framework for human causal inference," arXiv:2606.17165, 2026.
+[13] J. Persson, M. Schultzberg, and S. Ankargren, "Statistical foundations of LLM-based A/B testing: A surrogacy framework for human causal inference," arXiv:2606.17165, 2026, doi: 10.48550/arXiv.2606.17165.
 
-[14] A. C. Maiorano, "Do synthetic personas predict real audience response? A sim-to-real study where a no-persona baseline beats persona-based copy simulation," arXiv:2609.25010, 2026.
+[14] A. C. Maiorano, "Do synthetic personas predict real audience response? A sim-to-real study where a no-persona baseline beats persona-based copy simulation," arXiv:2609.25010, 2026, doi: 10.48550/arXiv.2609.25010.
 
 ## About the author
 
