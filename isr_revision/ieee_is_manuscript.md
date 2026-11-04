@@ -156,4 +156,4 @@ Whether an LLM operator skips verification is not a fixed property of the model.
 
 ## AUTHOR BIOGRAPHIES
 
-**Ook Lee** is a professor in the Department of Information Systems at Hanyang University, Seoul, South Korea. His current research interests include artificial intelligence, large language models, and the management of IT. Lee received the Ph.D. degree from Claremont Graduate University, Claremont, CA, USA. He is a Member of IEEE. Contact him at ooklee@hanyang.ac.kr.
+**Ook Lee** is a professor in the Department of Information System at Hanyang University, Seoul, South Korea. His current research interests include artificial intelligence, large language models, and the management of IT. Lee received the Ph.D. degree in management information systems from Claremont Graduate University, Claremont, CA, USA. He is a Member of IEEE. Contact him at ooklee@hanyang.ac.kr.
