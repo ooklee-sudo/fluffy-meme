@@ -12,7 +12,7 @@ doc_path = os.path.join(tdir, 'word', 'document.xml')
 x = open(doc_path, encoding='utf8').read()
 md = open(md_path, encoding='utf8').read()
 
-FIGURE_TITLE_ART = 'Feature Article: LLM Agents in Experimentation'
+FIGURE_TITLE_ART = 'FEATURE ARTICLE: LLM AGENTS IN EXPERIMENTATION'
 BLUE = '<w:color w:val="0070C0"/>'
 
 # ---------- inline formatting ----------
@@ -234,8 +234,9 @@ for who in ('First', 'Second', 'Third'):
     p = x[ps:pe]
     keep_ppr = re.search(r'<w:pPr>.*?</w:pPr>', p, re.S).group(0)
     if who == 'First':
-        new = (f'<w:p>{keep_ppr}<w:r><w:t xml:space="preserve">[Author Name], </w:t></w:r>'
-               '<w:r><w:rPr><w:b w:val="0"/><w:bCs/><w:i/><w:iCs/></w:rPr><w:t>[Department, Institution, City, Postal Code, Country]</w:t></w:r></w:p>')
+        name, affil = re.search(r'author:\n  - "(.*?)"', md).group(1).split(', ', 1)
+        new = (f'<w:p>{keep_ppr}<w:r><w:t xml:space="preserve">{escape(name)}, </w:t></w:r>'
+               f'<w:r><w:rPr><w:b w:val="0"/><w:bCs/><w:i/><w:iCs/></w:rPr><w:t>{escape(affil)}</w:t></w:r></w:p>')
     elif '<w:sectPr' in keep_ppr:
         new = f'<w:p>{keep_ppr}</w:p>'
     else:
