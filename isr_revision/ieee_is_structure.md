@@ -4,16 +4,19 @@ ISRE-2026-4499를 IEEE Intelligent Systems의 Feature Article로 다시 쓰기 �
 
 ---
 
-## 0. 투고 전에 확인할 것
+## 0. 공식 규정 (IEEE Intelligent Systems Author Information)
 
-올려주신 CS 매거진 템플릿(`CS_Mag_7_22_2.docx`)은 분량 제한을 각 매거진의 *Write for Us > Author Information* 페이지로 미룹니다. 저는 그 페이지를 확인하지 못했습니다. 아래 배분은 다음 **가정**에 맞춘 것이니 투고 전에 꼭 확인하세요.
-
-| 항목 | 가정 | 근거 |
+| 항목 | 규정 | 이 원고에 주는 영향 |
 |---|---|---|
-| 본문 | 약 6,000단어 이하 (그림·표 1개당 250단어로 계산) | Computer Society 피처 아티클의 일반 관행 |
-| 참고문헌 | 20개 이하 | 비공식 템플릿 사이트(SciSpace) 기준, 미확인 |
-| Abstract | 150단어 내외, 인용 없음 | 템플릿: 한 단락, 인용 금지 |
-| 헤더 | "Feature Article" + 3–4단어 주제 문구 | 템플릿 1쪽 안내 |
+| 본문 | **6,000단어 이하, 그림·표는 개당 300단어로 계산** | 그림 3개 + 표 1개 = 1,200단어 → 글은 약 4,800단어까지 |
+| 참고문헌 | **20개 이하** (서베이만 30개) | 5절 후보 18개로 맞춤 |
+| Abstract | **150단어 이하**, 원고 전체의 초점을 설명 | 2절 초안 150단어 |
+| 심사 기준 | 기술적 가치, 독자 관련성, 표현 품질. **전문가와 비전문가 모두 읽을 수 있어야** 함 | 통계 세부(분산 분해, 99.6% 구간)는 보충자료로 |
+| 프리프린트 | 이전에 공개된 버전(학회, 프리프린트)도 투고 가능. **투고 시 편집진에게 알리고**, 상당한 수정이 있어야 함 | ISR 원고를 프리프린트로 올렸다면 반드시 고지 |
+| 주제 적합성 | "AI ethics, privacy, security, trust, and interpretability", "Human-machine cooperation", "AI engineering, best practice" 등이 명시됨 | 이 원고는 trust/AI engineering best practice로 포지셔닝 |
+| 투고 | IEEE Author Portal (ieee.atyponrex.com/journal/is-cs), General submission | Special issue 중 맞는 CFP가 있는지도 확인 |
+
+Abstract는 단어 수에 포함되는지 규정에 명시돼 있지 않아서, 안전하게 포함하는 것으로 계산했습니다.
 
 템플릿 규칙 중 원고에 영향이 큰 것: 제목 4줄 이하, 소제목 번호 없음, 인용은 위첨자 번호(등장 순서), 본문에서 언급하지 않는 부록은 보충자료로 이동하고 언급하는 부록은 sidebar로, "general technical reader" 대상이라 전문용어 최소화, 결론에서 그림·표 언급 자제.
 
@@ -48,28 +51,30 @@ ISR 원고와 비교:
 
 **헤더 문구**: Feature Article: Auditing AI Operators
 
-**Abstract 초안 (약 150단어)**
+**Abstract 초안 (150단어)**
 
-> Organizations are beginning to let large language model (LLM) agents run maintenance pipelines, including the decision to skip regression tests. We built a rule-scored maintenance task in which skipping tests is always worse in expected value, and varied only the wording and layout of the status prompt. In a fast commercial model, skipping appeared only under time pressure. Stating the quality target in the status line raised it by about 16 percentage points, whereas describing the last result as a loss did not. The order in which options were listed mattered as much: the same model skipped in 62% of goal-stating prompts when "hold" was listed first and almost never when a tested fix was listed first. Larger and newer models did not skip under any layout. Shortcut taking is therefore a property of a model and its prompt layout together, and we describe an audit that organizations can run before delegating.
+> Organizations are beginning to let large language model (LLM) agents run maintenance pipelines, including the decision to skip regression tests. We built a rule-scored maintenance task in which skipping tests is always worse in expected value, and varied only the wording and layout of the status prompt. In a fast commercial model, skipping appeared only under time pressure. Stating the quality target in the status line raised it by about 16 percentage points, whereas describing the last result as a loss did not. The order in which options were listed mattered as much: the same model skipped in 62% of goal-stating prompts when "hold" was listed first and almost never when a tested fix was listed first. Larger and newer models did not skip under any layout. Shortcut taking is a property of a model and its prompt layout, and we describe an audit that organizations can run before delegating.
 
 ---
 
-## 3. 섹션별 분량 배분 (총 약 6,000단어 기준)
+## 3. 섹션별 분량 배분 (한도 6,000단어, 그림·표 개당 300단어)
 
 | 섹션 (번호 없음) | 단어 | 내용 | 원 원고에서 가져올 것 |
 |---|---|---|---|
 | Abstract | 150 | 위 초안 | – |
-| (도입, 제목 없음) | 600 | 에이전트에게 운영을 맡기는 흐름, 검증은 관찰하기 어려운 노력, 질문: 무엇이 shortcut을 유발하나 | 서론 1–2단락, 11.2 "통제 신호" |
-| **A Maintenance Task With a Known Right Answer** | 800 | 환경, payoff (skip은 항상 기대값 열위), 1회 선택만 분석하는 이유, 16개 wording과 순서 균형 설계 | 4.1–4.5 (대폭 압축) |
-| **Goals, Not Losses** | 900 | 시간 압박(12→6→3턴: 0%, 0.1%, 12.8%), goal effect +16 pp, loss 차이 없음, target이 어디에도 없으면 0% | Study 2, 4 (등록 검증 Study 1은 두 문장으로) |
-| **Option Order Matters as Much as Wording** | 800 | 순서별 skip 0–62%, wide_skip이 맨 위면 frame과 무관하게 약 35%, 원래 결과가 가장 유리한 순서에서 나왔다는 점을 직접 밝힘 | **신규** (order_check) |
-| **What Reduces Skipping** | 600 | thinking 13→8%, 기대값을 보여주면 약 5%로, 선택지 순서 균형 | Study 3, 5 |
-| **Which Models Skip** | 500 | 표 1: 모델별 결과. Haiku 4.5와 Flash-Lite만 skip, Sonnet 5.5·Haiku 5.5는 순서를 섞어도 0% | Study 2, 6, 7 파일럿 |
-| **Auditing an Operator Before Delegation** (sidebar 겸용) | 600 | 체크리스트 6개 | 11.2 measurement argument + 11.3 실무 함의 |
-| **Limitations** | 300 | 1회 선택, 단일 과제, 모델 버전 의존, 메커니즘 미규명 | 11.4 압축 |
-| Conclusion | 250 | 미래 방향 (agentic tool-use 과제, 실제 티켓 데이터), 그림 언급 없이 | 11.5 |
-| 그림 3개 + 표 1개 | (1,000) | 250 × 4 | |
-| **합계** | **약 6,500** | 한도가 6,000이면 Limitations와 Which Models를 줄이세요 | |
+| (도입, 제목 없음) | 500 | 에이전트에게 운영을 맡기는 흐름, 검증은 관찰하기 어려운 노력, 질문: 무엇이 shortcut을 유발하나 | 서론 1–2단락, 11.2 "통제 신호" |
+| **A Maintenance Task With a Known Right Answer** | 650 | 환경, payoff (skip은 항상 기대값 열위), 첫 선택만 분석하는 이유, 16개 wording과 순서 균형 설계 | 4.1–4.5 (대폭 압축) |
+| **Goals, Not Losses** | 750 | 시간 압박(12→6→3턴: 0%, 0.1%, 12.8%), goal effect +16 pp, loss 차이 없음, target이 어디에도 없으면 0% | Study 2, 4 (등록 검증 Study 1은 두 문장으로) |
+| **Option Order Matters as Much as Wording** | 700 | 순서별 skip 0–62%, 검증 없는 wide fix가 맨 위면 frame과 무관하게 약 35%, 원래 결과가 가장 유리한 순서에서 나왔다는 점을 직접 밝힘 | **신규** (order_check) |
+| **What Reduces Skipping** | 450 | thinking 13→8%, 기대값을 보여주면 약 5%로 | Study 3, 5 |
+| **Which Models Skip** | 350 | 표 1 해설. Haiku 4.5와 Flash-Lite만 skip, Sonnet 5.5·Haiku 5.5는 순서를 섞어도 0% | Study 2, 6, 7 파일럿 |
+| **Sidebar: Auditing an LLM Operator Before Delegation** | 450 | 체크리스트 6개 | 11.2 measurement argument + 11.3 실무 함의 |
+| **Limitations** | 250 | 첫 선택만 분석, 단일 과제, 모델 버전 의존, 메커니즘 미규명 | 11.4 압축 |
+| Conclusion | 200 | 미래 방향 (agentic tool-use 과제, 실제 티켓 데이터), 그림 언급 없이 | 11.5 |
+| 그림 3개 + 표 1개 | 1,200 | 300 × 4 | |
+| **합계** | **5,650** | 여유 약 350단어. 참고문헌 목록과 저자 소개가 단어 수에 들어가는지 편집실에 확인 | |
+
+넘칠 때 줄이는 순서: (1) 표 1을 없애고 Which Models Skip 본문에 숫자를 넣기 (−300 + 약 100 = −200), (2) What Reduces Skipping에서 기대값 결과를 한 문장으로 (−150), (3) Limitations를 Conclusion에 합치기 (−100).
 
 ### 빼거나 보충자료로 보낼 것
 - Study 1 전체 (사전등록 loss-chasing 검증): 본문 두 문장 + 보충자료. 이 저널 독자에게는 "유력한 설명을 미리 등록해서 검증했고 지지되지 않았다"면 충분합니다.
@@ -173,7 +178,7 @@ ISR 원고와 비교:
 
 ## 6. 진행 순서 제안
 
-1. Author Information 페이지에서 단어·참고문헌·그림 제한 확인 → 3절 배분 조정.
+1. ~~Author Information 확인~~ (완료: 6,000단어, 그림·표 300단어, 참고문헌 20개, abstract 150단어). ISR 원고를 프리프린트로 공개했는지 확인하고, 했다면 투고 시 고지.
 2. 그림 1 다이어그램 제작.
 3. "Option Order Matters" 섹션부터 쓰기 (새 내용이고 논문의 차별점).
 4. 선택지 순서 편향 문헌 찾아서 인용 16 확정.
