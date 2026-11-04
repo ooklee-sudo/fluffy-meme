@@ -16,6 +16,7 @@ for ax, m in zip(axes, models):
         ax.plot(Ns, y, marker='o' if p != 'D_twin_only' else None, ls='--' if p in ('C_random_m', 'D_twin_only') else '-',
                 color=COL[p], label=NAMES[p], lw=1.6, ms=3)
     ax.set_xscale('log'); ax.set_title(f"{m.split('/')[-1]}\nρ≈{r['implied_rho']:.2f}", fontsize=9)
+    ax.set_xticks(Ns); ax.set_xticklabels([f'{n//1000}k' for n in Ns]); ax.minorticks_off()
     ax.set_xlabel('Impressions per test'); ax.grid(alpha=.3)
     dA = np.array([r['A_all'][str(n)]['regret'] for n in Ns]); dB = np.array([r['B_twin_topm'][str(n)]['regret'] for n in Ns])
     better = dB < dA
