@@ -116,6 +116,9 @@ STUDIES: dict[str, list[Run]] = {
     # All three levers together: reasoning, expected values shown, and
     # balanced order (so the tested-option-first layouts can be read off).
     "combo_bal": [Run("haiku45_think", frames=F5, show_ev=True, rotate="balanced", tag="combo")],
+    "screen_bal": [Run(m, rotate="balanced", tag="bal") for m in
+                   ["ministral8b", "llama31_8b", "gemini31fl", "gemma3_12b", "gpt5nano", "qwen3_14b"]]
+                  + [Run("opus55", episodes=6, rotate="balanced", tag="bal")],
     "floor_bal": [Run("sonnet55", episodes=6, rotate="balanced", tag="bal"),
                   Run("haiku55", rotate="balanced", tag="bal")],
     # ---- pipeline check, no API calls
