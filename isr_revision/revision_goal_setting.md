@@ -113,6 +113,8 @@ Study 번호는 실행 순서대로 그대로 두되, 본문 서술의 무게중
 
 ### (a) Study 7: 큰 모델에서 skip이 생기는 조건 찾기 (설계안)
 
+> **업데이트 (파일럿 결과)**: `skipver/` 코드로 셀당 5회씩 파일럿을 돌렸더니 L0(Haiku 5.5), L1(Sonnet 5.5 minimal effort, reasoning 토큰 0), L2(1–2턴), L3(SLA 문구) **모두 0/240**이었습니다. 그리고 Sonnet 5.5는 OpenRouter에서 reasoning을 아예 끌 수 없습니다. 이 결과가 본 실험에서도 유지되면 (a)로는 큰 모델 문제를 풀기 어렵고, 아래 (b) 논리도 약해집니다(현재 세대 fast tier도 skip하지 않으므로). 그 경우 범위를 "이전 세대 / 저가 모델"로 분명히 좁히고, audit 방법론의 가치를 강조하는 쪽이 정직합니다. 자세한 내용은 `skipver/README.md`.
+
 > 이 레포에는 이 논문의 실험 코드가 없어서 직접 돌리지 못했습니다. 아래는 기존 환경(Table 2 payoff, 16 wordings, 사전 커밋된 스크립트)을 그대로 확장하는 설계안입니다.
 
 **원칙**: 한 번에 하나씩 압력을 올리는 사다리(ladder) 설계로, Sonnet 5.5부터 시작합니다 (Opus/Fable 대비 비용이 낮고 floor가 같음). 각 단계에서 skip이 5%를 넘으면 그 단계에서 Study 4의 2×2(valence × target)를 돌립니다. Study 6의 screening rule과 같은 논리라서 리뷰어에게 설명하기 쉽습니다. **screening rule과 단계 순서를 실행 전에 커밋하세요.**
