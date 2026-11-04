@@ -111,6 +111,8 @@ STUDIES: dict[str, list[Run]] = {
     "study3_bal": [Run("haiku45_think", rotate="balanced", tag="bal")],
     "study4_bal": [Run("haiku45", frames=F5, hide_target=[False, True], rotate="balanced", tag="s4_bal")],
     "study5_bal": [Run("haiku45", frames=F5, show_ev=True, rotate="balanced", tag="s5_bal")],
+    "study6_bal": [Run("gemini25fl", rotate="balanced", tag="bal"),
+                   Run("gemini25fl", frames=F5, hide_target=[False, True], rotate="balanced", tag="s4_bal")],
     "floor_bal": [Run("sonnet55", episodes=6, rotate="balanced", tag="bal"),
                   Run("haiku55", rotate="balanced", tag="bal")],
     # ---- pipeline check, no API calls
