@@ -1,7 +1,7 @@
 import sys; sys.path.insert(0,'.')
 from data import *; from samplers import weibull_pool
 from sim import simulate
-NAMED=[4.44,4.13,0.455,1.33,3.06,1.45]; MATCHED=[1.00,1.33,0.69,0.45,1.00,1.45]
+NAMED=[4.44,4.13,0.91,1.33,3.06,1.45]; MATCHED=[1.00,1.33,0.69,0.91,1.00,1.45]  # 3.5->3.6 Flash at standard (not introductory) price
 d=SETS['Gemini API (stable)']; pool,_=weibull_pool(lifetimes(d)); nt=notice_days(d)
 rows=[]
 for lab,ratios,shock in [('named',NAMED,True),('matched',MATCHED,True),('unchanged',[1],False)]:

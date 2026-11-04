@@ -1,7 +1,7 @@
 import sys, json; sys.path.insert(0,'.')
 from data import *; from samplers import weibull_pool
 from sim import simulate, summarize
-NAMED=[4.44,4.13,0.455,1.33,3.06,1.45]; MATCHED=[1.00,1.33,0.69,0.45,1.00,1.45]
+NAMED=[4.44,4.13,0.91,1.33,3.06,1.45]; MATCHED=[1.00,1.33,0.69,0.91,1.00,1.45]  # 3.5->3.6 Flash at standard (not introductory) price
 oa_notice=notice_days(SETS['OpenAI API (chat/text)'])
 scen={'Gemini life + OpenAI notice (manuscript design)':(SETS['Gemini API (stable)'],oa_notice),
       'Gemini API (stable), own notice':(SETS['Gemini API (stable)'],None),
