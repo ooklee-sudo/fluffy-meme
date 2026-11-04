@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Rectangle
-plt.rcParams.update({"font.family":"serif","font.serif":["Liberation Serif"],"font.size":9,"hatch.linewidth":0.5})
+plt.rcParams.update({"font.family":"sans-serif","font.sans-serif":["Liberation Sans"],"font.size":9,"hatch.linewidth":0.5})
 fig=plt.figure(figsize=(7.2,3.9),dpi=300)
 ax=fig.add_axes([0,0.3,1,0.7]);bx=fig.add_axes([0,0,1,0.27])
 ACC="#1f4e79";G1="#e3e3e3";G2="#9a9a9a"
