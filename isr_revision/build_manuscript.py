@@ -44,8 +44,8 @@ LEGACY = {"n1": "Pezeshkpour", "n2": "Zheng", "n3": "Kahneman", "n4": "Thaler", 
 CAPTIONS = {
     1: ("FIGURE 1. The status prompt an operator reads, with the parts that vary across conditions marked "
         "(headline, target in the facts line, turns left, and option order), and the expected quality change of each "
-        "action. Both test-skipping actions have lower expected value than their tested counterparts. "
-        "[Diagram to be drawn.]"),
+        "action, which the operator does not see. Both test-skipping actions have lower expected value than their "
+        "tested counterparts."),
     2: ("FIGURE 2. Share of first decisions that skip tests, by status headline (Claude Haiku 4.5, three turns left, "
         "option order balanced; bars are means over 16 wordings with 95% intervals). Headlines that state the target "
         "(blue) raise skipping whether they are neutral or describe a loss. When the target appears nowhere in the "
@@ -75,7 +75,7 @@ def build() -> tuple[str, dict]:
         ("abstract", section(R, "## ABSTRACT")),
         ("intro", section(R, "## (INTRODUCTION, no heading)")),
         ("## A MAINTENANCE TASK WITH A KNOWN RIGHT ANSWER", section(R, "## A MAINTENANCE TASK WITH A KNOWN RIGHT ANSWER")),
-        ("fig1", figure(1, None)),
+        ("fig1", figure(1, "fig1_prompt.png")),
         ("## GOALS, NOT LOSSES", section("ieee_is_goals.md", "## GOALS, NOT LOSSES")),
         ("fig2", figure(2, "fig2_goal.png")),
         ("## OPTION ORDER MATTERS AS MUCH AS WORDING", section("ieee_is_option_order.md", "## OPTION ORDER MATTERS AS MUCH AS WORDING")),

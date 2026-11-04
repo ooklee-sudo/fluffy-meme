@@ -28,7 +28,7 @@ A single sentence per condition would confound the condition with that sentence.
 
 We analyze only the operator's first decision in each episode, because later decisions depend on earlier draws. Each combination of headline and wording received 30 decisions, five per layout, unless stated otherwise. Models were called through a commercial aggregator at temperature 0.7 where the model accepts it; models that reason by default ran at their default settings. Because the wording is the unit of replication, we report means over wordings with 95% intervals from a bootstrap that resamples wordings. A model that never skipped is reported as a floor, not as evidence of no effect. Code, prompts, wordings, and logs are available in the supplementary material.
 
-**[FIGURE 1. The status prompt an operator reads, with the parts that vary across conditions marked (headline, target in the facts line, turns left, and option order), and the expected quality change of each action. Both test-skipping actions have lower expected value than their tested counterparts. [Diagram to be drawn.]]**
+![FIGURE 1. The status prompt an operator reads, with the parts that vary across conditions marked (headline, target in the facts line, turns left, and option order), and the expected quality change of each action, which the operator does not see. Both test-skipping actions have lower expected value than their tested counterparts.](/home/user/fluffy-meme/skipver/figures/fig1_prompt.png)
 
 ## GOALS, NOT LOSSES
 
