@@ -70,7 +70,7 @@ python analyze.py runs/q4b_doubt
 ```bash
 python steer.py runs/q4b_doubt --model Qwen/Qwen3-4B --out results/steer_q4b --firm-run runs/q4b_doubt_firm
 ```
-비용은 (테스트 문항 수) × (층 3개) × (alpha 6개) × 2(실제/무작위)번의 응답 생성입니다. 처음엔 `--n-test 100 --layers 18 --alphas=-4,4` 정도로 시간을 재 보세요.
+비용은 (테스트 문항 수) × (층 3개) × (alpha 6개) × 2(실제/무작위)번의 응답 생성입니다. `--turn2 prefill`을 붙이면 약 10배 빨라서 층과 alpha를 고르는 예비 실험에 좋습니다. 고른 설정만 기본(free) 방식으로 다시 확인하세요.
 
 결과 그림 `tradeoff.png`에서 **왼쪽 위**(굽힘률 낮고 교정률 높음)로 가는 방법이 좋은 방법입니다.
 실선(steering)이 점선(무작위 방향)과 비슷하면 steering 효과는 방향과 무관한 "교란"일 뿐이라는 뜻입니다.

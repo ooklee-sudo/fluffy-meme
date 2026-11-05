@@ -27,8 +27,8 @@ import numpy as np
 import torch
 from numpy.lib.format import open_memmap
 
-from syco import (CHALLENGES, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, last_hidden, letter_ids,
-                  load_mmlu, load_model, outcome, rates, read_letters, turn1_text, verbal_agree)
+from syco import (CHALLENGES, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, letter_ids, load_mmlu,
+                  load_model, outcome, rates, read_letters, turn1_text, verbal_agree)
 
 
 def main():
@@ -44,6 +44,7 @@ def main():
                    help="free = model writes a reply, then the final letter is read (realistic); "
                         "prefill = forced 'The answer is (' (fast, underestimates caving)")
     p.add_argument("--max-new-tokens", type=int, default=96, help="reply length in free mode")
+    p.add_argument("--bs", type=int, default=16, help="questions per batch (lower it if you run out of GPU memory)")
     p.add_argument("--no-hidden", action="store_true", help="skip saving hidden states")
     p.add_argument("--out", required=True)
     args = p.parse_args()
@@ -80,38 +81,45 @@ def main():
         H2 = open_memmap(os.path.join(args.out, "hidden_t2.npy"), mode=mode, dtype=np.float16,
                          shape=(n, n_layers, hidden))
 
-    rows, t0 = [], time.time()
+    rows, t0, last_print = [], time.time(), done
     with open(res_path, "a") as fout:
-        for i in range(done, n):
-            it = items[i]
-            p1, h1 = read_letters(model, tok, turn1_text(tok, it, system), ids, hidden=not args.no_hidden)
-            a1 = LETTERS[int(p1.argmax())]
-            p2, reply, text2, _ = answer_turn2(model, tok, it, a1, challenge, system, ids,
+        for b0 in range(done, n, args.bs):
+            batch = items[b0:b0 + args.bs]
+            p1, h1 = read_letters(model, tok, [turn1_text(tok, it, system) for it in batch], ids,
+                                  hidden=not args.no_hidden)
+            a1s = [LETTERS[int(x)] for x in p1.argmax(1)]
+            p2, replies, texts2 = answer_turn2(model, tok, batch, a1s, challenge, system, ids,
                                                args.turn2, args.max_new_tokens)
-            a2 = LETTERS[int(p2.argmax())]
-            if not args.no_hidden:  # state after the challenge, before any reply token
-                h2 = last_hidden(model, tok, text2)
             if not args.no_hidden:
-                H1[i], H2[i] = h1, h2
-            row = {"idx": i, "id": it["id"], "subject": it["subject"], "gold": it["answer"], "a1": a1, "a2": a2,
-                   "p1": [round(x, 4) for x in p1.tolist()], "p2": [round(x, 4) for x in p2.tolist()],
-                   "outcome": outcome(it["answer"], a1, a2)}
-            if args.turn2 == "free":
-                row["verbal_agree"] = verbal_agree(reply)
-                row["reply"] = reply[:300]
-            fout.write(json.dumps(row) + "\n")
-            rows.append(row)
-            if (i + 1) % 50 == 0 or i == n - 1:
-                fout.flush()
-                if not args.no_hidden:
-                    H1.flush()
-                    H2.flush()
+                # state after the challenge, before any reply token
+                _, h2 = read_letters(model, tok, texts2, ids, hidden=True)
+                H1[b0:b0 + len(batch)], H2[b0:b0 + len(batch)] = h1, h2
+            for j, it in enumerate(batch):
+                a2 = LETTERS[int(p2[j].argmax())]
+                row = {"idx": b0 + j, "id": it["id"], "subject": it["subject"], "gold": it["answer"],
+                       "a1": a1s[j], "a2": a2,
+                       "p1": [round(x, 4) for x in p1[j].tolist()], "p2": [round(x, 4) for x in p2[j].tolist()],
+                       "outcome": outcome(it["answer"], a1s[j], a2)}
+                if args.turn2 == "free":
+                    row["verbal_agree"] = verbal_agree(replies[j])
+                    row["reply"] = replies[j][:300]
+                fout.write(json.dumps(row) + "\n")
+                rows.append(row)
+            fout.flush()
+            if not args.no_hidden:
+                H1.flush()
+                H2.flush()
+            k = b0 + len(batch)
+            if k - last_print >= 100 or k == n:
+                last_print = k
                 r = rates(rows)
                 mem = torch.cuda.max_memory_allocated() / 2**30 if torch.cuda.is_available() else 0
-                print(f"[{i + 1}/{n}] acc t1 {r['acc_turn1']:.3f} -> t2 {r['acc_turn2']:.3f} | "
+                left = (time.time() - t0) / len(rows) * (n - k) / 60
+                print(f"[{k}/{n}] acc t1 {r['acc_turn1']:.3f} -> t2 {r['acc_turn2']:.3f} | "
                       f"cave {r['cave_rate']:.3f} | correct {r['correction_rate']:.3f} | "
                       f"verbal-only {r['verbal_only_rate']:.3f} | "
-                      f"{(time.time() - t0) / len(rows):.2f}s/q | GPU {mem:.1f} GB")
+                      f"{(time.time() - t0) / len(rows):.2f}s/q | ~{left:.0f} min left | GPU {mem:.1f} GB",
+                      flush=True)
     print(f"done. results in {args.out}")
 
 

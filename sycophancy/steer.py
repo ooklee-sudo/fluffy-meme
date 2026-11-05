@@ -29,28 +29,27 @@ import time
 import numpy as np
 import torch
 
-from syco import LETTERS, Steer, answer_turn2, letter_ids, load_mmlu, load_model, n_tokens, rates, \
-    turn2_text, verbal_agree
+from syco import LETTERS, Steer, answer_turn2, letter_ids, load_mmlu, load_model, rates, verbal_agree
 
 
-def evaluate(model, tok, ids, items, rows, challenge, system, mode, max_new, layer=None, vec=None):
-    """Re-ask turn 2 for `rows` (turn-1 answers fixed) with optional steering; return rows with new a2."""
+def evaluate(model, tok, ids, items, rows, challenge, system, mode, max_new, bs, layer=None, vec=None):
+    """Re-ask turn 2 for `rows` (turn-1 answers fixed) with optional steering; return rows with new a2.
+    `layer` is a hidden-state index h, i.e. the output of decoder block h - 1."""
     out = []
-    steer_ctx = Steer(model, layer - 1) if vec is not None else None  # hidden index h = output of block h-1
-    if steer_ctx:
-        steer_ctx.__enter__()
+    steer = Steer(model, layer - 1, vec) if vec is not None else None
+    if steer:
+        steer.__enter__()
     try:
-        for r in rows:
-            item = items[r["idx"]]
-            if steer_ctx:
-                _, prefix = turn2_text(tok, item, r["a1"], challenge, system, prefill=(mode == "prefill"))
-                steer_ctx.vec = vec.to(model.device)
-                steer_ctx.start = n_tokens(tok, prefix)
-            p2, reply, _, _ = answer_turn2(model, tok, item, r["a1"], challenge, system, ids, mode, max_new)
-            out.append({**r, "a2": LETTERS[int(p2.argmax())], "verbal_agree": verbal_agree(reply) if reply else None})
+        for b0 in range(0, len(rows), bs):
+            batch = rows[b0:b0 + bs]
+            p2, replies, _ = answer_turn2(model, tok, [items[r["idx"]] for r in batch], [r["a1"] for r in batch],
+                                          challenge, system, ids, mode, max_new, steer=steer)
+            for r, pr, rep in zip(batch, p2, replies):
+                out.append({**r, "a2": LETTERS[int(pr.argmax())],
+                            "verbal_agree": verbal_agree(rep) if rep else None})
     finally:
-        if steer_ctx:
-            steer_ctx.__exit__(None, None, None)
+        if steer:
+            steer.__exit__(None, None, None)
     return out
 
 
@@ -61,8 +60,11 @@ def main():
     p.add_argument("--quant", default="4bit", choices=["4bit", "none"])
     p.add_argument("--out", required=True)
     p.add_argument("--layers", default="", help="comma list of layer indices; default 3 layers at 1/3, 1/2, 2/3 depth")
-    p.add_argument("--alphas", default="-2,-1,1,2,4,8")
-    p.add_argument("--n-test", type=int, default=600, help="max test questions (cost grows linearly)")
+    p.add_argument("--alphas", default="-4,2,4,8")
+    p.add_argument("--n-test", type=int, default=300, help="max test questions (cost grows linearly)")
+    p.add_argument("--turn2", choices=["free", "prefill"],
+                   help="override the run's turn-2 mode; prefill is ~10x faster, handy to screen layers/alphas")
+    p.add_argument("--bs", type=int, default=16)
     p.add_argument("--firm-run", help="run made with --system firm on the same questions")
     p.add_argument("--min-caved", type=int, default=10, help="minimum caved examples needed in the train half")
     p.add_argument("--seed", type=int, default=0)
@@ -78,7 +80,8 @@ def main():
     H2 = np.load(os.path.join(args.run_dir, "hidden_t2.npy"), mmap_mode="r")
     items = load_mmlu(meta["n"], meta["seed"])
     challenge, system = meta["challenge_text"], meta["system_text"]
-    mode, max_new = meta.get("turn2", "prefill"), meta.get("max_new_tokens", 96)
+    run_mode, max_new = meta.get("turn2", "prefill"), meta.get("max_new_tokens", 96)
+    mode = args.turn2 or run_mode
 
     rng = np.random.default_rng(args.seed)
     perm = rng.permutation(n)
@@ -89,7 +92,7 @@ def main():
     caved = [i for i in train if rows[i]["outcome"] == "caved"]
     print(f"train: {len(held)} held / {len(caved)} caved (right in turn 1) | test questions: {len(test_rows)}")
     if len(caved) < args.min_caved:
-        raise SystemExit("fewer than 10 caved examples in the train half; use more questions or a "
+        raise SystemExit(f"fewer than {args.min_caved} caved examples in the train half; use more questions or a "
                          "stronger challenge (--challenge wrong)")
 
     n_layers = H2.shape[1]
@@ -101,9 +104,12 @@ def main():
     ids = letter_ids(tok)
 
     t0 = time.time()
-    base = rates(test_rows)  # alpha = 0: the recorded turn-2 answers
+    if mode == run_mode:
+        base = rates(test_rows)  # alpha = 0: the recorded turn-2 answers
+    else:  # different turn-2 mode: measure the unsteered baseline again
+        base = rates(evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new, args.bs))
     print(f"no steering: cave {base['cave_rate']:.3f} | correction {base['correction_rate']:.3f}")
-    result = {"run": args.run_dir, "model": args.model, "layers": layers, "alphas": alphas,
+    result = {"run": args.run_dir, "model": args.model, "turn2": mode, "layers": layers, "alphas": alphas,
               "n_test": len(test_rows), "baseline": base, "steer": {}, "random": {}}
 
     if args.firm_run:
@@ -111,6 +117,8 @@ def main():
             firm = [json.loads(line) for line in f if line.strip()]
         firm_test = [firm[i] for i in sorted(test) if i < len(firm)]
         result["firm_prompt"] = rates(firm_test)
+        if mode != run_mode:
+            print("[warn] the firm-prompt run used a different turn-2 mode than this evaluation")
         print(f"firm prompt: cave {result['firm_prompt']['cave_rate']:.3f} | "
               f"correction {result['firm_prompt']['correction_rate']:.3f}")
 
@@ -125,12 +133,12 @@ def main():
         for a in alphas:
             for kind, vec in (("steer", d), ("random", rnd)):
                 rr = rates(evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new,
-                                    layer, a * vec))
+                                    args.bs, layer, a * vec))
                 result[kind][layer][a] = rr
             s, q = result["steer"][layer][a], result["random"][layer][a]
             print(f"layer {layer:3d} alpha {a:+5.1f} | steer: cave {s['cave_rate']:.3f} correct "
                   f"{s['correction_rate']:.3f} acc2 {s['acc_turn2']:.3f} verbal-only {s['verbal_only_rate']:.3f} | random: cave {q['cave_rate']:.3f} "
-                  f"correct {q['correction_rate']:.3f} | {time.time() - t0:.0f}s")
+                  f"correct {q['correction_rate']:.3f} | {time.time() - t0:.0f}s", flush=True)
 
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, "steer.json"), "w") as f:
