@@ -113,8 +113,13 @@ BODY = [
     ("P", "When generated code is often wrong, developers review nearly every suggestion and little debt gets "
           "through. As the model improves, developers sense less risk and stop reviewing before the error rate "
           "has fallen far enough to compensate. Over a range of error rates, the share of flaws that reach the "
-          "codebase then rises faster than the error rate falls. A fully rational developer also reviews less as "
-          "models improve, but the biases widen that range and move it toward the error rates of current models. "
+          "codebase then rises faster than the error rate falls. The pattern is familiar from human factors research. "
+          "A meta-analysis of 18 experiments found that higher degrees of automation improve routine performance "
+          "but worsen performance when the automation fails,^13^ and in a field experiment with 181 recruiters, "
+          "those given higher-quality AI recommendations spent less effort on each candidate.^14^ What the model "
+          "adds is the consequence for accumulated debt: a fully rational developer also reviews less as models "
+          "improve, but the biases widen the range of error rates over which better models leave more debt and "
+          "move it toward the error rates of current models. "
           "In the illustration in Figure 1, which uses assumed rather than measured values, debt per task rises "
           "by 56% as the error rate falls from 0.46 to 0.29. The direction of the effect, not its size, is the "
           "result: the same upgrade can reduce debt in one organization and raise it in another."),
@@ -132,7 +137,8 @@ BODY = [
     ("H2", "Temporary Mandates Can Have Lasting Effects"),
     ("P", "Developers can learn how often generated code is wrong, but mainly by reviewing it, which is exactly "
           "what misplaced trust discourages. Developers who believe generated code is reliable enough not to "
-          "review never see its flaws and never revise the belief. A mandate that requires review for a limited "
+          "review never see its flaws and never revise the belief. Economists call such a belief self-confirming, because "
+          "the behavior it produces withholds the evidence that would correct it. A mandate that requires review for a limited "
           "period breaks this loop if it lasts long enough for developers to see enough flaws to start reviewing "
           "on their own. In the model’s illustration, with assumed values, a single period of mandatory "
           "review suffices. Under the speed-up explanation, by contrast, the effect of a mandate should end when "
@@ -161,7 +167,7 @@ BODY = [
           "commits did not differ. Labels capture only disclosed assistance, which biases all comparisons toward "
           "zero."),
     ("P", "A separate analysis of 431,043 agent-authored and 2,525,598 human pull requests on GitHub, drawing on "
-          "event logs and the AIDev dataset,^13^ points the same way. Within repositories, agent pull requests "
+          "event logs and the AIDev dataset,^15^ points the same way. Within repositories, agent pull requests "
           "had a ratio of additions to deletions about 1.8 times higher, carried 0.62 debt markers per 1000 added "
           "lines against 1.38 for human pull requests, and in team repositories, excluding Copilot, were 5.9 "
           "percentage points less likely to be reviewed. These patterns are consistent with the theory but "
@@ -284,6 +290,8 @@ REFS = [
     "R. Parasuraman and D. H. Manzey, “Complacency and bias in human use of automation: An attentional integration,” *Hum. Factors*, vol. 52, no. 3, pp. 381–410, 2010.",
     "D. Kahneman and A. Tversky, “Prospect theory: An analysis of decision under risk,” *Econometrica*, vol. 47, no. 2, pp. 263–291, 1979.",
     "A. Potdar and E. Shihab, “An exploratory study on self-admitted technical debt,” in *Proc. IEEE Int. Conf. Softw. Maint. Evol. (ICSME)*, 2014, pp. 91–100.",
+    "L. Onnasch, C. D. Wickens, H. Li, and D. Manzey, “Human performance consequences of stages and levels of automation: An integrated meta-analysis,” *Hum. Factors*, vol. 56, no. 3, pp. 476–488, 2014, doi: 10.1177/0018720813501549.",
+    "F. Dell’Acqua, “Falling asleep at the wheel: Human/AI collaboration in a field experiment on HR recruiters,” working paper, 2022.",
     "H. Li, H. Zhang, and A. E. Hassan, “AIDev: Studying AI coding agents on GitHub,” in *Proc. 23rd Int. Conf. Mining Softw. Repositories*, 2026, doi: 10.1145/3793302.3797249.",
 ]
 
