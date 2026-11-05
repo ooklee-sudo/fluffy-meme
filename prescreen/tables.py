@@ -36,7 +36,7 @@ for lab, d in [('Empirical Bayes, all impressions (main)', eb), ('Raw CTR, all i
     lines.append(f"| {lab} | {r['implied_rho']:.2f} {iv(r['implied_rho_ci'], lambda v: f'{v:.2f}')} | {pct(r['false_discard_rate'])}% | "
                  f"{pct(r['A_all']['16000']['regret'])}% | {pct(r['B_twin_topm']['16000']['regret'])}% | "
                  f"+{pct(r['diff_B_minus_A@16000'])} {iv(r['diff_B_minus_A@16000_ci'])} | "
-                 f"{pct(r['diff_E_minus_A@16000'])} {iv(r['diff_E_minus_A@16000_ci'])} | "
+                 f"{100*r['diff_E_minus_A@16000']:+.2f} [{100*r['diff_E_minus_A@16000_ci'][0]:+.2f}, {100*r['diff_E_minus_A@16000_ci'][1]:+.2f}] | "
                  f"{pct(r['saving_E_regret@16000'])}% {iv(r['saving_E_regret@16000_ci'])} |")
 lines += ['', 'Losses are expected CTR shortfalls relative to the best headline at 16,000 impressions per test. '
           'Intervals: bootstrap over tests (1,000 resamples). Differences are in percentage points.']

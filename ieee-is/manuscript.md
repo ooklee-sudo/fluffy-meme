@@ -4,7 +4,7 @@ author:
   - "Ook Lee, Hanyang University, Seoul, 04763, South Korea"
 ---
 
-**Abstract.** Platforms increasingly consider large language model (LLM) "digital twins" to pre-screen A/B tests before spending human traffic. We ask when such synthetic evidence can be trusted and what it is worth. Pre-registered studies across five model families show that twins recover the direction of cue-based effects such as framing and anchoring, but they misstate magnitudes. They also reverse the sign of default effects depending on whether the paradigm is familiar from training text. We translate these validity results into a decision model in which a single quantity, the twin–outcome correlation ρ, determines when pre-screening pays. On 500 public Upworthy headline tests, four current models reach ρ = 0.13–0.23. At these values, using twins to discard candidates doubles the expected loss in click-through rate at realistic budgets. Using them as a calibrated prior is safe but saves only 1–3% of traffic. We close with rules practitioners can apply before putting synthetic agents into an experimentation pipeline.
+**Abstract.** Platforms increasingly consider large language model (LLM) "digital twins" to pre-screen A/B tests before spending human traffic. We ask when such synthetic evidence can be trusted and what it is worth. Pre-registered studies across five model families show that twins recover the direction of cue-based effects such as framing and anchoring, but they misstate magnitudes. They also reverse the sign of default effects depending on whether the paradigm is familiar from training text. We translate these validity results into a decision model in which a single quantity, the twin–outcome correlation ρ, determines when pre-screening pays. On 500 public Upworthy headline tests, the five models from our pre-registered studies reach ρ = 0.13–0.20. At these values, using twins to discard candidates doubles the expected loss in click-through rate at realistic budgets. Using them as a calibrated prior is safe, but its traffic savings cannot be distinguished from zero. We close with rules practitioners can apply before putting synthetic agents into an experimentation pipeline.
 
 **Keywords:** large language models, synthetic agents, digital twins, A/B testing, experimentation platforms
 
@@ -31,7 +31,7 @@ We derived seven propositions from these conditions and tested them on new data 
 > - **Confirmatory twin study:** 600 new respondents, nine items (framing, anchoring, attraction, fairness, and a canonical and a novel default), five model families, and three persona formats; 9,000 calls.
 > - **Confirmatory reasoning grid:** 4 models × 3 reasoning-effort levels × 3 temperatures, with a bias battery and factual batteries; 10,800 calls.
 > - **Stability study (exploratory):** 13 model versions × 2 prompt templates; 5,200 calls.
-> - **Field evaluation:** 500 Upworthy headline tests × 4 current models × 3 draws; 6,000 calls (this article).
+> - **Field evaluation:** 500 Upworthy headline tests × 5 models from the studies above × 3 draws, plus two newer models; 10,500 calls (this article).
 >
 > No new human data were collected. All runs together cost about 310 USD in API fees. Prompts, outputs, code, and the deviation log are public.
 
@@ -76,35 +76,38 @@ Filtering trades two forces. Fewer arms mean more traffic per arm and less sampl
 
 Figure 1(b) shows N\* in a model calibrated to Upworthy (base click-through rate 1.5%, logit standard deviation of true headline effects 0.30, K = 5, m = 2). For ρ ≤ 0.1, filtering never pays. At ρ = 0.3, it pays only below about 1,200 impressions per test. Even at ρ = 0.7, N\* is under 10,000. A typical Upworthy test used about 20,000 impressions.
 
-![Figure 1. (a) Expected click-through-rate (CTR) loss, relative to the best headline, for five ways of using twins, averaged over 500 Upworthy tests (ensemble of four models). (b) Break-even budget N\* below which filtering beats testing all candidates, as a function of the twin–outcome correlation ρ. The shaded band marks the ρ values observed for the four models.](figure1.png)
+![Figure 1. (a) Expected click-through-rate (CTR) loss, relative to the best headline, for five ways of using twins, averaged over 500 Upworthy tests (ensemble of the five models); bands are 95% bootstrap intervals. (b) Break-even budget N\* below which filtering beats testing all candidates, as a function of the twin–outcome correlation ρ. The shaded band marks the ρ values observed for the five models.](figure1.png)
 
 ## Field evaluation on 500 Upworthy tests
 
-The Upworthy Research Archive contains 32,487 headline experiments run on a news site in 2013–2015, with impressions and clicks for every variant [10]. We drew 500 tests at random from the confirmatory release. Each had three to eight distinct headlines with at least 1,000 impressions each. To separate true differences from sampling noise, we estimated each headline's click-through rate (CTR) with empirical-Bayes shrinkage: the standard deviation of true headline effects is 0.30 on the logit scale, and the average sampling standard deviation is 0.20. Four current low-cost models scored all headlines of each test three times, in shuffled order. They used the same no-persona prompt that performed best in our confirmatory field study. For budgets from 2,000 to 64,000 impressions, we then simulated 400 A/B tests per test and policy. A random-filter policy served as a placebo for the gain from simply testing fewer arms. The prior's calibration was cross-fitted across two halves of the tests.
+The Upworthy Research Archive contains 32,487 headline experiments run on a news site in 2013–2015, with impressions and clicks for every variant [10]. We drew 500 tests at random from the confirmatory release. Each had three to eight distinct headlines with at least 1,000 impressions each. To separate true differences from sampling noise, we estimated each headline's click-through rate (CTR) with empirical-Bayes shrinkage: the standard deviation of true headline effects is 0.30 on the logit scale, and the average sampling standard deviation is 0.20. The five models used in our pre-registered studies scored all headlines of each test three times, in shuffled order. They used the same no-persona prompt that performed best in our confirmatory field study. Two newer models (GPT-6 luna and DeepSeek V4.1 Flash) gave the same picture, and their results are in the supplementary material. For budgets from 2,000 to 64,000 impressions, we then simulated 400 A/B tests per test and policy. A random-filter policy served as a placebo for the gain from simply testing fewer arms. The prior's calibration was cross-fitted across two halves of the tests. All intervals are 95% bootstrap intervals over tests.
 
 **Table 2. What synthetic pre-screening is worth (500 tests; CTR loss at 16,000 impressions).**
 
-| Model | Pairwise agreement | Implied ρ | Best headline discarded by filter | Loss: test all | Loss: twin filter | Loss: twin prior | Traffic saved by prior |
-|---|---|---|---|---|---|---|---|
-| Claude Haiku 5.5 | 0.542 | 0.13 | 41% | 4.06% | 8.81% | 4.02% | 1% |
-| DeepSeek V4.1 Flash | 0.572 | 0.23 | 38% | 4.04% | 8.08% | 3.95% | 3% |
-| Gemini 3.7 Flash | 0.559 | 0.18 | 41% | 4.07% | 8.81% | 3.99% | 2% |
-| GPT-6 luna | 0.555 | 0.17 | 42% | 4.05% | 9.05% | 4.02% | 1% |
-| Ensemble | 0.566 | 0.21 | 40% | 4.02% | 8.68% | 3.97% | 2% |
+| Model | Implied ρ [95% CI] | Best headline discarded by filter | Loss: test all | Loss: twin filter | Loss: twin prior | Traffic saved by prior [95% CI] |
+|---|---|---|---|---|---|---|
+| Claude Haiku 5.5 | 0.13 [0.07, 0.20] | 41% | 4.06% | 8.81% | 4.02% | 1.3% [−1.2, 3.6] |
+| Gemini 3.7 Flash | 0.18 [0.12, 0.25] | 41% | 4.04% | 8.81% | 4.02% | 0.9% [−2.2, 3.6] |
+| Llama 4 Maverick | 0.14 [0.08, 0.20] | 45% | 4.03% | 9.93% | 4.02% | 0.4% [−2.4, 2.7] |
+| GPT-5.6 luna | 0.13 [0.07, 0.19] | 43% | 4.01% | 9.07% | 4.00% | 0.5% [−2.4, 2.5] |
+| Grok 4.3 | 0.20 [0.14, 0.26] | 40% | 4.03% | 8.34% | 3.94% | 2.8% [0.0, 5.4] |
+| Ensemble | 0.20 [0.14, 0.27] | 40% | 4.01% | 8.82% | 3.96% | 1.6% [−1.1, 4.6] |
 
-*A random filter discards the best headline in 50% of tests and has a loss of 11.4% (ensemble). Relying on the twin alone yields a loss of 16.7%.*
+*A random filter discards the best headline in 50% of tests and has a loss of 10.8%. Relying on the twin alone yields a loss of 17.4% (ensemble).*
 
 The results line up with the model (Table 2 and Figure 1(a)).
 
-**The signal is real.** Every model discards the best headline less often than chance (38–42% vs. 50%), and every twin filter beats the random filter at every budget.
+**The signal is real.** Every model discards the best headline less often than chance (40–45% vs. 50%), and every twin filter beats the random filter at every budget.
 
-**The signal is weak.** Implied ρ ranges from 0.13 to 0.23. Averaging the four models raises it only slightly, to 0.21, which is consistent with errors that are shared across models.
+**The signal is weak.** Implied ρ ranges from 0.13 to 0.20. Averaging the five models does not raise it above the best single model, which is consistent with errors that are shared across models. These values lie below the ρ ≈ 0.29 implied by our pre-registered field study, which used a different sample of tests and scored agreement against observed winners. Either value lies far below the region where filtering pays (Figure 1(b)).
 
-**Filtering is the wrong way to use it.** Even at 2,000 impressions, the smallest budget simulated, testing all headlines beats the twin filter for every model. At 16,000 impressions, filtering *doubles* the expected loss (8.7% vs. 4.0%). Because the winner is often gone before the test starts, the filter's loss levels off near 7.7%. The loss from testing all headlines keeps falling, to 1.4% at 64,000 impressions.
+**Filtering is the wrong way to use it.** Even at 2,000 impressions, the smallest budget simulated, testing all headlines beats the twin filter for every model. At 16,000 impressions, filtering *doubles* the expected loss (8.8% vs. 4.0%; difference +4.8 points, 95% CI 3.7 to 5.8). Because the winner is often gone before the test starts, the filter's loss levels off near 7.9%. The loss from testing all headlines keeps falling, to 1.4% at 64,000 impressions.
 
-**The prior is safe but small.** Combining twin scores with the data never hurts, but it saves only 1–3% of traffic for the same expected loss.
+**The prior is safe but adds little.** Combining twin scores with the data never hurts, but the traffic it saves for the same expected loss ranges from 0.4% to 2.8% across models, and every 95% interval includes or touches zero.
 
-The archive is public and predates all four models, so some memorization of winners cannot be excluded. Memorization would inflate ρ. Our conclusion that the signal is too weak to filter is therefore, if anything, optimistic about the twins.
+**The conclusions do not depend on how true CTRs are defined.** We repeated the analysis with raw CTRs as the truth and with a split-sample design in which half of each headline's impressions defined the truth and the other half calibrated the prior. Filtering raised the loss by 4.9 to 6.7 points in both cases, and the prior's savings remained indistinguishable from zero (supplementary material).
+
+The archive is public and predates all five models, so some memorization of winners cannot be excluded. Memorization would inflate ρ. Our conclusion that the signal is too weak to filter is therefore, if anything, optimistic about the twins.
 
 ## Rules for practitioners
 
@@ -113,7 +116,7 @@ The validity map and the decision model together yield five rules:
 1. **Estimate ρ for the exact model version and effect type before use.** A battery of a few hundred past A/B tests with known outcomes is enough. Re-estimate whenever the model version changes, because errors are version-specific.
 2. **Never filter when ρ ≤ 0.1 or when the effect is not direction-valid.** Defaults, inertia, and friction effects fall in this group. Filtering on them is worse than filtering at random.
 3. **Filter only when the per-test budget is below N\*(ρ).** With effect spreads like Upworthy's, that means fewer than about 1,000 impressions at ρ ≈ 0.3. Such budgets are typical of long-tail or low-traffic surfaces, not of a platform's main pipeline.
-4. **Otherwise, use twin scores only as a calibrated prior, and expect savings of a few percent.** Never ship on twin evidence alone.
+4. **Otherwise, use twin scores only as a calibrated prior, and expect little or no saving.** Never ship on twin evidence alone.
 5. **Report the configuration.** Record the model identifier and access date, the persona format, the prompt, the reasoning setting, the estimated ρ, and the share of unusable outputs. Synthetic evidence that cannot be audited should not drive design decisions.
 
 The rules are deliberately quantitative. A team that wants to use synthetic agents more aggressively needs to show a higher ρ for its configuration, not argue that LLMs "think like humans." [11], [12]
@@ -124,7 +127,7 @@ Human benchmarks come from one U.S. online panel and cover seven effects. Field 
 
 ## Conclusion
 
-Synthetic agents are neither valid nor invalid in general. In our data, they knew the direction of cue-based effects, misjudged magnitudes and defaults, and gave a weak signal about which real headlines win. For an experimentation pipeline, the useful question is not whether twins are informative but whether they are informative enough to change what gets tested. At current levels, they are not. Platforms should use them as a cheap, calibrated prior, keep human traffic for the decisions, and re-check ρ every time the model changes.
+Synthetic agents are neither valid nor invalid in general. In our data, they knew the direction of cue-based effects, misjudged magnitudes and defaults, and gave a weak signal about which real headlines win. For an experimentation pipeline, the useful question is not whether twins are informative but whether they are informative enough to change what gets tested. At current levels, they are not. Platforms should use them, if at all, only as a calibrated prior, keep human traffic for the decisions, and re-check ρ every time the model changes.
 
 ## Acknowledgments
 

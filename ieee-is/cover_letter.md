@@ -19,11 +19,11 @@ The manuscript makes three contributions:
 
 1. **A validity map from pre-registered tests.** Across five model families, three persona formats, and 13 model versions, twins recover the direction of cue-based effects such as framing and anchoring but not their magnitude. Default effects reverse in sign depending on whether the paradigm is familiar from training text. Extra reasoning reduces factual errors while increasing bias. Errors are specific to model versions.
 2. **A decision model that turns validity into value.** A single quantity, the correlation ρ between twin scores and true effects, determines whether pre-screening pays. Filtering candidates on twin scores helps only below a break-even traffic budget N\*(ρ). For ρ ≤ 0.1, filtering never pays.
-3. **A field evaluation on 500 public Upworthy headline experiments.** Four current models reach ρ = 0.13–0.23. At these values, discarding candidates on twin scores doubles the expected loss in click-through rate at realistic budgets. Using the scores as a calibrated prior is safe but saves only 1–3% of traffic.
+3. **A field evaluation on 500 public Upworthy headline experiments.** The five models from the pre-registered studies reach ρ = 0.13–0.20. At these values, discarding candidates on twin scores doubles the expected loss in click-through rate at realistic budgets (+4.8 percentage points, 95% CI 3.7 to 5.8). Using the scores as a calibrated prior is safe, but its traffic savings cannot be distinguished from zero. Both results hold under three definitions of the true click-through rate.
 
 The article ends with five quantitative rules that platform teams can apply before putting synthetic agents into an experimentation pipeline. I believe it suits the magazine's readership of researchers and practitioners who build and deploy intelligent systems. It addresses a decision many teams now face, it is written for a broad technical audience, and its central message is that the way an AI signal is used matters as much as whether the signal exists. The results are deliberately sobering, which I hope will make them a useful counterweight to the many positive demonstrations in this area.
 
-The manuscript contains about 2,000 words of main text including a sidebar (2,750 words if each figure and table is counted as 250 words), a 155-word abstract, one figure, two tables, and 14 references. It was prepared with the IEEE Computer Society magazine template.
+The manuscript contains about 2,200 words of main text including a sidebar (2,950 words if each figure and table is counted as 250 words), a 155-word abstract, one figure, two tables, and 14 references, with a short supplementary file. It was prepared with the IEEE Computer Society magazine template.
 
 I confirm the following:
 

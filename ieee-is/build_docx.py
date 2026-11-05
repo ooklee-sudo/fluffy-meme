@@ -161,7 +161,8 @@ while i < len(blocks):
         if i + 2 < len(blocks) and blocks[i + 2].startswith('*A random'):
             note = blocks[i + 2].strip('*'); i += 1
         if len(rows[0]) > 4:
-            widths = [1700, 1000, 820, 1400, 1000, 1100, 1032, 1100]
+            widths = ([1700, 1000, 820, 1400, 1000, 1100, 1032, 1100] if len(rows[0]) == 8
+                      else [1500, 1450, 1300, 1050, 1150, 1100, 1602])
             out.append(full_width(table(rows, widths, cap, note)))
         else:
             widths = [1150, 900, 900, 1486]
