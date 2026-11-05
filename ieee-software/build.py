@@ -97,6 +97,20 @@ def figure(key, num):
             p("FigureCaption", f'<w:r><w:rPr><w:color w:val="0070C0"/></w:rPr><w:t xml:space="preserve">FIGURE {num}</w:t></w:r>' + runs(". " + f["caption"]),
               '<w:spacing w:after="160"/>')]
 
+def sidebar(key):
+    sb = C.SIDEBARS[key]
+    w = 4436
+    inner = p("Para", runs(sb["title"], '<w:rFonts w:ascii="Helvetica-Black" w:hAnsi="Helvetica-Black"/><w:b/><w:color w:val="0070C0"/><w:sz w:val="18"/>'),
+              '<w:spacing w:before="60" w:after="80"/><w:ind w:left="100" w:right="100" w:firstLine="0"/>')
+    for t in sb["paras"]:
+        inner += p("Para", runs(t, '<w:sz w:val="17"/>'), '<w:spacing w:after="60" w:line="220" w:lineRule="exact"/><w:ind w:left="100" w:right="100" w:firstLine="0"/><w:jc w:val="left"/>')
+    border = "".join(f'<w:{s} w:val="single" w:sz="6" w:space="0" w:color="0070C0"/>' for s in ["top", "left", "bottom", "right"])
+    return [p("Para", "", '<w:spacing w:after="0" w:line="120" w:lineRule="exact"/>'),
+            f'<w:tbl><w:tblPr><w:tblW w:w="{w}" w:type="dxa"/><w:tblBorders>{border}</w:tblBorders><w:tblLayout w:type="fixed"/>'
+            f'<w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid><w:gridCol w:w="{w}"/></w:tblGrid>'
+            f'<w:tr><w:tc><w:tcPr><w:tcW w:w="{w}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="EEF3FA"/></w:tcPr>{inner}</w:tc></w:tr></w:tbl>',
+            p("Para", "", '<w:spacing w:after="0" w:line="120" w:lineRule="exact"/>')]
+
 # ---- document.xml ----
 path = f"{OUT}/word/document.xml"
 tree = etree.parse(path)
@@ -165,6 +179,8 @@ for kind, val in C.BODY:
         xml.append(sect_break(cols2=True))
         xml += table(val, tnum[val])
         xml.append(sect_break(cols2=False))
+    elif kind == "S":
+        xml += sidebar(val)
     elif kind == "F":
         xml += figure(val, 1)
 xml.append(p("AckHead", runs("ACKNOWLEDGMENTS")))

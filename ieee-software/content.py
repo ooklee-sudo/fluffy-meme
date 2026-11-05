@@ -1,4 +1,5 @@
-# Manuscript content for the IEEE CS magazine template (version 2: built on the formal model).
+# Manuscript content for the IEEE CS magazine template (version 3: plain-language terms, model in a sidebar,
+# illustrative numbers labeled as such).
 # Inline markup: ^n^ superscript, *x* italic, **x** bold.
 
 TITLE = "Choosing Versus Accepting: Why Better Coding Assistants Can Leave More Technical Debt"
@@ -9,20 +10,20 @@ AFFIL = "Hanyang University, Seoul, 04763, South Korea"
 
 ABSTRACT = (
     "Large language model (LLM) coding assistants change the order of a developer’s decision. Without an "
-    "assistant, the developer decides how to build a task before any code exists; with one, a working artifact "
+    "assistant, the developer decides how to build a task before any code exists; with one, working code "
     "arrives first and the decision becomes whether to accept it. Drawing on a formal model of this reordering, "
     "we show that rising technical debt alone cannot reveal whether developers decide differently, because a "
-    "rational response to faster work produces the same aggregate pattern. Three statistics can: the share of "
-    "debt that developers admit to, the effect of holding a working artifact on refactoring, and the rate at "
-    "which planned refactoring lapses. The model also implies that more reliable models can increase debt, that "
-    "codebases can tip into debt traps, and that a temporary inspection mandate can have lasting effects. We "
-    "report commit data consistent with these predictions and draw lessons for teams."
+    "rational response to faster work produces the same pattern. Three measures can: how much of the debt "
+    "developers flag, how much more often they defer refactoring when working code is already in hand, and "
+    "how often planned refactoring never happens. The model also implies that more reliable models can leave "
+    "more debt, that codebases can tip into a high-debt state, and that a temporary review mandate can have "
+    "lasting effects. We report commit data consistent with these predictions."
 )
 
 INSIGHTS = [
-    ("Do not judge an assistant by aggregate debt", "Track the share of debt that is self-admitted, whether planned refactoring is carried out, and how much inspection a model upgrade displaces."),
-    ("Decide before generating", "Asking developers to commit to an expedient or a careful approach before the assistant produces code removes the order effect the model identifies."),
-    ("Use inspection mandates to change beliefs", "A mandate that lasts long enough to correct developers’ sense of the defect rate can have effects that outlast it, while a shorter one has none."),
+    ("Do not judge an assistant by total debt", "Track how much of the debt developers flag, whether planned refactoring actually happens, and how much review a model upgrade replaces."),
+    ("Decide before generating", "Asking developers to commit to a quick or a careful approach before the assistant produces code removes the order effect described here."),
+    ("Use review mandates to correct beliefs", "A review mandate that lasts long enough to correct developers’ sense of how often generated code is wrong can keep working after it ends; a shorter one does not."),
 ]
 
 INTRO_FIRST = (  # the template's drop-cap image supplies the initial "T"
@@ -37,12 +38,11 @@ INTRO_FIRST = (  # the template's drop-cap image supplies the initial "T"
 
 BODY = [
     ("P", "This article argues that assistants change the structure of the quality decision more than its price. "
-          "Without an assistant, a developer chooses an approach before either implementation exists. With one, a "
-          "working implementation arrives first, often an expedient one that looks finished, and the decision "
-          "becomes whether to accept it or to spend further effort improving it. We call this the shift from "
-          "choosing to accepting. We summarize a formal model of the shift, explain what it implies for how "
-          "teams should evaluate and oversee assistants, and report repository data that bear on its "
-          "predictions."),
+          "Without an assistant, a developer chooses an approach before either implementation exists. With one, "
+          "working code arrives first, often a quick solution that looks finished, and the decision becomes "
+          "whether to accept it or to spend further effort improving it. We call this the shift from choosing to "
+          "accepting. We summarize a formal model of the shift, explain what it implies for how teams should "
+          "evaluate and oversee assistants, and report repository data that bear on its predictions."),
 
     ("H1", "RELATION TO PRIOR WORK"),
     ("P", "A growing literature documents what happens to generated code. Liu and colleagues traced about "
@@ -58,163 +58,195 @@ BODY = [
           "would distinguish them in data."),
 
     ("H1", "FROM CHOOSING TO ACCEPTING"),
-    ("P", "The model compares two regimes that differ only in when the developer decides. In the choice regime, "
-          "the developer commits to an expedient or a careful approach before doing the work. Both the extra "
-          "effort and the rework it avoids then lie in the future, so the decision depends only on their relative "
-          "size. In the acceptance regime, an artifact arrives first. The developer may notice that it is "
-          "defective, may spend time inspecting it, and, if a defect is found, may refactor it, while the rework "
-          "from an unrepaired defect falls later."),
-    ("P", "Three well-documented departures from rational choice, which we call wedges, enter the model. Present "
-          "bias gives immediate costs more weight than future ones.^9^ Imperfect perception leads developers to "
-          "underestimate the defect rate of output that looks finished, as automation bias would predict.^10^ "
-          "Loss aversion makes changing an artifact already in hand feel more costly than building it "
-          "differently would have been.^11^ A fourth wedge, introduced later, is a share of artifacts that are "
-          "accepted by default without deliberation."),
-    ("P", "The central observation is that these wedges have nothing to act on in the choice regime. When the "
-          "decision precedes both the effort and the artifact, present bias scales both sides of the comparison "
-          "equally, no artifact exists to be misjudged, and nothing is yet in hand to be lost. The same wedges "
-          "each move the decision once an artifact exists. The order of events, rather than the presence of "
-          "bias, therefore determines whether the biases matter."),
+    ("P", "The model compares two workflows that differ only in when the developer decides. In the "
+          "decide-first workflow, the developer commits to a quick or a careful approach before doing the work. "
+          "Both the extra effort and the rework it avoids then lie in the future, so the decision depends only "
+          "on their relative size. In the generate-first workflow, working code arrives first. The developer may "
+          "notice that it is flawed, may spend time reviewing it, and, if a flaw is found, may refactor it, "
+          "while the rework from an unrepaired flaw comes later."),
+    ("P", "Three well-documented biases enter the model. The first is the pull of the present: developers give "
+          "effort spent now more weight than effort saved later.^9^ The second is misplaced trust: code that "
+          "looks finished is judged less likely to be wrong than it is, as research on automation bias would "
+          "predict.^10^ The third is reluctance to change what already works: rewriting code that is already in "
+          "hand feels more costly than building it differently would have been.^11^ A fourth factor, introduced "
+          "later, is a share of suggestions that are accepted by default without any real decision. The "
+          "sidebar “The Model in Brief” states these assumptions formally."),
+    ("P", "The central observation is that these biases have nothing to act on in the decide-first workflow. "
+          "When the decision comes before both the effort and the code, the pull of the present weighs both "
+          "sides equally, there is no output to trust too much, and nothing is yet in hand to protect. Each bias "
+          "moves the decision once working code exists. The order of events, rather than the presence of bias, "
+          "therefore determines whether the biases matter."),
+    ("S", "SB"),
 
     ("H1", "WHY RISING DEBT PROVES LITTLE"),
-    ("P", "Rising debt might seem to confirm the argument, but a rational developer can also accumulate more debt "
-          "when code becomes cheaper. When a team can build faster, the value of shipping sooner rises, and "
-          "expedient implementations become more attractive. We call this rational acceleration. The model "
-          "decomposes the change in debt after adoption into a price effect, which lowers debt; an acceleration "
-          "effect, which raises it; and a behavioral term, which also raises it. In one illustration, the price "
-          "effect lowers the probability that a task ends with debt by 0.24 and the behavioral term raises it by "
-          "0.29, so debt rises from 0.500 to 0.555 per task even though quality has become cheaper."),
-    ("P", "Crucially, for any behavioral configuration there is a faster pace of work at which a fully rational "
-          "developer produces exactly the same aggregate debt. Aggregate data, including the difference-in-"
-          "differences estimates that dominate current evidence, therefore cannot tell the two accounts apart. "
-          "Three statistics can, because each takes a fixed value for a rational developer and shifts in a known "
-          "direction once a wedge applies (see Table 1):"),
+    ("P", "Rising debt might seem to confirm the argument, but a fully rational developer can also accumulate "
+          "more debt when code becomes cheaper. When a team can build faster, shipping sooner becomes more "
+          "valuable, and quick solutions become more attractive. We call this the speed-up explanation. The "
+          "model splits the change in debt after adoption into three parts: cheaper quality lowers debt, faster "
+          "work raises it, and the biases raise it further."),
+    ("P", "All numbers in this and the following section come from the model with parameter values that we "
+          "chose to illustrate the mechanisms. They are not estimates, and they show what the mechanisms can "
+          "produce, not how large they are in practice. In one such illustration, cheaper quality lowers the "
+          "probability that a task ends with debt by 0.24 and the biases raise it by 0.29, so debt rises from "
+          "0.500 to 0.555 per task even though quality has become cheaper."),
+    ("P", "Crucially, whatever the biases do to the level of debt, some faster pace of work leads a fully "
+          "rational developer to exactly the same level. Aggregate data, including the difference-in-differences "
+          "estimates that dominate current evidence, therefore cannot tell the two explanations apart. Three "
+          "measures can, because each stays at a fixed value under the speed-up explanation and moves in a known "
+          "direction once a bias applies (see Table 1):"),
     ("L", [
-        ("Self-admitted share", "the share of debt in the code that developers have marked, for example with TODO or FIXME comments.^12^ It falls below its rational level when perception is imperfect."),
-        ("Possession effect", "how much more often refactoring is deferred when a working artifact is in hand than when the same choice is made in advance. It is zero for a rational developer and positive under present bias or loss aversion."),
-        ("Lapse rate", "the share of planned refactoring that is not carried out. It is positive only under present bias, which separates present bias from loss aversion."),
+        ("Flagged share of debt", "the share of debt in the code that developers have marked, for example with TODO or FIXME comments.^12^ It falls when developers trust generated code too much."),
+        ("Working-code effect", "how much more often developers put off refactoring when working code is already in hand than when they make the same choice in advance. It is zero for a fully rational developer and positive under the pull of the present or reluctance to change working code."),
+        ("Broken refactoring plans", "the share of planned refactoring that never happens. Only the pull of the present produces it, so it separates that bias from reluctance to change working code."),
     ]),
     ("T", "T1"),
-    ("P", "In the illustration above, rational acceleration reproduces the behavioral level of debt when the "
-          "value of time rises by a factor of about 2.6, yet its self-admitted share stays at its baseline of "
-          "0.50 and its possession effect and lapse rate stay at zero. The behavioral configuration yields a "
-          "self-admitted share of 0.33, a possession effect of 0.31, and a lapse rate of 0.21. A rational "
-          "developer may also revise a decision because the artifact reveals something about the work ahead. "
-          "The model bounds that informational channel by the dispersion of the signal, so a possession effect "
-          "larger than the bound cannot be explained by information alone."),
+    ("P", "In the illustration above, the speed-up explanation reproduces the same level of debt if the value of "
+          "developer time rises by a factor of about 2.6. Even then, the flagged share stays at its baseline of "
+          "0.50, and there is no working-code effect and no broken plans. With the biases, the flagged share "
+          "falls to 0.33, the working-code effect is 0.31, and 0.21 of tasks end with a broken refactoring plan. "
+          "A rational developer may also change course because the generated code reveals something about the "
+          "work ahead. The model limits how large that effect can be, so a working-code effect beyond that limit "
+          "cannot be explained by new information alone."),
 
     ("H1", "THREE RESULTS THAT MATTER FOR PRACTICE"),
     ("H2", "Better Models Can Leave More Debt"),
-    ("P", "When defects are frequent, developers inspect nearly every artifact and debt stays low. As the model "
-          "improves, perceived risk falls and inspection stops before the defect rate has fallen far enough to "
-          "compensate. Over an interval, the share of defects that reach the codebase then rises faster than "
-          "the defect rate falls. Even a rational developer relaxes inspection in this way, but the wedges "
-          "widen the interval and shift it toward the defect rates of today’s models. In the illustration "
-          "in Figure 1, debt per task rises by 56% as the defect rate falls from 0.46 to 0.29. The same upgrade "
-          "can therefore reduce debt in one organization and raise it in another."),
+    ("P", "When generated code is often wrong, developers review nearly every suggestion and little debt gets "
+          "through. As the model improves, developers sense less risk and stop reviewing before the error rate "
+          "has fallen far enough to compensate. Over a range of error rates, the share of flaws that reach the "
+          "codebase then rises faster than the error rate falls. A fully rational developer also reviews less as "
+          "models improve, but the biases widen that range and move it toward the error rates of current models. "
+          "In the illustration in Figure 1, which uses assumed rather than measured values, debt per task rises "
+          "by 56% as the error rate falls from 0.46 to 0.29. The direction of the effect, not its size, is the "
+          "result: the same upgrade can reduce debt in one organization and raise it in another."),
     ("F", "F1"),
-    ("H2", "Codebases Can Tip Into Debt Traps"),
-    ("P", "Debt is a stock, and a larger stock makes each refactoring more expensive, which is the interest in "
-          "the metaphor. When present bias applies, a codebase can have two stable states, one with little debt "
-          "and one with much more. In one parameterization the high-debt state carries ten times the debt of the "
-          "low one. Because present bias does not act in the choice regime, adoption itself can tip a codebase "
-          "into the high-debt state even though the assistant also makes refactoring cheaper. Once there, the "
-          "codebase does not return when conditions recover slightly. Small nudges that would have prevented the "
-          "trap cannot reverse it, and escape requires a large change in the decision environment or a one-time "
-          "refactoring program."),
+    ("H2", "Codebases Can Tip Into a High-Debt State"),
+    ("P", "Debt accumulates, and the more of it a codebase carries, the more each refactoring costs, which is "
+          "the interest in the metaphor. Under the pull of the present, a codebase can settle in either of two "
+          "stable states, one with little debt and one with much more. In an illustrative parameterization, the "
+          "high-debt state carries ten times the debt of the low one. Because the pull of the present does not "
+          "act in the decide-first workflow, adopting an assistant can itself tip a codebase into the high-debt "
+          "state even though the assistant also makes refactoring cheaper. Once there, the codebase does not "
+          "return when conditions improve slightly. Small nudges that would have prevented the tipping cannot "
+          "reverse it; escape requires a large change in how decisions are made or a one-time refactoring "
+          "program."),
     ("H2", "Temporary Mandates Can Have Lasting Effects"),
-    ("P", "Developers can learn the true defect rate, but mainly through the inspection that imperfect perception "
-          "suppresses. If developers believe generated code is reliable enough not to inspect, they observe no "
-          "defects and never revise the belief. A mandate that requires inspection for a limited period breaks "
-          "this loop if it lasts long enough for the belief to cross the threshold at which developers start "
-          "inspecting on their own. In the model’s illustration, a single period of mandatory inspection "
-          "suffices, and the belief then converges to the true rate. Under rational acceleration, by contrast, "
-          "the effect of a mandate should end when it is lifted, which gives a direct test."),
+    ("P", "Developers can learn how often generated code is wrong, but mainly by reviewing it, which is exactly "
+          "what misplaced trust discourages. Developers who believe generated code is reliable enough not to "
+          "review never see its flaws and never revise the belief. A mandate that requires review for a limited "
+          "period breaks this loop if it lasts long enough for developers to see enough flaws to start reviewing "
+          "on their own. In the model’s illustration, with assumed values, a single period of mandatory "
+          "review suffices. Under the speed-up explanation, by contrast, the effect of a mandate should end when "
+          "the mandate does, which gives a direct test."),
 
     ("H1", "WHAT REPOSITORY DATA SHOW"),
-    ("P", "Archival data cannot test the mechanisms, since aggregate outcomes do not separate the accounts and the "
-          "wedges are not observed, but they can be consistent or inconsistent with the predictions. We examined "
-          "six actively maintained open-source projects with many contributors: Prefect, Cal.com, n8n, Grafana, "
-          "Home Assistant, and Sentry. A commit was treated as AI-assisted when its message carried a co-author "
-          "trailer or footer naming a coding assistant such as Claude, Codex, Cursor, or Copilot. We analyzed "
-          "nonmerge commits from April 2025 to October 2026, excluding bot accounts, nonsource files, generated "
-          "code, and commits that added more than 5000 lines."),
+    ("P", "Archival data cannot test the mechanisms, since aggregate outcomes do not separate the explanations "
+          "and the biases are not observed, but they can be consistent or inconsistent with the predictions. We "
+          "examined six actively maintained open-source projects with many contributors: Prefect, Cal.com, n8n, "
+          "Grafana, Home Assistant, and Sentry. A commit was treated as AI-assisted when its message carried a "
+          "co-author trailer or footer naming a coding assistant such as Claude, Codex, Cursor, or Copilot. We "
+          "analyzed nonmerge commits from April 2025 to October 2026, excluding bot accounts, nonsource files, "
+          "generated code, and commits that added more than 5000 lines."),
     ("P", "To hold skill and style constant, we compared each developer with themselves. For every developer with "
           "at least five AI-labeled commits, we compared those commits with the same developer’s unlabeled "
           "commits made after the first labeled one, retaining developers with at least five of each. This left "
           "251 developers in five projects and 32,620 commits, of which 10,641 carried an AI label (see "
-          "Table 2)."),
+          "Table 2). Unlike the figures in the previous sections, these are measured values."),
     ("T", "T2"),
-    ("P", "AI-labeled commits carried about 20% fewer self-admitted debt markers per added line, which matches the "
-          "direction the self-admitted share predicts, although the within-developer difference was not "
-          "statistically reliable and fewer markers could also reflect less debt. AI-labeled commits were also "
-          "more weighted toward additions for 61% of developers, which is consistent with retention of generated "
-          "code. That difference narrowed and lost statistical reliability among commits adding 10 to 300 lines "
-          "(57% of 170 developers, *p* = .23), because AI-labeled commits were considerably larger. Duplication "
-          "within commits did not differ. Labels capture only disclosed assistance, which biases all comparisons "
-          "toward zero."),
+    ("P", "AI-labeled commits carried about 20% fewer debt markers per added line, which matches the direction "
+          "the flagged share predicts, although the within-developer difference was not statistically reliable "
+          "and fewer markers could also reflect less debt. AI-labeled commits were also more weighted toward "
+          "additions for 61% of developers, which is consistent with reluctance to remove generated code. That "
+          "difference narrowed and lost statistical reliability among commits adding 10 to 300 lines (57% of "
+          "170 developers, *p* = .23), because AI-labeled commits were considerably larger. Duplication within "
+          "commits did not differ. Labels capture only disclosed assistance, which biases all comparisons toward "
+          "zero."),
     ("P", "A separate analysis of 431,043 agent-authored and 2,525,598 human pull requests on GitHub, drawing on "
           "event logs and the AIDev dataset,^13^ points the same way. Within repositories, agent pull requests "
-          "had a ratio of additions to deletions about 1.8 times higher, carried 0.62 self-admitted markers per "
-          "1000 added lines against 1.38 for human pull requests, and in team repositories, excluding Copilot, were 5.9 percentage "
-          "points less likely to be reviewed. These patterns are consistent with the theory but cannot "
-          "identify its mechanisms."),
+          "had a ratio of additions to deletions about 1.8 times higher, carried 0.62 debt markers per 1000 added "
+          "lines against 1.38 for human pull requests, and in team repositories, excluding Copilot, were 5.9 "
+          "percentage points less likely to be reviewed. These patterns are consistent with the theory but "
+          "cannot identify its mechanisms."),
 
     ("H1", "IMPLICATIONS FOR TEAMS"),
     ("P", "Remedies such as debt registers and repayment sprints assume that debt is visible and that it will be "
-          "repaid when the numbers justify it. Where the wedges bind, less debt is recorded and planned repayment "
-          "lapses, so those remedies will underperform. The model suggests four alternatives:"),
+          "repaid when the numbers justify it. Where the biases operate, less debt is recorded and planned "
+          "repayment does not happen, so those remedies will underperform. The model suggests four "
+          "alternatives:"),
     ("L", [
-        ("Decide before generating", "Ask developers to commit to an approach before the assistant produces code. The three statistics then return to their rational values."),
-        ("Evaluate upgrades by the inspection they displace", "Measure review effort and the self-admitted share alongside defect rates whenever a model is upgraded."),
-        ("Use mandates to change beliefs", "Set the length of an inspection mandate by whether it corrects developers’ sense of the defect rate, not by how long control is needed."),
-        ("Prevent traps rather than reverse them", "Watch codebases that enter adoption with high debt, since they are the most likely to tip, and budget a one-time refactoring program for those that do."),
+        ("Decide before generating", "Ask developers to commit to an approach before the assistant produces code. The three measures then return to their rational values."),
+        ("Evaluate upgrades by the review they replace", "Measure review effort and the flagged share alongside error rates whenever a model is upgraded."),
+        ("Use mandates to correct beliefs", "Set the length of a review mandate by whether it corrects developers’ sense of how often generated code is wrong, not by how long control is needed."),
+        ("Prevent tipping rather than reverse it", "Watch codebases that enter adoption with high debt, since they are the most likely to tip, and budget a one-time refactoring program for those that do."),
     ]),
 
     ("H1", "LIMITATIONS"),
-    ("P", "The model is deliberately minimal, and its results are statements about mechanisms rather than "
-          "calibrated magnitudes. Tasks are independent, inspection detects defects perfectly, and the debt-trap "
-          "result relies on a particular form of interest on debt. The present-bias results assume that the "
-          "quality decision without an assistant is made before effort is committed. Learning concerns the "
-          "defect rate and not the fluency of the output, which may resist statistical evidence."),
+    ("P", "The model is deliberately minimal, and its results describe mechanisms rather than magnitudes; the "
+          "numbers quoted from it are illustrations, not estimates. Tasks are independent, review finds every "
+          "flaw it looks for, and the tipping result relies on a particular form of interest on debt. The "
+          "results about the pull of the present assume that, without an assistant, the quality decision is "
+          "made before effort is committed. Learning concerns the error rate and not how polished the output "
+          "looks, which may resist statistical evidence."),
     ("P", "The theory is untested. The repository data are observational, drawn from public projects, and silent "
           "on the industrial settings in which most commercial software is built. Agent labels are incomplete, "
           "and static analysis only approximates the debt developers experience. The decisive test is an "
-          "experiment that observes the same decision in a choice, a plan, and an acceptance condition with "
-          "information held fixed, ideally with professional developers in industry."),
+          "experiment that observes the same decision when developers choose in advance, plan ahead, and accept "
+          "generated code, with information held fixed, ideally with professional developers in industry."),
 
     ("H1", "CONCLUSION"),
     ("P", "LLM coding assistants have made code cheap to produce, and the first evidence suggests that they have "
           "made systems more expensive to maintain. We have argued that the cause lies in how assistance "
-          "restructures the decision, since a working artifact now arrives before the quality question is posed. "
-          "A rational response to faster work can produce the same rise in debt, so the behavioral account must "
-          "be judged by what it alone predicts: debt that goes unrecorded and repayment that lapses despite "
-          "plans. Two further warnings follow. Better models do not guarantee less debt, and a codebase that has "
+          "restructures the decision, since working code now arrives before the quality question is posed. A "
+          "rational response to faster work can produce the same rise in debt, so the behavioral account must be "
+          "judged by what it alone predicts: debt that goes unflagged and refactoring plans that are not carried "
+          "out. Two further warnings follow. Better models do not guarantee less debt, and a codebase that has "
           "tipped into a high-debt state will not be rescued by the nudges that would have prevented it."),
 ]
 
+SIDEBARS = {
+    "SB": dict(
+        title="THE MODEL IN BRIEF",
+        paras=[
+            "A task can be built quickly (*E*) or carefully (*Q*). Building *Q* takes *a* more units of time, "
+            "valued at *v* per unit; a task left as *E* costs rework *R* later, discounted by *δ*.",
+            "**Decide first.** The developer chooses *E* if *va* > *δR*. Every cost lies in the future, so "
+            "the biases below cancel out.",
+            "**Generate first.** Generated code is flawed with probability *q*. A flaw that is found is "
+            "refactored, at time cost *r*, only if *λvr* < *βδR*. Code not seen to be flawed is "
+            "reviewed only if the expected gain exceeds the review time.",
+            "**Biases.** *β* ≤ 1, the pull of the present (present bias); *φ* ≤ 1, the "
+            "share of the true error rate that developers perceive (misplaced trust); *λ* ≥ 1, the extra "
+            "weight on changing code already in hand (loss aversion); *α*, the share of suggestions accepted "
+            "without review. A fully rational developer has *β* = *φ* = *λ* = 1 and *α* = 0.",
+            "**What the model shows.** With all biases off, the flagged share, the working-code effect, and "
+            "broken plans take their rational values whatever the error rate or pace of work. Each bias moves "
+            "exactly one or two of them, as Table 1 summarizes.",
+            "Numerical results quoted in the text use illustrative values of these parameters, not estimates.",
+        ],
+    ),
+}
+
 TABLES = {
     "T1": dict(
-        caption="Predictions that separate rational acceleration from the behavioral account.",
+        caption="Predictions that separate the speed-up explanation from the behavioral account.",
         widths=[3850, 2650, 2650],
-        header=["Prediction", "Rational acceleration", "Behavioral account"],
+        header=["Prediction", "Speed-up explanation", "Behavioral account"],
         rows=[
-            ["Aggregate debt after adoption", "Rises", "Rises"],
-            ["Self-admitted share of debt", "Unchanged, no difference by authorship", "Lower for generation-first changes"],
-            ["Possession effect on refactoring", "Zero", "Positive"],
-            ["Lapse of planned refactoring", "None", "Positive"],
-            ["Statistics when the decision precedes generation", "Unchanged", "Return to rational values"],
-            ["Debt as model reliability improves", "Rises over a narrow interval", "Rises over a wider, shifted interval"],
-            ["Effect of a temporary inspection mandate after it ends", "Ends with the mandate", "Can persist"],
+            ["Total debt after adoption", "Rises", "Rises"],
+            ["Flagged share of debt", "Unchanged, no difference by authorship", "Lower for generated code"],
+            ["Working-code effect on refactoring", "Zero", "Positive"],
+            ["Broken refactoring plans", "None", "Present"],
+            ["The three measures when the decision precedes generation", "Unchanged", "Return to rational values"],
+            ["Debt as models become more reliable", "Rises over a narrow range", "Rises over a wider, shifted range"],
+            ["Effect of a temporary review mandate after it ends", "Ends with the mandate", "Can persist"],
         ],
         notes=[],
     ),
     "T2": dict(
-        caption="Within-developer comparison of AI-labeled and other commits (251 developers, five projects).",
+        caption="Within-developer comparison of AI-labeled and other commits (251 developers, five projects). Measured values.",
         widths=[3950, 1250, 1250, 1750, 950],
         header=["Indicator", "AI-labeled commits", "Other commits", "Developers for whom AI-labeled commits score higher", "*p*"],
         rows=[
-            ["Self-admitted debt markers per 1000 added lines, all commits pooled", "0.16", "0.20", "22% (29% lower, 49% tied)", ".16^b^"],
+            ["Debt markers (TODO, FIXME, HACK, XXX) per 1000 added lines, all commits pooled", "0.16", "0.20", "22% (29% lower, 49% tied)", ".16^b^"],
             ["Additions as share of changed lines, median across developers", "82.5%", "78.8%", "61%", ".002^a^"],
             ["Added lines duplicated within the same commit, median across developers", "32.3%", "33.0%", "49%", ".93^a^"],
             ["Changed lines per commit, median across developers", "152", "85", "72%", "<.001^a^"],
@@ -226,10 +258,11 @@ TABLES = {
 FIGURES = {
     "F1": dict(
         image="fig1.png", width_in=3.05, height_in=2.02,
-        caption="The reliability paradox. Debt per task as the defect rate of the model falls, in the rational "
-                "benchmark and with the behavioral wedges (present bias 0.5, perception 0.6, loss aversion 1.2, "
-                "default acceptance 0.2). With the wedges, debt rises by 56% as the defect rate falls from 0.46 "
-                "to 0.29.",
+        caption="Better models can leave more debt. Debt per task as the error rate of the model falls, for a "
+                "fully rational developer and for one subject to the biases in the sidebar. The curves are "
+                "computed from the model with illustrative parameter values (present bias 0.5, perceived share "
+                "of errors 0.6, loss aversion 1.2, default acceptance 0.2), not estimated from data; they show "
+                "the shape of the effect, not its size.",
     ),
 }
 
