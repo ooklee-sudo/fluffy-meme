@@ -23,7 +23,7 @@ The manuscript makes three contributions:
 
 The article ends with five quantitative rules that platform teams can apply before putting synthetic agents into an experimentation pipeline. I believe it suits the magazine's readership of researchers and practitioners who build and deploy intelligent systems. It addresses a decision many teams now face, it is written for a broad technical audience, and its central message is that the way an AI signal is used matters as much as whether the signal exists. The results are deliberately sobering, which I hope will make them a useful counterweight to the many positive demonstrations in this area.
 
-The manuscript contains about 2,200 words of main text including a sidebar (2,950 words if each figure and table is counted as 250 words), a 162-word abstract, one figure, two tables, and 14 references, with a short supplementary file. It was prepared with the IEEE Computer Society magazine template.
+The manuscript contains about 2,200 words of main text including a sidebar (2,950 words if each figure and table is counted as 250 words), a 162-word abstract, one figure, two tables, and 14 references. It was prepared with the IEEE Computer Society magazine template.
 
 I confirm the following:
 
