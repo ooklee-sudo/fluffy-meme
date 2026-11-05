@@ -66,6 +66,12 @@ def main():
                    help="override the run's turn-2 mode; prefill is ~10x faster, handy to screen layers/alphas")
     p.add_argument("--bs", type=int, default=16)
     p.add_argument("--firm-run", help="run made with --system firm on the same questions")
+    p.add_argument("--direction", default="cave", choices=["cave", "targeted", "combined"],
+                   help="cave: mean(held|right) - mean(caved|right). "
+                        "targeted: cave direction minus its projection on the 'keep when wrong' direction "
+                        "mean(held|wrong) - mean(corrected|wrong), i.e. the shared 'keep my answer' part removed. "
+                        "combined: unit(cave) - unit(keep-when-wrong): hold when right, change when wrong. "
+                        "targeted/combined are rescaled to the norm of the cave direction so alphas compare.")
     p.add_argument("--min-caved", type=int, default=10, help="minimum caved examples needed in the train half")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
@@ -90,7 +96,12 @@ def main():
 
     held = [i for i in train if rows[i]["outcome"] == "held_correct"]
     caved = [i for i in train if rows[i]["outcome"] == "caved"]
-    print(f"train: {len(held)} held / {len(caved)} caved (right in turn 1) | test questions: {len(test_rows)}")
+    held_w = [i for i in train if rows[i]["outcome"] == "held_wrong"]
+    fixed = [i for i in train if rows[i]["outcome"] == "corrected"]
+    print(f"train: {len(held)} held / {len(caved)} caved (right in turn 1), "
+          f"{len(held_w)} held / {len(fixed)} corrected (wrong in turn 1) | test questions: {len(test_rows)}")
+    if args.direction != "cave" and len(fixed) < args.min_caved:
+        raise SystemExit(f"fewer than {args.min_caved} corrected examples in the train half for --direction {args.direction}")
     if len(caved) < args.min_caved:
         raise SystemExit(f"fewer than {args.min_caved} caved examples in the train half; use more questions or a "
                          "stronger challenge (--challenge wrong)")
@@ -122,9 +133,25 @@ def main():
         print(f"firm prompt: cave {result['firm_prompt']['cave_rate']:.3f} | "
               f"correction {result['firm_prompt']['correction_rate']:.3f}")
 
+    result["direction"] = args.direction
+    result["geometry"] = {}
+    mean = lambda ix, l: np.asarray(H2[ix, l], dtype=np.float64).mean(0)
     for layer in layers:
-        d = (np.asarray(H2[held, layer], dtype=np.float64).mean(0)
-             - np.asarray(H2[caved, layer], dtype=np.float64).mean(0))
+        d_cave = mean(held, layer) - mean(caved, layer)
+        geo = {"cave_norm_over_hidden_norm": float(np.linalg.norm(d_cave) / np.linalg.norm(
+            np.asarray(H2[train, layer], dtype=np.float64), axis=1).mean())}
+        d = d_cave
+        if len(fixed) >= 2:
+            d_wrong = mean(held_w, layer) - mean(fixed, layer)  # "keep my answer" when wrong
+            u = d_wrong / np.linalg.norm(d_wrong)
+            geo["cos(cave, keep_when_wrong)"] = float(d_cave @ u / np.linalg.norm(d_cave))
+            if args.direction == "targeted":
+                d = d_cave - (d_cave @ u) * u
+            elif args.direction == "combined":
+                d = d_cave / np.linalg.norm(d_cave) - u
+            d = d / np.linalg.norm(d) * np.linalg.norm(d_cave)
+        result["geometry"][layer] = geo
+        print(f"layer {layer}: " + " | ".join(f"{k} {v:.3f}" for k, v in geo.items()), flush=True)
         d = torch.tensor(d, dtype=torch.float32)
         g = torch.Generator().manual_seed(args.seed + layer)
         rnd = torch.randn(d.shape, generator=g)
@@ -167,7 +194,7 @@ def main():
                    label="firm system prompt")
     ax.set_xlabel("cave rate (right -> wrong)  — lower is better")
     ax.set_ylabel("correction rate (wrong -> right)  — higher is better")
-    ax.set_title(f"Sycophancy vs. stubbornness ({args.model.split('/')[-1]})")
+    ax.set_title(f"Sycophancy vs. stubbornness ({args.model.split('/')[-1]}, {args.direction} direction)")
     ax.legend(fontsize=7)
     fig.tight_layout()
     fig.savefig(os.path.join(args.out, "tradeoff.png"), dpi=150)

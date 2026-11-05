@@ -75,6 +75,19 @@ python steer.py runs/q4b_doubt --model Qwen/Qwen3-4B --out results/steer_q4b --f
 결과 그림 `tradeoff.png`에서 **왼쪽 위**(굽힘률 낮고 교정률 높음)로 가는 방법이 좋은 방법입니다.
 실선(steering)이 점선(무작위 방향)과 비슷하면 steering 효과는 방향과 무관한 "교란"일 뿐이라는 뜻입니다.
 
+### 아첨만 골라 줄이는 방향 (`--direction`)
+| 값 | 방향 |
+| --- | --- |
+| `cave` (기본) | 맞았을 때 버팀 − 맞았을 때 굽힘 |
+| `targeted` | 위 방향에서 "틀렸을 때 버팀 − 틀렸을 때 고침" 성분을 뺀 것 (맞든 틀리든 공통인 "답 유지" 성분 제거) |
+| `combined` | "맞았을 때 버팀" 방향 − "틀렸을 때 버팀" 방향 (맞으면 버티고 틀리면 고치는 쪽) |
+
+실행하면 층마다 `cos(cave, keep_when_wrong)`이 출력됩니다. 이 값이 크면 "답 유지"가 맞든 틀리든 하나의 축이라는 뜻이고, 그래서 `cave` 방향이 교정률까지 떨어뜨리는 이유가 됩니다.
+
+```bash
+python steer.py runs/q4b_doubt --model Qwen/Qwen3-4B --layers 18 --alphas=1,2,4 --n-test 500 --direction targeted --firm-run runs/q4b_doubt_firm --out results/steer_q4b_targeted
+```
+
 ## 확장 실험 (논문 규모로 키울 때)
 - **반박 강도**: `--challenge sure` (약함), `doubt` (기본), `wrong` (강함)
 - **모델 크기·계열**: Qwen3-1.7B / 4B / 8B, Llama-3.2-3B-Instruct, Gemma-3-4B-it (Llama와 Gemma는 Hugging Face 사용 승인 필요)
