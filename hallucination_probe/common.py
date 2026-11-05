@@ -47,8 +47,11 @@ def load_questions(name, n, seed=0, path=None):
 
 # ---------------------------------------------------------------- model
 
-def load_model(model_name, quant="4bit"):
+def load_model(model_name, quant="4bit", adapter=None):
     """Load model + tokenizer. quant: "4bit", "8bit" or "none".
+
+    adapter: optional path / hub id of a LoRA adapter (PEFT) applied on top of the model,
+    e.g. to compare a model before and after fine-tuning.
 
     On a CPU (no CUDA) quantization is skipped, which is only meant for smoke tests
     with tiny models.
@@ -60,7 +63,7 @@ def load_model(model_name, quant="4bit"):
     if not torch.cuda.is_available():
         print("[warn] CUDA not found: loading on CPU in float32 without quantization.")
         model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.float32)
-        return model.eval(), tok
+        return _with_adapter(model, adapter).eval(), tok
 
     kwargs = {"device_map": {"": 0}}  # keep everything on the GPU; never silently offload
     if quant in ("4bit", "8bit"):
@@ -77,11 +80,33 @@ def load_model(model_name, quant="4bit"):
     else:
         kwargs["dtype"] = torch.bfloat16
     model = AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
-    return model.eval(), tok
+    return _with_adapter(model, adapter).eval(), tok
 
 
-def build_prompt(tok, question):
-    """Chat-format the question. Turns off Qwen3 'thinking' so answers stay short."""
+def _with_adapter(model, adapter):
+    if not adapter:
+        return model
+    from peft import PeftModel
+    print(f"applying LoRA adapter: {adapter}")
+    return PeftModel.from_pretrained(model, adapter)
+
+
+# Few-shot plain-text prompt. Works the same way for base and instruct models, so two
+# versions of a model can be compared on identical input text.
+FEWSHOT = [
+    ("What is the capital of France?", "Paris"),
+    ("Who wrote the play Hamlet?", "William Shakespeare"),
+    ("What is the chemical symbol for gold?", "Au"),
+]
+
+
+def build_prompt(tok, question, style="chat"):
+    """style "chat": chat template (turns off Qwen3 'thinking' so answers stay short).
+    style "fewshot": plain "Q: ... A:" prompt with three examples; the answer ends at
+    the first newline."""
+    if style == "fewshot":
+        shots = "".join(f"Q: {q}\nA: {a}\n\n" for q, a in FEWSHOT)
+        return f"{SYSTEM_PROMPT}\n\n{shots}Q: {question}\nA:"
     if tok.chat_template:
         messages = [{"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": question}]

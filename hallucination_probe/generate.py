@@ -36,6 +36,9 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--model", default="Qwen/Qwen3-8B")
     p.add_argument("--quant", default="4bit", choices=["4bit", "8bit", "none"])
+    p.add_argument("--adapter", help="optional LoRA adapter (path or hub id) applied on top of --model")
+    p.add_argument("--prompt", default="chat", choices=["chat", "fewshot"],
+                   help="fewshot = identical plain-text prompt for base and instruct models")
     p.add_argument("--dataset", default="triviaqa", choices=["triviaqa", "nq", "jsonl"])
     p.add_argument("--data-path", help="jsonl file when --dataset jsonl")
     p.add_argument("--n", type=int, default=1000, help="number of questions")
@@ -46,8 +49,8 @@ def parse_args():
 
 
 @torch.no_grad()
-def answer_one(model, tok, question, max_new_tokens):
-    prompt = build_prompt(tok, question)
+def answer_one(model, tok, question, max_new_tokens, style="chat"):
+    prompt = build_prompt(tok, question, style)
     enc = tok(prompt, return_tensors="pt", add_special_tokens=False).to(model.device)
     prompt_len = enc.input_ids.shape[1]
 
@@ -57,6 +60,7 @@ def answer_one(model, tok, question, max_new_tokens):
         max_new_tokens=max_new_tokens,
         return_dict_in_generate=True, output_logits=True,
         pad_token_id=tok.pad_token_id,
+        **({"stop_strings": ["\n"], "tokenizer": tok} if style == "fewshot" else {}),
     )
     gen_ids = out.sequences[0, prompt_len:]
 
@@ -65,6 +69,11 @@ def answer_one(model, tok, question, max_new_tokens):
     if isinstance(model.generation_config.eos_token_id, list):
         stop_ids |= set(model.generation_config.eos_token_id)
     n_ans = len(gen_ids)
+    if style == "fewshot":  # the answer is the first line only
+        for k in range(n_ans):
+            if "\n" in tok.decode(gen_ids[: k + 1]):
+                n_ans = k
+                break
     while n_ans > 0 and gen_ids[n_ans - 1].item() in stop_ids:
         n_ans -= 1
     ans_ids = gen_ids[:n_ans]
@@ -101,7 +110,7 @@ def main():
     n = len(questions)
     print(f"{n} questions loaded from {args.dataset}")
 
-    model, tok = load_model(args.model, args.quant)
+    model, tok = load_model(args.model, args.quant, args.adapter)
     n_layers = model.config.num_hidden_layers + 1  # + embedding output
     hidden = model.config.hidden_size
     print(f"model: {args.model} | layers (incl. embeddings): {n_layers} | hidden size: {hidden}")
@@ -111,7 +120,8 @@ def main():
     if os.path.exists(gen_path) and os.path.exists(meta_path):
         with open(meta_path) as f:
             old = json.load(f)
-        if old["model"] != args.model or old["n"] != n or old["dataset"] != args.dataset:
+        if any(old.get(k) != v for k, v in [("model", args.model), ("n", n), ("dataset", args.dataset),
+                                            ("adapter", args.adapter), ("prompt", args.prompt)]):
             raise SystemExit(f"{args.out} holds a different run; choose another --out")
         with open(gen_path, encoding="utf-8") as f:
             done = sum(1 for line in f if line.strip())
@@ -131,7 +141,7 @@ def main():
     with open(gen_path, "a", encoding="utf-8") as fout:
         for i in range(done, n):
             q = questions[i]
-            answer, n_ans, scores, h_p, h_a = answer_one(model, tok, q["question"], args.max_new_tokens)
+            answer, n_ans, scores, h_p, h_a = answer_one(model, tok, q["question"], args.max_new_tokens, args.prompt)
             em, contains = grade(answer, q["answers"])
             hp[i], ha[i] = h_p, h_a
             row = {"idx": i, "id": q["id"], "question": q["question"], "answers": q["answers"][:10],
