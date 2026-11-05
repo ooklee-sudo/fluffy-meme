@@ -78,6 +78,25 @@ def table(key, num):
         xml.append(p("ParaContinue", "", '<w:spacing w:after="0"/>'))
     return xml
 
+EMU = 914400
+def figure(key, num):
+    f = C.FIGURES[key]
+    shutil.copy(os.path.join(HERE, f["image"]), f"{OUT}/word/media/image2.png")
+    cx, cy = int(f["width_in"] * EMU), int(f["height_in"] * EMU)
+    drawing = (f'<w:r><w:rPr><w:noProof/></w:rPr><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0" '
+               f'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">'
+               f'<wp:extent cx="{cx}" cy="{cy}"/><wp:docPr id="{100 + num}" name="Figure {num}"/>'
+               f'<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+               f'<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
+               f'<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">'
+               f'<pic:nvPicPr><pic:cNvPr id="{100 + num}" name="figure{num}.png"/><pic:cNvPicPr/></pic:nvPicPr>'
+               f'<pic:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId21"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'
+               f'<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>'
+               f'</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>')
+    return [p("Para", drawing, '<w:keepNext/><w:spacing w:before="160" w:after="60"/><w:ind w:firstLine="0"/><w:jc w:val="center"/>'),
+            p("FigureCaption", f'<w:r><w:rPr><w:color w:val="0070C0"/></w:rPr><w:t xml:space="preserve">FIGURE {num}</w:t></w:r>' + runs(". " + f["caption"]),
+              '<w:spacing w:after="160"/>')]
+
 # ---- document.xml ----
 path = f"{OUT}/word/document.xml"
 tree = etree.parse(path)
@@ -146,6 +165,8 @@ for kind, val in C.BODY:
         xml.append(sect_break(cols2=True))
         xml += table(val, tnum[val])
         xml.append(sect_break(cols2=False))
+    elif kind == "F":
+        xml += figure(val, 1)
 xml.append(p("AckHead", runs("ACKNOWLEDGMENTS")))
 xml.append(p("Para", runs(C.ACK)))
 xml.append(p("ReferenceHead", runs("REFERENCES")))
