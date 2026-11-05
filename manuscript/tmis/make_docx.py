@@ -14,7 +14,10 @@ from docx import Document
 from docx.enum.text import WD_LINE_SPACING
 from docx.shared import Pt, RGBColor
 
-SRC, TMP, OUT = "main.tex", "build_word.tex", "main.docx"
+import sys
+ANON = "--anonymous" in sys.argv
+SRC, TMP = "main.tex", "build_word.tex"
+OUT = "main_anonymous.docx" if ANON else "main.docx"
 
 labels = dict(re.findall(r"\\newlabel\{([^}]+)\}\{\{([^}]*)\}", open("main.aux").read()))
 s = open(SRC).read()
@@ -27,9 +30,11 @@ keywords = re.search(r"\\keywords\{(.+?)\}", s).group(1)
 body = s[s.index("\\maketitle") + len("\\maketitle"):s.index("\\end{document}")]
 
 ccs_text = "; ".join(c.replace("~", " $\\rightarrow$ ") for c in ccs)
-front = (
+author_line = ("" if ANON else
     "\\noindent Ook Lee, Hanyang University, Seoul, Republic of Korea "
-    "(ooklee@hanyang.ac.kr; ORCID 0000-0003-4361-7927)\n\n"
+    "(ooklee@hanyang.ac.kr; ORCID 0000-0003-4361-7927)\n\n")
+front = (
+    author_line +
     "\\section*{Abstract}\n" + abstract + "\n\n"
     "\\noindent\\textbf{CCS Concepts:} " + ccs_text + "\n\n"
     "\\noindent\\textbf{Additional Key Words and Phrases:} " + keywords + "\n\n"
@@ -249,5 +254,9 @@ for t in d.tables:
                 cp.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
                 for r in cp.runs:
                     r.font.size = Pt(10)
+cp = d.core_properties
+cp.author = "" if ANON else "Ook Lee"
+cp.last_modified_by = ""
+cp.title = title
 d.save(OUT)
 print("wrote", OUT)
