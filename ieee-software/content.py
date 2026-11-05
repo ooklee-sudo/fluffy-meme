@@ -115,8 +115,10 @@ BODY = [
           "has fallen far enough to compensate. Over a range of error rates, the share of flaws that reach the "
           "codebase then rises faster than the error rate falls. The pattern is familiar from human factors research. "
           "A meta-analysis of 18 experiments found that higher degrees of automation improve routine performance "
-          "but worsen performance when the automation fails,^13^ and in a field experiment with 181 recruiters, "
-          "those given higher-quality AI recommendations spent less effort on each candidate.^14^ What the model "
+          "but worsen performance when the automation fails.^13^ In a preregistered experiment with 758 management "
+          "consultants, those given GPT-4 for a task just beyond its capabilities were 19 percentage points less "
+          "likely to reach the correct answer, even though their recommendations were rated as more coherent and "
+          "persuasive.^14^ What the model "
           "adds is the consequence for accumulated debt: a fully rational developer also reviews less as models "
           "improve, but the biases widen the range of error rates over which better models leave more debt and "
           "move it toward the error rates of current models. "
@@ -291,7 +293,7 @@ REFS = [
     "D. Kahneman and A. Tversky, “Prospect theory: An analysis of decision under risk,” *Econometrica*, vol. 47, no. 2, pp. 263–291, 1979.",
     "A. Potdar and E. Shihab, “An exploratory study on self-admitted technical debt,” in *Proc. IEEE Int. Conf. Softw. Maint. Evol. (ICSME)*, 2014, pp. 91–100.",
     "L. Onnasch, C. D. Wickens, H. Li, and D. Manzey, “Human performance consequences of stages and levels of automation: An integrated meta-analysis,” *Hum. Factors*, vol. 56, no. 3, pp. 476–488, 2014, doi: 10.1177/0018720813501549.",
-    "F. Dell’Acqua, “Falling asleep at the wheel: Human/AI collaboration in a field experiment on HR recruiters,” working paper, 2022.",
+    "F. Dell’Acqua et al., “Navigating the jagged technological frontier: Field experimental evidence of the effects of artificial intelligence on knowledge worker productivity and quality,” *Organ. Sci.*, 2026, doi: 10.1287/orsc.2025.21838.",
     "H. Li, H. Zhang, and A. E. Hassan, “AIDev: Studying AI coding agents on GitHub,” in *Proc. 23rd Int. Conf. Mining Softw. Repositories*, 2026, doi: 10.1145/3793302.3797249.",
 ]
 
