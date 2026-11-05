@@ -31,7 +31,7 @@
 \renewcommand{\shortauthors}{Ook Lee}
 
 \begin{abstract}
-Organizations increasingly use one language model to maintain another: a judge model scores outputs, an optimizer searches for prompts that raise the score, and a release review reads the increase as improvement. Real options research on IT investment assumes that the measure used to update beliefs stays attached to the asset it measures, but a model-based judge is cheap, endogenous to search, and versioned without notice. This article aims to explain when such a judge can safely license commitment. It introduces measurement-system risk, the risk that the instrument used to observe value is biased, collapsing, or jumping, and shows that it differs from the risks recognized in option-based IT risk management. It then defines the switch-the-ruler option, an option written on the instrument rather than on the project: the right to pin a judge version, refuse comparisons across a suspected change, and recalibrate against independent inspection. A formal model yields six propositions, including the result that pinning an uninformative judge is worth nothing, and shows that inspection both detects and deters gaming. Experiments with open-weight models show that a strong judge turned search into improvement, whereas a weak judge removed the gain and increased divergence between score and correctness.
+Organizations increasingly use one language model to maintain another: a judge model scores outputs, an optimizer searches for prompts that raise the score, and a release review reads the increase as improvement. Real options research on IT investment assumes that the measure used to update beliefs stays attached to the asset it measures, but a model-based judge is cheap, endogenous to search, and versioned without notice. This article explains when such a judge can safely license commitment. It introduces measurement-system risk, the risk that the instrument used to observe value is biased, collapsing, or jumping, and shows that it differs from the risks recognized in option-based IT risk management. It then defines the switch-the-ruler option, an option written on the instrument rather than on the project: the right to pin a judge version, refuse comparisons across a suspected change, and recalibrate against independent inspection. A formal model yields six propositions, including the result that pinning an uninformative judge is worth nothing, and shows that inspection detects and deters gaming. Experiments with open-weight models show that search against a strong judge improved correctness, whereas under a weak judge the gain was smaller, and correctness peaked while the judge score kept rising.
 \end{abstract}
 
 \begin{CCSXML}
@@ -251,7 +251,7 @@ Each form of measurement-system risk appears (Table~\ref{tab:lab}, Figure~\ref{f
 
 \subsection{An Empirical Check}
 
-We drew 200 questions at random from the GSM8K test set \citep{cobbe2021}; gold $G$ is exact match on the final number. The policy is the open-weight Llama 3.1 8B Instruct, sampled at temperature one. The judge gives a reference-free score from one to ten for clarity, apparent correctness, and completeness and never sees the gold answer. GPT-4o-mini serves as the strong judge and Llama 3.2 3B Instruct as the weak one. Models were accessed through a commercial API in October 2026; the versions behind these names may change, itself an instance of jump risk. In \emph{best-of-N selection}, 32 answers are sampled per question and the highest-$J$ answer among $N$ is selected. In \emph{judge-guided rewriting}, the same Llama model is told the rubric and current score, proposes four rewrites per round for six rounds, and keeps the best-scoring rewrite (optimize arm) or a random one (control arm). The arms differ only in whether the judge selects.
+We drew 200 questions at random from the GSM8K test set \citep{cobbe2021}; gold $G$ is exact match on the final number. The policy is the open-weight Llama 3.1 8B Instruct, sampled at temperature one. The judge gives a reference-free score from one to ten for clarity, apparent correctness, and completeness at temperature zero and never sees the gold answer. GPT-4o-mini serves as the strong judge and Llama 3.2 3B Instruct as the weak one. All models were accessed through OpenRouter in November 2026, with requests routed to the highest-throughput provider and the serving provider logged for every call; the versions behind these names may change, itself an instance of jump risk. In \emph{best-of-N selection}, 32 answers are sampled per question and, for each $N$, the highest-$J$ answer among $N$ candidates drawn at random without replacement is selected, with ties broken at random (2,000 draws per question). In \emph{judge-guided rewriting}, the same Llama model is told the rubric and current score, proposes four rewrites per round for six rounds, and keeps the best-scoring rewrite if it does not lower the score (optimize arm) or a random one (control arm). Both arms and both judges start from the same round-0 answer, so they differ only in whether, and by which judge, rewrites are selected. Intervals are percentile bootstraps over questions (10,000 resamples); tests are paired $t$-tests with $n - 1 = 199$ degrees of freedom and, for binary outcomes, exact McNemar tests. Code and per-question raw data are available as supplementary material.
 
 \begin{table}[t]
 \caption{Best-of-N selection by judge score, evaluated by gold (judge: GPT-4o-mini)}\label{tab:bon}
@@ -260,18 +260,18 @@ We drew 200 questions at random from the GSM8K test set \citep{cobbe2021}; gold 
 \toprule
 $N$ & Gold accuracy [95\% CI] & Mean $J$ & Length (chars) & Oracle \\
 \midrule
-1 & 0.756 [0.719, 0.794] & 8.40 & 891 & 0.756 \\
-2 & 0.816 [0.778, 0.853] & 9.08 & 862 & 0.862 \\
-4 & 0.842 [0.803, 0.881] & 9.46 & 855 & 0.919 \\
-8 & 0.853 [0.810, 0.891] & 9.65 & 848 & 0.950 \\
-16 & 0.861 [0.821, 0.901] & 9.77 & 847 & 0.969 \\
-32 & 0.868 [0.827, 0.907] & 9.85 & 846 & 0.985 \\
+1 & 0.807 [0.773, 0.839] & 8.55 & 891 & 0.807 \\
+2 & 0.869 [0.840, 0.898] & 9.15 & 860 & 0.909 \\
+4 & 0.899 [0.870, 0.925] & 9.46 & 846 & 0.962 \\
+8 & 0.912 [0.884, 0.938] & 9.63 & 838 & 0.983 \\
+16 & 0.918 [0.888, 0.944] & 9.73 & 835 & 0.990 \\
+32 & 0.919 [0.888, 0.947] & 9.80 & 832 & 0.995 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\footnotesize 200 questions; bootstrap intervals over questions. Oracle is the share of questions for which at least one of the $N$ candidates is correct.
+\par\smallskip\footnotesize $n = 200$ questions; bootstrap intervals over questions. Oracle is the probability that at least one of the $N$ candidates is correct.
 \end{table}
 
-\paragraph{Best-of-N.} Accuracy rises from 0.756 to 0.868 and never turns down, with quickly diminishing gains (Table~\ref{tab:bon}). The judge captures 49--57\% of the improvement exact-match selection could deliver. Selected answers do not lengthen, and judge score correlates negatively with length within a question ($-0.17$). The judge is informative (within-question correlation with correctness 0.48) but saturates near 9.85 of 10. No exploitable cheat appears, and the curve has the shape Eq.~(\ref{eq:depth}) implies when $\xi \approx 0$; the gap to the oracle is the value of an inspection the judge cannot substitute for.
+\paragraph{Best-of-N.} Accuracy rises from 0.807 at $N = 1$ to 0.919 at $N = 32$ ($t(199) = 8.44$, $p < .001$) and never turns down, with quickly diminishing gains: moving from one candidate to two adds six points, moving from sixteen to thirty-two adds a tenth of a point (Table~\ref{tab:bon}). The judge captures 59--61\% of the improvement that exact-match selection could deliver. Selected answers become slightly shorter, and judge score correlates negatively with length within a question ($r = -0.30$). The judge is informative (within-question correlation with correctness $r = 0.50$) but saturates near 9.8 of 10. No exploitable cheat appears, and the curve has the shape Eq.~(\ref{eq:depth}) implies when $\xi \approx 0$; the gap to the oracle is the value of an inspection the judge cannot substitute for.
 
 \begin{table}[t]
 \caption{Judge-guided rewriting: optimize minus control after six rounds}\label{tab:rewrite}
@@ -280,22 +280,24 @@ $N$ & Gold accuracy [95\% CI] & Mean $J$ & Length (chars) & Oracle \\
 \toprule
  & \multicolumn{3}{c}{Strong judge} & \multicolumn{3}{c}{Weak judge} \\
 \cmidrule(lr){2-4}\cmidrule(l){5-7}
-Measure & Diff. & 95\% interval & $z$ ($p$) & Diff. & 95\% interval & $z$ ($p$) \\
+Measure & Diff. & 95\% CI & $t(199)$, $p$ & Diff. & 95\% CI & $t(199)$, $p$ \\
 \midrule
-Gold accuracy & $+0.100$ & $[+0.035, +0.165]$ & 3.02 (.003) & $-0.025$ & $[-0.095, +0.045]$ & $-0.70$ (.48) \\
-Judge score $J$ & $+1.77$ & $[+1.47, +2.08]$ & 11.37 ($<$.001) & $+0.79$ & $[+0.68, +0.91]$ & 13.46 ($<$.001) \\
-Length (chars) & $+132$ & $[+27, +239]$ & 2.44 (.015) & $-10$ & $[-120, +104]$ & $-0.17$ (.86) \\
-$J$ up, $G$ down & $+0.015$ & $[-0.005, +0.040]$ & 1.31 (.19) & $+0.065$ & $[+0.020, +0.110]$ & 2.83 (.005) \\
+Gold accuracy & $+0.145$ & $[+0.090, +0.205]$ & 4.90, $<$.001 & $+0.040$ & $[-0.030, +0.110]$ & 1.13, .26 \\
+Judge score $J$ & $+1.81$ & $[+1.57, +2.05]$ & 14.45, $<$.001 & $+0.38$ & $[+0.29, +0.48]$ & 7.69, $<$.001 \\
+Length (chars) & $-249$ & $[-342, -155]$ & $-5.18$, $<$.001 & $-128$ & $[-229, -28]$ & $-2.50$, .013 \\
+$J$ up, $G$ down & $+0.005$ & $[-0.010, +0.025]$ & 0.58, .57 & $+0.015$ & $[0.000, +0.035]$ & 1.74, .083 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\footnotesize Paired differences over $n = 200$ questions; 95\% intervals from a bootstrap over questions. $z$ is the difference divided by its bootstrap standard error, with two-sided $p$. The last row is the share of questions whose judge score is higher and gold score lower than in round 0.
+\par\smallskip\footnotesize Paired differences over $n = 200$ questions; 95\% intervals from a bootstrap over questions; paired $t$-tests. Exact McNemar tests for the binary rows: gold accuracy, 34 vs.\ 5 discordant questions ($p < .001$) under the strong judge and 29 vs.\ 21 ($p = .32$) under the weak judge; $J$ up and $G$ down, 2 vs.\ 1 ($p = 1.00$) and 3 vs.\ 0 ($p = .25$). The last row is the share of questions whose judge score is higher and gold score lower than in round 0.
 \end{table}
 
-\paragraph{Rewriting.} Under the strong judge, the optimize arm raised accuracy from 0.730 to 0.815 while the control moved to 0.715 (paired difference 0.100, $z = 3.02$, $p = .003$), and divergence between $J$ and $G$ did not differ detectably between arms ($z = 1.31$, $p = .19$; Table~\ref{tab:rewrite}). Under the weak judge, optimization raised $J$ by 0.79 more than control but did not improve accuracy (difference $-0.025$, $z = -0.70$, $p = .48$), and the share of questions in which $J$ rose while $G$ fell was 6.5 points higher ($z = 2.83$, $p = .005$). Answers lengthened similarly in both arms, so length growth reflects rewriting, not judge pressure.
+\paragraph{Rewriting.} From a common round-0 accuracy of 0.785, the optimize arm under the strong judge reached 0.870 while the control arm fell to 0.725 (paired difference 0.145, $t(199) = 4.90$, $p < .001$; Table~\ref{tab:rewrite}), and divergence between $J$ and $G$ did not differ between arms ($t(199) = 0.58$, $p = .57$). Under the weak judge, optimization raised $J$ by 0.38 more than control, but the accuracy difference of 0.040 was not significant ($t(199) = 1.13$, $p = .26$), and the gain from optimization was smaller than under the strong judge by 0.105 ($t(199) = 2.33$, $p = .021$). Rewriting lengthened answers in every arm (from 915 to 1,456--1,723 characters), but judge selection kept them shorter than in the control arm, so the experiments give no sign of length gaming.
+
+The weak-judge trajectory is informative. In the optimize arm, mean $J$ rose in every round (from 7.93 to 8.25), whereas accuracy rose from 0.785 to 0.830 after the first round (McNemar 11 vs.\ 2, $p = .022$) and then fell to 0.750 by round six, below its starting point. The decline from round one to round six (20 vs.\ 4 questions, $p = .002$) is an exploratory comparison, since the peak was located after seeing the data, but its shape is that of proxy overoptimization: the quote kept rising while the quantity it was meant to track fell. Under the strong judge, accuracy instead kept rising after round one (13 vs.\ 2, $p = .007$). The share of individual questions in which $J$ rose while $G$ fell remained small under both judges and did not differ significantly between arms.
 
 \subsection{What the Evidence Does and Does Not Show}
 
-Search against a judge is not uniformly dangerous: with a strong judge on verifiable problems it improved correctness. Its effect depends on the judge, the comparative static of Proposition~2: the same procedure produced no gain and more divergence under the weak judge. And the strong judge approached its ceiling quickly. The experiments do not show that judges are generally gameable, since no gaming was detected; they do not show that accuracy falls under a weak judge; and they do not speak to open-ended tasks, other models, or organizations. The pattern resembles reward-model overoptimization, where optimization against a proxy first helps and later hurts \citep{gao2023}.
+Search against a judge is not uniformly dangerous: with a strong judge on verifiable problems it improved correctness substantially. Its effect depends on the judge, the comparative static of Proposition~2: the same procedure produced a significantly smaller and nonsignificant gain under the weak judge, and an aggregate path in which the judge score kept rising after correctness had peaked. The strong judge approached its ceiling quickly. The experiments do not show that judges are generally gameable, since no gaming was detected at the level of individual answers; they do not show that accuracy falls under a weak judge relative to control; and they do not speak to open-ended tasks, other models, or organizations. The weak-judge path resembles reward-model overoptimization, where optimization against a proxy first helps and later hurts \citep{gao2023}.
 
 %% =====================================================================
 \section{Discussion}\label{sec:discussion}
