@@ -241,7 +241,7 @@ def front_matter(tblocks):
         retext(tblocks[2], r(latex_to_text(M.author))),
         tblocks[3],                                    # academic editor / history / citation / copyright box
         retext(tblocks[4], r(address)),
-        retext(tblocks[6], r(corres)),
+        retext(tblocks[6], r("*", "<w:rPr><w:b/></w:rPr>") + "<w:r><w:tab/></w:r>" + r(corres)),
         tblocks[7],                                    # "Abstract" heading
         retext(tblocks[8], r(abstract)),
         retext(tblocks[9], r("Keywords: ", "<w:rPr><w:b/></w:rPr>") + r(keywords)),

@@ -20,9 +20,9 @@ const results = [
 ];
 const confirms = [
   'the manuscript is original, has not been published previously, and is not under consideration for publication elsewhere;',
-  'I am the sole author and have approved the submitted version;',
-  'the research received no external funding, and I declare no conflicts of interest;',
-  'the data and code supporting the case study are available from me upon reasonable request;',
+  'both authors have approved the submitted version and agree to its submission;',
+  'the research received no external funding, and the authors declare no conflicts of interest;',
+  'the data and code supporting the case study are available from the corresponding author upon reasonable request;',
   '[Generative AI: state the tool and purpose if used beyond grammar and formatting, or delete this line.]',
 ];
 
@@ -30,22 +30,22 @@ const children = [
   new Paragraph({ children: [new TextRun('6 November 2026')], spacing: { after: 160 } }),
   ...lines(['Editorial Office', '*Electronics*', 'MDPI, Basel, Switzerland'], 160),
   para('Dear Editors of *Electronics*,'),
-  para('I am pleased to submit the manuscript “Mathematical Modeling of Large Language Model Maintenance: A Stochastic Optimal-Control Framework for Retraining Scheduling, Knowledge Retention, and Alignment Preservation” for consideration as an Article in the Artificial Intelligence section of *Electronics*.'),
+  para('On behalf of my co-author, Hannah Park, I am pleased to submit our manuscript “Mathematical Modeling of Large Language Model Maintenance: A Stochastic Optimal-Control Framework for Retraining Scheduling, Knowledge Retention, and Alignment Preservation” for consideration as an Article in the Artificial Intelligence section of *Electronics*.'),
   para('Deployed large language models (LLMs) lose accuracy as the world drifts away from their training data, yet most teams still update them on a fixed calendar. The manuscript treats a deployed LLM as a deteriorating system and uses condition-based maintenance theory to decide when, how, and how much to update it, accounting jointly for staleness, update-induced forgetting, and compute cost.'),
   para('Three results make the work useful to practitioners:', { spacing: { after: 120 }, keepNext: true }),
   ...results.map((t, i) => item('numbers', t, i === results.length - 1)),
   para('The manuscript states openly which building blocks are classical, such as the economic-order-quantity form and monotone-policy arguments, and sets out what is new at the end of the Introduction.'),
   para('The work fits *Electronics* because it addresses an engineering problem in operating AI systems and turns the analysis into design rules for LLM operations: update schedulers, release gates on forgetting, and monitoring (Section 9). The numerical results are reproducible on a standard CPU, where each scheduling problem solves in seconds.'),
-  para('I confirm that:', { spacing: { after: 120 }, keepNext: true }),
+  para('We confirm that:', { spacing: { after: 120 }, keepNext: true }),
   ...confirms.map((t, i) => item('bullets', t, i === confirms.length - 1)),
-  para('I would be glad to suggest potential reviewers if that would help the editorial process. Thank you for considering this manuscript; I look forward to hearing from you.'),
+  para('We would be glad to suggest potential reviewers if that would help the editorial process. Thank you for considering this manuscript; we look forward to hearing from you.'),
   new Paragraph({ children: [new TextRun('Sincerely,')], spacing: { after: 240 } }),
-  ...lines(['Ook Lee', 'Department of Information Systems, Hanyang University', 'Seoul 04763, Republic of Korea; ooklee@hanyang.ac.kr'], 0),
+  ...lines(['Ook Lee (corresponding author), on behalf of both authors (Ook Lee and Hannah Park)', 'Department of Information Systems, Hanyang University', 'Seoul 04763, Republic of Korea; ooklee@hanyang.ac.kr'], 0),
 ];
 
 const lvl = (format, text) => [{ level: 0, format, text, alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 567, hanging: 340 } } } }];
 const doc = new Document({
-  creator: 'Ook Lee',
+  creator: 'Ook Lee and Hannah Park',
   title: 'Cover Letter',
   styles: { default: { document: { run: { font: FONT, size: 22 } } } },
   numbering: { config: [

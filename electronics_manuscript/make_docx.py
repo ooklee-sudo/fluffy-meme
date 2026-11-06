@@ -199,7 +199,7 @@ back = resolve(back)
 
 # ---------------------------------------------------------------- back matter
 pieces = []
-for macro, head in [("funding", "Funding"), ("institutionalreview", "Institutional Review Board Statement"),
+for macro, head in [("authorcontributions", "Author Contributions"), ("funding", "Funding"), ("institutionalreview", "Institutional Review Board Statement"),
                     ("informedconsent", "Informed Consent Statement"), ("dataavailability", "Data Availability Statement"),
                     ("conflictsofinterest", "Conflicts of Interest")]:
     if "\\" + macro + "{" in back:
