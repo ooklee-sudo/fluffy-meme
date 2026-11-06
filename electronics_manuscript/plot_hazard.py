@@ -1,6 +1,6 @@
 """Figure 2: drift hazard and optimal retraining threshold vs. days since the last drift event.
 
-Reads results_hazard.json from hazard_mdp.py; writes fig2.png (same monochrome style as Figure 1).
+Reads results_hazard.json from hazard_mdp.py; writes fig_hazard.png (same monochrome style as Figure 1).
 """
 import json
 
@@ -16,7 +16,7 @@ STYLE = {  # line style + marker carry identity (print and colorblind safe), ink
     "2.0": dict(ls="--", marker="s", color="black", label="DMRL (Weibull shape 2)"),
 }
 plt.rcParams.update({"font.family": "serif", "font.size": 9, "axes.linewidth": 0.8})
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 2.8), dpi=300)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 3.1), dpi=300)
 for k, s in r["shapes"].items():
     st = STYLE[k]
     u = list(range(U_SHOW + 1))
@@ -34,7 +34,9 @@ for ax, tag in ((ax1, "(a)"), (ax2, "(b)")):
     ax.set_xlim(0, U_SHOW)
     ax.grid(True, lw=0.3, color="0.85")
     ax.text(0.02, 0.97, tag, transform=ax.transAxes, va="top", fontweight="bold")
-ax2.legend(frameon=False, fontsize=7.5, loc="best")
-fig.tight_layout()
-fig.savefig("fig2.png")
-print("wrote fig2.png")
+ax2.set_ylim(0, 14)  # above this the shape-2 policy never retrains (states almost never reached)
+handles, labels = ax2.get_legend_handles_labels()
+fig.legend(handles, labels, loc="lower center", ncol=3, frameon=False, fontsize=8)
+fig.tight_layout(rect=(0, 0.08, 1, 1))
+fig.savefig("fig_hazard.png")
+print("wrote fig_hazard.png")

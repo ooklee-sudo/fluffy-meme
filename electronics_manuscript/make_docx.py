@@ -180,7 +180,8 @@ def figure(m):
     lab = re.search(r"\\label\{([^}]*)\}", f).group(1)
     f = re.sub(r"\\label\{[^}]*\}", "", f)
     f = f.replace("\\caption{", f"\\caption{{\\textbf{{Figure {labels[lab]}.}} ", 1)
-    return f.replace("[width=10.5 cm]{fig1}", "[width=10.5cm]{fig1.png}")
+    return re.sub(r"\\includegraphics\[width=([\d.]+) ?cm\]\{([^}.]+)\}",
+                  lambda m: f"\\includegraphics[width={m.group(1)}cm]{{{m.group(2)}.png}}", f)
 
 
 body = re.sub(r"\\begin\{figure\}\[H\].*?\\end\{figure\}", figure, body, flags=re.S)
@@ -421,7 +422,8 @@ def postprocess(path):
 
 BUILD.mkdir(exist_ok=True)
 (BUILD / "pandoc_input.tex").write_text(doc)
-shutil.copy(HERE / "fig1.png", BUILD / "fig1.png")
+for png in HERE.glob("*.png"):
+    shutil.copy(png, BUILD / png.name)
 ref = BUILD / "mdpi_reference.docx"
 build_reference(ref)
 subprocess.run(["pandoc", "pandoc_input.tex", "-f", "latex", "-t", "docx",
