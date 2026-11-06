@@ -60,6 +60,25 @@ def load_mmlu(n, seed=0):
              "choices": list(r["choices"]), "answer": LETTERS[r["answer"]]} for i, r in enumerate(ds)]
 
 
+def load_arc(n, seed=0):
+    """ARC-Challenge test set, four-option questions only (1,165 of 1,172).
+    Option labels "1".."4" are mapped to A-D."""
+    from datasets import load_dataset
+    ds = load_dataset("allenai/ai2_arc", "ARC-Challenge", split="test")
+    ds = ds.filter(lambda r: len(r["choices"]["text"]) == 4).shuffle(seed=seed)
+    ds = ds.select(range(min(n, len(ds))))
+    return [{"id": r["id"], "subject": "arc_challenge", "question": r["question"],
+             "choices": list(r["choices"]["text"]),
+             "answer": LETTERS[list(r["choices"]["label"]).index(r["answerKey"])]} for r in ds]
+
+
+DATASETS = {"mmlu": load_mmlu, "arc": load_arc}
+
+
+def load_questions(dataset, n, seed=0):
+    return DATASETS[dataset](n, seed)
+
+
 def format_question(item):
     opts = "\n".join(f"({l}) {c}" for l, c in zip(LETTERS, item["choices"]))
     return f"{item['question'].strip()}\n\n{opts}"

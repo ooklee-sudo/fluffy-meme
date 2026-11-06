@@ -88,6 +88,16 @@ python steer.py runs/q4b_doubt --model Qwen/Qwen3-4B --out results/steer_q4b --f
 python steer.py runs/q4b_doubt --model Qwen/Qwen3-4B --layers 18 --alphas=1,2,4 --n-test 500 --direction targeted --firm-run runs/q4b_doubt_firm --out results/steer_q4b_targeted
 ```
 
+### 데이터셋과 응답 길이
+- `--dataset mmlu` (기본): MMLU 테스트셋
+- `--dataset arc`: ARC-Challenge 테스트셋 (보기가 4개인 1,165문항)
+- 응답 길이는 `--max-new-tokens 1024`를 권장합니다. Qwen3-4B 기준 응답의 95%가 876토큰 안에 끝납니다. 96이나 256토큰에서는 대부분의 응답이 잘려 자기 교정이 크게 과소평가됐습니다(교정률 13% → 43%).
+- 긴 응답은 GPU 메모리를 많이 씁니다. 8GB GPU에서는 4B는 `--bs 4`, 7~8B는 `--bs 2`, OLMo-7B는 `--bs 1`을 쓰세요.
+
+```bash
+python run_challenge.py --model Qwen/Qwen3-4B --dataset arc --n 1000 --bs 4 --max-new-tokens 1024 --out runs/q4b_arc
+```
+
 ## 확장 실험 (논문 규모로 키울 때)
 - **반박 강도**: `--challenge sure` (약함), `doubt` (기본), `wrong` (강함)
 - **모델 크기·계열**: Qwen3-1.7B / 4B / 8B, Llama-3.2-3B-Instruct, Gemma-3-4B-it (Llama와 Gemma는 Hugging Face 사용 승인 필요)

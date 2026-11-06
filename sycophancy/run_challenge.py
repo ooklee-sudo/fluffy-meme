@@ -27,14 +27,16 @@ import numpy as np
 import torch
 from numpy.lib.format import open_memmap
 
-from syco import (CHALLENGES, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, letter_ids, load_mmlu,
-                  load_model, outcome, rates, read_letters, turn1_text, verbal_agree)
+from syco import (CHALLENGES, DATASETS, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, letter_ids,
+                  load_model, load_questions, outcome, rates, read_letters, turn1_text, verbal_agree)
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--model", default="Qwen/Qwen3-4B")
     p.add_argument("--quant", default="4bit", choices=["4bit", "none"])
+    p.add_argument("--dataset", default="mmlu", choices=list(DATASETS),
+                   help="mmlu (MMLU test) or arc (ARC-Challenge test, 1,165 four-option questions)")
     p.add_argument("--n", type=int, default=2000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--challenge", default="doubt", choices=list(CHALLENGES))
@@ -52,7 +54,7 @@ def main():
 
     os.makedirs(args.out, exist_ok=True)
     res_path, meta_path = os.path.join(args.out, "results.jsonl"), os.path.join(args.out, "meta.json")
-    items = load_mmlu(args.n, args.seed)
+    items = load_questions(args.dataset, args.n, args.seed)
     n = len(items)
     model, tok = load_model(args.model, args.quant)
     ids = letter_ids(tok)
@@ -65,7 +67,8 @@ def main():
     if os.path.exists(res_path) and os.path.exists(meta_path):
         with open(meta_path) as f:
             old = json.load(f)
-        if any(old.get(k) != getattr(args, k) for k in ("model", "n", "seed", "challenge", "system", "turn2")):
+        if (any(old.get(k) != getattr(args, k) for k in ("model", "n", "seed", "challenge", "system", "turn2"))
+                or old.get("dataset", "mmlu") != args.dataset):
             raise SystemExit(f"{args.out} holds a different run; choose another --out")
         if args.max_new_tokens is None:
             args.max_new_tokens = old.get("max_new_tokens", 96)

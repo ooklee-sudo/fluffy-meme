@@ -35,7 +35,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from syco import LETTERS, Steer, answer_turn2, letter_ids, load_mmlu, load_model, rates, verbal_agree
+from syco import LETTERS, Steer, answer_turn2, letter_ids, load_model, load_questions, rates, verbal_agree
 
 
 def _logit(p):
@@ -122,7 +122,7 @@ def main():
         rows = [json.loads(line) for line in f if line.strip()]
     n = len(rows)
     H2 = np.load(os.path.join(args.run_dir, "hidden_t2.npy"), mmap_mode="r")
-    items = load_mmlu(meta["n"], meta["seed"])
+    items = load_questions(meta.get("dataset", "mmlu"), meta["n"], meta["seed"])
     challenge, system = meta["challenge_text"], meta["system_text"]
     run_mode, max_new = meta.get("turn2", "prefill"), meta.get("max_new_tokens", 96)
     mode = args.turn2 or run_mode
