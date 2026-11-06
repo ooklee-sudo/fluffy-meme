@@ -14,7 +14,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from agents import APIError, run_llm_episode, run_scripted_episode
-from conditions import info_control_cells, study1_cells
+from conditions import frontier_cells, info_control_cells, study1_cells
 from env_coding import CodingEnv
 
 lock = threading.Lock()
@@ -52,12 +52,12 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--budget", type=float, default=10.0, help="stop submitting new episodes past this USD spend")
     ap.add_argument("--out", default="results/study1.jsonl")
-    ap.add_argument("--design", choices=["study1", "info"], default="study1",
+    ap.add_argument("--design", choices=["study1", "info", "frontier"], default="study1",
                     help="info = loss x information control cells (NI, F2a, F8a)")
     a = ap.parse_args()
 
     models = list(a.models) + (["scripted:honest", "scripted:escalating"] if a.scripted else [])
-    all_cells = info_control_cells() if a.design == "info" else study1_cells()
+    all_cells = {"study1": study1_cells, "info": info_control_cells, "frontier": frontier_cells}[a.design]()
     cells = all_cells[: a.cells] if a.cells else all_cells
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

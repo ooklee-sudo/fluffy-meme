@@ -140,6 +140,12 @@ def info_control_cells():
             for h, s in itertools.product(["NI", "F2a", "F8a"], ["none", "deadline"])]
 
 
+def frontier_cells():
+    """Confirmatory set for frontier models: H1, H2 and the information control, full record."""
+    return [dict(history=h, scarcity=s, record="full")
+            for h, s in itertools.product(["S4", "N", "NI", "F2", "F2a", "F8", "F8a"], ["none", "deadline"])]
+
+
 if __name__ == "__main__":
     lens = {}
     for c in study1_cells():
