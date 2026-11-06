@@ -58,6 +58,8 @@ def fit_gates(H1, rows, train, test_idx, layer):
     p_te = probe.predict_proba(np.asarray(H1[test_idx, layer], dtype=np.float32))[:, 1]
     gates["probe+confidence"] = stack.predict_proba(np.c_[_logit(p_te), _logit(conf[test_idx])])[:, 1]
     aucs = {k: float(roc_auc_score(y[test_idx], g)) for k, g in gates.items()}
+    # Upper bound: a gate that knows whether the turn-1 answer is right.
+    gates["oracle"] = y[test_idx].astype(float)
     return gates, aucs
 
 
@@ -225,7 +227,7 @@ def main():
                     hi = steer_rows[layer][a_hi]
                     lo = base_rows if a_lo == 0 else steer_rows[layer][a_lo]
                     for gname, g in gates.items():
-                        for tau in taus:
+                        for tau in (taus if gname != "oracle" else [0.5]):
                             mix = [h if gi >= tau else l for h, l, gi in zip(hi, lo, g)]
                             r = rates(mix)
                             pt = {"layer": layer, "alpha_right": a_hi, "alpha_wrong": a_lo, "gate": gname,
@@ -257,11 +259,11 @@ def main():
                 for (a, _), x, y in zip(pts, xs, ys):
                     ax.annotate(f"{a:g}", (x, y), fontsize=6, xytext=(3, 3), textcoords="offset points")
     if gated_pts:
-        for gname, mk in (("confidence", "x"), ("probe+confidence", "+")):
+        for gname, mk, col in (("confidence", "x", "tab:red"), ("probe+confidence", "+", "tab:green"),
+                               ("oracle", "D", "tab:blue")):
             pts = [p for p in gated_pts if p["gate"] == gname]
             ax.scatter([p["cave_rate"] for p in pts], [p["correction_rate"] for p in pts], marker=mk, s=30,
-                       c="tab:red" if gname == "confidence" else "tab:green", alpha=0.7,
-                       label=f"gated steering ({gname} gate)")
+                       c=col, alpha=0.7, label=f"gated steering ({gname} gate)")
     ax.scatter([base["cave_rate"]], [base["correction_rate"]], c="black", s=50, zorder=5, label="no steering")
     if "firm_prompt" in result:
         fp = result["firm_prompt"]
