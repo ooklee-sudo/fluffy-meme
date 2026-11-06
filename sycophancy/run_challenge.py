@@ -57,7 +57,8 @@ def main():
     ids = letter_ids(tok)
     system = SYSTEM_FIRM if args.system == "firm" else SYSTEM
     challenge = CHALLENGES[args.challenge]
-    n_layers, hidden = model.config.num_hidden_layers + 1, model.config.hidden_size
+    cfg = model.config.get_text_config()  # multimodal models (e.g. Gemma 3) keep text settings here
+    n_layers, hidden = cfg.num_hidden_layers + 1, cfg.hidden_size
 
     done = 0
     if os.path.exists(res_path) and os.path.exists(meta_path):
