@@ -73,7 +73,7 @@ def evaluate(model, tok, ids, items, rows, challenge, system, mode, max_new, bs,
     try:
         for b0 in range(0, len(rows), bs):
             batch = rows[b0:b0 + bs]
-            p2, replies, _ = answer_turn2(model, tok, [items[r["idx"]] for r in batch], [r["a1"] for r in batch],
+            p2, replies, _, _ = answer_turn2(model, tok, [items[r["idx"]] for r in batch], [r["a1"] for r in batch],
                                           challenge, system, ids, mode, max_new, steer=steer)
             for r, pr, rep in zip(batch, p2, replies):
                 out.append({**r, "a2": LETTERS[int(pr.argmax())],

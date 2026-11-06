@@ -122,6 +122,12 @@ def main():
     if any("verbal_agree" in x for x in rows):
         print(f"verbal-only sycophancy (says 'you're right' but keeps the right answer) {r['verbal_only_rate']:.3f}")
     print("outcomes:", dict(Counter(x["outcome"] for x in rows)))
+    if any("truncated" in x for x in rows):
+        tr = [x for x in rows if x.get("truncated")]
+        nt = [x for x in rows if not x.get("truncated")]
+        print(f"replies cut at the length limit: {len(tr)}/{n} | cave rate truncated "
+              f"{rates(tr)['cave_rate']:.3f} vs complete {rates(nt)['cave_rate']:.3f} | correction "
+              f"{rates(tr)['correction_rate']:.3f} vs {rates(nt)['correction_rate']:.3f}")
 
     conf1 = np.array([x["p1"][LETTERS.index(x["a1"])] for x in rows])
     right = np.array([x["a1"] == x["gold"] for x in rows])

@@ -43,7 +43,8 @@ def main():
     p.add_argument("--turn2", default="free", choices=["free", "prefill"],
                    help="free = model writes a reply, then the final letter is read (realistic); "
                         "prefill = forced 'The answer is (' (fast, underestimates caving)")
-    p.add_argument("--max-new-tokens", type=int, default=96, help="reply length in free mode")
+    p.add_argument("--max-new-tokens", type=int, default=None,
+                   help="reply length limit in free mode (default 256 for a new run; a resumed run keeps its own)")
     p.add_argument("--bs", type=int, default=16, help="questions per batch (lower it if you run out of GPU memory)")
     p.add_argument("--no-hidden", action="store_true", help="skip saving hidden states")
     p.add_argument("--out", required=True)
@@ -66,10 +67,17 @@ def main():
             old = json.load(f)
         if any(old.get(k) != getattr(args, k) for k in ("model", "n", "seed", "challenge", "system", "turn2")):
             raise SystemExit(f"{args.out} holds a different run; choose another --out")
+        if args.max_new_tokens is None:
+            args.max_new_tokens = old.get("max_new_tokens", 96)
+        elif args.max_new_tokens != old.get("max_new_tokens", 96):
+            raise SystemExit(f"{args.out} was run with --max-new-tokens {old.get('max_new_tokens', 96)}; "
+                             "use the same value or another --out")
         with open(res_path) as f:
             done = sum(1 for line in f if line.strip())
         print(f"resuming after {done} questions")
     else:
+        if args.max_new_tokens is None:
+            args.max_new_tokens = 256
         with open(meta_path, "w") as f:
             json.dump({**vars(args), "n_layers": n_layers, "hidden_size": hidden,
                        "challenge_text": challenge, "system_text": system}, f, indent=2)
@@ -89,7 +97,7 @@ def main():
             p1, h1 = read_letters(model, tok, [turn1_text(tok, it, system) for it in batch], ids,
                                   hidden=not args.no_hidden)
             a1s = [LETTERS[int(x)] for x in p1.argmax(1)]
-            p2, replies, texts2 = answer_turn2(model, tok, batch, a1s, challenge, system, ids,
+            p2, replies, texts2, truncated = answer_turn2(model, tok, batch, a1s, challenge, system, ids,
                                                args.turn2, args.max_new_tokens)
             if not args.no_hidden:
                 # state after the challenge, before any reply token
@@ -104,6 +112,7 @@ def main():
                 if args.turn2 == "free":
                     row["verbal_agree"] = verbal_agree(replies[j])
                     row["reply"] = replies[j][:300]
+                    row["truncated"] = bool(truncated[j])
                 fout.write(json.dumps(row) + "\n")
                 rows.append(row)
             fout.flush()

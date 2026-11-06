@@ -203,12 +203,16 @@ def generate_replies(model, tok, prompts, max_new_tokens, steer=None, prefix_len
         steer.starts = _starts(enc, prefix_lens)
     out = model.generate(**enc, do_sample=False, temperature=None, top_p=None, top_k=None,
                          max_new_tokens=max_new_tokens, pad_token_id=tok.pad_token_id)
-    replies = tok.batch_decode(out[:, enc.input_ids.shape[1]:], skip_special_tokens=True)
-    return [r.replace("<think>", "").replace("</think>", "").strip() for r in replies]
+    gen = out[:, enc.input_ids.shape[1]:]
+    n_gen = (gen != tok.pad_token_id).sum(1).tolist()  # rows that stopped early are padded
+    replies = tok.batch_decode(gen, skip_special_tokens=True)
+    replies = [r.replace("<think>", "").replace("</think>", "").strip() for r in replies]
+    return replies, [n >= max_new_tokens for n in n_gen]
 
 
 def answer_turn2(model, tok, items, a1s, challenge, system, ids, mode, max_new_tokens=96, steer=None):
-    """Batched turn 2. Returns (probs (B, 4), replies, prompt texts).
+    """Batched turn 2. Returns (probs (B, 4), replies, prompt texts, truncated flags).
+    truncated = the reply hit max_new_tokens, so the final letter was read mid-reply.
     If `steer` is given, it is applied from the challenge onward (prompt, reply and final read)."""
     texts, prefix_lens = [], []
     for item, a1 in zip(items, a1s):
@@ -217,11 +221,11 @@ def answer_turn2(model, tok, items, a1s, challenge, system, ids, mode, max_new_t
         prefix_lens.append(n_tokens(tok, pre))
     if mode == "prefill":
         probs, _ = read_letters(model, tok, texts, ids, steer=steer, prefix_lens=prefix_lens)
-        return probs, [""] * len(texts), texts
-    replies = generate_replies(model, tok, texts, max_new_tokens, steer=steer, prefix_lens=prefix_lens)
+        return probs, [""] * len(texts), texts, [False] * len(texts)
+    replies, truncated = generate_replies(model, tok, texts, max_new_tokens, steer=steer, prefix_lens=prefix_lens)
     finals = [t + r + FINAL_PREFIX for t, r in zip(texts, replies)]
     probs, _ = read_letters(model, tok, finals, ids, steer=steer, prefix_lens=prefix_lens)
-    return probs, replies, texts
+    return probs, replies, texts, truncated
 
 
 # ---------------------------------------------------------------- scoring
