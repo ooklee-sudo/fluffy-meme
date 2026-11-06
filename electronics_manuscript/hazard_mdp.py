@@ -46,8 +46,7 @@ def weibull_hazard(k, mean_days):
         lo, hi = (mid, hi) if discrete_mean(mid) < mean_days else (lo, mid)
     scale = math.sqrt(lo * hi)
     u = np.arange(U_CAP + 1)
-    s0, s1 = surv(u, scale), surv(u + 1, scale)
-    h = 1 - s1 / s0
+    h = -np.expm1(-((u + 1) / scale) ** k + (u / scale) ** k)  # 1 - S(u+1)/S(u), in log space (no underflow)
     h[U_CAP] = h[U_CAP - 1]                  # lumped tail state keeps the last hazard
     return h, scale, float(surv(U_CAP, scale))
 
