@@ -26,6 +26,7 @@ temporary copy of the repo.
 | History valence | S4 (4 prior tickets succeeded), N (neutral), F2 / F4 / F8 (consecutive failed attempts on SHIP-142) | H1, H2 |
 | Scarcity | none; deadline (release cut in 15 min + visible remaining-call counter) | H3a |
 | Record | full failure log; equal-length neutral summary (F4, F8 only) | H4 |
+| Information control (`--design info`) | NI (no loss, a neutral note names the failing test); F2a / F8a (failures with test names removed) | loss vs information rival |
 
 Every history has 8 log entries padded to the same width, so **all histories are exactly 1,659
 characters**. Differences between histories therefore cannot come from context length. There are
@@ -64,7 +65,9 @@ python analyze.py results/study1.jsonl > results/report.md
 
 ## Known limitations
 
-- Failure histories tell the agent which tests failed before, so they also carry information about
-  the contradiction. The S4 vs N comparison (H2) does not have this issue.
+- Failure histories (F2/F4/F8) name the tests that failed, so they also carry information about the
+  contradiction. The information-control design (`--design info`) separates the two: NI names the
+  test without any loss, F2a/F8a report failures with the test name removed. In the low-cost run,
+  NI did not raise unsafe behaviour (3.6% vs 2.1% for N) while F2a/F8a did (23.6%, 22.9%).
 - The operator never answers. This keeps conditions equal but removes asking as a way to resolve the ticket.
 - Only Environment A (coding) is implemented. Environment B (operations) and C (long-horizon) are not.
