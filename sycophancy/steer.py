@@ -29,7 +29,36 @@ import time
 import numpy as np
 import torch
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import cross_val_predict
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
 from syco import LETTERS, Steer, answer_turn2, letter_ids, load_mmlu, load_model, rates, verbal_agree
+
+
+def _logit(p):
+    p = np.clip(np.asarray(p, dtype=float), 1e-6, 1 - 1e-6)
+    return np.log(p / (1 - p))
+
+
+def fit_gates(H1, rows, train, test_idx, layer):
+    """Estimate P(turn-1 answer is right) for each test question, from information available
+    before the challenge. Two gates: turn-1 confidence alone, and confidence + a hidden-state
+    probe (stacked on out-of-fold probe predictions). Trained on the train half only."""
+    conf = np.array([r["p1"][LETTERS.index(r["a1"])] for r in rows])
+    y = np.array([int(r["a1"] == r["gold"]) for r in rows])
+    gates = {"confidence": conf[test_idx]}
+    probe = make_pipeline(StandardScaler(), LogisticRegression(C=0.05, max_iter=3000))
+    Xtr = np.asarray(H1[train, layer], dtype=np.float32)
+    oof = cross_val_predict(probe, Xtr, y[train], cv=5, method="predict_proba")[:, 1]
+    stack = LogisticRegression(max_iter=1000).fit(np.c_[_logit(oof), _logit(conf[train])], y[train])
+    probe.fit(Xtr, y[train])
+    p_te = probe.predict_proba(np.asarray(H1[test_idx, layer], dtype=np.float32))[:, 1]
+    gates["probe+confidence"] = stack.predict_proba(np.c_[_logit(p_te), _logit(conf[test_idx])])[:, 1]
+    aucs = {k: float(roc_auc_score(y[test_idx], g)) for k, g in gates.items()}
+    return gates, aucs
 
 
 def evaluate(model, tok, ids, items, rows, challenge, system, mode, max_new, bs, layer=None, vec=None):
@@ -72,6 +101,13 @@ def main():
                         "mean(held|wrong) - mean(corrected|wrong), i.e. the shared 'keep my answer' part removed. "
                         "combined: unit(cave) - unit(keep-when-wrong): hold when right, change when wrong. "
                         "targeted/combined are rescaled to the norm of the cave direction so alphas compare.")
+    p.add_argument("--gate", action="store_true",
+                   help="also evaluate gated steering: steer with alpha>0 ('keep') only where the model is "
+                        "probably right in turn 1, and with alpha<=0 (or not at all) elsewhere. Every test "
+                        "question is run once per alpha, so all thresholds are scored without extra runs.")
+    p.add_argument("--gate-layer", type=int, default=-1, help="hidden_t1 layer for the gate probe (default: last)")
+    p.add_argument("--gate-taus", default="0.5,0.6,0.7,0.8,0.9,0.95",
+                   help="thresholds on P(right): steer 'keep' when P(right) >= tau")
     p.add_argument("--min-caved", type=int, default=10, help="minimum caved examples needed in the train half")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
@@ -116,9 +152,10 @@ def main():
 
     t0 = time.time()
     if mode == run_mode:
-        base = rates(test_rows)  # alpha = 0: the recorded turn-2 answers
+        base_rows = test_rows  # alpha = 0: the recorded turn-2 answers
     else:  # different turn-2 mode: measure the unsteered baseline again
-        base = rates(evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new, args.bs))
+        base_rows = evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new, args.bs)
+    base = rates(base_rows)
     print(f"no steering: cave {base['cave_rate']:.3f} | correction {base['correction_rate']:.3f}")
     result = {"run": args.run_dir, "model": args.model, "turn2": mode, "layers": layers, "alphas": alphas,
               "n_test": len(test_rows), "baseline": base, "steer": {}, "random": {}}
@@ -133,6 +170,7 @@ def main():
         print(f"firm prompt: cave {result['firm_prompt']['cave_rate']:.3f} | "
               f"correction {result['firm_prompt']['correction_rate']:.3f}")
 
+    steer_rows = {}
     result["direction"] = args.direction
     result["geometry"] = {}
     mean = lambda ix, l: np.asarray(H2[ix, l], dtype=np.float64).mean(0)
@@ -159,13 +197,44 @@ def main():
         result["steer"][layer], result["random"][layer] = {}, {}
         for a in alphas:
             for kind, vec in (("steer", d), ("random", rnd)):
-                rr = rates(evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new,
-                                    args.bs, layer, a * vec))
+                out_rows = evaluate(model, tok, ids, items, test_rows, challenge, system, mode, max_new,
+                                    args.bs, layer, a * vec)
+                if kind == "steer":
+                    steer_rows.setdefault(layer, {})[a] = out_rows
+                rr = rates(out_rows)
                 result[kind][layer][a] = rr
             s, q = result["steer"][layer][a], result["random"][layer][a]
             print(f"layer {layer:3d} alpha {a:+5.1f} | steer: cave {s['cave_rate']:.3f} correct "
                   f"{s['correction_rate']:.3f} acc2 {s['acc_turn2']:.3f} verbal-only {s['verbal_only_rate']:.3f} | random: cave {q['cave_rate']:.3f} "
                   f"correct {q['correction_rate']:.3f} | {time.time() - t0:.0f}s", flush=True)
+
+    gated_pts = []
+    if args.gate:
+        H1 = np.load(os.path.join(args.run_dir, "hidden_t1.npy"), mmap_mode="r")
+        test_idx = np.array(sorted(test))
+        gl = args.gate_layer if args.gate_layer >= 0 else H1.shape[1] - 1
+        gates, gate_auc = fit_gates(H1, rows, np.asarray(train), test_idx, gl)
+        taus = [float(t) for t in args.gate_taus.split(",")]
+        result["gated"] = {"gate_layer": gl, "gate_auroc": gate_auc, "points": []}
+        print("\ngated steering (gate AUROC for 'turn-1 answer is right': "
+              + ", ".join(f"{k} {v:.3f}" for k, v in gate_auc.items()) + ")")
+        for layer in layers:
+            lo_options = [0.0] + [a for a in alphas if a < 0]
+            for a_hi in [a for a in alphas if a > 0]:
+                for a_lo in lo_options:
+                    hi = steer_rows[layer][a_hi]
+                    lo = base_rows if a_lo == 0 else steer_rows[layer][a_lo]
+                    for gname, g in gates.items():
+                        for tau in taus:
+                            mix = [h if gi >= tau else l for h, l, gi in zip(hi, lo, g)]
+                            r = rates(mix)
+                            pt = {"layer": layer, "alpha_right": a_hi, "alpha_wrong": a_lo, "gate": gname,
+                                  "tau": tau, "steered_share": float(np.mean(g >= tau)), **r}
+                            result["gated"]["points"].append(pt)
+                            gated_pts.append(pt)
+                            print(f"layer {layer} | +{a_hi:g} if P(right)>={tau:.2f} else {a_lo:+g} | {gname:16s} | "
+                                  f"steered {pt['steered_share']:.2f} | cave {r['cave_rate']:.3f} "
+                                  f"correct {r['correction_rate']:.3f} acc2 {r['acc_turn2']:.3f}", flush=True)
 
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, "steer.json"), "w") as f:
@@ -187,6 +256,12 @@ def main():
             if kind == "steer":
                 for (a, _), x, y in zip(pts, xs, ys):
                     ax.annotate(f"{a:g}", (x, y), fontsize=6, xytext=(3, 3), textcoords="offset points")
+    if gated_pts:
+        for gname, mk in (("confidence", "x"), ("probe+confidence", "+")):
+            pts = [p for p in gated_pts if p["gate"] == gname]
+            ax.scatter([p["cave_rate"] for p in pts], [p["correction_rate"] for p in pts], marker=mk, s=30,
+                       c="tab:red" if gname == "confidence" else "tab:green", alpha=0.7,
+                       label=f"gated steering ({gname} gate)")
     ax.scatter([base["cave_rate"]], [base["correction_rate"]], c="black", s=50, zorder=5, label="no steering")
     if "firm_prompt" in result:
         fp = result["firm_prompt"]
