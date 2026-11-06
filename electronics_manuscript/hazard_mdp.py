@@ -98,7 +98,7 @@ def thresholds(act):
     return th, monotone
 
 
-def best_memoryless(h, c_r, V0):
+def best_memoryless(h, c_r, V0, s_center):
     """Best single threshold s (ignores u): coarse scan at 0.25, then golden-section search to 0.01."""
     cache = {}
 
@@ -108,7 +108,7 @@ def best_memoryless(h, c_r, V0):
             pol = np.broadcast_to((X >= s - 1e-12)[:, None], (NX, U_CAP + 1))
             cache[s] = solve(h, c_r, policy=pol, V0=V0)[0]
         return cache[s]
-    coarse = np.arange(2.0, 8.0 + 1e-9, 0.25)
+    coarse = np.arange(max(0.5, round(0.5 * s_center, 1)), 1.6 * s_center, 0.25)  # around the fluid threshold
     g = [gain(s) for s in coarse]
     i = int(np.argmin(g))
     a, b = coarse[max(i - 1, 0)], coarse[min(i + 1, len(coarse) - 1)]
@@ -148,7 +148,7 @@ def main():
         acts[k] = act
         th, mono = thresholds(act)
         print(f"k={k}: optimal g*={g_opt:.4f} ({iters} iterations)", flush=True)
-        s_mem, g_mem, scan = best_memoryless(h, args.cr, V_opt)
+        s_mem, g_mem, scan = best_memoryless(h, args.cr, V_opt, s_fluid)
         g_fluid_policy = solve(h, args.cr, policy=np.broadcast_to((X >= s_fluid)[:, None], (NX, U_CAP + 1)), V0=V_opt)[0]
         out["shapes"][str(k)] = {
             "weibull_scale": scale, "tail_mass_beyond_cap": tail, "hazard": h.tolist(),
