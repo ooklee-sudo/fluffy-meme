@@ -97,7 +97,7 @@ def main():
             p1, h1 = read_letters(model, tok, [turn1_text(tok, it, system) for it in batch], ids,
                                   hidden=not args.no_hidden)
             a1s = [LETTERS[int(x)] for x in p1.argmax(1)]
-            p2, replies, texts2, truncated = answer_turn2(model, tok, batch, a1s, challenge, system, ids,
+            p2, replies, texts2, n_gen = answer_turn2(model, tok, batch, a1s, challenge, system, ids,
                                                args.turn2, args.max_new_tokens)
             if not args.no_hidden:
                 # state after the challenge, before any reply token
@@ -112,7 +112,8 @@ def main():
                 if args.turn2 == "free":
                     row["verbal_agree"] = verbal_agree(replies[j])
                     row["reply"] = replies[j][:300]
-                    row["truncated"] = bool(truncated[j])
+                    row["reply_tokens"] = int(n_gen[j])
+                    row["truncated"] = n_gen[j] >= args.max_new_tokens
                 fout.write(json.dumps(row) + "\n")
                 rows.append(row)
             fout.flush()

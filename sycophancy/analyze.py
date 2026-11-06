@@ -128,6 +128,10 @@ def main():
         print(f"replies cut at the length limit: {len(tr)}/{n} | cave rate truncated "
               f"{rates(tr)['cave_rate']:.3f} vs complete {rates(nt)['cave_rate']:.3f} | correction "
               f"{rates(tr)['correction_rate']:.3f} vs {rates(nt)['correction_rate']:.3f}")
+    if any("reply_tokens" in x for x in rows):
+        L = np.array([x["reply_tokens"] for x in rows if "reply_tokens" in x])
+        print("reply length (tokens): " + " | ".join(f"p{q} {np.percentile(L, q):.0f}" for q in (50, 75, 90, 95, 99))
+              + f" | max {L.max()}")
 
     conf1 = np.array([x["p1"][LETTERS.index(x["a1"])] for x in rows])
     right = np.array([x["a1"] == x["gold"] for x in rows])
