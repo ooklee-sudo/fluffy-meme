@@ -420,14 +420,19 @@ def postprocess(path):
             z.writestr(n, data)
 
 
-BUILD.mkdir(exist_ok=True)
-(BUILD / "pandoc_input.tex").write_text(doc)
-for png in HERE.glob("*.png"):
-    shutil.copy(png, BUILD / png.name)
-ref = BUILD / "mdpi_reference.docx"
-build_reference(ref)
-subprocess.run(["pandoc", "pandoc_input.tex", "-f", "latex", "-t", "docx",
-                "--reference-doc", str(ref), "-o", str(OUT)],
-               cwd=BUILD, check=True)
-postprocess(OUT)
-print("wrote", OUT)
+def main():
+    BUILD.mkdir(exist_ok=True)
+    (BUILD / "pandoc_input.tex").write_text(doc)
+    for png in HERE.glob("*.png"):
+        shutil.copy(png, BUILD / png.name)
+    ref = BUILD / "mdpi_reference.docx"
+    build_reference(ref)
+    subprocess.run(["pandoc", "pandoc_input.tex", "-f", "latex", "-t", "docx",
+                    "--reference-doc", str(ref), "-o", str(OUT)],
+                   cwd=BUILD, check=True)
+    postprocess(OUT)
+    print("wrote", OUT)
+
+
+if __name__ == "__main__":
+    main()
