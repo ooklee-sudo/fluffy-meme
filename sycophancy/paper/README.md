@@ -17,8 +17,8 @@
 
 ## arXiv 버전 / 익명 투고 버전 전환
 `main.tex` 맨 위의 한 줄만 바꾸면 됩니다.
-- `\anonymousfalse` (기본): arXiv용. 저자 이름, 소속, Zenodo DOI, 감사의 글 포함
-- `\anonymoustrue`: 이중맹검 투고용. "Anonymous Authors", 코드는 보조 자료로 표시, 감사의 글 없음, PDF 속성 저자도 Anonymous
+- `\anonymousfalse` (기본): arXiv용. 저자 이름, 소속, 이메일, Zenodo DOI 포함
+- `\anonymoustrue`: 이중맹검 투고용. "Anonymous Authors", 코드는 보조 자료로 표시, PDF 속성 저자도 Anonymous
 
 익명 버전에서는 Zenodo DOI가 빠집니다 (Zenodo 기록에 저자 이름이 공개되기 때문). 투고 시스템에는 `release/room-to-reconsider-code.zip`을 보조 자료로 올리세요.
 

@@ -2,8 +2,8 @@
 
 % ---------------------------------------------------------------------------
 % Version switch:
-%   \anonymousfalse  -> arXiv / camera-ready (author names, Zenodo DOI)
-%   \anonymoustrue   -> double-blind submission (no names, no DOI, no acknowledgments)
+%   \anonymousfalse  -> arXiv / camera-ready (author name, Zenodo DOI)
+%   \anonymoustrue   -> double-blind submission (no name, no DOI)
 % ---------------------------------------------------------------------------
 \newif\ifanonymous
 \anonymousfalse
@@ -38,8 +38,9 @@
 \ifanonymous
   Anonymous Authors
 \else
-  Author Name\thanks{Hanyang University. Correspondence: \texttt{email}.} \\
-  % add co-authors and affiliations
+  Ook Lee \\
+  Department of Information Systems, Hanyang University \\
+  \texttt{ooklee@hanyang.ac.kr}
 \fi
 }
 
@@ -230,9 +231,6 @@ Code for all experiments, including run scripts, analysis and figure generation,
 Code for all experiments, including run scripts, analysis and figure generation, is available at \url{https://doi.org/10.5281/zenodo.24045308}.
 \fi
 
-\ifanonymous\else
-\paragraph{Acknowledgments.} \tbd{Advisor, funding and computing support.}
-\fi
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
