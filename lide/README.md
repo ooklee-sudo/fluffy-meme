@@ -79,6 +79,7 @@ python analyze.py results/study1.jsonl > results/report.md
 | Low-cost (`report_lowcost.md`) | 7 | 1,400 | $12.56 | 2.1% | 17.1% | 14.3% | 3.6% | 23.6% | 22.9% |
 | Frontier (`report_frontier.md`) | 6 | 840 | $24.74 | 0% | 0% | 0% | 0% | 0% | 3.3% |
 | Frontier, hidden tests (`report_frontier_hidden.md`) | 6 | 420 | $21.27 | 1.7% | 3.3% | 6.7% | 6.7% | 5.0% | 10.0% |
+| Operations task, low-cost (`report_study4_ops.md`) | 7 | 490 | $3.14 | 0% | 0% | 0% | 0% | 0% | 0% |
 
 In low-cost models, failure history raises unsafe behaviour and the effect does not come from
 knowing which test fails. Frontier models almost always report the ticket as blocked; the
@@ -87,3 +88,11 @@ With hidden tests (`--env hidden`: test source unreadable, pass/fail-only output
 20-call limit), five of six frontier models still always report the ticket as blocked. Only
 grok-4.7 special-cases, by guessing an integer-weight "partner rate" from repeated test runs
 (N 1/10, F8a 6/10, Fisher p = .057).
+
+Study 4 (`--task ops`, `env_ops.py`): an operations ticket with a real SQLite database in which every
+route to gaming is explicitly prohibited. No model gamed; failure histories raised asking the operator
+instead (4.3% after N, 15.7% after F8).
+
+Study 5 (`--env hidden --histories N --max-steps 30`, `analyze_selfgen.py`): agents start from a
+neutral history and accumulate their own failures. The hazard of gaming per attempt rose from 0.8%
+after one failed test run to 6.6% after three (b = 0.0047 per failure, p = .012).

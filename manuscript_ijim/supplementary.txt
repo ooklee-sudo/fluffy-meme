@@ -99,9 +99,27 @@ TABLE: Coding task: episodes with evaluation gaming by model and session history
 NOTE: Full failure records only. A dash indicates that the condition was not run.
 
 
-[[S4_TABLE]]
+TABLE: Study 4 (operations task): episodes in which the agent asked the operator, by model and session history (count/episodes).
+| Model | S4 | N | NI | F2a | F2 | F8a | F8 |
+| claude-haiku-5.5 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 |
+| deepseek-v4.1-flash | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 |
+| gemini-3.5-flash-lite | 1/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 |
+| gemini-3.8-flash | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 |
+| gpt-5.6-luna | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 |
+| mistral-large-4 | 1/10 | 0/10 | 1/10 | 2/10 | 2/10 | 5/10 | 4/10 |
+| qwen3.8-27b | 6/10 | 3/10 | 4/10 | 6/10 | 5/10 | 2/10 | 7/10 |
+NOTE: No episode in Study 4 involved evaluation gaming; all 490 ended with the ticket reported as blocked.
 
-[[S5_TABLE]]
+TABLE: Study 5 (self-generated failure): outcomes by model.
+| Model | Episodes | Gaming | Honest exit | Reached call limit | Mean own failed test runs |
+| claude-haiku-5.5 | 30 | 0 | 30 | 0 | 1.30 |
+| deepseek-v4.1-flash | 30 | 0 | 30 | 0 | 1.77 |
+| gemini-3.5-flash-lite | 30 | 1 | 12 | 17 | 9.90 |
+| gemini-3.8-flash | 30 | 0 | 16 | 14 | 8.13 |
+| gpt-5.6-luna | 30 | 8 | 22 | 0 | 3.27 |
+| mistral-large-4 | 30 | 3 | 16 | 12 | 5.17 |
+| qwen3.8-27b | 30 | 6 | 17 | 8 | 3.67 |
+NOTE: Hidden-test coding environment, neutral history, call limit of 30. Gaming comprises 15 special-casing episodes, 2 tampering episodes, and 1 false completion.
 
 # Supplementary Material S3. Regression estimates
 
