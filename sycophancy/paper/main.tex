@@ -21,6 +21,7 @@
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\usepackage[section]{placeins}  % floats stay in their own section
 \usepackage{xcolor}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
@@ -114,7 +115,7 @@ Turn-1 accuracy differs by at most 0.3 points between the short and long run of 
 
 The budget also changes which models look sycophantic. When the reply is prefilled with ``The answer is ('', so that the model answers without any reasoning, OLMo-2 7B never changes its answer (0\% cave, 0\% correction), although it caves on 19.7\% of right answers with full replies and opens 80\% of its replies with a concession.
 
-\begin{table}[t]
+\begin{table}[tbp]
 \centering
 \small
 \input{tables/main.tex}
@@ -122,7 +123,7 @@ The budget also changes which models look sycophantic. When the reply is prefill
 \label{tab:main}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_budget.pdf}
 \caption{Cave and correction rates with short and full replies on the same questions. Error bars are 95\% bootstrap intervals.}
@@ -140,7 +141,7 @@ With turn-1 accuracy $a$, cave rate $k$ and correction rate $c$, the change in a
 \end{equation}
 so pushback helps exactly when $a < a^\ast = c/(c+k)$. A model that caves easily has a low break-even accuracy, and a task the model already does well on leaves more right answers at risk. OLMo-2 7B on ARC-Challenge is the only setting with a negative estimate under full replies ($-1.2$ points, 95\% interval $[-4.8, 2.4]$): its break-even accuracy is 74.2\%, below its turn-1 accuracy of 76.6\%. For Qwen3-4B on the same data, the break-even accuracy is 93.2\% against a turn-1 accuracy of 85.9\% (Figure~\ref{fig:breakeven}).
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.48\linewidth]{figures/fig_breakeven.pdf}
 \caption{Turn-1 accuracy against break-even accuracy for full replies. Points above the diagonal lose accuracy after pushback.}
@@ -169,7 +170,7 @@ With truncated replies, transfer works in all three models (AUROC 0.57--0.69 acr
 
 We first measured this coupling with cosine similarities between mean-difference directions and found a value of 0.785. Hidden-state dimensions are, however, strongly correlated, and the same cosine computed with shuffled labels reached 0.6--0.9 even after z-scoring; the sign of the raw cosine even flipped between two runs that differ only in their labels. We therefore withdrew that measurement and rely on the transfer test, whose chance level does not depend on the geometry of the representation.
 
-\begin{table}[t]
+\begin{table}[tbp]
 \centering
 \small
 \input{tables/transfer.tex}
@@ -177,7 +178,7 @@ We first measured this coupling with cosine similarities between mean-difference
 \label{tab:transfer}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_transfer.pdf}
 \caption{AUROC gain over turn-1 confidence from a probe trained only on self-correction cases, by layer. Shaded: 95\% bootstrap intervals.}
@@ -197,14 +198,14 @@ We add $\alpha\,d$ to one layer's residual stream from the challenge onward, whe
 
 \paragraph{Gated steering.} Applying the ``keep'' direction only where a gate predicts that the turn-1 answer is right, and optionally the opposite direction elsewhere, gains at most 0.4 points of accuracy for Qwen3-4B and 1.0 for Qwen3-8B. An oracle gate that knows the turn-1 correctness gains 6.9 and 1.5 points (Figure~\ref{fig:gate}). The gates reach AUROC 0.81 for predicting turn-1 correctness, which is not enough to target the direction where it helps.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.48\linewidth]{figures/fig_frontier.pdf}
 \caption{Steering Qwen3-4B at layer 18 with answers read without reasoning. Numbers give $\alpha$. All three directions move along one frontier.}
 \label{fig:frontier}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_gate.pdf}
 \caption{Gated steering. Each point is a gate and threshold; the oracle gate knows whether the turn-1 answer is right.}
@@ -233,6 +234,7 @@ Code for all experiments, including run scripts, analysis and figure generation,
 \fi
 
 
+\FloatBarrier
 \bibliographystyle{plainnat}
 \bibliography{refs}
 
