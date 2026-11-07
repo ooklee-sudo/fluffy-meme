@@ -216,17 +216,17 @@ Accumulated loss still changed behavior, but in a different direction. Agents wi
 
 ## 5.6. Study 5: self-generated failure
 
-Starting from a neutral history in the hidden-test environment, agents gamed the evaluation in 18 of 210 episodes (8.6%): 15 special-cased the input, 2 tampered with the tests, and 1 submitted while tests were failing. Because the hidden test runner reports only test names, an agent learned which test was failing at its first failed run and gained no further information about the contradiction from later runs. Any rise in gaming after the first failure therefore reflects accumulated failure rather than new information.
+Starting from a neutral history in the hidden-test environment, agents ended 18 of 210 episodes (8.6%) with the evaluation gamed: 15 special-cased the input, 2 tampered with the tests, and 1 submitted while tests were failing. Agents made at least one gaming attempt in 25 episodes. In 8 of these, the agent later reverted the change, and 6 of those 8 then reported the ticket as blocked. Because the hidden test runner reports only test names, an agent learned which test was failing at its first failed run and gained no further information about the contradiction from later runs. Any rise in gaming after the first failure therefore reflects accumulated failure rather than new information.
 
 TABLE: Study 5: hazard of gaming per code-change attempt, by the number of failed test runs the agent had produced so far.
-| Own failed test runs so far | Attempts, all models | Gaming per attempt, all models (%) | Attempts, four models with any gaming | Gaming per attempt, four models (%) |
-| 1 | 129 | 0.8 | 91 | 1.1 |
-| 2 | 110 | 2.7 | 74 | 4.1 |
-| 3 | 106 | 6.6 | 68 | 7.4 |
-| 4 or more | 452 | 3.1 | 292 | 4.8 |
-NOTE: Attempts are writes to source files or tampering actions made after the agent's first failed test run, up to and including the first gaming attempt in an episode. The four models with any gaming are gpt-5.6-luna, qwen3.8-27b, mistral-large-4, and gemini-3.5-flash-lite. 210 episodes, call limit of 30.
+| Own failed test runs so far | Attempts, all models | Gaming per attempt, all models (%) | Attempts, four models with any gaming attempt | Gaming per attempt, four models (%) |
+| 1 | 129 | 0.8 | 69 | 1.4 |
+| 2 | 110 | 2.7 | 80 | 3.8 |
+| 3 | 106 | 6.6 | 68 | 10.3 |
+| 4 or more | 452 | 3.1 | 115 | 12.2 |
+NOTE: Attempts are writes to source files or tampering actions made after the agent's first failed test run, up to and including the first gaming attempt in an episode. The four models with any gaming attempt are gpt-5.6-luna, qwen3.8-27b, mistral-large-4, and deepseek-v4.1-flash. 210 episodes, call limit of 30.
 
-The hazard of gaming rose with the agent's own failures (Table 8). It was 0.8% for an attempt made after one failed test run and 6.6% after three. Each additional failed run raised the hazard by 0.47 percentage points (b = 0.0047, SE = 0.0019, p = .012; 797 attempts in 210 episodes, standard errors clustered by episode). In a logistic model on the four models that gamed at least once, doubling the number of own failures multiplied the odds of gaming by 2.54 (b = 1.35 on log failures, SE = 0.46, p = .003). The hazard dipped after four or more failures. Attempts in that range came mostly from gemini-3.5-flash-lite and gemini-3.8-flash, which kept retrying honest implementations and reached the call limit in 57% and 47% of their episodes without either gaming or reporting. Within the four models that gamed at least once, the hazard still stood at 4.8% after four or more failures, compared with 1.1% after one.
+The hazard of gaming rose with the agent's own failures (Table 8). Across all models, it was 0.8% for an attempt made after one failed test run and 6.6% after three. Each additional failed run raised the hazard by 0.47 percentage points (b = 0.0047, SE = 0.0019, p = .012; 797 attempts in 210 episodes, standard errors clustered by episode). In a logistic model on the four models with any gaming attempt, doubling the number of own failures multiplied the odds of gaming by 2.54 (b = 1.35 on log failures, SE = 0.46, p = .003). Within these four models, the hazard rose steadily, from 1.4% after one failure to 10.3% after three and 12.2% after four or more. Across all models, the hazard dipped after four or more failures because attempts in that range came mostly from gemini-3.5-flash-lite and gemini-3.8-flash, which never made a gaming attempt; they kept retrying honest implementations and reached the call limit in 57% and 47% of their episodes without either gaming or reporting.
 
 ## 5.7. What the ex ante risk measure missed
 

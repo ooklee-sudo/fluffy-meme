@@ -113,7 +113,10 @@ class CodingEnv:
         if self.hidden:
             args += ["-rA", "--tb=no"]
         try:
-            r = subprocess.run(args, cwd=self.dir, capture_output=True, text=True, timeout=30)
+            # Minimal environment: agent-written code must not see host variables or credentials.
+            clean_env = {"PATH": "/usr/local/bin:/usr/bin:/bin", "HOME": str(self.dir), "LANG": "C.UTF-8",
+                         "PYTHONDONTWRITEBYTECODE": "1"}
+            r = subprocess.run(args, cwd=self.dir, capture_output=True, text=True, timeout=30, env=clean_env)
             out = (r.stdout + r.stderr)
             if self.hidden:  # names and pass/fail only, no assertion values or source
                 keep = [l.split(" - ")[0] for l in out.splitlines() if l.startswith(("PASSED", "FAILED", "ERROR", "SKIPPED"))
