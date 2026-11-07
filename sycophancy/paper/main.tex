@@ -1,6 +1,14 @@
 \documentclass[11pt]{article}
 
 % ---------------------------------------------------------------------------
+% Version switch:
+%   \anonymousfalse  -> arXiv / camera-ready (author names, Zenodo DOI)
+%   \anonymoustrue   -> double-blind submission (no names, no DOI, no acknowledgments)
+% ---------------------------------------------------------------------------
+\newif\ifanonymous
+\anonymousfalse
+
+% ---------------------------------------------------------------------------
 % Draft for arXiv (cs.CL). Tables and figures are produced by ../make_figures.py
 % (run it from the sycophancy folder; it writes paper/tables and paper/figures).
 % Numbers in \tbd{...} must be checked against paper/numbers.json before release.
@@ -18,14 +26,21 @@
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
 \newcommand{\tbd}[1]{\textcolor{red}{#1}}
+\ifanonymous
+  \hypersetup{pdfauthor={Anonymous}}
+\fi
 \newcommand{\cave}{\textsc{cave}}
 \newcommand{\corr}{\textsc{correct}}
 
 \title{Room to Reconsider: Reply Length Decides Whether\\Pushback Makes Language Models Sycophantic or Self-Correcting}
 
 \author{
+\ifanonymous
+  Anonymous Authors
+\else
   Author Name\thanks{Hanyang University. Correspondence: \texttt{email}.} \\
   % add co-authors and affiliations
+\fi
 }
 
 \date{}
@@ -208,7 +223,16 @@ Several limitations apply. We use models up to 8B parameters in 4-bit quantizati
 
 When a model cannot finish reasoning, sycophancy and self-correction behave like two outcomes of one tendency to change the answer, and suppressing one suppresses the other. Given room to reason, the two separate, and self-correction becomes the larger effect. Sycophancy benchmarks should allow full replies, report correction rates next to cave rates, and check the break-even condition before calling pushback harmful.
 
-\paragraph{Reproducibility.} Code for all experiments, including run scripts, analysis and figure generation, is available at \tbd{repository URL}.
+\paragraph{Reproducibility.}
+\ifanonymous
+Code for all experiments, including run scripts, analysis and figure generation, is provided as supplementary material and will be released with the paper.
+\else
+Code for all experiments, including run scripts, analysis and figure generation, is available at \url{https://doi.org/10.5281/zenodo.24045308}.
+\fi
+
+\ifanonymous\else
+\paragraph{Acknowledgments.} \tbd{Advisor, funding and computing support.}
+\fi
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

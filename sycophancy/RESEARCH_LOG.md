@@ -1,7 +1,9 @@
 # 연구 기록: LLM 아첨(sycophancy)과 자기 교정
 
 최종 업데이트: 2026-11-08 (전이 테스트 반영, 코사인 결과 철회)
-논문 초안 뼈대(영문): https://claude.ai/artifact/UiF9kPcHUirf4fPyRjtAx5
+논문 원고(LaTeX): `paper/main.tex` (익명/arXiv 버전 전환 가능)
+재현 코드: Zenodo DOI https://doi.org/10.5281/zenodo.24045308 (익명 zip: `release/room-to-reconsider-code.zip`)
+초기 영문 뼈대(대체됨): https://claude.ai/artifact/UiF9kPcHUirf4fPyRjtAx5
 
 ---
 

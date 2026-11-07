@@ -15,5 +15,12 @@
 ## 참고문헌
 `refs.bib`에서 `VERIFY`, `TODO` 표시된 항목은 arXiv 페이지에서 저자와 제목을 확인해 채우세요.
 
+## arXiv 버전 / 익명 투고 버전 전환
+`main.tex` 맨 위의 한 줄만 바꾸면 됩니다.
+- `\anonymousfalse` (기본): arXiv용. 저자 이름, 소속, Zenodo DOI, 감사의 글 포함
+- `\anonymoustrue`: 이중맹검 투고용. "Anonymous Authors", 코드는 보조 자료로 표시, 감사의 글 없음, PDF 속성 저자도 Anonymous
+
+익명 버전에서는 Zenodo DOI가 빠집니다 (Zenodo 기록에 저자 이름이 공개되기 때문). 투고 시스템에는 `release/room-to-reconsider-code.zip`을 보조 자료로 올리세요.
+
 ## 저널 양식
 지금은 arXiv용 일반 양식(article)입니다. ACM TIST에 낼 때는 ACM 양식(`acmart`, `acmsmall`)으로 옮기면 됩니다.
