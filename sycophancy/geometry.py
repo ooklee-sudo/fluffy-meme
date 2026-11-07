@@ -24,6 +24,11 @@ right-in-turn-1 questions (held vs caved). Its AUROC is exactly 0.5 under no sha
   within_right   5-fold CV AUROC inside the right group (ceiling for transfer_w2r)
   within_wrong   5-fold CV AUROC inside the wrong group
   ci             95% bootstrap interval of transfer_w2r
+  conf           AUROC of turn-1 confidence alone on the right group (low confidence -> cave)
+  conf+transfer  5-fold CV AUROC of a logistic regression on [confidence, transfer score]
+                 inside the right group; gain = conf+transfer - conf with a paired
+                 bootstrap interval. A gain above 0 means the shared signal carries
+                 information beyond confidence.
 
 Space (cosine method): by default every dimension is z-scored (pooled mean and standard deviation of the
 layer) before directions are taken. A few dimensions of LLM hidden states carry very large
@@ -145,9 +150,16 @@ def transfer(args, rows, H2, layers, held, caved, held_w, fixed):
     yW = np.r_[np.ones(len(held_w)), np.zeros(len(fixed))].astype(int)
     rng = np.random.default_rng(args.seed)
     cv = StratifiedKFold(5, shuffle=True, random_state=args.seed)
+    LET = ["A", "B", "C", "D"]
+    conf = np.array([r["p1"][LET.index(r["a1"])] for r in rows])
+    cR = np.clip(conf[R], 1e-6, 1 - 1e-6)
+    logit_c = np.log(cR / (1 - cR))
+    auc_conf = roc_auc_score(yR, cR)
+    print(f"confidence alone on the right group: AUROC {auc_conf:.3f}")
 
     report = []
-    print(f"{'layer':>5} {'transfer_w2r':>12} {'ci':>15} {'within_right':>12} {'transfer_r2w':>12} {'within_wrong':>12}")
+    print(f"{'layer':>5} {'transfer_w2r':>12} {'ci':>15} {'within_right':>12} {'transfer_r2w':>12} {'within_wrong':>12}"
+          f" {'conf+transfer':>13} {'gain':>7} {'gain_ci':>17}")
     for l in layers:
         XR = np.asarray(H2[R, l], dtype=np.float32)
         XW = np.asarray(H2[W, l], dtype=np.float32)
@@ -159,12 +171,25 @@ def transfer(args, rows, H2, layers, held, caved, held_w, fixed):
             if 0 < yR[b].sum() < len(b):
                 boots.append(roc_auc_score(yR[b], sR[b]))
         ci = (float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5)))
+        # Does the transfer score add to confidence? (CV inside the right group)
+        Z = np.c_[logit_c, np.log(np.clip(sR, 1e-6, 1 - 1e-6) / np.clip(1 - sR, 1e-6, 1))]
+        p_both = cross_val_predict(LogisticRegression(max_iter=1000), Z, yR, cv=cv, method="predict_proba")[:, 1]
+        auc_both = roc_auc_score(yR, p_both)
+        gains = []
+        for _ in range(500):
+            b = rng.integers(0, len(yR), len(yR))
+            if 0 < yR[b].sum() < len(b):
+                gains.append(roc_auc_score(yR[b], p_both[b]) - roc_auc_score(yR[b], cR[b]))
+        gain_ci = (float(np.percentile(gains, 2.5)), float(np.percentile(gains, 97.5)))
         r2w = roc_auc_score(yW, probe().fit(XR, yR).predict_proba(XW)[:, 1])
         inR = roc_auc_score(yR, cross_val_predict(probe(), XR, yR, cv=cv, method="predict_proba")[:, 1])
         inW = roc_auc_score(yW, cross_val_predict(probe(), XW, yW, cv=cv, method="predict_proba")[:, 1])
         report.append({"layer": l, "transfer_w2r": float(w2r), "ci": ci, "within_right": float(inR),
-                       "transfer_r2w": float(r2w), "within_wrong": float(inW)})
-        print(f"{l:5d} {w2r:12.3f} [{ci[0]:.3f}, {ci[1]:.3f}] {inR:12.3f} {r2w:12.3f} {inW:12.3f}", flush=True)
+                       "transfer_r2w": float(r2w), "within_wrong": float(inW), "conf": float(auc_conf),
+                       "conf_plus_transfer": float(auc_both), "gain": float(auc_both - auc_conf),
+                       "gain_ci": gain_ci})
+        print(f"{l:5d} {w2r:12.3f} [{ci[0]:.3f}, {ci[1]:.3f}] {inR:12.3f} {r2w:12.3f} {inW:12.3f}"
+              f" {auc_both:13.3f} {auc_both - auc_conf:+7.3f} [{gain_ci[0]:+.3f}, {gain_ci[1]:+.3f}]", flush=True)
 
     path = os.path.join(args.run_dir, "geometry_transfer.json")
     with open(path, "w") as f:
