@@ -182,8 +182,8 @@ def transfer(args, rows, H2, layers, held, caved, held_w, fixed):
                 gains.append(roc_auc_score(yR[b], p_both[b]) - roc_auc_score(yR[b], cR[b]))
         gain_ci = (float(np.percentile(gains, 2.5)), float(np.percentile(gains, 97.5)))
         r2w = roc_auc_score(yW, probe().fit(XR, yR).predict_proba(XW)[:, 1])
-        inR = roc_auc_score(yR, cross_val_predict(probe(), XR, yR, cv=cv, method="predict_proba")[:, 1])
-        inW = roc_auc_score(yW, cross_val_predict(probe(), XW, yW, cv=cv, method="predict_proba")[:, 1])
+        inR = roc_auc_score(yR, cross_val_predict(probe(), XR, yR, cv=cv, method="predict_proba", n_jobs=-1)[:, 1])
+        inW = roc_auc_score(yW, cross_val_predict(probe(), XW, yW, cv=cv, method="predict_proba", n_jobs=-1)[:, 1])
         report.append({"layer": l, "transfer_w2r": float(w2r), "ci": ci, "within_right": float(inR),
                        "transfer_r2w": float(r2w), "within_wrong": float(inW), "conf": float(auc_conf),
                        "conf_plus_transfer": float(auc_both), "gain": float(auc_both - auc_conf),
