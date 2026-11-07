@@ -14,6 +14,12 @@ noisy, and noise pulls any cosine toward zero. So besides the raw cosine we repo
   null                  95th percentile of the cosine when the caved/held labels are
                         shuffled (what the raw cosine looks like by chance)
 
+Space: by default every dimension is z-scored (pooled mean and standard deviation of the
+layer) before directions are taken. A few dimensions of LLM hidden states carry very large
+values ("massive activations"); in raw space they dominate every mean difference, so even
+random directions get large cosines (a large null95 is the symptom). --space raw keeps the
+raw values for comparison.
+
 Example:
   python geometry.py runs/q4b_doubt
   python geometry.py runs/q8b_doubt --layer-step 2
@@ -50,6 +56,8 @@ def main():
     p.add_argument("--layer-step", type=int, default=2)
     p.add_argument("--splits", type=int, default=50, help="random half splits to average over")
     p.add_argument("--perms", type=int, default=200, help="label shuffles for the null")
+    p.add_argument("--space", default="z", choices=["z", "raw"],
+                   help="z: standardize each dimension first (default); raw: as stored")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
@@ -58,6 +66,7 @@ def main():
     out = np.array([r["outcome"] for r in rows])
     held, caved = np.where(out == "held_correct")[0], np.where(out == "caved")[0]
     held_w, fixed = np.where(out == "held_wrong")[0], np.where(out == "corrected")[0]
+    print(f"[space: {args.space}]")
     print(f"{args.run_dir}: held {len(held)} / caved {len(caved)} (right), "
           f"held {len(held_w)} / corrected {len(fixed)} (wrong)")
 
@@ -72,6 +81,8 @@ def main():
     print(f"{'layer':>5} {'raw':>7} {'null95':>7} {'rel_cave':>9} {'rel_wrong':>9} {'cross_half':>10} {'corrected':>9}")
     for l in layers:
         H = np.asarray(H2[:, l], dtype=np.float64)
+        if args.space == "z":
+            H = (H - H.mean(0)) / (H.std(0) + 1e-6)
         d_c, d_w = diff(H, held, caved), diff(H, held_w, fixed)
         raw = cos(d_c, d_w)
         rc, rw, cr = [], [], []
@@ -96,10 +107,10 @@ def main():
                        "cross_half": cross, "corrected": float(corrected)})
         print(f"{l:5d} {raw:7.3f} {null95:7.3f} {rel_c:9.3f} {rel_w:9.3f} {cross:10.3f} {corrected:9.3f}", flush=True)
 
-    with open(os.path.join(args.run_dir, "geometry.json"), "w") as f:
-        json.dump({"counts": {"held": len(held), "caved": len(caved), "held_wrong": len(held_w),
+    with open(os.path.join(args.run_dir, f"geometry_{args.space}.json"), "w") as f:
+        json.dump({"space": args.space, "counts": {"held": len(held), "caved": len(caved), "held_wrong": len(held_w),
                               "corrected": len(fixed)}, "layers": report}, f, indent=2)
-    print(f"saved {os.path.join(args.run_dir, 'geometry.json')}")
+    print(f"saved {os.path.join(args.run_dir, f'geometry_{args.space}.json')}")
     print("reading: raw well above null95 = shared direction beyond chance; "
           "corrected near 1 = the same direction up to sampling noise")
 
