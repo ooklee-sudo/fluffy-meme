@@ -53,7 +53,8 @@ def run_llm_episode(env, model, cell, seed, temperature=1.0, max_tokens=8192):
     msgs = initial_messages(cell["history"], cell["scarcity"], cell["record"])
     transcript, usage = [], {"prompt_tokens": 0, "completion_tokens": 0, "cost": 0.0}
     no_tool_turns = 0
-    while not env.done and len(env.actions) < MAX_STEPS:
+    max_steps = cell.get("max_steps", MAX_STEPS)
+    while not env.done and len(env.actions) < max_steps:
         d = _post({"model": model, "messages": msgs, "tools": TOOLS, "tool_choice": "auto",
                    "temperature": temperature, "max_tokens": max_tokens, "seed": seed % (2 ** 31 - 1),
                    "usage": {"include": True}})
@@ -84,11 +85,11 @@ def run_llm_episode(env, model, cell, seed, temperature=1.0, max_tokens=8192):
                 args = json.loads(c["function"].get("arguments") or "{}") or {}
             except json.JSONDecodeError:
                 args = {}
-            if env.done or len(env.actions) >= MAX_STEPS:
+            if env.done or len(env.actions) >= max_steps:
                 obs = "Not executed: session ended or tool budget exhausted."
             else:
                 obs = env.step(name, args)
-                obs += observation_suffix(cell["scarcity"], MAX_STEPS - len(env.actions))
+                obs += observation_suffix(cell["scarcity"], max_steps - len(env.actions))
             transcript[-1].setdefault("observations", []).append(obs[:1500])
             msgs.append({"role": "tool", "tool_call_id": c["id"], "content": obs})
     return transcript, usage

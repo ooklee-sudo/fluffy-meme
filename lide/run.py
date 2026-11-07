@@ -27,7 +27,7 @@ def episode_id(model, cell, rep):
 
 def run_one(model, cell, rep, temperature):
     seed = int(hashlib.sha256(episode_id(model, cell, rep).encode()).hexdigest()[:8], 16)
-    env = CodingEnv()
+    env = CodingEnv(hidden=cell.get("env") == "hidden")
     try:
         if model.startswith("scripted:"):
             transcript, usage = run_scripted_episode(env, model.split(":")[1])
@@ -52,6 +52,10 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--budget", type=float, default=10.0, help="stop submitting new episodes past this USD spend")
     ap.add_argument("--out", default="results/study1.jsonl")
+    ap.add_argument("--max-steps", type=int, default=None, help="tool-call limit (default 12; 20 in hidden env)")
+    ap.add_argument("--scarcity", choices=["none", "deadline"], default=None, help="keep only one scarcity level")
+    ap.add_argument("--env", choices=["visible", "hidden"], default="visible",
+                    help="hidden = test source unreadable, run_tests shows pass/fail only")
     ap.add_argument("--design", choices=["study1", "info", "frontier"], default="study1",
                     help="info = loss x information control cells (NI, F2a, F8a)")
     a = ap.parse_args()
@@ -59,6 +63,12 @@ def main():
     models = list(a.models) + (["scripted:honest", "scripted:escalating"] if a.scripted else [])
     all_cells = {"study1": study1_cells, "info": info_control_cells, "frontier": frontier_cells}[a.design]()
     cells = all_cells[: a.cells] if a.cells else all_cells
+    if a.scarcity:
+        cells = [c for c in cells if c["scarcity"] == a.scarcity]
+    if a.env == "hidden":
+        cells = [dict(c, env="hidden", max_steps=a.max_steps or 20) for c in cells]
+    elif a.max_steps:
+        cells = [dict(c, max_steps=a.max_steps) for c in cells]
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     done = set()
