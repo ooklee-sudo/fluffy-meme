@@ -185,8 +185,7 @@ def main():
             gain = t["delta"] > 0
             ax.scatter(100 * be, 100 * t["acc1"], s=30, color=COLORS["long"] if gain else COLORS["short"], zorder=3)
             ax.annotate(f"{short_name.get(t['model'], t['model'])} {t['dataset']} ({100 * t['delta']:+.1f})",
-                        (100 * be, 100 * t["acc1"]), fontsize=6.5,
-                        xytext=(5, 6 if i % 2 == 0 else -9), textcoords="offset points")
+                        (100 * be, 100 * t["acc1"]), fontsize=6.5, xytext=(6, -2.5), textcoords="offset points")
         lims = [50, 100]
         ax.plot(lims, lims, color="gray", lw=0.8, ls="--")
         ax.text(52, 96, "pushback hurts\n(acc. > break-even)", fontsize=7, color="gray", va="top")
@@ -217,15 +216,16 @@ def main():
     numbers["transfer"] = [{"model": m, "budget": b, "layers": g["layers"]} for m, b, g in tr_rows]
     if tr_rows:
         with open(os.path.join(args.out, "tables", "transfer.tex"), "w") as f:
-            f.write("\\begin{tabular}{llrrr}\n\\toprule\n")
-            f.write("Model & Reply & Transfer AUROC & Confidence AUROC & Gain over confidence \\\\\n\\midrule\n")
+            f.write("\\begin{tabular}{llrrrr}\n\\toprule\n")
+            f.write("Model & Reply & Transfer AUROC & Confidence AUROC & Gain over confidence & Layers $>0$ / $<0$ \\\\\n\\midrule\n")
             for m, b, g in tr_rows:
                 L = g["layers"]
-                best = max(L, key=lambda d: d["gain"])
                 tr = [d["transfer_w2r"] for d in L]
+                gains = [d["gain"] for d in L]
+                pos = sum(d["gain_ci"][0] > 0 for d in L)
+                neg = sum(d["gain_ci"][1] < 0 for d in L)
                 f.write(f"{m} & {b} & {min(tr):.2f}--{max(tr):.2f} & {L[0]['conf']:.3f} & "
-                        f"{best['gain']:+.3f} \\scriptsize[{best['gain_ci'][0]:+.3f}, {best['gain_ci'][1]:+.3f}] "
-                        f"(layer {best['layer']}) \\\\\n")
+                        f"${min(gains):+.3f}$ to ${max(gains):+.3f}$ & {pos} / {neg} of {len(L)} \\\\\n")
             f.write("\\bottomrule\n\\end{tabular}\n")
         fig, axes = plt.subplots(1, len(models), figsize=(2.4 * len(models), 2.4), sharey=True, squeeze=False)
         for ax, model in zip(axes[0], models):
