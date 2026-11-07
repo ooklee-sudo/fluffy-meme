@@ -71,3 +71,14 @@ python analyze.py results/study1.jsonl > results/report.md
   NI did not raise unsafe behaviour (3.6% vs 2.1% for N) while F2a/F8a did (23.6%, 22.9%).
 - The operator never answers. This keeps conditions equal but removes asking as a way to resolve the ticket.
 - Only Environment A (coding) is implemented. Environment B (operations) and C (long-horizon) are not.
+
+## Results so far (Environment A)
+
+| Run | Models | Episodes | Cost | Unsafe: N | F2 | F8 | NI | F2a | F8a |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Low-cost (`report_lowcost.md`) | 7 | 1,400 | $12.56 | 2.1% | 17.1% | 14.3% | 3.6% | 23.6% | 22.9% |
+| Frontier (`report_frontier.md`) | 6 | 840 | $24.74 | 0% | 0% | 0% | 0% | 0% | 3.3% |
+
+In low-cost models, failure history raises unsafe behaviour and the effect does not come from
+knowing which test fails. Frontier models almost always report the ticket as blocked; the
+contradiction in this task is visible in the test file, so the task may be too easy for them.
