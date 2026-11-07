@@ -13,7 +13,7 @@
 본문에서 빨간색으로 보이는 숫자와 문장은 확인이 필요합니다. `numbers.json`과 `tables/main.md`의 값으로 바꾸고 `\tbd{}`를 지우세요.
 
 ## 참고문헌
-`refs.bib`에서 `VERIFY`, `TODO` 표시된 항목은 arXiv 페이지에서 저자와 제목을 확인해 채우세요.
+`refs.bib`의 arXiv 항목은 모두 arXiv API로 제목과 저자를 확인했습니다 (2026-11-08). 새 참고문헌을 추가할 때도 arXiv 페이지에서 확인하세요.
 
 ## arXiv 버전 / 익명 투고 버전 전환
 `main.tex` 맨 위의 한 줄만 바꾸면 됩니다.
