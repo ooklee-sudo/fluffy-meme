@@ -14,7 +14,18 @@ noisy, and noise pulls any cosine toward zero. So besides the raw cosine we repo
   null                  95th percentile of the cosine when the caved/held labels are
                         shuffled (what the raw cosine looks like by chance)
 
-Space: by default every dimension is z-scored (pooled mean and standard deviation of the
+Transfer test (default, --method transfer): the cosine numbers above are hard to read
+because hidden-state dimensions are strongly correlated, so even mean differences of random
+groups line up (a large null95, also after z-scoring). The transfer test avoids this: a
+linear probe is trained ONLY on wrong-in-turn-1 questions (held vs corrected) and scored on
+right-in-turn-1 questions (held vs caved). Its AUROC is exactly 0.5 under no shared signal.
+  transfer_w2r   probe trained on wrong-group, AUROC on right-group (held vs caved)
+  transfer_r2w   the reverse
+  within_right   5-fold CV AUROC inside the right group (ceiling for transfer_w2r)
+  within_wrong   5-fold CV AUROC inside the wrong group
+  ci             95% bootstrap interval of transfer_w2r
+
+Space (cosine method): by default every dimension is z-scored (pooled mean and standard deviation of the
 layer) before directions are taken. A few dimensions of LLM hidden states carry very large
 values ("massive activations"); in raw space they dominate every mean difference, so even
 random directions get large cosines (a large null95 is the symptom). --space raw keeps the
@@ -56,6 +67,8 @@ def main():
     p.add_argument("--layer-step", type=int, default=2)
     p.add_argument("--splits", type=int, default=50, help="random half splits to average over")
     p.add_argument("--perms", type=int, default=200, help="label shuffles for the null")
+    p.add_argument("--method", default="transfer", choices=["transfer", "cosine"])
+    p.add_argument("--C", type=float, default=0.05, help="inverse L2 strength of the transfer probe")
     p.add_argument("--space", default="z", choices=["z", "raw"],
                    help="z: standardize each dimension first (default); raw: as stored")
     p.add_argument("--seed", type=int, default=0)
@@ -76,6 +89,9 @@ def main():
               else list(range(args.layer_step, n_layers, args.layer_step)))
     rng = np.random.default_rng(args.seed)
     right = np.concatenate([held, caved])
+
+    if args.method == "transfer":
+        return transfer(args, rows, H2, layers, held, caved, held_w, fixed)
 
     report = []
     print(f"{'layer':>5} {'raw':>7} {'null95':>7} {'rel_cave':>9} {'rel_wrong':>9} {'cross_half':>10} {'corrected':>9}")
@@ -113,6 +129,50 @@ def main():
     print(f"saved {os.path.join(args.run_dir, f'geometry_{args.space}.json')}")
     print("reading: raw well above null95 = shared direction beyond chance; "
           "corrected near 1 = the same direction up to sampling noise")
+
+
+def transfer(args, rows, H2, layers, held, caved, held_w, fixed):
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import roc_auc_score
+    from sklearn.model_selection import StratifiedKFold, cross_val_predict
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    probe = lambda: make_pipeline(StandardScaler(), LogisticRegression(C=args.C, max_iter=3000))
+    R = np.concatenate([held, caved])
+    yR = np.r_[np.ones(len(held)), np.zeros(len(caved))].astype(int)      # 1 = kept the answer
+    W = np.concatenate([held_w, fixed])
+    yW = np.r_[np.ones(len(held_w)), np.zeros(len(fixed))].astype(int)
+    rng = np.random.default_rng(args.seed)
+    cv = StratifiedKFold(5, shuffle=True, random_state=args.seed)
+
+    report = []
+    print(f"{'layer':>5} {'transfer_w2r':>12} {'ci':>15} {'within_right':>12} {'transfer_r2w':>12} {'within_wrong':>12}")
+    for l in layers:
+        XR = np.asarray(H2[R, l], dtype=np.float32)
+        XW = np.asarray(H2[W, l], dtype=np.float32)
+        sR = probe().fit(XW, yW).predict_proba(XR)[:, 1]
+        w2r = roc_auc_score(yR, sR)
+        boots = []
+        for _ in range(500):
+            b = rng.integers(0, len(yR), len(yR))
+            if 0 < yR[b].sum() < len(b):
+                boots.append(roc_auc_score(yR[b], sR[b]))
+        ci = (float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5)))
+        r2w = roc_auc_score(yW, probe().fit(XR, yR).predict_proba(XW)[:, 1])
+        inR = roc_auc_score(yR, cross_val_predict(probe(), XR, yR, cv=cv, method="predict_proba")[:, 1])
+        inW = roc_auc_score(yW, cross_val_predict(probe(), XW, yW, cv=cv, method="predict_proba")[:, 1])
+        report.append({"layer": l, "transfer_w2r": float(w2r), "ci": ci, "within_right": float(inR),
+                       "transfer_r2w": float(r2w), "within_wrong": float(inW)})
+        print(f"{l:5d} {w2r:12.3f} [{ci[0]:.3f}, {ci[1]:.3f}] {inR:12.3f} {r2w:12.3f} {inW:12.3f}", flush=True)
+
+    path = os.path.join(args.run_dir, "geometry_transfer.json")
+    with open(path, "w") as f:
+        json.dump({"method": "transfer", "counts": {"held": len(held), "caved": len(caved),
+                   "held_wrong": len(held_w), "corrected": len(fixed)}, "layers": report}, f, indent=2)
+    print(f"saved {path}")
+    print("reading: transfer_w2r above 0.5 (ci excluding 0.5) = what separates keeping from correcting a "
+          "WRONG answer also separates keeping from caving on a RIGHT one; compare with within_right")
 
 
 if __name__ == "__main__":
