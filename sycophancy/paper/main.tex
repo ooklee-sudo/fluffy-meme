@@ -48,7 +48,7 @@ We study both effects together. Our protocol asks a four-option question, record
 Our main findings are:
 
 \begin{enumerate}
-  \item \textbf{The reply budget reverses the verdict.} With short replies, pushback looks harmful. With room to reason, correction rates rise to 34--50\% across models and datasets, and pushback raises accuracy in four of five settings. Short budgets mostly hide self-correction rather than create caving (Section~\ref{sec:budget}).
+  \item \textbf{The reply budget reverses the verdict.} With 96-token replies, pushback lowers accuracy in all three Qwen settings; with 1{,}024 tokens it raises accuracy in all three. Across settings the correction rate rises by 6--31 points with full replies while the cave rate changes far less, so short budgets mainly hide self-correction (Section~\ref{sec:budget}).
   \item \textbf{A break-even rule predicts the net effect.} Pushback helps when turn-1 accuracy is below $c/(c+k)$, where $c$ is the correction rate and $k$ the cave rate. The rule accounts for the one setting where pushback hurts (Section~\ref{sec:breakeven}).
   \item \textbf{Caving is partly predictable before the challenge.} A linear probe on hidden states, combined with turn-1 confidence, improves AUROC over confidence by about 0.05 in both model families (Section~\ref{sec:predict}).
   \item \textbf{Caving and correcting share an internal signal only when reasoning is cut short.} A probe trained only on self-correction cases predicts caving beyond confidence with truncated replies, in all three models tested, and adds nothing with full replies (Section~\ref{sec:coupling}).
@@ -89,9 +89,11 @@ We store the residual stream at the last token before the turn-1 answer ($t_1$) 
 \label{sec:budget}
 % ===========================================================================
 
-Table~\ref{tab:main} and Figure~\ref{fig:budget} summarize the outcome rates. With Qwen3-4B on MMLU, a 96-token reply gives a cave rate of \tbd{8.3\%} and a correction rate of \tbd{12.2\%}, and accuracy falls by \tbd{1.3} points after pushback. With 1{,}024 tokens on the same questions, the correction rate rises to 43.2\% and accuracy rises by 5.7 points. Qwen3-8B behaves the same way (43.1\% correction, $+3.8$ points), and so does OLMo-2 7B ($-$\tbd{1.3} points at 256 tokens, $+2.2$ at 1{,}024).
+Table~\ref{tab:main} and Figure~\ref{fig:budget} summarize the outcome rates. With Qwen3-4B on MMLU, a 96-token reply gives a cave rate of 8.4\% and a correction rate of 12.3\%, and accuracy falls by 1.3 points after pushback. With 1{,}024 tokens on the same questions, the correction rate rises to 43.2\% and accuracy rises by 5.7 points. Qwen3-8B moves from $-2.6$ to $+3.8$ points (correction 21.8\% $\to$ 43.1\%), and Qwen3-4B on ARC-Challenge from $-0.1$ to $+3.9$ points.
 
-The cleanest contrast is Qwen3-4B on ARC-Challenge: the cave rate is identical at both budgets (3.6\%), while the correction rate rises from 21.3\% to 49.6\%. OLMo-2 7B shows the same pattern on MMLU, where caving barely moves (19.0\% $\to$ 19.7\%) and correction rises from 24.5\% to 33.7\%. Short budgets therefore do not manufacture sycophancy; they hide self-correction. Within the 256-token run of Qwen3-4B, complete replies corrected 46.7\% of wrong answers against 19.3\% for truncated ones.
+In the ARC setting the cave rate is identical at both budgets (3.6\%), while the correction rate rises from 21.3\% to 49.6\%. Across the four paired settings, the correction rate rises by 6 to 31 points with full replies, while the cave rate changes by $-0.4$ to $+5.2$ points. Short budgets therefore mainly hide self-correction rather than manufacture sycophancy. Within the 256-token run of Qwen3-4B, complete replies corrected 46.7\% of wrong answers against 19.3\% for truncated ones. OLMo-2 7B, whose short run used 256 tokens with 31\% of replies truncated, already gains from pushback at that budget ($+1.2$ points) and gains more with full replies ($+2.2$ points; correction 27.3\% $\to$ 33.7\%, cave 16.9\% $\to$ 19.7\%).
+
+Turn-1 accuracy differs by at most 0.3 points between the short and long run of a model, because batched decoding with different batch sizes changes a few near-tied logits.
 
 The budget also changes which models look sycophantic. When the reply is prefilled with ``The answer is ('', so that the model answers without any reasoning, OLMo-2 7B never changes its answer (0\% cave, 0\% correction), although it caves on 19.7\% of right answers with full replies and opens 80\% of its replies with a concession.
 
