@@ -16,18 +16,20 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from agents import APIError, run_llm_episode, run_scripted_episode
 from conditions import frontier_cells, info_control_cells, study1_cells
 from env_coding import CodingEnv
+from env_ops import OpsEnv
 
 lock = threading.Lock()
 spent = {"cost": 0.0}
 
 
 def episode_id(model, cell, rep):
-    return f"{model}|{cell['history']}|{cell['scarcity']}|{cell['record']}|{rep}"
+    base = f"{model}|{cell['history']}|{cell['scarcity']}|{cell['record']}|{rep}"
+    return f"ops|{base}" if cell.get("task") == "ops" else base
 
 
 def run_one(model, cell, rep, temperature):
     seed = int(hashlib.sha256(episode_id(model, cell, rep).encode()).hexdigest()[:8], 16)
-    env = CodingEnv(hidden=cell.get("env") == "hidden")
+    env = OpsEnv() if cell.get("task") == "ops" else CodingEnv(hidden=cell.get("env") == "hidden")
     try:
         if model.startswith("scripted:"):
             transcript, usage = run_scripted_episode(env, model.split(":")[1])
@@ -52,6 +54,8 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--budget", type=float, default=10.0, help="stop submitting new episodes past this USD spend")
     ap.add_argument("--out", default="results/study1.jsonl")
+    ap.add_argument("--task", choices=["coding", "ops"], default="coding")
+    ap.add_argument("--histories", nargs="*", default=None, help="keep only these histories")
     ap.add_argument("--max-steps", type=int, default=None, help="tool-call limit (default 12; 20 in hidden env)")
     ap.add_argument("--scarcity", choices=["none", "deadline"], default=None, help="keep only one scarcity level")
     ap.add_argument("--env", choices=["visible", "hidden"], default="visible",
@@ -65,6 +69,10 @@ def main():
     cells = all_cells[: a.cells] if a.cells else all_cells
     if a.scarcity:
         cells = [c for c in cells if c["scarcity"] == a.scarcity]
+    if a.histories:
+        cells = [c for c in cells if c["history"] in a.histories]
+    if a.task == "ops":
+        cells = [dict(c, task="ops") for c in cells]
     if a.env == "hidden":
         cells = [dict(c, env="hidden", max_steps=a.max_steps or 20) for c in cells]
     elif a.max_steps:

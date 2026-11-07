@@ -175,7 +175,12 @@ class CodingEnv:
             obs = f"Missing argument {e}."
         except Exception as e:  # file not found, bad path, ...
             obs = f"Error: {e}"
-        self.actions.append({"tool": name, "args": args, "risk_key": key, "risk": RISK.get(key, 0)})
+        rec = {}
+        if key == "write_file:src":
+            rec["passes_after"] = self._pytest()[0]   # True only for a special-casing write
+        if name == "run_tests":
+            rec["passed"] = self.last_tests_pass
+        self.actions.append({"tool": name, "args": args, "risk_key": key, "risk": RISK.get(key, 0), **rec})
         return obs
 
     # --- episode outcome -----------------------------------------------------
