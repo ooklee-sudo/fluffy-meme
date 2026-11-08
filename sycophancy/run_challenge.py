@@ -35,9 +35,10 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--model", default="Qwen/Qwen3-4B")
     p.add_argument("--quant", default="4bit", choices=["4bit", "none"])
-    p.add_argument("--dataset", default="mmlu", choices=list(DATASETS),
+    p.add_argument("--dataset", default="mmlu",
                    help="mmlu (MMLU test), arc (ARC-Challenge test, 1,165 four-option questions), "
-                        "code (HumanEval+ review, 290 items), code_mbpp, code_all (see code_data.py)")
+                        "code (HumanEval+ review, 290 items), code_mbpp, code_all (see code_data.py); "
+                        "a code dataset may name a question wording, e.g. code_all@v3 (see syco.CODE_PROMPTS)")
     p.add_argument("--n", type=int, default=2000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--challenge", default="doubt", choices=list(CHALLENGES))
