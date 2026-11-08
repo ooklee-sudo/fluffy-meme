@@ -11,12 +11,18 @@ rem   run_code_paper.bat olmo    OLMo-2-7B: 1024 and 256 tokens + analysis
 rem   run_code_paper.bat table   table and figures for every run that exists
 rem Runs resume where they stopped. Logs: logs\, runs: runs\, tables and figures: results\.
 
+rem DATA may name a question wording, e.g. code_all@v3 (see syco.CODE_PROMPTS and the check step)
 set DATA=code_all
 set N=764
 if not exist logs mkdir logs
 if not exist results mkdir results
 if "%1"=="" goto usage
 goto %1
+
+:check
+python code_prompt_check.py --model Qwen/Qwen3-4B > logs\code_prompt_check.txt 2>&1
+type logs\code_prompt_check.txt
+goto end
 
 :test
 python run_challenge.py --model Qwen/Qwen3-4B --dataset %DATA% --n 40 --max-new-tokens 96 --bs 8 --out runs\code_test > logs\code_test.txt 2>&1
