@@ -1,0 +1,30 @@
+Dear Editor-in-Chief,
+
+Please consider the enclosed manuscript, "Room to Reconsider: Reply Length Decides Whether Pushback Makes Language Models Sycophantic or Self-Correcting," for publication as a Regular Paper in ACM Transactions on Intelligent Systems and Technology.
+
+Conversational language models are now routinely questioned by their users, and their response to a simple "Are you sure?" affects how reliable they are in practice. Most evaluations of this behavior count how often a model abandons a correct answer under pushback, treat it as sycophancy, and seek to suppress it. Our paper shows that this view is incomplete and that a common evaluation choice changes its conclusions.
+
+The main contributions are:
+
+1. An evaluation protocol that measures both failure and repair under pushback: the rate at which correct answers are abandoned and the rate at which wrong answers are corrected, with answers read exactly from option probabilities after a free-form reply.
+
+2. Evidence that the reply budget reverses the verdict. With short replies, pushback appears harmful; with replies long enough for the model to finish reasoning, models correct 34-50% of their wrong answers, and pushback significantly improves accuracy for all three Qwen3 settings we test. A simple break-even rule predicts when pushback helps.
+
+3. An analysis of model internals showing that caving can be partly predicted before the challenge, and that caving and self-correction share an internal signal beyond confidence only when the reply is truncated.
+
+4. A controlled study of activation steering with random-direction controls and an oracle-gated upper bound, showing that steering does not reduce sycophancy selectively and that its potential gain is limited by how well the model knows whether it is right.
+
+We believe the paper fits the scope of TIST in speech and language understanding and processing systems and in user behavior modeling, and the journal's emphasis on solid evaluation. The results have direct consequences for how conversational systems are benchmarked and for interventions intended to make them more robust to user pressure. All experiments use open models (Qwen3 and OLMo-2) and run on a single consumer GPU, and all code is available for reproduction.
+
+A preprint of this work has been posted on arXiv (arXiv:[ID]). The manuscript has not been published elsewhere and is not under consideration by any other journal or conference. Code and scripts to reproduce every table and figure are provided as supplementary material and are archived at https://doi.org/10.5281/zenodo.24045308. I have no conflicts of interest to declare.
+
+Thank you for your time and consideration. I look forward to hearing from you.
+
+Sincerely,
+
+Ook Lee
+Department of Information System
+Hanyang University
+Seoul, Korea
+ooklee@hanyang.ac.kr
+ORCID: [ORCID iD]
