@@ -16,8 +16,10 @@ Setting (items the AI has rejected in turn 1)
 Assumptions
   A1  odds(rho) < K            rejection is right on average (why the AI rejected)
   A2  odds(rho) * q/(1-q) > K  an author with a good signal is worth listening to
+  A3  c_g * v_b < c_b * v_g     a good-signal author is at least as willing to object
+                               (true whenever c_b >= c_g and d > 0)
 
-Results (checked numerically by `python strategic_user.py --check`)
+Results (proofs in the research plan's appendix; checked numerically by `python strategic_user.py --check`)
   P1  Cheap talk: with c_b = 0 and v_b > 0, every delta > 0 makes objections uninformative and
       harmful, so the best policy ignores pushback (delta* = 0).
   P2  Optimal deference: with v_b > c_b > 0, the organization's gain from pushback is maximized
@@ -28,6 +30,9 @@ Results (checked numerically by `python strategic_user.py --check`)
       the author's accountability d and with the cost c_b of objecting without grounds.
   P5  Evidence requirement: raising c_b (objections must carry evidence that is costly to fake)
       raises delta* and the gain; if v_b <= c_b, full deference (delta* = 1) is optimal.
+  Corollary  Evidence window: with c_s = c + F (1 - P(G | s)) (evidence is free for good code and
+      costs F for buggy code), full deference reaches the first best for F in [F_lo, F_hi); for
+      F >= F_hi even good-signal authors stop objecting and pushback has no value.
   P6  Commitment: without commitment the only informative equilibrium is in mixed strategies,
       where the organization gains nothing from pushback (the AI is indifferent). Fixing
       deference in training is what makes pushback valuable.
@@ -140,6 +145,22 @@ def check(n=20000, seed=0):
             W0 = [gain(x, rho, q, b, d, 0.0, 0.0, LB, LG) for x in grid[1:]]
             assert max(W0) < 0 and optimal_delta(rho, q, b, d, 0.0, 0.0, LB, LG) == 0.0
             tested["P1"] += 1
+        # First-best bound (Lemma 3): no policy beats P(g) e_g
+        assert W.max() <= P["g"] * e["g"] + 1e-12
+        tested["bound"] = tested.get("bound", 0) + 1
+        # Evidence window (Corollary)
+        c0 = rng.uniform(0, 0.5)
+        mg, mb, _ = posteriors(rho, q)
+        F_lo, F_hi = (b - c0) / (1 - mb) - d, (b - c0) / (1 - mg) - d
+        F = rng.uniform(0, 6)
+        cg2, cb2 = c0 + F * (1 - mg), c0 + F * (1 - mb)
+        W2 = np.array([gain(x, rho, q, b, d, cg2, cb2, LB, LG) for x in grid])
+        if b > c0 and F_lo <= F < F_hi:
+            assert abs(W2.max() - P["g"] * e["g"]) < 1e-12 and abs(W2[-1] - W2.max()) < 1e-12
+            tested["window"] = tested.get("window", 0) + 1
+        elif b > c0 and F >= F_hi:
+            assert W2.max() == 0
+            tested["window"] = tested.get("window", 0) + 1
     print("all propositions hold on random parameter draws:", tested)
 
 
