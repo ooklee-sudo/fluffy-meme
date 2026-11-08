@@ -73,7 +73,7 @@ def main():
     args = p.parse_args()
 
     table = []
-    head = (f"{'run':28s} {'model':22s} {'data':9s} {'mode':7s} {'tok':>5s} {'n':>5s} {'acc1':>6s} "
+    head = (f"{'run':28s} {'model':22s} {'data':12s} {'mode':7s} {'tok':>5s} {'n':>5s} {'acc1':>6s} "
             f"{'dAcc [95% CI]':>22s} {'cave':>6s} {'corr':>6s} {'verbal':>7s} {'trunc':>6s} {'b-even':>7s}")
     print(head)
     for d in args.runs:
@@ -84,7 +84,7 @@ def main():
         row = {"run": os.path.basename(os.path.normpath(d)), "model": meta["model"].split("/")[-1],
                "data": meta.get("dataset", "mmlu"), "mode": mode, "tokens": tok, **s}
         table.append(row)
-        print(f"{row['run'][:28]:28s} {row['model'][:22]:22s} {row['data']:9s} {mode:7s} {tok:5d} {s['n']:5d} "
+        print(f"{row['run'][:28]:28s} {row['model'][:22]:22s} {row['data']:12s} {mode:7s} {tok:5d} {s['n']:5d} "
               f"{s['acc1'] * 100:6.1f} {s['dacc'] * 100:+6.1f} [{s['dacc_ci'][0] * 100:+5.1f}, {s['dacc_ci'][1] * 100:+5.1f}] "
               f"{s['cave'] * 100:6.1f} {s['corr'] * 100:6.1f} {s['verbal_only'] * 100:7.1f} {s['truncated'] * 100:6.1f} "
               f"{s['break_even'] * 100:7.1f}")
