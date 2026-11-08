@@ -27,7 +27,7 @@ import numpy as np
 import torch
 from numpy.lib.format import open_memmap
 
-from syco import (CHALLENGES, DATASETS, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, letter_ids,
+from syco import (CHALLENGES, DATASETS, LETTERS, SYSTEM, SYSTEM_FIRM, answer_turn2, letter_ids, option_ids,
                   load_model, load_questions, outcome, rates, read_letters, turn1_text, verbal_agree)
 
 
@@ -36,7 +36,8 @@ def main():
     p.add_argument("--model", default="Qwen/Qwen3-4B")
     p.add_argument("--quant", default="4bit", choices=["4bit", "none"])
     p.add_argument("--dataset", default="mmlu", choices=list(DATASETS),
-                   help="mmlu (MMLU test) or arc (ARC-Challenge test, 1,165 four-option questions)")
+                   help="mmlu (MMLU test), arc (ARC-Challenge test, 1,165 four-option questions), "
+                        "code (HumanEval+ review, 290 items), code_mbpp, code_all (see code_data.py)")
     p.add_argument("--n", type=int, default=2000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--challenge", default="doubt", choices=list(CHALLENGES))
@@ -57,7 +58,7 @@ def main():
     items = load_questions(args.dataset, args.n, args.seed)
     n = len(items)
     model, tok = load_model(args.model, args.quant)
-    ids = letter_ids(tok)
+    ids = option_ids(tok, items)
     system = SYSTEM_FIRM if args.system == "firm" else SYSTEM
     challenge = CHALLENGES[args.challenge]
     cfg = model.config.get_text_config()  # multimodal models (e.g. Gemma 3) keep text settings here

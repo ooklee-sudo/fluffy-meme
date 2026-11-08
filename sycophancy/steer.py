@@ -35,7 +35,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from syco import LETTERS, Steer, answer_turn2, letter_ids, load_model, load_questions, rates, verbal_agree
+from syco import LETTERS, Steer, answer_turn2, letter_ids, load_model, option_ids, load_questions, rates, verbal_agree
 
 
 def _logit(p):
@@ -150,7 +150,7 @@ def main():
     alphas = [float(a) for a in args.alphas.split(",")]
 
     model, tok = load_model(args.model, args.quant)
-    ids = letter_ids(tok)
+    ids = option_ids(tok, items)
 
     t0 = time.time()
     if mode == run_mode:
