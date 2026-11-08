@@ -185,6 +185,13 @@ def main():
             d_wrong = mean(held_w, layer) - mean(fixed, layer)  # "keep my answer" when wrong
             u = d_wrong / np.linalg.norm(d_wrong)
             geo["cos(cave, keep_when_wrong)"] = float(d_cave @ u / np.linalg.norm(d_cave))
+            # Same cosine after z-scoring each dimension (raw cosines are dominated by a few
+            # massive-activation dimensions; see geometry.py). The steering vector stays raw.
+            Ht = np.asarray(H2[train, layer], dtype=np.float64)
+            mu, sd = Ht.mean(0), Ht.std(0) + 1e-6
+            zmean = lambda ix: ((np.asarray(H2[ix, layer], dtype=np.float64) - mu) / sd).mean(0)
+            zc, zw = zmean(held) - zmean(caved), zmean(held_w) - zmean(fixed)
+            geo["cos_z(cave, keep_when_wrong)"] = float(zc @ zw / (np.linalg.norm(zc) * np.linalg.norm(zw)))
             if args.direction == "targeted":
                 d = d_cave - (d_cave @ u) * u
             elif args.direction == "combined":
