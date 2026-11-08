@@ -127,6 +127,7 @@ def run_tests(code):
 out = {"canon_pass": run_tests(job["canon"]), "mut_pass": run_tests(job["mut"]), "witness": None}
 if out["canon_pass"] and not out["mut_pass"]:
     tns = {}
+    exec(job["canon"], tns)           # MBPP+ tests call the function at module level
     exec(job["test"], tns)            # defines `assertion`, imports
     inputs = eval(job["inputs_expr"], tns)
     cns, mns = {}, {}

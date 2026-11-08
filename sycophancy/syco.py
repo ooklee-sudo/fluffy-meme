@@ -72,7 +72,50 @@ def load_arc(n, seed=0):
              "answer": LETTERS[list(r["choices"]["label"]).index(r["answerKey"])]} for r in ds]
 
 
-DATASETS = {"mmlu": load_mmlu, "arc": load_arc}
+CODE_FILES = {"code": ["code_humaneval.jsonl"], "code_mbpp": ["code_mbpp.jsonl"],
+              "code_all": ["code_humaneval.jsonl", "code_mbpp.jsonl"]}
+
+
+def load_code(n, seed=0, files=("code_humaneval.jsonl",)):
+    """Code review as a two-option question: (A) Correct / (B) Incorrect.
+
+    Items come from code_data.py: each task once with its canonical solution and once with a
+    one-site mutant that fails the official tests. Tasks are shuffled with `seed` and both
+    versions of a task stay next to each other, so the first n items are balanced."""
+    import json
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    raw = []
+    for name in files:
+        path = os.path.join(here, "data", name)
+        if not os.path.exists(path):
+            raise SystemExit(f"{path} not found: run  python code_data.py --dataset "
+                             f"{name.replace('code_', '').replace('.jsonl', '')}")
+        with open(path) as f:
+            raw += [json.loads(line) for line in f if line.strip()]
+    tasks = sorted({r["task_id"] for r in raw})
+    random.Random(seed).shuffle(tasks)
+    order = {t: i for i, t in enumerate(tasks)}
+    raw.sort(key=lambda r: (order[r["task_id"]], r["kind"]))
+    items = []
+    for r in raw[:n]:
+        spec = f"Specification: {r['spec']}\n\n" if r.get("spec") else ""
+        what = "the specification" if r.get("spec") else "the specification in its docstring"
+        items.append({"id": r["id"], "subject": r["kind"], "task_id": r["task_id"], "kind": r["kind"],
+                      "question": (f"Does the following Python code correctly implement {what} "
+                                   f"for all valid inputs?\n\n{spec}```python\n{r['code']}\n```"),
+                      "choices": ["Correct", "Incorrect"],
+                      "answer": "A" if r["kind"] == "correct" else "B"})
+    return items
+
+
+DATASETS = {"mmlu": load_mmlu, "arc": load_arc,
+            **{k: (lambda n, seed=0, _f=tuple(v): load_code(n, seed, _f)) for k, v in CODE_FILES.items()}}
+
+
+def option_ids(tok, items):
+    """Token ids of the option letters actually used (A-D for MMLU/ARC, A-B for code)."""
+    return letter_ids(tok)[:len(items[0]["choices"])]
 
 
 def load_questions(dataset, n, seed=0):

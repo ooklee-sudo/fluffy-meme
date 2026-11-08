@@ -149,3 +149,32 @@ python code_challenge_compare.py runs/code_q4b_doubt runs/code_q4b_evidence
 
 - 먼저 `--n 40`으로 속도와 메모리를 확인하세요. 코드 문항은 MMLU보다 길어서 4B 기준 `--bs 4`(기본값)부터 시작하고, 느려지면 2로 낮추세요.
 - 1차 판정이 한쪽("Correct")으로 크게 쏠리면 굽힘률·교정률이 한 종류의 코드에서만 계산됩니다. 비교 스크립트의 `turn-1 'Correct' verdicts` 값을 확인하세요.
+
+## 논문(Room to Reconsider)을 코드 리뷰로 재현
+
+MMLU/ARC 대신 **코드가 맞는지 판정하는 2지선다**로 논문과 똑같은 프로토콜을 돌립니다. 시스템 프롬프트, "The answer is (", 반박 문구, "Final answer: ("는 모두 같고 데이터만 다릅니다.
+
+- 문항: `--dataset code_all` = HumanEval+ 290 + MBPP+ 474 = **764문항** (정답 코드 382, 테스트에서 실제로 실패하는 한 군데 버그 코드 382). `code`(HumanEval+만), `code_mbpp`도 있습니다.
+- 질문 형식: "Does the following Python code correctly implement ...?" + 코드 + (A) Correct (B) Incorrect. 답은 A/B 두 글자의 확률로 읽습니다.
+- 기존 스크립트(`run_challenge.py`, `analyze.py`, `steer.py`)를 그대로 씁니다. 선택지가 두 개인 데이터에서는 A/B만 읽도록 고쳤고, MMLU/ARC 동작은 그대로입니다.
+
+| 논문 절 | 코드 버전 | 스크립트 |
+| --- | --- | --- |
+| 4 응답 길이 (96 vs 1,024토큰) | Qwen3-4B·8B 96/1,024, OLMo-2 256/1,024 | `run_challenge.py --dataset code_all` |
+| 5 손익분기식, 표 1, 그림 1·2 | 같은 표와 그림 | `paper_table.py` |
+| 6 반박 전 굽힘 예측 | 같은 probe, nested CV | `analyze.py` |
+| 7 공유 신호 (자기 교정 probe로 굽힘 예측) | 같은 transfer 검사 | `shared_signal.py` |
+| 8 steering, gate, oracle | 18·24·28층, prefill 선별 | `steer.py --gate` |
+| 9 시스템 프롬프트 기준선 | `--system firm` | `run_challenge.py` |
+
+**Windows 실행 순서** (`run_code_paper.bat`, 끊겨도 다시 실행하면 이어서 진행)
+```bat
+run_code_paper.bat test
+run_code_paper.bat 4b
+run_code_paper.bat steer
+run_code_paper.bat 8b
+run_code_paper.bat olmo
+```
+`test`는 40문항으로 몇 분 안에 끝나는 확인용입니다. `4b`가 핵심(응답 길이 비교, 표, probe, 공유 신호)이고, 끝나면 `results\code_table.csv`, `results\code_breakeven.png`, `logs\shared_code_q4b.txt`가 생깁니다. 표만 다시 만들려면 `run_code_paper.bat table`.
+
+배치 크기는 연구 기록의 8GB 기준(4B 4~8, 8B 2~4, OLMo 1~2)으로 넣었습니다. GPU 메모리를 넘으면 오류 없이 매우 느려지니, 첫 진행 줄의 s/q와 GPU 메모리를 확인하세요.
