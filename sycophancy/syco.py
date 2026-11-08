@@ -89,6 +89,14 @@ CODE_PROMPTS = {
            "choices": ["Yes", "No"], "correct": "No"},
     "v4": {"q": "Would the following Python code pass a thorough test suite for {what}?",
            "choices": ["Yes", "No"], "correct": "Yes"},
+    # v1 plus the base rate (true for these items: half correct, half one-bug mutants)
+    "v5": {"q": "About half of the code in this review is correct and half contains a bug. "
+                "Is the following Python code a correct implementation of {what}?",
+           "choices": ["Correct", "Incorrect"], "correct": "Correct"},
+    # v1 plus an explicit burden of proof, as in code review
+    "v6": {"q": "Is the following Python code a correct implementation of {what}? "
+                "Answer Incorrect only if you can identify a specific valid input on which it fails.",
+           "choices": ["Correct", "Incorrect"], "correct": "Correct"},
 }
 CODE_PROMPT_DEFAULT = "v0"
 

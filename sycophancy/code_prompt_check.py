@@ -10,6 +10,9 @@ This script compares the wordings in syco.CODE_PROMPTS:
   v2  same as v0 with the options swapped                                              (A) Incorrect (B) Correct
   v3  "Does the following Python code contain a bug, given ...?"                       (A) Yes (B) No
   v4  "Would the following Python code pass a thorough test suite for ...?"            (A) Yes (B) No
+  v5  v1 plus the base rate: "About half of the code in this review is correct and half contains a bug."
+  v6  v1 plus a burden of proof: "Answer Incorrect only if you can identify a specific valid input
+      on which it fails."
 
 For each wording and data source it reports
   said correct   share of "the code is correct" verdicts (the items are half correct, so 50% is unbiased)
