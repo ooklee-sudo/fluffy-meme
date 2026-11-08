@@ -167,11 +167,22 @@ MMLU/ARC 대신 **코드가 맞는지 판정하는 2지선다**로 논문과 똑
 | 8 steering, gate, oracle | 18·24·28층, prefill 선별 | `steer.py --gate` |
 | 9 시스템 프롬프트 기준선 | `--system firm` | `run_challenge.py` |
 
-**판정 쏠림 먼저 확인.** 첫 Qwen3-4B 테스트에서 코드 40개 중 37개를 "Incorrect"라고 했습니다. 이러면 굽힘률은 버그 코드에서만, 교정률은 정답 코드에서만 재게 됩니다. `check` 단계(`code_prompt_check.py`)가 질문 문구 5가지(`syco.CODE_PROMPTS`)의 1차 판정만 비교합니다. "said correct"가 50%에 가깝고 AUROC가 높은 문구를 골라 `run_code_paper.bat`의 `DATA`를 예컨대 `code_all@v3`으로 바꾸세요.
+**판정 쏠림과 질문 문구.** Qwen3-4B는 문구와 관계없이 코드 대부분을 "틀렸다"고 판정합니다(`code_prompt_check.py`, 300문항, 절반이 정답 코드).
+
+| 문구 | "Correct" 판정 | 균형 정확도 | AUROC |
+| --- | --- | --- | --- |
+| v0 "...for all valid inputs?" | 13.0% | 62.3% | 0.801 |
+| **v1 "...a correct implementation of...?"** | **18.7%** | **67.3%** | **0.814** |
+| v2 v0의 선택지 순서 바꿈 | 10.0% | 59.3% | 0.794 |
+| v3 "...contain a bug?" (Yes/No) | 10.3% | 59.0% | 0.764 |
+| v4 "...pass a thorough test suite?" | 8.3% | 57.7% | 0.779 |
+| v5 v1 + "절반은 맞고 절반은 버그" | 10.0% | 59.3% | 0.791 |
+| v6 v1 + "실패하는 입력을 댈 수 있을 때만 Incorrect" | 23.0% | 67.0% | 0.783 |
+
+글자 위치(v0 vs v2)나 단어(v3)의 문제가 아니라 모델의 판단 기준선이 치우친 것입니다. 구분 능력(AUROC ~0.8)은 있습니다. 확률 문턱을 보정하면 모델이 고르지 않은 답을 1차 답으로 넣게 되어 프로토콜이 깨지므로, **v1로 논문과 같은 프로토콜을 유지**하고 쏠림은 결과로 보고합니다. `paper_table.py`는 코드 실행에 대해 **1차 판정별 뒤집기 비율**을 정답 코드와 버그 코드로 나눠 보여 줍니다. 같은 "Incorrect → Correct" 뒤집기를 두 종류의 코드에서 비교하므로 판정 쏠림의 영향을 받지 않습니다.
 
 **Windows 실행 순서** (`run_code_paper.bat`, 끊겨도 다시 실행하면 이어서 진행)
 ```bat
-run_code_paper.bat check
 run_code_paper.bat test
 run_code_paper.bat 4b
 run_code_paper.bat steer

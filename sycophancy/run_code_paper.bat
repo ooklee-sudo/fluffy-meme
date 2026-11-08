@@ -12,7 +12,9 @@ rem   run_code_paper.bat table   table and figures for every run that exists
 rem Runs resume where they stopped. Logs: logs\, runs: runs\, tables and figures: results\.
 
 rem DATA may name a question wording, e.g. code_all@v3 (see syco.CODE_PROMPTS and the check step)
-set DATA=code_all
+rem v1 = "Is the following Python code a correct implementation of ...?": least biased of v0-v6 for Qwen3-4B
+rem (18.7% Correct verdicts on half-correct items, AUROC 0.814; code_prompt_check.py, 2026-11-08)
+set DATA=code_all@v1
 set N=764
 if not exist logs mkdir logs
 if not exist results mkdir results
@@ -25,8 +27,8 @@ type logs\code_prompt_check.txt
 goto end
 
 :test
-python run_challenge.py --model Qwen/Qwen3-4B --dataset %DATA% --n 40 --max-new-tokens 96 --bs 8 --out runs\code_test > logs\code_test.txt 2>&1
-python paper_table.py runs\code_test
+python run_challenge.py --model Qwen/Qwen3-4B --dataset %DATA% --n 40 --max-new-tokens 96 --bs 8 --out runs\code_test_v1 > logs\code_test.txt 2>&1
+python paper_table.py runs\code_test_v1
 goto end
 
 :4b
