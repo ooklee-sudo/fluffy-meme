@@ -163,18 +163,21 @@ MMLU/ARC 대신 **코드가 맞는지 판정하는 2지선다**로 논문과 똑
 | 4 응답 길이 (96 vs 1,024토큰) | Qwen3-4B·8B 96/1,024, OLMo-2 256/1,024 | `run_challenge.py --dataset code_all` |
 | 5 손익분기식, 표 1, 그림 1·2 | 같은 표와 그림 | `paper_table.py` |
 | 6 반박 전 굽힘 예측 | 같은 probe, nested CV | `analyze.py` |
-| 7 공유 신호 (자기 교정 probe로 굽힘 예측) | 같은 transfer 검사 | `shared_signal.py` |
+| 7 공유 신호 (자기 교정 probe로 굽힘 예측) | 같은 transfer 검사 | `geometry.py --layer-step 4` |
 | 8 steering, gate, oracle | 18·24·28층, prefill 선별 | `steer.py --gate` |
 | 9 시스템 프롬프트 기준선 | `--system firm` | `run_challenge.py` |
 
+**판정 쏠림 먼저 확인.** 첫 Qwen3-4B 테스트에서 코드 40개 중 37개를 "Incorrect"라고 했습니다. 이러면 굽힘률은 버그 코드에서만, 교정률은 정답 코드에서만 재게 됩니다. `check` 단계(`code_prompt_check.py`)가 질문 문구 5가지(`syco.CODE_PROMPTS`)의 1차 판정만 비교합니다. "said correct"가 50%에 가깝고 AUROC가 높은 문구를 골라 `run_code_paper.bat`의 `DATA`를 예컨대 `code_all@v3`으로 바꾸세요.
+
 **Windows 실행 순서** (`run_code_paper.bat`, 끊겨도 다시 실행하면 이어서 진행)
 ```bat
+run_code_paper.bat check
 run_code_paper.bat test
 run_code_paper.bat 4b
 run_code_paper.bat steer
 run_code_paper.bat 8b
 run_code_paper.bat olmo
 ```
-`test`는 40문항으로 몇 분 안에 끝나는 확인용입니다. `4b`가 핵심(응답 길이 비교, 표, probe, 공유 신호)이고, 끝나면 `results\code_table.csv`, `results\code_breakeven.png`, `logs\shared_code_q4b.txt`가 생깁니다. 표만 다시 만들려면 `run_code_paper.bat table`.
+`test`는 40문항으로 몇 분 안에 끝나는 확인용입니다. `4b`가 핵심(응답 길이 비교, 표, probe, 공유 신호)이고, 끝나면 `results\code_table.csv`, `results\code_breakeven.png`, `logs\tr_code_q4b_*.txt`가 생깁니다. 표만 다시 만들려면 `run_code_paper.bat table`.
 
 배치 크기는 연구 기록의 8GB 기준(4B 4~8, 8B 2~4, OLMo 1~2)으로 넣었습니다. GPU 메모리를 넘으면 오류 없이 매우 느려지니, 첫 진행 줄의 s/q와 GPU 메모리를 확인하세요.

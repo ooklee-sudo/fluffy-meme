@@ -2,6 +2,7 @@
 rem Same study as the paper ("Room to Reconsider"), on code review instead of MMLU/ARC.
 rem Data: data\code_humaneval.jsonl + data\code_mbpp.jsonl (764 items: half correct code, half one-bug mutants).
 rem
+rem   run_code_paper.bat check   turn-1 verdict bias of each question wording (python code_prompt_check.py)
 rem   run_code_paper.bat test    quick check: Qwen3-4B, 40 items, 96 tokens (a few minutes)
 rem   run_code_paper.bat 4b      Qwen3-4B: 1024 and 96 tokens, firm prompt, tables, probes, shared signal
 rem   run_code_paper.bat steer   Qwen3-4B steering screen (prefill) with gates, layers 18/24/28
@@ -29,7 +30,8 @@ python run_challenge.py --model Qwen/Qwen3-4B --dataset %DATA% --n %N% --max-new
 python run_challenge.py --model Qwen/Qwen3-4B --dataset %DATA% --n %N% --turn2 prefill --bs 8 --no-hidden --out runs\code_q4b_prefill > logs\code_q4b_prefill.txt 2>&1
 python analyze.py runs\code_q4b_1024 > logs\analyze_code_q4b_1024.txt 2>&1
 python analyze.py runs\code_q4b_96 > logs\analyze_code_q4b_96.txt 2>&1
-python shared_signal.py runs\code_q4b_96 runs\code_q4b_1024 --plot results\code_q4b_shared_signal.png > logs\shared_code_q4b.txt 2>&1
+python geometry.py runs\code_q4b_96 --layer-step 4 > logs\tr_code_q4b_96.txt 2>&1
+python geometry.py runs\code_q4b_1024 --layer-step 4 > logs\tr_code_q4b_1024.txt 2>&1
 goto table
 
 :steer
@@ -41,7 +43,8 @@ python run_challenge.py --model Qwen/Qwen3-8B --dataset %DATA% --n %N% --max-new
 python run_challenge.py --model Qwen/Qwen3-8B --dataset %DATA% --n %N% --max-new-tokens 96 --bs 4 --out runs\code_q8b_96 > logs\code_q8b_96.txt 2>&1
 python analyze.py runs\code_q8b_1024 > logs\analyze_code_q8b_1024.txt 2>&1
 python analyze.py runs\code_q8b_96 > logs\analyze_code_q8b_96.txt 2>&1
-python shared_signal.py runs\code_q8b_96 runs\code_q8b_1024 --plot results\code_q8b_shared_signal.png > logs\shared_code_q8b.txt 2>&1
+python geometry.py runs\code_q8b_96 --layer-step 4 > logs\tr_code_q8b_96.txt 2>&1
+python geometry.py runs\code_q8b_1024 --layer-step 4 > logs\tr_code_q8b_1024.txt 2>&1
 goto table
 
 :olmo
@@ -49,7 +52,8 @@ python run_challenge.py --model allenai/OLMo-2-1124-7B-Instruct --dataset %DATA%
 python run_challenge.py --model allenai/OLMo-2-1124-7B-Instruct --dataset %DATA% --n %N% --max-new-tokens 256 --bs 2 --out runs\code_olmo7b_256 > logs\code_olmo7b_256.txt 2>&1
 python analyze.py runs\code_olmo7b_1024 > logs\analyze_code_olmo7b_1024.txt 2>&1
 python analyze.py runs\code_olmo7b_256 > logs\analyze_code_olmo7b_256.txt 2>&1
-python shared_signal.py runs\code_olmo7b_256 runs\code_olmo7b_1024 --plot results\code_olmo7b_shared_signal.png > logs\shared_code_olmo7b.txt 2>&1
+python geometry.py runs\code_olmo7b_256 --layer-step 4 > logs\tr_code_olmo7b_256.txt 2>&1
+python geometry.py runs\code_olmo7b_1024 --layer-step 4 > logs\tr_code_olmo7b_1024.txt 2>&1
 goto table
 
 :table
@@ -62,5 +66,5 @@ type logs\code_table.txt
 goto end
 
 :usage
-echo usage: run_code_paper.bat test ^| 4b ^| steer ^| 8b ^| olmo ^| table
+echo usage: run_code_paper.bat check ^| test ^| 4b ^| steer ^| 8b ^| olmo ^| table
 :end
