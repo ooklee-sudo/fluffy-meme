@@ -1,0 +1,250 @@
+% Appendix: proofs for the strategic-user model.
+% Use with \input{strategic_appendix} inside \appendix. Needs amsmath and amsthm, and the theorem
+% environments defined in strategic_proofs.tex (copy those lines into the paper's preamble).
+
+\providecommand{\odds}{\operatorname{odds}}
+\providecommand{\ind}{\mathbf{1}}
+
+\section{Proofs for the Strategic-User Model}
+\label{app:strategic}
+
+\subsection{Setup and notation}
+
+The items are pieces of code that the AI has rejected in its first verdict. The code is good
+($G$) with probability $\rho \in (0,1)$ and buggy ($B$) otherwise. The author observes a private
+signal $s \in \{g, b\}$ with $P(g \mid G) = P(b \mid B) = q \in (\tfrac12, 1)$. Write
+$\pi_g = P(g) = \rho q + (1-\rho)(1-q)$, $\pi_b = 1 - \pi_g$ and $\mu_s = P(G \mid s)$. Bayes' rule gives
+\begin{equation}
+  \pi_g \mu_g = \rho q, \qquad \pi_g (1-\mu_g) = (1-\rho)(1-q), \qquad
+  \pi_b \mu_b = \rho (1-q), \qquad \pi_b (1-\mu_b) = (1-\rho) q,
+  \label{eq:bayes}
+\end{equation}
+so that $\odds(\mu_g) = \odds(\rho)\, q/(1-q)$ and $\odds(\mu_b) = \odds(\rho)\,(1-q)/q$, where
+$\odds(x) = x/(1-x)$. Since $q > \tfrac12$, $\mu_b < \rho < \mu_g$.
+
+A final approval is worth $v_s = \beta - d\,(1-\mu_s)$ to an author with signal $s$, where
+$\beta > 0$ is the benefit of a merge and $d \ge 0$ the author's accountability for a shipped
+bug; a rejection is worth zero. Objecting costs $c_s \ge 0$. After an objection the AI switches
+to approval with probability $\delta \in [0,1]$. The author objects if and only if
+$\delta v_s > c_s$ (indifferent authors do not object); write $o_s(\delta)$ for this indicator
+and $\delta_s = c_s / v_s$ for the deference at which type $s$ becomes willing to object.
+
+The organization loses $L_B$ when it approves buggy code and $L_G$ when it rejects good code;
+let $K = L_B / L_G$. Switching after an objection by an author of type $s$ reduces the expected
+loss by $e_s = \mu_s L_G - (1-\mu_s) L_B$. The organization's gain from a deference policy,
+per rejected item and relative to ignoring objections, is
+\begin{equation}
+  W(\delta) = \delta \sum_{s \in \{g,b\}} \pi_s\, o_s(\delta)\, e_s .
+  \label{eq:gain}
+\end{equation}
+
+\begin{assumption}\label{ass:all}
+\leavevmode
+\begin{enumerate}
+  \item[(A1)] $\odds(\rho) < K$: rejecting is right on average.
+  \item[(A2)] $\odds(\rho)\, q/(1-q) > K$: an author with a good signal is worth listening to.
+  \item[(A3)] $c_g v_b < c_b v_g$ whenever $v_b > 0$: a good-signal author is at least as
+  willing to object as a bad-signal one. A3 holds whenever $c_b \ge c_g$ and $d > 0$.
+\end{enumerate}
+\end{assumption}
+
+Under A3, $\delta_g < \delta_b$ whenever $v_b > 0$.
+
+\subsection{Lemmas}
+
+\begin{lemma}[Signs]\label{lem:signs}
+Under A1 and A2, $e_g > 0 > e_b$ and $\pi_g e_g + \pi_b e_b < 0$.
+\end{lemma}
+
+\begin{proof}
+For any posterior $\mu$, $\mu L_G - (1-\mu) L_B > 0$ if and only if $\odds(\mu) > K$. A2 states
+$\odds(\mu_g) > K$, so $e_g > 0$. Since $\odds(\mu_b) < \odds(\rho) < K$ by A1, $e_b < 0$.
+Finally, $\pi_g \mu_g + \pi_b \mu_b = \rho$, so $\pi_g e_g + \pi_b e_b = \rho L_G - (1-\rho) L_B$,
+which is negative by A1.
+\end{proof}
+
+\begin{lemma}[Monotone objection]\label{lem:monotone}
+Under A3, if a bad-signal author objects at some $\delta$, so does a good-signal author.
+\end{lemma}
+
+\begin{proof}
+If $\delta v_b > c_b$ with $v_b > 0$, then $\delta > \delta_b > \delta_g$ by A3, hence
+$\delta v_g > c_g$ (note $v_g \ge v_b > 0$ because $\mu_g > \mu_b$).
+\end{proof}
+
+\begin{lemma}[First-best bound]\label{lem:firstbest}
+Under A1 and A2, for every $\delta \in [0,1]$ and every pattern of objections,
+$W(\delta) \le \pi_g e_g$, with equality only if $\delta = 1$ and only good-signal authors object.
+\end{lemma}
+
+\begin{proof}
+$W(\delta) = \delta\,[\pi_g o_g e_g + \pi_b o_b e_b] \le \delta\, \pi_g e_g \le \pi_g e_g$,
+using $e_b < 0 < e_g$ (Lemma~\ref{lem:signs}). Both inequalities hold with equality only if
+$o_b = 0$, $o_g = 1$ and $\delta = 1$.
+\end{proof}
+
+\subsection{Propositions under commitment}
+
+Throughout this subsection the designer fixes $\delta$ (in training) before authors decide.
+
+\begin{proposition}[Cheap talk unravels]\label{prop:cheaptalk}
+Under A1 and A2, if $c_b = 0$ and $v_b > 0$, then $W(\delta) < 0$ for every $\delta \in (0,1]$,
+so the optimal deference is $\delta^* = 0$.
+\end{proposition}
+
+\begin{proof}
+For $\delta > 0$, $\delta v_b > 0 = c_b$, so $o_b = 1$. If $o_g = 1$,
+$W(\delta) = \delta(\pi_g e_g + \pi_b e_b) < 0$ by Lemma~\ref{lem:signs}; if $o_g = 0$,
+$W(\delta) = \delta \pi_b e_b < 0$. Since $W(0) = 0$, the unique maximizer is $\delta = 0$.
+\end{proof}
+
+\begin{proposition}[Optimal deference]\label{prop:optimal}
+Under A1--A3, if $v_b > c_b > 0$, then $W$ is uniquely maximized at
+\[
+  \delta^* = \frac{c_b}{v_b} < 1, \qquad W(\delta^*) = \delta^* \pi_g e_g > 0 .
+\]
+\end{proposition}
+
+\begin{proof}
+Since $v_g \ge v_b > 0$, the thresholds satisfy $\delta_g < \delta_b = \delta^* < 1$ and split
+$[0,1]$ into three intervals. On $[0, \delta_g]$, $\delta v_s \le c_s$ for both types, so nobody
+objects and $W = 0$. On $(\delta_g, \delta_b]$, only good-signal authors object, so
+$W(\delta) = \delta \pi_g e_g$, which is positive and strictly increasing by
+Lemma~\ref{lem:signs}. On $(\delta_b, 1]$, bad-signal authors object and, by
+Lemma~\ref{lem:monotone}, so do good-signal authors; hence
+$W(\delta) = \delta(\pi_g e_g + \pi_b e_b) < 0$. The maximum is attained at $\delta_b$ and
+nowhere else.
+\end{proof}
+
+If indifferent authors objected instead, the supremum would not be attained, and any $\delta$
+slightly below $\delta^*$ would come arbitrarily close to it.
+
+\begin{proposition}[The cliff]\label{prop:cliff}
+Under the conditions of Proposition~\ref{prop:optimal}, $W(\delta) < 0$ for every
+$\delta > \delta^*$, and
+\[
+  W(\delta^*) - \lim_{\delta \downarrow \delta^*} W(\delta)
+  = \delta^* \pi_b \big[(1-\mu_b) L_B - \mu_b L_G\big] > 0 .
+\]
+\end{proposition}
+
+\begin{proof}
+Both claims follow from the third interval in the proof of Proposition~\ref{prop:optimal}: just
+above $\delta^*$, $W(\delta) = \delta(\pi_g e_g + \pi_b e_b)$, and the jump equals
+$-\delta^* \pi_b e_b$, which is positive by Lemma~\ref{lem:signs}. Beyond $\delta^*$ the loss
+grows linearly in $\delta$.
+\end{proof}
+
+\begin{proposition}[Comparative statics]\label{prop:statics}
+On the region $v_b > c_b > 0$, the optimal deference $\delta^* = c_b / [\beta - d(1-\mu_b)]$ and
+the optimal gain $W^* = \delta^* \pi_g e_g$ satisfy
+\[
+  \frac{\partial \delta^*}{\partial \beta} = -\frac{c_b}{v_b^2} < 0, \qquad
+  \frac{\partial \delta^*}{\partial d} = \frac{c_b (1-\mu_b)}{v_b^2} > 0, \qquad
+  \frac{\partial \delta^*}{\partial c_b} = \frac{1}{v_b} > 0,
+\]
+and $W^*$ moves in the same direction, because $\pi_g e_g$ does not depend on $\beta$, $d$ or
+$c_b$. Both $\delta^*$ and $W^*$ also increase with the author's signal precision $q$.
+\end{proposition}
+
+\begin{proof}
+The derivatives follow directly from $\delta^* = c_b / v_b$. For $q$:
+$\odds(\mu_b) = \odds(\rho)(1-q)/q$ falls in $q$, so $v_b$ falls and $\delta^*$ rises; and by
+\eqref{eq:bayes}, $\pi_g e_g = \rho q L_G - (1-\rho)(1-q) L_B$ rises in $q$.
+\end{proof}
+
+\begin{proposition}[Raising the cost of groundless objections]\label{prop:evidence}
+Under A1--A3 and $v_g > c_g$:
+(a) $\delta^*$ and $W^*$ are non-decreasing in $c_b$, and strictly increasing while $c_b < v_b$;
+(b) if $c_b \ge v_b$, then $\delta^* = 1$ and $W(1) = \pi_g e_g$, the first best of
+Lemma~\ref{lem:firstbest}.
+\end{proposition}
+
+\begin{proof}
+(a) For $c_b < v_b$ this is Proposition~\ref{prop:statics}.
+(b) If $c_b \ge v_b$, then $\delta v_b \le v_b \le c_b$ for every $\delta \le 1$, so bad-signal
+authors never object, and $W(\delta) = \delta \pi_g e_g$ for $\delta > \delta_g$. This is
+maximized at $\delta = 1$, where it equals the bound of Lemma~\ref{lem:firstbest}. As $c_b$ rises
+to $v_b$, $\delta^* = c_b/v_b$ rises continuously to 1, so $W^*$ is non-decreasing throughout.
+\end{proof}
+
+\begin{corollary}[An evidence window]\label{cor:window}
+Suppose an objection must be backed by evidence that is free to produce for good code and costs
+$F \ge 0$ for buggy code, so that $c_s = c + F(1-\mu_s)$ with $c \ge 0$. Assume $\beta > c$,
+$d > 0$ and $c + F > 0$, and define
+\[
+  \underline{F} = \frac{\beta - c}{1-\mu_b} - d, \qquad
+  \overline{F} = \frac{\beta - c}{1-\mu_g} - d, \qquad \underline{F} < \overline{F}.
+\]
+Then (i) for $F < \underline{F}$, $\delta^* = c_b/v_b < 1$ and rises with $F$;
+(ii) for $\underline{F} \le F < \overline{F}$, $\delta^* = 1$ and pushback attains the first
+best; (iii) for $F \ge \overline{F}$, nobody objects at any $\delta$ and pushback has no value.
+\end{corollary}
+
+\begin{proof}
+Here $c_b - c_g = F(\mu_g - \mu_b) \ge 0$ and $d > 0$, so A3 holds. The condition $c_b \ge v_b$
+is equivalent to $F \ge \underline{F}$, and $v_g > c_g$ is equivalent to $F < \overline{F}$;
+the ordering $\underline{F} < \overline{F}$ follows from $\beta > c$ and
+$1-\mu_g < 1-\mu_b$. Case (i) is Proposition~\ref{prop:optimal} (with $c_b > 0$ because
+$c + F > 0$), and case (ii) is Proposition~\ref{prop:evidence}(b). In case (iii),
+$v_g \le c_g$ and $v_b < v_g \le c_g \le c_b$, so neither type objects for any $\delta \le 1$
+and $W \equiv 0$.
+\end{proof}
+
+\subsection{Equilibria without commitment}
+
+Without commitment, the AI chooses $\delta$ after observing an objection to minimize the
+organization's expected loss given its posterior, and authors choose objection probabilities
+$z_s \in [0,1]$. We study perfect Bayesian equilibria and assume $c_g, c_b > 0$.
+
+\begin{proposition}[Value of commitment]\label{prop:commitment}
+Under A1--A3 and $v_b > c_b > 0$:
+\begin{enumerate}
+  \item There is an equilibrium in which nobody objects and $\delta = 0$, supported by any
+  off-path belief whose odds do not exceed $K$.
+  \item In every equilibrium in which objections occur with positive probability, $z_g = 1$,
+  $\delta = c_b / v_b$, and
+  \[
+    z_b = z^* = \frac{\rho q - K(1-\rho)(1-q)}{K(1-\rho)q - \rho(1-q)} \in (0,1).
+  \]
+  \item In every equilibrium, $W = 0$. The value of commitment is therefore
+  $W(\delta^*) = \delta^* \pi_g e_g > 0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\emph{Part 1.} With $\delta = 0$ every author's payoff from objecting is $-c_s < 0$, so nobody objects; a
+posterior with odds at most $K$ makes $\delta = 0$ optimal after the off-path objection.
+
+\emph{Part 2.} Let $O$ be the posterior odds that the code is good after an objection. If $O > K$, the AI
+sets $\delta = 1$. Then $\delta v_b = v_b > c_b$, so $z_b = 1$, and $z_g = 1$ by
+Lemma~\ref{lem:monotone}; by the Bayes identities \eqref{eq:bayes}, $O = \odds(\rho) < K$, a contradiction. If
+$O < K$, the AI sets $\delta = 0$ and nobody objects, contradicting that objections occur. Hence
+$O = K$ and the AI is indifferent over $\delta$.
+
+Next, $z_b \in (0,1)$. If $z_b = 0$, objections come only from good-signal authors, so
+$O = \odds(\mu_g) > K$ by A2. If $z_b = 1$, then $\delta v_b \ge c_b$, good-signal authors
+strictly prefer to object by A3, and $O = \odds(\rho) < K$. Both contradict $O = K$. A
+bad-signal author mixes only if indifferent, so $\delta = c_b / v_b$; at this $\delta$,
+good-signal authors strictly prefer to object by A3, so $z_g = 1$. By the Bayes identities \eqref{eq:bayes},
+\[
+  O = \frac{\rho q + z \rho (1-q)}{(1-\rho)(1-q) + z (1-\rho) q} = K
+\]
+gives $z = z^*$. The numerator of $z^*$ is positive by A2 and the denominator is positive
+because $\odds(\mu_b) < K$; $z^* < 1$ rearranges to $\rho < K(1-\rho)$, which is A1.
+
+\emph{Part 3.} The gain is $W = \delta \sum_s \pi_s z_s e_s
+= \delta\,[L_G\, P(G, \text{objection}) - L_B\, P(B, \text{objection})]$, which is zero when
+$O = K$, and zero trivially when nobody objects. Comparing with
+Proposition~\ref{prop:optimal} gives the value of commitment.
+\end{proof}
+
+\begin{remark}
+Commitment matters only in the interior case. If $c_b \ge v_b$, bad-signal authors never object,
+the posterior after an objection is $\mu_g$, and $\delta = 1$ is sequentially rational, so the
+first best is reached without commitment. Training thus has its largest leverage exactly when
+authors are biased enough that groundless objections are tempting.
+\end{remark}
+
+All propositions, the first-best bound and the evidence window were also verified numerically on
+random parameter draws satisfying A1--A3 (\texttt{strategic\_user.py -{}-check}).

@@ -1,0 +1,30 @@
+% Standalone build of the strategic-user proofs (pdflatex strategic_proofs.tex).
+% To use them in a paper: add the amsthm lines below to its preamble and
+% \input{strategic_appendix} after \appendix.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Proofs for the Strategic-User Model of AI Deference}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\appendix
+\input{strategic_appendix}
+\end{document}
