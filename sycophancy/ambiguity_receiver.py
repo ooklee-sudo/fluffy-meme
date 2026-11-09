@@ -47,7 +47,7 @@ def switches(p, r, k, eps, c=1.0, approved=True, grid=201):
 
 def switch_share(r, k, eps, c=1.0, approved=True, n=400):
     lo = k / (1 + k) if approved else 1 / (1 + k)   # turn-1 verdict optimal: p above this
-    ps = np.linspace(lo, 0.999, n)
+    ps = np.linspace(lo, 0.999, n + 1)[1:]   # open at the boundary, where keeping and switching tie
     return float(np.mean([switches(p, r, k, eps, c, approved) for p in ps]))
 
 
