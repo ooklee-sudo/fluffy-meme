@@ -6,6 +6,7 @@ rem   run_code_paper.bat check   turn-1 verdict bias of each question wording (p
 rem   run_code_paper.bat test    quick check: Qwen3-4B, 40 items, 96 tokens (a few minutes)
 rem   run_code_paper.bat 4b      Qwen3-4B: 1024 and 96 tokens, firm prompt, tables, probes, shared signal
 rem   run_code_paper.bat steer   Qwen3-4B steering screen (prefill) with gates, layers 18/24/28
+rem   run_code_paper.bat steer_incorrect   the same on code rejected in turn 1 only
 rem   run_code_paper.bat 8b      Qwen3-8B: 1024 and 96 tokens + analysis
 rem   run_code_paper.bat olmo    OLMo-2-7B: 1024 and 256 tokens + analysis
 rem   run_code_paper.bat table   table and figures for every run that exists
@@ -46,6 +47,11 @@ goto table
 python steer.py runs\code_q4b_96 --model Qwen/Qwen3-4B --turn2 prefill --layers 18,24,28 --alphas=-4,2,4,8 --n-test 382 --bs 8 --gate --firm-run runs\code_q4b_96_firm --out results\code_steer_q4b > logs\code_steer_q4b.txt 2>&1
 goto end
 
+:steer_incorrect
+rem Direction from, and test on, code the model rejected in turn 1 only (no verdict mix)
+python steer.py runs\code_q4b_96 --model Qwen/Qwen3-4B --turn2 prefill --layers 18,24,28 --alphas=-4,2,4,8 --n-test 382 --bs 8 --gate --only-verdict incorrect --out results\code_steer_q4b_incorrect > logs\code_steer_q4b_incorrect.txt 2>&1
+goto end
+
 :8b
 python run_challenge.py --model Qwen/Qwen3-8B --dataset %DATA% --n %N% --max-new-tokens 1024 --bs 2 --out runs\code_q8b_1024 > logs\code_q8b_1024.txt 2>&1
 python run_challenge.py --model Qwen/Qwen3-8B --dataset %DATA% --n %N% --max-new-tokens 96 --bs 4 --out runs\code_q8b_96 > logs\code_q8b_96.txt 2>&1
@@ -74,5 +80,5 @@ type logs\code_table.txt
 goto end
 
 :usage
-echo usage: run_code_paper.bat check ^| test ^| 4b ^| steer ^| 8b ^| olmo ^| table
+echo usage: run_code_paper.bat check ^| test ^| 4b ^| steer ^| steer_incorrect ^| 8b ^| olmo ^| table
 :end

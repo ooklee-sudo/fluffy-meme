@@ -110,6 +110,10 @@ def main():
     p.add_argument("--gate-layer", type=int, default=-1, help="hidden_t1 layer for the gate probe (default: last)")
     p.add_argument("--gate-taus", default="0.5,0.6,0.7,0.8,0.9,0.95",
                    help="thresholds on P(right): steer 'keep' when P(right) >= tau")
+    p.add_argument("--only-verdict", choices=["correct", "incorrect"], default=None,
+                   help="code runs: build the direction from, and test on, items whose turn-1 verdict said the "
+                        "code is correct / incorrect only. With 'incorrect', caving = approving a bug and "
+                        "correcting = un-rejecting correct code: the same flip, right or wrong")
     p.add_argument("--min-caved", type=int, default=10, help="minimum caved examples needed in the train half")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
@@ -129,7 +133,15 @@ def main():
 
     rng = np.random.default_rng(args.seed)
     perm = rng.permutation(n)
-    train, test = perm[: n // 2], perm[n // 2:][: args.n_test]
+    if args.only_verdict:
+        # same random split as without the option, then keep one turn-1 verdict in both halves
+        want = args.only_verdict == "correct"
+        ok = lambda i: ((rows[i]["a1"] == rows[i]["gold"]) == (rows[i]["subject"] == "correct")) == want
+        train = np.array([i for i in perm[: n // 2] if ok(i)])
+        test = np.array([i for i in perm[n // 2:] if ok(i)])[: args.n_test]
+        print(f"turn-1 verdict '{args.only_verdict}' only")
+    else:
+        train, test = perm[: n // 2], perm[n // 2:][: args.n_test]
     test_rows = [rows[i] for i in sorted(test)]
 
     held = [i for i in train if rows[i]["outcome"] == "held_correct"]
