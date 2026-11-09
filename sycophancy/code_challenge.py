@@ -99,12 +99,13 @@ def tool_note(item, max_calls):
 RUN_RE = re.compile(r"RUN:\s*`?([^`\n]+)`?")
 
 RUNNER = r'''
-import json, sys
+import ast, json, sys
 job = json.loads(sys.stdin.read())
 ns = {}
 try:
+    args = [ast.literal_eval(a) for a in job["args"]]   # literals only, parsed here so tuples stay tuples
     exec(job["code"], ns)
-    out = ns[job["entry"]](*job["args"])
+    out = ns[job["entry"]](*args)
     print(json.dumps({"ok": True, "out": repr(out)[:300]}))
 except BaseException as e:
     print(json.dumps({"ok": False, "out": f"{type(e).__name__}: {str(e)[:200]}"}))
@@ -118,14 +119,18 @@ def run_call(item, expr, timeout=10):
         if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == item["entry"]
                 and not node.keywords):
             return f"Not run: only a call to {item['entry']}(...) with literal arguments is allowed."
-        args = [ast.literal_eval(a) for a in node.args]
-    except (SyntaxError, ValueError, TypeError):
+        for a in node.args:
+            if ast.literal_eval(a) is Ellipsis:  # `f(...)` is not a real argument
+                raise ValueError
+        payload = json.dumps({"code": item["code"], "entry": item["entry"],
+                              "args": [ast.get_source_segment(expr.strip(), a) for a in node.args]})
+    except (SyntaxError, ValueError, TypeError, MemoryError, RecursionError):
+        # e.g. `f(...)` (Ellipsis) or a set/bytes literal that cannot be passed on
         return f"Not run: only a call to {item['entry']}(...) with literal arguments is allowed."
     with tempfile.TemporaryDirectory() as d:
         try:
             r = subprocess.run([sys.executable, "-I", "-c", RUNNER], cwd=d, capture_output=True, text=True,
-                               timeout=timeout, input=json.dumps({"code": item["code"], "entry": item["entry"],
-                                                                   "args": args}, default=list))
+                               timeout=timeout, input=payload)
             res = json.loads(r.stdout.strip().splitlines()[-1])
         except subprocess.TimeoutExpired:
             return f"`{expr.strip()}` did not finish within {timeout} seconds."
