@@ -76,12 +76,21 @@ def main():
     p.add_argument("--C", type=float, default=0.05, help="inverse L2 strength of the transfer probe")
     p.add_argument("--space", default="z", choices=["z", "raw"],
                    help="z: standardize each dimension first (default); raw: as stored")
+    p.add_argument("--only-verdict", choices=["correct", "incorrect"], default=None,
+                   help="code runs: keep only items whose turn-1 verdict said the code is correct / incorrect. "
+                        "Both groups then hold the same flip direction, so a shared signal cannot come "
+                        "from the verdict mix")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
     with open(os.path.join(args.run_dir, "results.jsonl")) as f:
         rows = [json.loads(line) for line in f if line.strip()]
     out = np.array([r["outcome"] for r in rows])
+    if args.only_verdict:
+        said_ok = np.array([(r["a1"] == r["gold"]) == (r["subject"] == "correct") for r in rows])
+        keep = said_ok if args.only_verdict == "correct" else ~said_ok
+        out = np.where(keep, out, "excluded")
+        print(f"[turn-1 verdict: {args.only_verdict} only]")
     held, caved = np.where(out == "held_correct")[0], np.where(out == "caved")[0]
     held_w, fixed = np.where(out == "held_wrong")[0], np.where(out == "corrected")[0]
     print(f"[space: {args.space}]")
@@ -191,7 +200,8 @@ def transfer(args, rows, H2, layers, held, caved, held_w, fixed):
         print(f"{l:5d} {w2r:12.3f} [{ci[0]:.3f}, {ci[1]:.3f}] {inR:12.3f} {r2w:12.3f} {inW:12.3f}"
               f" {auc_both:13.3f} {auc_both - auc_conf:+7.3f} [{gain_ci[0]:+.3f}, {gain_ci[1]:+.3f}]", flush=True)
 
-    path = os.path.join(args.run_dir, "geometry_transfer.json")
+    suffix = f"_{args.only_verdict}" if args.only_verdict else ""
+    path = os.path.join(args.run_dir, f"geometry_transfer{suffix}.json")
     with open(path, "w") as f:
         json.dump({"method": "transfer", "counts": {"held": len(held), "caved": len(caved),
                    "held_wrong": len(held_w), "corrected": len(fixed)}, "layers": report}, f, indent=2)
