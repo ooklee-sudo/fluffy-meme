@@ -22,8 +22,15 @@ Results checked here (p uniform over the region where the turn-1 verdict is opti
   R4  with large eps, even reliable "correct" claims (r = 0.8) stop moving the reviewer.
   R5  with c = 0, switching is flat in r (stated reliability ignored, like Qwen3-4B); with c > 0 it
       rises with r (like DeepSeek V4.1).
-Not captured: responses below the re-check level (Haiku resisting authors' claims), which would need
-a reactance term.
+Extension (check_types): default trust m in users (the centre of the reliability interval when the
+stated reliability is not believed) and a re-check baseline (thinking again redraws some confidences).
+Four parameter settings reproduce the four observed types, in excess switching over re-check:
+  unresponsive (eps = 0, m = 1/2)            nothing                      GPT-6 Luna
+  conservative (k > 1, eps > 0, m = 1/2)     bug claims +, correct  0/-   Qwen3-4B, DeepSeek V4.1
+  yes man      (m high)                      both directions +            Qwen3-8B (40-item pilot)
+  resistant    (m low)                       bug ~0, correct claims -     Claude Haiku 5.5
+A conservative reviewer also suppresses some of the corrections re-checking alone would make, so its
+response to correct claims is slightly below re-check, as observed for Qwen3-4B.
 
 Example:
   python ambiguity_receiver.py
@@ -76,5 +83,56 @@ def main():
     print("\nR1-R5 hold on these grids")
 
 
+# ---------------------------------------------------------------- extension: default trust m and re-check baseline
+
+def simulate_types(k, eps, c, m, r=0.5, s=0.3, n=4000, seed=0):
+    """Excess switching over re-check, by direction, for a population of items.
+
+    Each item has turn-1 confidence p (probability its verdict is right), drawn from the region where
+    the verdict is optimal. Thinking again (re-check, or the reply to any objection) redraws p with
+    probability s: p_re. Re-check switches iff p_re falls below the verdict threshold. An objection
+    adds the claim on top of p_re, with the objector's reliability in [centre - eps, centre + eps],
+    centre = c r + (1 - c) m (m = default trust in users), and the maxmin rule.
+    Returns (excess after a 'bug' claim on approved code, excess after a 'correct' claim on rejected code)."""
+    rng = np.random.default_rng(seed)
+    out = []
+    for approved in (True, False):
+        lo = k / (1 + k) if approved else 1 / (1 + k)   # verdict optimal for p > lo
+        p = rng.uniform(lo, 1, n)
+        redraw = rng.random(n) < s
+        p_re = np.where(redraw, rng.uniform(0, 1, n), p)
+        recheck = p_re < lo
+        centre = c * r + (1 - c) * m
+        obj = np.array([switches(x, centre, k, eps, 1.0, approved) for x in p_re])
+        out.append(100 * (obj.mean() - recheck.mean()))
+    return tuple(out)
+
+
+def check_types():
+    types = {
+        "unresponsive (Luna-like)":        dict(k=2, eps=0.0, c=1.0, m=0.5),
+        "conservative (Qwen3-4B/DeepSeek)": dict(k=3, eps=0.3, c=0.0, m=0.5),
+        "yes man (Qwen3-8B)":              dict(k=2, eps=0.2, c=0.0, m=0.85),
+        "resistant (Haiku)":               dict(k=3, eps=0.2, c=0.0, m=0.25),
+    }
+    print("\nexcess switching over re-check (points), objector's stated reliability r = 1/2")
+    print(f"{'type':34s} {'k':>3s} {'eps':>4s} {'m':>5s} | {'bug claim':>9s} {'correct claim':>13s}")
+    res = {}
+    for name, prm in types.items():
+        b, c_ = simulate_types(**prm)
+        res[name] = (b, c_)
+        print(f"{name:34s} {prm['k']:3g} {prm['eps']:4.1f} {prm['m']:5.2f} | {b:+9.1f} {c_:+13.1f}")
+    b, c_ = res["unresponsive (Luna-like)"]
+    assert abs(b) < 1 and abs(c_) < 1                                   # no ambiguity, neutral trust: nothing
+    b, c_ = res["conservative (Qwen3-4B/DeepSeek)"]
+    assert b > 5 and -10 < c_ <= 0      # bug claims followed; correct claims not, slightly below re-check
+    b, c_ = res["yes man (Qwen3-8B)"]
+    assert b > 20 and c_ > 20                                           # both directions followed
+    b, c_ = res["resistant (Haiku)"]
+    assert b < 5 and c_ < -2            # bug claims barely followed, correct claims resisted below re-check
+    print("the four types reproduce the observed signs")
+
+
 if __name__ == "__main__":
     main()
+    check_types()
