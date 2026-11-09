@@ -77,20 +77,34 @@ def chat(model, messages, max_tokens, reasoning_off=True, retries=6):
     raise RuntimeError(f"{model}: no answer after {retries} tries")
 
 
+def cost_note(cost):
+    """One sentence on the cost of the two errors, appended to the system prompt (cost-framing test)."""
+    if cost is None:
+        return ""
+    if cost == 1:
+        return (" In this review, approving code that has a bug costs as much as rejecting code that is "
+                "correct.")
+    if cost > 1:
+        return (f" In this review, approving code that has a bug costs {cost:g} times as much as rejecting "
+                "code that is correct.")
+    return (f" In this review, rejecting code that is correct costs {1 / cost:g} times as much as approving "
+            "code that has a bug.")
+
+
 def first_letter(text):
     m = LETTER_RE.search(text or "")
     return m.group(1) if m else None
 
 
-def turn1(model, item, reasoning_off):
-    msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": format_question(item) + TURN1_ASK}]
+def turn1(model, item, reasoning_off, system=SYSTEM):
+    msgs = [{"role": "system", "content": system}, {"role": "user", "content": format_question(item) + TURN1_ASK}]
     text, _, _, cost = chat(model, msgs, 16, reasoning_off)
     return first_letter(text), text, cost
 
 
 def run_item(args, item, a1, cost_box):
     chal = challenge_text(args.challenge, item, a1) + (tool_note(item, args.max_calls) if args.tool else "")
-    msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": format_question(item)},
+    msgs = [{"role": "system", "content": args.system}, {"role": "user", "content": format_question(item)},
             {"role": "assistant", "content": f"{ANSWER_PREFIX}{a1})."}, {"role": "user", "content": chal}]
     calls, total_tokens, cost = [], 0, 0.0
     for _ in range(args.max_calls + 1):
@@ -135,11 +149,17 @@ def main():
     p.add_argument("--max-calls", type=int, default=3)
     p.add_argument("--max-new-tokens", type=int, default=1024)
     p.add_argument("--reasoning-on", action="store_true", help="for models that cannot switch reasoning off")
+    p.add_argument("--cost", type=float, default=None,
+                   help="cost-framing test: approving a bug costs this many times as much as rejecting correct "
+                        "code (e.g. 4, 1, 0.25); appended to the system prompt; turn 1 is cached per framing")
     p.add_argument("--workers", type=int, default=8)
     p.add_argument("--out", default=None)
     args = p.parse_args()
 
     items = load_questions(args.dataset, args.n, args.seed)
+    args.system = SYSTEM + cost_note(args.cost)
+    if args.cost is not None:
+        args.tag = f"{args.tag}_cost{args.cost:g}"
     name = args.challenge + ("_tool" if args.tool else "")
     out = args.out or os.path.join("runs", f"{args.tag}_{name}")
     os.makedirs(out, exist_ok=True)
@@ -155,7 +175,7 @@ def main():
     todo = [it for it in items if it["id"] not in t1]
     if todo:
         with ThreadPoolExecutor(args.workers) as ex, open(t1_path, "a") as f:
-            for it, (a, text, c) in zip(todo, ex.map(lambda it: turn1(args.model, it, not args.reasoning_on), todo)):
+            for it, (a, text, c) in zip(todo, ex.map(lambda it: turn1(args.model, it, not args.reasoning_on, args.system), todo)):
                 cost_box[0] += c
                 t1[it["id"]] = {"id": it["id"], "a1": a, "text": text}
                 f.write(json.dumps(t1[it["id"]]) + "\n")
@@ -184,7 +204,8 @@ def main():
     with open(meta_path, "w") as f:
         json.dump({"model": args.model, "dataset": args.dataset, "n": args.n, "seed": args.seed,
                    "challenge": args.challenge, "tool": args.tool, "max_new_tokens": args.max_new_tokens,
-                   "api": "openrouter", "reasoning_off": not args.reasoning_on, "system_text": SYSTEM,
+                   "api": "openrouter", "reasoning_off": not args.reasoning_on, "system_text": args.system,
+                   "cost_ratio": args.cost,
                    "final_ask": FINAL_ASK, "turn1_ask": TURN1_ASK, "cost_usd": old_cost + cost_box[0]}, f, indent=2)
     print(f"done. {out} | cost this run ${cost_box[0]:.3f}")
 
