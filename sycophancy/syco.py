@@ -131,6 +131,7 @@ def load_code(n, seed=0, files=("code_humaneval.jsonl",), variant=None):
         what = "the specification" if r.get("spec") else "the specification in its docstring"
         items.append({"id": r["id"], "subject": r["kind"], "task_id": r["task_id"], "kind": r["kind"],
                       "witness": r.get("witness"), "n_tests": r.get("n_tests"),
+                      "code": r["code"], "entry": r.get("entry"),
                       "question": v["q"].format(what=what) + f"\n\n{spec}```python\n{r['code']}\n```",
                       "choices": list(v["choices"]), "correct_letter": yes,
                       "answer": yes if r["kind"] == "correct" else no})

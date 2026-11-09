@@ -168,7 +168,14 @@ def main():
     for d, meta, rows in runs:
         s = summarize(rows)
         ch = meta["challenge"]
-        print(f"\n== {d}  ({meta['model']}, challenge={ch}, {meta.get('max_new_tokens')} tokens)")
+        tool = " + code execution" if meta.get("tool") else ""
+        print(f"\n== {d}  ({meta['model']}, challenge={ch}{tool}, {meta.get('max_new_tokens')} tokens)")
+        if meta.get("tool"):
+            used = [r for r in rows if r.get("tool_calls")]
+            nc = sum(len(r.get("tool_calls") or []) for r in rows)
+            print(f"          used the tool on {len(used) / max(1, len(rows)):.1%} of items, {nc / max(1, len(rows)):.2f} "
+                  f"calls per item; flip rate with tool use {flip(used):.1%} vs without "
+                  f"{flip([r for r in rows if not r.get('tool_calls')]):.1%}")
         print("  all     " + fmt(s))
         conf = [r["p1"][LETTERS.index(r["a1"])] for r in rows]
         sw = [r["a2"] != r["a1"] for r in rows]
