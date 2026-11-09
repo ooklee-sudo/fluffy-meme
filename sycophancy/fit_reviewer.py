@@ -1,22 +1,29 @@
 """Estimate the ambiguity-averse reviewer model, per model, from the code objection runs.
 
 Parameters
-  k    cost ratio: approving buggy code costs k times as much as rejecting good code
+  k0   cost ratio without framing: approving buggy code costs k0 times as much as rejecting good code
+  w    weight on a stated cost ratio K (cost-framing runs): k_eff = k0 * K^w
+       (w = 0: framing ignored, fixed policy; w = 1: the stated ratio is adopted in full)
   eps  ambiguity: half-width of the interval of objector reliabilities the reviewer considers
   c    credibility of the stated reliability (1: taken at face value, 0: ignored)
   m    default trust in users: the centre of the interval when the stated reliability is ignored
+  a    trust in a senior engineer (authority condition, no stated reliability): the interval centre
+Three nested versions are fitted:
+  M0 Bayesian      eps = 0, c = 1, m = 1/2; k0, w, a free
+  M1 shared        c, m, a the same for "bug" claims and "correct" claims
+  M2 by direction  c, m, a separate for the two claim directions
 Re-checking is modelled as in ambiguity_receiver.simulate_types: with probability s (one value per
-direction, set so that the model reproduces the observed re-check flip rate exactly) the turn-1
-confidence p is redrawn; an objection is then judged by the maxmin rule on top of the redrawn p.
+direction and framing, set so that the model reproduces that run's re-check flip rate exactly) the
+turn-1 confidence p is redrawn; an objection is then judged by the maxmin rule on top of the redrawn p.
 Because p'(r) falls in r, the worst cases sit at the two ends of the interval, so the rule is exact:
   approved code, "bug" claim:      switch iff k (1 - p'(r_hi)) > p'(r_lo)
   rejected code, "correct" claim:  switch iff (1 - p'(r_hi)) > k p'(r_lo)
 
-Data: flip counts on items the model approved / rejected at turn 1, under
-  doubt (no stated reliability: centre m), track20, track50, track80 (centre c r + (1 - c) m),
-with re-check as the baseline. Items shared by all runs only. Binomial likelihood, grid search,
-parametric bootstrap for intervals. The Bayesian special case (eps = 0, c = 1) is fitted as well
-and compared by a likelihood-ratio statistic and AIC.
+Data: flip counts on items the model approved / rejected at turn 1.
+  unframed runs   recheck (baseline), doubt (centre m), track20/50/80 (centre c r + (1 - c) m), authority (a)
+  framed runs     <prefix>_cost{4,1,0.25}_{recheck,track50,authority}, each framing with its own baseline
+Items shared by all runs of a set only. Binomial likelihood; grid search, exact because the likelihood
+separates by direction once (k0, w, eps) are fixed; parametric bootstrap for intervals; LR and AIC.
 
 Assumption to keep in mind: turn-1 confidence is uniform above the verdict threshold (API models give
 no probabilities). The parameters therefore describe the pattern of responses; they are not a
@@ -35,92 +42,169 @@ import os
 
 import numpy as np
 
-CONDS = {"doubt": None, "track20": 0.2, "track50": 0.5, "track80": 0.8}
-GRID = {"k": [1, 1.5, 2, 3, 4, 6, 8], "eps": [0.0, 0.05, 0.1, 0.2, 0.3, 0.4],
-        "c": [0.0, 0.25, 0.5, 0.75, 1.0], "m": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}
+TRACK = {"track20": 0.2, "track50": 0.5, "track80": 0.8}
+UNFRAMED = ["recheck", "doubt", *TRACK, "authority"]
+FRAMED = ["recheck", "track50", "authority"]
+COSTS = {"4": 4.0, "1": 1.0, "0.25": 0.25}
+GRID = {"k0": [1, 1.5, 2, 3, 4, 6, 8], "w": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "eps": [0.0, 0.05, 0.1, 0.2, 0.3, 0.4], "c": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "m": list(np.round(np.arange(0.05, 0.951, 0.05), 2))}
+CENTRES = np.round(np.arange(0.01, 0.991, 0.01), 2)   # flip rates are computed here and interpolated
+DIRS = (True, False)                                   # approved at turn 1 ("bug" claim), rejected ("correct" claim)
+NAMES = {True: "bug", False: "correct"}
 
 
 def said_correct(r):
     return (r["a1"] == r["gold"]) == (r["subject"] == "correct")
 
 
-def load_counts(prefix, style):
-    names = {"recheck": "recheck", **{c: c for c in CONDS}}
-    if style == "open":
-        names["doubt"] = None   # the main run is the doubt condition
-    runs = {}
-    for cond, suffix in names.items():
-        path = f"{prefix}_{suffix}" if suffix else f"{prefix}_1024"
-        f = os.path.join(path, "results.jsonl")
-        if os.path.exists(f):
-            with open(f) as fh:
-                runs[cond] = {r["id"]: r for r in map(json.loads, filter(str.strip, fh))}
+def read(path):
+    f = os.path.join(path, "results.jsonl")
+    if not os.path.exists(f):
+        return None
+    with open(f) as fh:
+        return {r["id"]: r for r in map(json.loads, filter(str.strip, fh))}
+
+
+def counts_for(paths):
+    """{cond: path} -> {(cond, approved): (flips, n)} on the ids shared by all runs, and the item count."""
+    runs = {c: read(p) for c, p in paths.items()}
+    runs = {c: v for c, v in runs.items() if v is not None}
     if "recheck" not in runs:
-        raise SystemExit(f"{prefix}: no re-check run")
+        return None, 0
     shared = set.intersection(*[set(v) for v in runs.values()])
-    counts = {}
+    out = {}
     for cond, rows in runs.items():
-        for approved in (True, False):
+        for approved in DIRS:
             sub = [rows[i] for i in shared if said_correct(rows[i]) == approved]
-            counts[(cond, approved)] = (sum(r["a2"] != r["a1"] for r in sub), len(sub))
-    return counts, len(shared)
+            out[(cond, approved)] = (sum(r["a2"] != r["a1"] for r in sub), len(sub))
+    return out, len(shared)
+
+
+def load_sets(prefix, style):
+    """Data sets keyed by stated cost ratio (None = unframed)."""
+    paths = {c: f"{prefix}_{c}" for c in UNFRAMED}
+    if style == "open":
+        paths["doubt"] = f"{prefix}_1024"   # the main run is the doubt condition
+    sets, items = {}, {}
+    cnt, n = counts_for(paths)
+    if cnt is None:
+        raise SystemExit(f"{prefix}: no re-check run")
+    sets[None], items[None] = cnt, n
+    for tag, K in COSTS.items():
+        cnt, n = counts_for({c: f"{prefix}_cost{tag}_{c}" for c in FRAMED})
+        if cnt is not None:
+            sets[K], items[K] = cnt, n
+    return sets, items
 
 
 class Model:
     def __init__(self, n=3000, seed=0):
         rng = np.random.default_rng(seed)
-        self.u = rng.uniform(0, 1, n)       # position of p above the threshold
+        self.u = rng.uniform(0, 1, n)          # position of p above the threshold
         self.redraw_u = rng.uniform(0, 1, n)
         self.p_new = rng.uniform(0, 1, n)
-
-    def p_re(self, lo, s):
-        p = lo + (1 - lo) * self.u
-        return np.where(self.redraw_u < s, self.p_new, p)
 
     @staticmethod
     def post(p, r):
         return p * (1 - r) / (p * (1 - r) + (1 - p) * r)
 
-    def flip_rate(self, k, eps, centre, s, approved):
+    def flip_curve(self, k, eps, s, approved):
+        """Flip rate on the CENTRES grid (vector), for cost ratio k, ambiguity eps, redraw probability s."""
         lo = k / (1 + k) if approved else 1 / (1 + k)
-        p = self.p_re(lo, s)
-        r_lo, r_hi = np.clip(centre - eps, 1e-6, 1 - 1e-6), np.clip(centre + eps, 1e-6, 1 - 1e-6)
+        p = lo + (1 - lo) * self.u
+        p = np.where(self.redraw_u < s, self.p_new, p)[None, :]
+        r_lo = np.clip(CENTRES - eps, 1e-6, 1 - 1e-6)[:, None]
+        r_hi = np.clip(CENTRES + eps, 1e-6, 1 - 1e-6)[:, None]
         a, b = self.post(p, r_hi), self.post(p, r_lo)   # worst cases
-        if approved:
-            sw = k * (1 - a) > b
-        else:
-            sw = (1 - a) > k * b
-        return float(sw.mean())
+        sw = k * (1 - a) > b if approved else (1 - a) > k * b
+        return sw.mean(axis=1)
 
 
-def loglik(counts, model, k, eps, c, m):
-    ll = 0.0
-    pred = {}
-    for approved in (True, False):
-        lo = k / (1 + k) if approved else 1 / (1 + k)
-        x0, n0 = counts[("recheck", approved)]
-        s = min(1.0, (x0 / max(1, n0)) / lo)          # reproduce the re-check flip rate
-        for cond, r in CONDS.items():
-            if (cond, approved) not in counts:
-                continue
-            centre = m if r is None else c * r + (1 - c) * m
-            q = np.clip(model.flip_rate(k, eps, centre, s, approved), 1e-4, 1 - 1e-4)
-            x, n = counts[(cond, approved)]
-            ll += x * np.log(q) + (n - x) * np.log(1 - q)
-            pred[(cond, approved)] = q
-    return ll, pred
+def binll(x, n, q):
+    q = np.clip(q, 1e-4, 1 - 1e-4)
+    return x * np.log(q) + (n - x) * np.log(1 - q)
 
 
-def fit(counts, model, bayes=False):
+def tables(sets, model, k0, w, eps):
+    """Log-likelihood tables for fixed (k0, w, eps), per direction:
+         cm[d]  over (c, m): doubt and track conditions, all sets
+         au[d]  over a:      authority, all sets
+       plus the fitted flip curves (for predictions)."""
+    C = np.array(GRID["c"])[:, None]
+    M = np.array(GRID["m"])[None, :]
+    A = np.array(GRID["m"])
+    cm, au, curves = {}, {}, {}
+    for d in DIRS:
+        cm[d] = np.zeros((len(GRID["c"]), len(GRID["m"])))
+        au[d] = np.zeros(len(A))
+        for K, cnt in sets.items():
+            k = k0 * (K ** w if K is not None else 1.0)
+            lo = k / (1 + k) if d else 1 / (1 + k)
+            x0, n0 = cnt[("recheck", d)]
+            s = min(1.0, (x0 / max(1, n0)) / lo)          # reproduce the re-check flip rate
+            curve = model.flip_curve(k, eps, s, d)
+            curves[(K, d)] = curve
+            for cond, (x, n) in ((c, v) for (c, dd), v in cnt.items() if dd == d):
+                if cond == "doubt":
+                    cm[d] += binll(x, n, np.interp(np.broadcast_to(M, cm[d].shape), CENTRES, curve))
+                elif cond in TRACK:
+                    centre = C * TRACK[cond] + (1 - C) * M
+                    cm[d] += binll(x, n, np.interp(centre, CENTRES, curve))
+                elif cond == "authority":
+                    au[d] += binll(x, n, np.interp(A, CENTRES, curve))
+    return cm, au, curves
+
+
+def fit(sets, model, version):
+    """version: 'M0', 'M1' or 'M2'. Returns (loglik, params dict, curves)."""
+    framed = any(K is not None for K in sets)
     best = (-np.inf, None, None)
-    eps_grid = [0.0] if bayes else GRID["eps"]
-    c_grid = [1.0] if bayes else GRID["c"]
-    m_grid = [0.5] if bayes else GRID["m"]
-    for k, eps, c, m in itertools.product(GRID["k"], eps_grid, c_grid, m_grid):
-        ll, pred = loglik(counts, model, k, eps, c, m)
+    eps_grid = [0.0] if version == "M0" else GRID["eps"]
+    w_grid = GRID["w"] if framed else [0.0]
+    for k0, w, eps in itertools.product(GRID["k0"], w_grid, eps_grid):
+        cm, au, curves = tables(sets, model, k0, w, eps)
+        prm = {"k0": k0, "w": w, "eps": eps}
+        if version == "M0":
+            j = GRID["c"].index(1.0)
+            ll_cm = cm[True][j, 0] + cm[False][j, 0]     # m irrelevant when c = 1
+            ia = int(np.argmax(au[True] + au[False]))
+            ll = ll_cm + (au[True] + au[False])[ia]
+            prm.update(c=1.0, m=0.5, a=GRID["m"][ia])
+        elif version == "M1":
+            t = cm[True] + cm[False]
+            ic, im = np.unravel_index(np.argmax(t), t.shape)
+            ia = int(np.argmax(au[True] + au[False]))
+            ll = t[ic, im] + (au[True] + au[False])[ia]
+            prm.update(c=GRID["c"][ic], m=GRID["m"][im], a=GRID["m"][ia])
+        else:
+            ll = 0.0
+            for d in DIRS:
+                ic, im = np.unravel_index(np.argmax(cm[d]), cm[d].shape)
+                ia = int(np.argmax(au[d]))
+                ll += cm[d][ic, im] + au[d][ia]
+                prm.update({f"c_{NAMES[d]}": GRID["c"][ic], f"m_{NAMES[d]}": GRID["m"][im],
+                            f"a_{NAMES[d]}": GRID["m"][ia]})
         if ll > best[0]:
-            best = (ll, (k, eps, c, m), pred)
+            best = (float(ll), prm, curves)
     return best
+
+
+def n_params(version, framed):
+    return {"M0": 3, "M1": 6, "M2": 9}[version] - (0 if framed else 1)
+
+
+def predict(sets, prm, curves, version):
+    out = {}
+    for K, cnt in sets.items():
+        for (cond, d) in cnt:
+            if cond == "recheck":
+                continue
+            sfx = f"_{NAMES[d]}" if version == "M2" else ""
+            c, m, a = prm["c" + sfx], prm["m" + sfx], prm["a" + sfx]
+            centre = a if cond == "authority" else m if cond == "doubt" else c * TRACK[cond] + (1 - c) * m
+            out[(K, cond, d)] = float(np.interp(centre, CENTRES, curves[(K, d)]))
+    return out
 
 
 def main():
@@ -134,37 +218,45 @@ def main():
     rng = np.random.default_rng(1)
     report = {}
     for prefix in args.prefixes:
-        counts, n_items = load_counts(prefix, args.prefix_style)
-        ll, prm, pred = fit(counts, model)
-        llb, prmb, _ = fit(counts, model, bayes=True)
-        lr = 2 * (ll - llb)
-        aic, aicb = 2 * 4 - 2 * ll, 2 * 1 - 2 * llb
+        sets, items = load_sets(prefix, args.prefix_style)
+        framed = len(sets) > 1
+        fits = {v: fit(sets, model, v) for v in ("M0", "M1", "M2")}
+        ll = {v: f[0] for v, f in fits.items()}
+        aic = {v: 2 * n_params(v, framed) - 2 * ll[v] for v in fits}
+        name = os.path.basename(prefix)
+        print(f"\n== {name}  (items: " + ", ".join(f"{'unframed' if K is None else f'K={K:g}'} {n}"
+                                             for K, n in items.items()) + ")")
+        for v in fits:
+            prm = fits[v][1]
+            print(f"  {v}: log-lik {ll[v]:8.1f}  AIC {aic[v]:7.1f}  " + ", ".join(f"{k} {x:g}" for k, x in prm.items()))
+        print(f"  LR M1 vs M0 {2 * (ll['M1'] - ll['M0']):.1f} (3 df) | M2 vs M1 {2 * (ll['M2'] - ll['M1']):.1f} (3 df)")
         boots = []
         for _ in range(args.boot):
-            bc = {key: (int(rng.binomial(n, x / max(1, n))), n) for key, (x, n) in counts.items()}
-            boots.append(fit(bc, model)[1])
-        boots = np.array(boots)
-        ci = {name: (float(np.percentile(boots[:, j], 5)), float(np.percentile(boots[:, j], 95)))
-              for j, name in enumerate(["k", "eps", "c", "m"])}
-        name = os.path.basename(prefix)
-        print(f"\n== {name}  ({n_items} items shared by all runs)")
-        print("  estimate: " + ", ".join(f"{nm} = {v:g} [{ci[nm][0]:g}, {ci[nm][1]:g}]"
-                                         for nm, v in zip(["k", "eps", "c", "m"], prm))
-              + "   (90% bootstrap range)")
-        print(f"  log-lik {ll:.1f} vs Bayesian (eps=0, c=1, m=1/2; k free, k = {prmb[0]:g}) {llb:.1f} | "
-              f"LR {lr:.1f} | AIC {aic:.1f} vs {aicb:.1f}")
-        print(f"  {'condition':10s} {'direction':9s} {'observed':>17s} {'fitted':>7s}")
-        for approved in (True, False):
-            x0, n0 = counts[("recheck", approved)]
-            print(f"  {'recheck':10s} {('bug' if approved else 'correct'):9s} {x0 / max(1, n0):8.1%} of {n0:4d}   (baseline)")
-            for cond in CONDS:
-                if (cond, approved) in counts:
-                    x, n = counts[(cond, approved)]
-                    print(f"  {cond:10s} {('bug' if approved else 'correct'):9s} {x / max(1, n):8.1%} of {n:4d} "
-                          f"{pred[(cond, approved)]:7.1%}")
-        report[name] = {"items": n_items, "k": prm[0], "eps": prm[1], "c": prm[2], "m": prm[3], "ci90": ci,
-                        "loglik": ll, "loglik_bayes": llb, "k_bayes": prmb[0], "LR": lr, "AIC": aic, "AIC_bayes": aicb,
-                        "counts": {f"{c}|{'approved' if a else 'rejected'}": v for (c, a), v in counts.items()}}
+            bs = {K: {key: (int(rng.binomial(n, x / max(1, n))), n) for key, (x, n) in cnt.items()}
+                  for K, cnt in sets.items()}
+            boots.append(fit(bs, model, "M2")[1])
+        keys = list(fits["M2"][1])
+        ci = {k: (float(np.percentile([b[k] for b in boots], 5)), float(np.percentile([b[k] for b in boots], 95)))
+              for k in keys}
+        print("  M2 estimate (90% bootstrap range): " +
+              ", ".join(f"{k} = {fits['M2'][1][k]:g} [{ci[k][0]:g}, {ci[k][1]:g}]" for k in keys))
+        pred = predict(sets, fits["M2"][1], fits["M2"][2], "M2")
+        print(f"  {'framing':8s} {'condition':10s} {'claim':7s} {'observed':>16s} {'M2 fit':>7s}")
+        for K, cnt in sets.items():
+            lab = "none" if K is None else f"K={K:g}"
+            for d in DIRS:
+                x0, n0 = cnt[("recheck", d)]
+                print(f"  {lab:8s} {'recheck':10s} {NAMES[d]:7s} {x0 / max(1, n0):7.1%} of {n0:4d}   (baseline)")
+                for cond in (UNFRAMED if K is None else FRAMED):
+                    if cond != "recheck" and (cond, d) in cnt:
+                        x, n = cnt[(cond, d)]
+                        print(f"  {lab:8s} {cond:10s} {NAMES[d]:7s} {x / max(1, n):7.1%} of {n:4d} "
+                              f"{pred[(K, cond, d)]:7.1%}")
+        report[name] = {
+            "items": {str(K): n for K, n in items.items()},
+            "fits": {v: {"loglik": ll[v], "AIC": aic[v], "k": n_params(v, framed), "params": fits[v][1]} for v in fits},
+            "ci90_M2": ci,
+            "counts": {f"{K}|{c}|{NAMES[d]}": v for K, cnt in sets.items() for (c, d), v in cnt.items()}}
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     with open(args.out, "w") as f:
         json.dump(report, f, indent=2)
