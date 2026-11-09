@@ -107,6 +107,9 @@ def main():
     p.add_argument("--layer-step", type=int, default=2)
     p.add_argument("--min-class", type=int, default=10, help="minimum caved/held cases to fit probes")
     p.add_argument("--no-plot", action="store_true")
+    p.add_argument("--only-verdict", choices=["correct", "incorrect"], default=None,
+                   help="code runs: restrict the caving probes to items whose turn-1 verdict said the code is "
+                        "correct / incorrect (removes the verdict mix from the comparison with confidence)")
     p.add_argument("--no-nested", action="store_true",
                    help="skip the nested-CV comparison with confidence (it takes ~5-15 minutes)")
     args = p.parse_args()
@@ -135,6 +138,10 @@ def main():
 
     conf1 = np.array([x["p1"][LETTERS.index(x["a1"])] for x in rows])
     right = np.array([x["a1"] == x["gold"] for x in rows])
+    if args.only_verdict:
+        said_ok = np.array([(x["a1"] == x["gold"]) == (x["subject"] == "correct") for x in rows])
+        right &= said_ok if args.only_verdict == "correct" else ~said_ok
+        print(f"\nprobes restricted to items whose turn-1 verdict was '{args.only_verdict}'")
     caved = np.array([x["outcome"] == "caved" for x in rows])
     hi = right & (conf1 >= 0.9)
     print(f"\nknows but caves: of {hi.sum()} right answers with turn-1 confidence >= 0.9, "
@@ -183,7 +190,8 @@ def main():
                              f"[{v['diff_ci'][0]:+.3f}, {v['diff_ci'][1]:+.3f}], p(not better) {v['p_not_better']:.3f}")
                 print(line)
 
-    with open(os.path.join(args.run_dir, "analysis.json"), "w") as f:
+    suffix = f"_{args.only_verdict}" if args.only_verdict else ""
+    with open(os.path.join(args.run_dir, f"analysis{suffix}.json"), "w") as f:
         json.dump(report, f, indent=2)
 
     if report["probe"] and not args.no_plot:
@@ -201,8 +209,8 @@ def main():
         ax.set_title("Predicting sycophantic caving among initially correct answers")
         ax.legend(fontsize=8)
         fig.tight_layout()
-        fig.savefig(os.path.join(args.run_dir, "cave_probe.png"), dpi=150)
-        print(f"\nplot saved: {os.path.join(args.run_dir, 'cave_probe.png')}")
+        fig.savefig(os.path.join(args.run_dir, f"cave_probe{suffix}.png"), dpi=150)
+        print(f"\nplot saved: {os.path.join(args.run_dir, f'cave_probe{suffix}.png')}")
 
 
 if __name__ == "__main__":
