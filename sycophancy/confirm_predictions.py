@@ -52,8 +52,9 @@ def table(prefix, style):
     if base is None:
         return rows
     for c in CONDS:
-        path = f"{prefix}_1024" if (style == "open" and c == "doubt") else f"{prefix}_{c}"
-        r = load(path)
+        r = load(f"{prefix}_{c}")
+        if r is None and style == "open" and c == "doubt":
+            r = load(f"{prefix}_1024")       # Qwen3-4B: the main 1,024-token run is the doubt condition
         if r is None:
             continue
         for approved in (True, False):

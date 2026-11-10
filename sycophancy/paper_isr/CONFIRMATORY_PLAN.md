@@ -144,4 +144,7 @@ Order: (1) build the items; (2) generate `predictions_open.md` on the laptop and
 
 ## 7. Deviations
 
-(none yet)
+- 2026-11-11, before any confirmatory run: the exploratory Qwen3-4B evidence-with-tool run used a
+  code runner that mishandled some calls (an Ellipsis argument; tuples turned into lists). It is
+  rerun with the fixed runner, and its rows in `predictions_open.md` are replaced by the rerun
+  before the first confirmatory run. No other prediction changes.
