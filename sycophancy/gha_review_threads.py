@@ -322,8 +322,9 @@ def summary(args):
     print(f"threads with a human reply: {len(rows)} | disputes of the bot's finding: {len(disp)} "
           f"({len(disp) / len(rows):.1%})")
     a = [r for r in rows if r["replier_is_author"]]
-    print(f"  replies by the PR author: {len(a)} ({len(a) / len(rows):.0%}); dispute rate among them "
-          f"{sum(r['dispute'] for r in a) / max(1, len(a)):.1%}")
+    if a:   # GH Archive payloads often omit the pull request's author
+        print(f"  replies by the PR author: {len(a)} ({len(a) / len(rows):.0%}); dispute rate among them "
+              f"{sum(r['dispute'] for r in a) / len(a):.1%}")
     print("\nform of disputes")
     out["form"] = {}
     for fm in FORMS:
