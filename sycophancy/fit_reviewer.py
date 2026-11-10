@@ -42,6 +42,7 @@ import argparse
 import itertools
 import json
 import os
+import time
 
 import numpy as np
 
@@ -241,10 +242,14 @@ def main():
             print(f"  {v}: log-lik {ll[v]:8.1f}  AIC {aic[v]:7.1f}  " + ", ".join(f"{k} {x:g}" for k, x in prm.items()))
         print(f"  LR M1 vs M0 {2 * (ll['M1'] - ll['M0']):.1f} (3 df) | M2 vs M1 {2 * (ll['M2'] - ll['M1']):.1f} (4 df)")
         boots = []
-        for _ in range(args.boot):
+        t0 = time.time()
+        for j in range(args.boot):
             bs = {K: {key: (int(rng.binomial(n, x / max(1, n))), n) for key, (x, n) in cnt.items()}
                   for K, cnt in sets.items()}
             boots.append(fit(bs, model, "M2")[1])
+            if (j + 1) % 10 == 0 or j + 1 == args.boot:
+                left = (time.time() - t0) / (j + 1) * (args.boot - j - 1) / 60
+                print(f"  bootstrap {j + 1}/{args.boot} (~{left:.0f} min left)", flush=True)
         keys = list(fits["M2"][1])
         ci = {k: ((float(np.percentile([b[k] for b in boots], 5)), float(np.percentile([b[k] for b in boots], 95)))
                   if boots else (fits["M2"][1][k],) * 2) for k in keys}
