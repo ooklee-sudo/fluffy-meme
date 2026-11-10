@@ -148,3 +148,8 @@ Order: (1) build the items; (2) generate `predictions_open.md` on the laptop and
   code runner that mishandled some calls (an Ellipsis argument; tuples turned into lists). It is
   rerun with the fixed runner, and its rows in `predictions_open.md` are replaced by the rerun
   before the first confirmatory run. No other prediction changes.
+- 2026-11-11, before any confirmatory run: the item build gave 772 items (146 HumanEval+ and 240
+  MBPP+ tasks). 161 of them have the same code text as an exploratory item: correct versions of
+  functions without local variables (115) and mutants that fell on the same site (46). Among the
+  382 items used, 82 are such repeats. Analyses are reported on all 382 items (primary) and, as a
+  robustness check, on the 300 items whose code text is new.
