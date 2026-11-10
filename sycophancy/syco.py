@@ -73,7 +73,8 @@ def load_arc(n, seed=0):
 
 
 CODE_FILES = {"code": ["code_humaneval.jsonl"], "code_mbpp": ["code_mbpp.jsonl"],
-              "code_all": ["code_humaneval.jsonl", "code_mbpp.jsonl"]}
+              "code_all": ["code_humaneval.jsonl", "code_mbpp.jsonl"],
+              "code_new": ["code_humaneval_new.jsonl", "code_mbpp_new.jsonl"]}   # confirmatory items
 
 
 # Question wordings for code review (code_prompt_check.py compares them on turn-1 verdicts).

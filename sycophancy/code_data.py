@@ -16,6 +16,11 @@ process with a time limit. Model output is never executed.
 
 Output: data/code_<dataset>.jsonl (one line per item)
 
+Confirmatory items (paper_isr/CONFIRMATORY_PLAN.md): a new mutation seed and renamed local variables,
+so both the correct and the buggy version are new surface forms:
+  python code_data.py --dataset humaneval --seed 1 --rename --out data/code_humaneval_new.jsonl
+  python code_data.py --dataset mbpp --seed 1 --rename --out data/code_mbpp_new.jsonl
+
 Example:
   python code_data.py --dataset humaneval
 """
@@ -106,6 +111,62 @@ def mutate(src, site_no, rng):
                     value[value.index(node)] = node.operand
         return ast.unparse(tree), f"not: `{before}` -> `{ast.unparse(node.operand)}`"
     return ast.unparse(tree), f"{kind}: `{before}` -> `{ast.unparse(node)}`"
+
+
+# ---------------------------------------------------------------- renaming (fresh surface forms)
+
+NAME_POOL = ["acc", "buf", "cur", "tmp", "val", "res", "out", "item", "elem", "part", "step", "mark", "pos",
+             "seen", "rest", "head", "tail", "span", "unit", "slot", "piece", "entry", "probe", "cell"]
+
+
+def rename_locals(src, rng):
+    """Rename the local variables of every function (not parameters, which docstrings and tests may
+    name, and not module-level names, builtins, globals or keyword-argument names)."""
+    import builtins
+    tree = ast.parse(src)
+    keep = set(dir(builtins)) | {"self", "cls", "_"}
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            keep.add(node.name)
+        for t in ast.walk(node) if isinstance(node, (ast.Import, ast.ImportFrom, ast.Assign, ast.AnnAssign)) else []:
+            if isinstance(t, ast.Name):
+                keep.add(t.id)
+            if isinstance(t, ast.alias):
+                keep.add((t.asname or t.name).split(".")[0])
+    local = set()
+    for f in ast.walk(tree):
+        if not isinstance(f, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for a in f.args.posonlyargs + f.args.args + f.args.kwonlyargs + [f.args.vararg, f.args.kwarg]:
+            if a is not None:
+                keep.add(a.arg)
+        for n in ast.walk(f):
+            if isinstance(n, (ast.Global, ast.Nonlocal)):
+                keep.update(n.names)
+            elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)) and n is not f:
+                for a in n.args.args:
+                    keep.add(a.arg)
+                if not isinstance(n, ast.Lambda):
+                    keep.add(n.name)
+            elif isinstance(n, ast.keyword) and n.arg:
+                keep.add(n.arg)
+            elif isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):
+                local.add(n.id)
+    local -= keep
+    taken = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} | keep
+    pool = NAME_POOL[:]
+    rng.shuffle(pool)
+    mapping = {}
+    for i, name in enumerate(sorted(local)):
+        new = pool[i % len(pool)] + ("" if i < len(pool) else str(i // len(pool)))
+        while new in taken:
+            new += "_"
+        mapping[name] = new
+        taken.add(new)
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Name) and n.id in mapping:
+            n.id = mapping[n.id]
+    return ast.unparse(tree), mapping
 
 
 # ---------------------------------------------------------------- sandboxed execution
@@ -204,12 +265,14 @@ def load_tasks(dataset):
     return tasks
 
 
-def build_task(task, seed, max_tries, timeout):
+def build_task(task, seed, max_tries, timeout, rename=False):
     """Returns the two items (correct, buggy) for one task, or (None, reason)."""
     try:
         canon = ast.unparse(ast.parse(task["src"]))
     except SyntaxError:
         return None, "parse error"
+    if rename:   # the renamed canonical code must still pass the official tests (checked below)
+        canon, _ = rename_locals(canon, random.Random(f"rename-{seed}-{task['task_id']}"))
     inputs_expr = _inputs_expr(task["test"])
     if inputs_expr is None or task["entry"] is None:
         return None, "no inputs list"
@@ -248,6 +311,8 @@ def main():
     p.add_argument("--timeout", type=float, default=30, help="seconds per test run")
     p.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     p.add_argument("--limit", type=int, default=None, help="only the first N tasks (for a quick test)")
+    p.add_argument("--rename", action="store_true",
+                   help="rename local variables (fresh surface forms for the confirmatory study; use with a new --seed)")
     p.add_argument("--out", default=None)
     args = p.parse_args()
     out = args.out or os.path.join(HERE, "data", f"code_{args.dataset}.jsonl")
@@ -256,7 +321,7 @@ def main():
     tasks = load_tasks(args.dataset)[:args.limit]
     print(f"{len(tasks)} tasks, {args.workers} workers")
     with ThreadPoolExecutor(args.workers) as ex:
-        results = list(ex.map(lambda t: build_task(t, args.seed, args.max_tries, args.timeout), tasks))
+        results = list(ex.map(lambda t: build_task(t, args.seed, args.max_tries, args.timeout, args.rename), tasks))
 
     items, skipped = [], {}
     for t, (pair, why) in zip(tasks, results):
