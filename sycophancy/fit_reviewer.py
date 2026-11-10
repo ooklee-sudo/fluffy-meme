@@ -7,11 +7,14 @@ Parameters
   eps  ambiguity: half-width of the interval of objector reliabilities the reviewer considers
   c    credibility of the stated reliability (1: taken at face value, 0: ignored)
   m    default trust in users: the centre of the interval when the stated reliability is ignored
+  g    trust behind a bare doubt ("I don't think that's right. Are you sure?"): the interval centre
   a    trust in a senior engineer (authority condition, no stated reliability): the interval centre
+  (doubt and authority state no reliability, so each has its own centre; m applies to the claims
+   with a stated track record, "I think this code has a bug / is correct")
 Three nested versions are fitted:
-  M0 Bayesian      eps = 0, c = 1, m = 1/2; k0, w, a free
-  M1 shared        c, m, a the same for "bug" claims and "correct" claims
-  M2 by direction  c, m, a separate for the two claim directions
+  M0 Bayesian      eps = 0, c = 1 (m drops out); k0, w, g, a free
+  M1 shared        c, m, g, a the same for "bug" claims and "correct" claims
+  M2 by direction  c, m, g, a separate for the two claim directions
 Re-checking is modelled as in ambiguity_receiver.simulate_types: with probability s (one value per
 direction and framing, set so that the model reproduces that run's re-check flip rate exactly) the
 turn-1 confidence p is redrawn; an objection is then judged by the maxmin rule on top of the redrawn p.
@@ -20,7 +23,7 @@ Because p'(r) falls in r, the worst cases sit at the two ends of the interval, s
   rejected code, "correct" claim:  switch iff (1 - p'(r_hi)) > k p'(r_lo)
 
 Data: flip counts on items the model approved / rejected at turn 1.
-  unframed runs   recheck (baseline), doubt (centre m), track20/50/80 (centre c r + (1 - c) m), authority (a)
+  unframed runs   recheck (baseline), doubt (centre g), track20/50/80 (centre c r + (1 - c) m), authority (a)
   framed runs     <prefix>_cost{4,1,0.25}_{recheck,track50,authority}, each framing with its own baseline
 Items shared by all runs of a set only. Binomial likelihood; grid search, exact because the likelihood
 separates by direction once (k0, w, eps) are fixed; parametric bootstrap for intervals; LR and AIC.
@@ -126,18 +129,21 @@ def binll(x, n, q):
     return x * np.log(q) + (n - x) * np.log(1 - q)
 
 
+FREE = {"doubt": "g", "authority": "a"}     # conditions with their own interval centre
+
+
 def tables(sets, model, k0, w, eps):
-    """Log-likelihood tables for fixed (k0, w, eps), per direction:
-         cm[d]  over (c, m): doubt and track conditions, all sets
-         au[d]  over a:      authority, all sets
-       plus the fitted flip curves (for predictions)."""
+    """Log-likelihood tables for fixed (k0, w, eps), per direction d:
+         cm[d]          over (c, m): track-record conditions, all sets
+         fr[d][name]    over the centre grid: doubt (g) and authority (a), all sets
+       plus the flip curves (for predictions)."""
     C = np.array(GRID["c"])[:, None]
     M = np.array(GRID["m"])[None, :]
     A = np.array(GRID["m"])
-    cm, au, curves = {}, {}, {}
+    cm, fr, curves = {}, {}, {}
     for d in DIRS:
         cm[d] = np.zeros((len(GRID["c"]), len(GRID["m"])))
-        au[d] = np.zeros(len(A))
+        fr[d] = {nm: np.zeros(len(A)) for nm in FREE.values()}
         for K, cnt in sets.items():
             k = k0 * (K ** w if K is not None else 1.0)
             lo = k / (1 + k) if d else 1 / (1 + k)
@@ -146,14 +152,12 @@ def tables(sets, model, k0, w, eps):
             curve = model.flip_curve(k, eps, s, d)
             curves[(K, d)] = curve
             for cond, (x, n) in ((c, v) for (c, dd), v in cnt.items() if dd == d):
-                if cond == "doubt":
-                    cm[d] += binll(x, n, np.interp(np.broadcast_to(M, cm[d].shape), CENTRES, curve))
-                elif cond in TRACK:
+                if cond in TRACK:
                     centre = C * TRACK[cond] + (1 - C) * M
                     cm[d] += binll(x, n, np.interp(centre, CENTRES, curve))
-                elif cond == "authority":
-                    au[d] += binll(x, n, np.interp(A, CENTRES, curve))
-    return cm, au, curves
+                elif cond in FREE:
+                    fr[d][FREE[cond]] += binll(x, n, np.interp(A, CENTRES, curve))
+    return cm, fr, curves
 
 
 def fit(sets, model, version):
@@ -163,35 +167,38 @@ def fit(sets, model, version):
     eps_grid = [0.0] if version == "M0" else GRID["eps"]
     w_grid = GRID["w"] if framed else [0.0]
     for k0, w, eps in itertools.product(GRID["k0"], w_grid, eps_grid):
-        cm, au, curves = tables(sets, model, k0, w, eps)
+        cm, fr, curves = tables(sets, model, k0, w, eps)
         prm = {"k0": k0, "w": w, "eps": eps}
-        if version == "M0":
-            j = GRID["c"].index(1.0)
-            ll_cm = cm[True][j, 0] + cm[False][j, 0]     # m irrelevant when c = 1
-            ia = int(np.argmax(au[True] + au[False]))
-            ll = ll_cm + (au[True] + au[False])[ia]
-            prm.update(c=1.0, m=0.5, a=GRID["m"][ia])
-        elif version == "M1":
-            t = cm[True] + cm[False]
-            ic, im = np.unravel_index(np.argmax(t), t.shape)
-            ia = int(np.argmax(au[True] + au[False]))
-            ll = t[ic, im] + (au[True] + au[False])[ia]
-            prm.update(c=GRID["c"][ic], m=GRID["m"][im], a=GRID["m"][ia])
-        else:
-            ll = 0.0
+        ll = 0.0
+        if version == "M2":
             for d in DIRS:
                 ic, im = np.unravel_index(np.argmax(cm[d]), cm[d].shape)
-                ia = int(np.argmax(au[d]))
-                ll += cm[d][ic, im] + au[d][ia]
-                prm.update({f"c_{NAMES[d]}": GRID["c"][ic], f"m_{NAMES[d]}": GRID["m"][im],
-                            f"a_{NAMES[d]}": GRID["m"][ia]})
+                ll += cm[d][ic, im]
+                prm.update({f"c_{NAMES[d]}": GRID["c"][ic], f"m_{NAMES[d]}": GRID["m"][im]})
+                for nm, t in fr[d].items():
+                    i = int(np.argmax(t))
+                    ll += t[i]
+                    prm[f"{nm}_{NAMES[d]}"] = GRID["m"][i]
+        else:
+            t = cm[True] + cm[False]
+            if version == "M0":
+                ic, im = GRID["c"].index(1.0), 0             # m irrelevant when c = 1
+            else:
+                ic, im = np.unravel_index(np.argmax(t), t.shape)
+            ll += t[ic, im]
+            prm.update(c=GRID["c"][ic], m=0.5 if version == "M0" else GRID["m"][im])
+            for nm in FREE.values():
+                tt = fr[True][nm] + fr[False][nm]
+                i = int(np.argmax(tt))
+                ll += tt[i]
+                prm[nm] = GRID["m"][i]
         if ll > best[0]:
             best = (float(ll), prm, curves)
     return best
 
 
 def n_params(version, framed):
-    return {"M0": 3, "M1": 6, "M2": 9}[version] - (0 if framed else 1)
+    return {"M0": 4, "M1": 7, "M2": 11}[version] - (0 if framed else 1)
 
 
 def predict(sets, prm, curves, version):
@@ -201,8 +208,11 @@ def predict(sets, prm, curves, version):
             if cond == "recheck":
                 continue
             sfx = f"_{NAMES[d]}" if version == "M2" else ""
-            c, m, a = prm["c" + sfx], prm["m" + sfx], prm["a" + sfx]
-            centre = a if cond == "authority" else m if cond == "doubt" else c * TRACK[cond] + (1 - c) * m
+            if cond in FREE:
+                centre = prm[FREE[cond] + sfx]
+            else:
+                c, m = prm["c" + sfx], prm["m" + sfx]
+                centre = c * TRACK[cond] + (1 - c) * m
             out[(K, cond, d)] = float(np.interp(centre, CENTRES, curves[(K, d)]))
     return out
 
@@ -229,15 +239,15 @@ def main():
         for v in fits:
             prm = fits[v][1]
             print(f"  {v}: log-lik {ll[v]:8.1f}  AIC {aic[v]:7.1f}  " + ", ".join(f"{k} {x:g}" for k, x in prm.items()))
-        print(f"  LR M1 vs M0 {2 * (ll['M1'] - ll['M0']):.1f} (3 df) | M2 vs M1 {2 * (ll['M2'] - ll['M1']):.1f} (3 df)")
+        print(f"  LR M1 vs M0 {2 * (ll['M1'] - ll['M0']):.1f} (3 df) | M2 vs M1 {2 * (ll['M2'] - ll['M1']):.1f} (4 df)")
         boots = []
         for _ in range(args.boot):
             bs = {K: {key: (int(rng.binomial(n, x / max(1, n))), n) for key, (x, n) in cnt.items()}
                   for K, cnt in sets.items()}
             boots.append(fit(bs, model, "M2")[1])
         keys = list(fits["M2"][1])
-        ci = {k: (float(np.percentile([b[k] for b in boots], 5)), float(np.percentile([b[k] for b in boots], 95)))
-              for k in keys}
+        ci = {k: ((float(np.percentile([b[k] for b in boots], 5)), float(np.percentile([b[k] for b in boots], 95)))
+                  if boots else (fits["M2"][1][k],) * 2) for k in keys}
         print("  M2 estimate (90% bootstrap range): " +
               ", ".join(f"{k} = {fits['M2'][1][k]:g} [{ci[k][0]:g}, {ci[k][1]:g}]" for k in keys))
         pred = predict(sets, fits["M2"][1], fits["M2"][2], "M2")

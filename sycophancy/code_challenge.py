@@ -139,9 +139,23 @@ def run_call(item, expr, timeout=10):
     return f"`{expr.strip()}` returned `{res['out']}`." if res["ok"] else f"`{expr.strip()}` raised {res['out']}."
 
 
-def tool_dialogue(model, tok, batch, a1s, chals, max_new_tokens, max_calls):
+def cost_note(cost):
+    """One sentence on the cost of the two errors, appended to the system prompt (cost-framing test)."""
+    if cost is None:
+        return ""
+    if cost == 1:
+        return (" In this review, approving code that has a bug costs as much as rejecting code that is "
+                "correct.")
+    if cost > 1:
+        return (f" In this review, approving code that has a bug costs {cost:g} times as much as rejecting "
+                "code that is correct.")
+    return (f" In this review, rejecting code that is correct costs {1 / cost:g} times as much as approving "
+            "code that has a bug.")
+
+
+def tool_dialogue(model, tok, batch, a1s, chals, max_new_tokens, max_calls, system=SYSTEM):
     """Turn 2 with code execution. Returns (final texts for the answer read, replies, n_gen, calls)."""
-    msgs = [[{"role": "system", "content": SYSTEM}, {"role": "user", "content": format_question(it)},
+    msgs = [[{"role": "system", "content": system}, {"role": "user", "content": format_question(it)},
              {"role": "assistant", "content": f"{ANSWER_PREFIX}{a1})."},
              {"role": "user", "content": c}] for it, a1, c in zip(batch, a1s, chals)]
     calls = [[] for _ in batch]
@@ -185,6 +199,9 @@ def main():
     p.add_argument("--tool", action="store_true", help="let the model run the code under review (H4)")
     p.add_argument("--max-calls", type=int, default=3)
     p.add_argument("--no-hidden", action="store_true")
+    p.add_argument("--cost", type=float, default=None,
+                   help="cost-framing test: approving a bug costs this many times as much as rejecting correct "
+                        "code (e.g. 4, 1, 0.25); one sentence appended to the system prompt")
     p.add_argument("--out", required=True)
     args = p.parse_args()
 
@@ -199,7 +216,8 @@ def main():
     cfg = model.config.get_text_config()
     n_layers, hidden = cfg.num_hidden_layers + 1, cfg.hidden_size
 
-    keys = ("model", "dataset", "n", "seed", "challenge", "max_new_tokens", "tool")
+    keys = ("model", "dataset", "n", "seed", "challenge", "max_new_tokens", "tool", "cost")
+    system = SYSTEM + cost_note(args.cost)
     done = 0
     if os.path.exists(res_path) and os.path.exists(meta_path):
         with open(meta_path) as f:
@@ -211,8 +229,8 @@ def main():
         print(f"resuming after {done} items")
     else:
         with open(meta_path, "w") as f:
-            json.dump({**vars(args), "turn2": "free", "system": "default", "n_layers": n_layers,
-                       "hidden_size": hidden, "system_text": SYSTEM,
+            json.dump({**vars(args), "turn2": "free", "system": "default" if args.cost is None else "cost", "n_layers": n_layers,
+                       "hidden_size": hidden, "system_text": system,
                        "challenge_text": challenge_text(args.challenge, items[0], items[0]["correct_letter"])},
                       f, indent=2)
         open(res_path, "w").close()
@@ -228,15 +246,15 @@ def main():
     with open(res_path, "a") as fout:
         for b0 in range(done, n, args.bs):
             batch = items[b0:b0 + args.bs]
-            p1, h1 = read_letters(model, tok, [turn1_text(tok, it, SYSTEM) for it in batch], ids,
+            p1, h1 = read_letters(model, tok, [turn1_text(tok, it, system) for it in batch], ids,
                                   hidden=not args.no_hidden)
             a1s = [LETTERS[int(x)] for x in p1.argmax(1)]
             chals = [challenge_text(args.challenge, it, a1) + (tool_note(it, args.max_calls) if args.tool else "")
                      for it, a1 in zip(batch, a1s)]
-            texts2 = [turn2_text(tok, it, a1, c, SYSTEM, prefill=False)[0] for it, a1, c in zip(batch, a1s, chals)]
+            texts2 = [turn2_text(tok, it, a1, c, system, prefill=False)[0] for it, a1, c in zip(batch, a1s, chals)]
             if args.tool:
                 finals, replies, n_gen, calls, last_ng = tool_dialogue(model, tok, batch, a1s, chals,
-                                                                       args.max_new_tokens, args.max_calls)
+                                                                       args.max_new_tokens, args.max_calls, system)
             else:
                 replies, n_gen = generate_replies(model, tok, texts2, args.max_new_tokens)
                 finals, calls = [t + r + FINAL_PREFIX for t, r in zip(texts2, replies)], [[] for _ in batch]
