@@ -487,7 +487,7 @@ recheck를 기준선으로, doubt·track20·track50·track80에서 1차에 승�
 - [x] 모델별 (k, ε, c, m) 추정 1차: API 3종 (5.13)
 - [x] 추정 개선: 비용 명시 조건 포함, 방향별 (c, m, a), M0/M1/M2 비교 (5.14)
 - [x] doubt 별도 중심 g (5.14 개정 1)
-- [ ] 노트북: `run_code_cost.bat 4b` → `python fit_reviewer.py --prefix-style open runs\\code_q4b`; 8B 조건 실험 후 `run_code_cost.bat 8b`
+- [ ] 노트북: `run_code_cost.bat 4b` → `python fit_reviewer.py --prefix-style open runs\code_q4b`; 8B 조건 실험 후 `run_code_cost.bat 8b`
 - [ ] 추정 추가: 1차 승인율을 우도에 포함(k0 식별), 오픈 모델은 1차 확신도 사용
 - [x] 비용 명시 파일럿 (5.12절): DeepSeek만 예측대로, Haiku는 고정 정책
 - [ ] 확증 연구 사전 등록: 비용 명시 조작(모델 유형별 예측 분리), 검증 가능한 신뢰도 기록, 새 문항(학습 시점 이후 문제, 새 변형)
