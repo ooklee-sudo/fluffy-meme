@@ -1,0 +1,27 @@
+matched rows 1787 leaked 606
+deepseek_diff    0.998881
+deepseek_win     0.998881
+qwen_diff        0.965865
+qwen_win         0.965865
+haiku_diff       0.332960
+haiku_win        0.332960
+dtype: float64
+total LLM spend so far $1.667
+n 1724 leaked 582
+judge agreement corr(diff) deepseek~qwen = 0.50
+haiku subsample n=575 corr(avg open, haiku)=0.64
+human-vs-judge: corr(win, judge win prob)=0.18
+mean judge quality gap (focal-opp): leaked -0.12 vs not -0.08
+matched, no controls     beta=-0.0154 se=0.0270 p=0.57
++ rule controls          beta=-0.0105 se=0.0277 p=0.704
++ judges (avg)           beta=-0.0065 se=0.0278 p=0.816
++ deepseek only          beta=-0.0040 se=0.0277 p=0.885
++ qwen only              beta=-0.0100 se=0.0278 p=0.718
+   outcome lose: beta=+0.0506 (0.0298)
+   outcome tie: beta=-0.0409 (0.0231)
+  fit = lambda f, d, y='win': smf.ols(f'{y} ~ {f}', d).fit(cov_type='cluster', cov_kwds={'groups': pd.factorize(d.pair)[0]})
+H1a leak x top3 = -0.0671 (0.0519) p=0.196
+  |gap| small: beta=+0.0493 (0.0743) n_leak=191
+  |gap| mid  : beta=+0.0680 (0.0660) n_leak=166
+  |gap| large: beta=+0.0306 (0.0794) n_leak=225
+substantive prompts only: beta=-0.0310 (0.0386) n_leak=350

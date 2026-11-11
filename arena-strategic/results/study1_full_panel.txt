@@ -1,0 +1,13 @@
+rows 47843 leaked 606 pairs 350
+no controls                  beta=-0.0255 se=0.0186 p=0.17
++ rule controls              beta=-0.0186 se=0.0186 p=0.316
++ short-prompt FE, cl100     beta=-0.0175 se=0.0191 p=0.359
+   outcome lose     beta=+0.0690 se=0.0198
+   outcome tie      beta=-0.0446 se=0.0145
+   outcome bothbad  beta=-0.0058 se=0.0137
+H1 x top3   leak=+0.0171 (0.0237)  interaction=-0.0907 (0.0365) p=0.013
+H1 x repeat leak=-0.0150 (0.0194)  interaction=-0.0502 (0.0590) p=0.395
+  dev=xai        n_leak= 337 beta=+0.0044 (0.0256)
+  dev=anthropic  n_leak= 170 beta=-0.0658 (0.0335)
+  dev=google     n_leak=  58 beta=-0.1019 (0.0623)
+  dev=alibaba    n_leak=  23 beta=+0.0137 (0.1071)

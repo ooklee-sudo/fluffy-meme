@@ -1,0 +1,13 @@
+debut events: {'amazon-nova-experimental-chat-05-14': '2025-06-11', 'amazon.nova-pro-v1:0': '2025-05-17', 'claude-3-7-sonnet-20250219-thinking-32k': '2025-05-17', 'claude-opus-4-20250514': '2025-05-22', 'claude-opus-4-20250514-thinking-16k': '2025-06-06', 'claude-sonnet-4-20250514': '2025-05-22', 'claude-sonnet-4-20250514-thinking-32k': '2025-06-06', 'command-a-03-2025': '2025-05-17', 'deepseek-r1-0528': '2025-05-29', 'gemini-2.5-flash': '2025-05-20', 'gemini-2.5-flash-lite-preview-06-17-thinking': '2025-06-12', 'gemini-2.5-pro': '2025-05-23', 'gemini-2.5-pro-preview-05-06': '2025-05-06', 'gemma-3n-e4b-it': '2025-06-18', 'grok-3-mini-high': '2025-07-07', 'grok-4-0709': '2025-07-10', 'hunyuan-turbos-20250416': '2025-06-06', 'kimi-k2-0711-preview': '2025-07-14', 'llama-4-maverick-03-26-experimental': '2025-05-01', 'llama-4-scout-17b-16e-instruct': '2025-06-18', 'magistral-medium-2506': '2025-06-12', 'minimax-m1': '2025-06-18', 'mistral-medium-2505': '2025-05-17', 'mistral-small-2506': '2025-07-04', 'mistral-small-3.1-24b-instruct-2503': '2025-06-11', 'qwen3-235b-a22b': '2025-04-29', 'qwen3-235b-a22b-instruct-2507': '2025-07-22', 'qwen3-235b-a22b-no-thinking': '2025-05-27', 'qwen3-30b-a3b': '2025-04-29', 'qwen3-coder-480b-a35b-instruct': '2025-07-24'}
+
+Study 2: event-model outcomes by week since debut (model FE; week 5+ = reference)
+  won     w0:+0.010(0.007)  w1:+0.012(0.006)  w2:+0.006(0.008)  w3:-0.002(0.006)  w4:+0.004(0.007)
+  single  w0:+0.009(0.005)  w1:+0.001(0.004)  w2:-0.005(0.004)  w3:+0.001(0.006)  w4:+0.001(0.004)
+  dup     w0:+0.020(0.004)  w1:+0.014(0.003)  w2:+0.006(0.003)  w3:+0.006(0.004)  w4:+0.004(0.003)
+  daily battles, median across models by week: {0: 98.0, 1: 132.0, 2: 97.0, 3: 86.0, 4: 89.0, 5: 72.0}
+
+Study 3: top 10 (full sample): gemini-2.5-pro:1187, gemini-2.5-pro-preview-03-25:1159, grok-4-0709:1152, o3-2025-04-16:1138, chatgpt-4o-latest-20250326:1136, deepseek-r1-0528:1133, gemini-2.5-pro-preview-05-06:1132, grok-3-preview-02-24:1128, llama-4-maverick-03-26-experimental:1126, gemini-2.5-flash:1118
+  drop leaks                    n_dropped=   803  tau@10=1.000 tau@20=0.979  reversals in top20=2  max|dScore|=2.6
+  drop leaks+debut week         n_dropped= 23139  tau@10=0.867 tau@20=0.895  reversals in top20=10  max|dScore|=65.5
+  drop leaks+debut+dup prompts  n_dropped= 28229  tau@10=0.822 tau@20=0.884  reversals in top20=11  max|dScore|=65.5
+  bootstrap (30 resamples) top-20 reversals: median=14, 90th pct=23
