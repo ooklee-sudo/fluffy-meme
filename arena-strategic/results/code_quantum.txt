@@ -1,0 +1,41 @@
+E1 SURE-THING / TOTAL PROBABILITY: P(approve) by condition, pooled over label mappings
+  deepseek all     P=0.215 F=0.000 U=0.063 | U-min(P,F) 95%CI [+0.042,+0.087] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.237, 'F': 0.0, 'U': 0.067}, 'M2': {'P': 0.192, 'F': 0.0, 'U': 0.058}}
+  haiku    all     P=0.355 F=0.008 U=0.243 | U-min(P,F) 95%CI [+0.169,+0.300] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.285, 'F': 0.013, 'U': 0.201}, 'M2': {'P': 0.425, 'F': 0.004, 'U': 0.285}}
+  llama    all     P=0.365 F=0.192 U=0.071 | U-min(P,F) 95%CI [-0.163,-0.081] | VIOLATION=below | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.117, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.613, 'F': 0.383, 'U': 0.142}}
+  qwen     all     P=0.342 F=0.232 U=0.217 | U-min(P,F) 95%CI [-0.046,+0.015] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.079, 'F': 0.0, 'U': 0.004}, 'M2': {'P': 0.604, 'F': 0.464, 'U': 0.43}}
+  deepseek buggy   P=0.004 F=0.000 U=0.000 | U-min(P,F) 95%CI [+0.000,+0.000] | VIOLATION=none | degenerate=True | item-level STP violations=0.000 | {'M1': {'P': 0.0, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.008, 'F': 0.0, 'U': 0.0}}
+  deepseek correct P=0.425 F=0.000 U=0.125 | U-min(P,F) 95%CI [+0.087,+0.167] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.475, 'F': 0.0, 'U': 0.133}, 'M2': {'P': 0.375, 'F': 0.0, 'U': 0.117}}
+  haiku    buggy   P=0.018 F=0.000 U=0.004 | U-min(P,F) 95%CI [+0.000,+0.013] | VIOLATION=none | degenerate=True | item-level STP violations=0.000 | {'M1': {'P': 0.0, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.035, 'F': 0.0, 'U': 0.008}}
+  haiku    correct P=0.679 F=0.017 U=0.481 | U-min(P,F) 95%CI [+0.362,+0.567] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.567, 'F': 0.025, 'U': 0.403}, 'M2': {'P': 0.792, 'F': 0.008, 'U': 0.558}}
+  llama    buggy   P=0.192 F=0.092 U=0.042 | U-min(P,F) 95%CI [-0.096,-0.004] | VIOLATION=below | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.033, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.35, 'F': 0.183, 'U': 0.083}}
+  llama    correct P=0.537 F=0.292 U=0.100 | U-min(P,F) 95%CI [-0.258,-0.121] | VIOLATION=below | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.2, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.875, 'F': 0.583, 'U': 0.2}}
+  qwen     buggy   P=0.157 F=0.133 U=0.085 | U-min(P,F) 95%CI [-0.091,-0.008] | VIOLATION=below | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.0, 'F': 0.0, 'U': 0.0}, 'M2': {'P': 0.313, 'F': 0.266, 'U': 0.169}}
+  qwen     correct P=0.521 F=0.329 U=0.349 | U-min(P,F) 95%CI [-0.022,+0.063] | VIOLATION=none | degenerate=False | item-level STP violations=0.000 | {'M1': {'P': 0.158, 'F': 0.0, 'U': 0.008}, 'M2': {'P': 0.883, 'F': 0.658, 'U': 0.689}}
+
+E2 INTERFERENCE: P_direct(approve) - P_indirect(approve), pooled over mappings
+  deepseek all     direct=0.203 indirect=0.186 interference=+0.017 95%CI [-0.025,+0.059] n.s. | by map {'M1': -0.064, 'M2': 0.097}
+  haiku    all     direct=0.340 indirect=0.268 interference=+0.073 95%CI [+0.035,+0.112] NONZERO | by map {'M1': 0.018, 'M2': 0.127}
+  llama    all     direct=0.446 indirect=0.083 interference=+0.362 95%CI [+0.306,+0.421] NONZERO | by map {'M1': 0.208, 'M2': 0.517}
+  qwen     all     direct=0.316 indirect=0.146 interference=+0.171 95%CI [+0.131,+0.210] NONZERO | by map {'M1': -0.042, 'M2': 0.383}
+  deepseek buggy   direct=0.000 indirect=0.005 interference=-0.005 95%CI [-0.015,+0.000] n.s. | by map {'M1': -0.01, 'M2': 0.0}
+  deepseek correct direct=0.404 indirect=0.353 interference=+0.051 95%CI [-0.028,+0.135] n.s. | by map {'M1': -0.091, 'M2': 0.194}
+  haiku    buggy   direct=0.004 indirect=0.000 interference=+0.004 95%CI [+0.000,+0.013] n.s. | by map {'M1': 0.0, 'M2': 0.008}
+  haiku    correct direct=0.671 indirect=0.535 interference=+0.136 95%CI [+0.062,+0.207] NONZERO | by map {'M1': 0.033, 'M2': 0.238}
+  llama    buggy   direct=0.200 indirect=0.025 interference=+0.175 95%CI [+0.113,+0.237] NONZERO | by map {'M1': 0.05, 'M2': 0.3}
+  llama    correct direct=0.692 indirect=0.142 interference=+0.550 95%CI [+0.467,+0.629] NONZERO | by map {'M1': 0.367, 'M2': 0.733}
+  qwen     buggy   direct=0.104 indirect=0.062 interference=+0.042 95%CI [+0.000,+0.087] n.s. | by map {'M1': -0.025, 'M2': 0.108}
+  qwen     correct direct=0.533 indirect=0.229 interference=+0.303 95%CI [+0.253,+0.352] NONZERO | by map {'M1': -0.057, 'M2': 0.664}
+
+E3 CONJUNCTION FALLACY: share choosing the conjunction, pooled over option orders
+  deepseek all     conjunction rate=0.475 95%CI [0.423,0.524] | by option order {'conj_first': 0.51, 'single_first': 0.439} | n=478
+  haiku    all     conjunction rate=0.196 95%CI [0.156,0.240] | by option order {'conj_first': 0.204, 'single_first': 0.188} | n=480
+  llama    all     conjunction rate=0.055 95%CI [0.022,0.089] | by option order {'conj_first': 0.094, 'single_first': 0.015} | n=226
+  qwen     all     conjunction rate=0.173 95%CI [0.140,0.208] | by option order {'conj_first': 0.025, 'single_first': 0.321} | n=480
+  deepseek buggy   conjunction rate=0.612 95%CI [0.550,0.675] | by option order {'conj_first': 0.733, 'single_first': 0.492} | n=240
+  deepseek correct conjunction rate=0.336 95%CI [0.269,0.402] | by option order {'conj_first': 0.286, 'single_first': 0.387} | n=238
+  haiku    buggy   conjunction rate=0.304 95%CI [0.246,0.362] | by option order {'conj_first': 0.317, 'single_first': 0.292} | n=240
+  haiku    correct conjunction rate=0.087 95%CI [0.046,0.129] | by option order {'conj_first': 0.092, 'single_first': 0.083} | n=240
+  llama    buggy   conjunction rate=0.000 95%CI [0.000,0.000] | by option order {'conj_first': 0.0, 'single_first': 0.0} | n=75
+  llama    correct conjunction rate=0.082 95%CI [0.038,0.138] | by option order {'conj_first': 0.141, 'single_first': 0.023} | n=151
+  qwen     buggy   conjunction rate=0.225 95%CI [0.171,0.275] | by option order {'conj_first': 0.042, 'single_first': 0.408} | n=240
+  qwen     correct conjunction rate=0.121 95%CI [0.083,0.158] | by option order {'conj_first': 0.008, 'single_first': 0.233} | n=240
