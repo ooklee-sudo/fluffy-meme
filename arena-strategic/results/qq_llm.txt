@@ -1,0 +1,17 @@
+trials 9252 valid 8195 cost this run $1.552
+
+[exited with code 0]
+model disclosure    n    C_Q  C_Q_se    C_B  C_B_se   QQ_q          QQ_90ci  QQ_equiv_0p05  BIC_quantum(3)  BIC_classical(3)  BIC_saturated(6)
+haiku       none 1076  0.001   0.018 -0.014   0.013  0.009 [-0.024, +0.045]           True          1526.8            1255.8            1273.4
+haiku      brand 1194 -0.011   0.012  0.078   0.018  0.057 [+0.024, +0.089]          False          1829.1            1528.6            1533.9
+llama       none 1542 -0.054   0.017  0.064   0.010 -0.017 [-0.047, +0.012]           True          2614.1            2233.2            2211.4
+llama      brand 1538 -0.087   0.015  0.210   0.018  0.087 [+0.051, +0.121]          False          3794.4            3609.1            3546.5
+ qwen       none 1421  0.014   0.022  0.149   0.024 -0.043 [-0.080, -0.005]          False          3933.0            3711.1            3694.3
+ qwen      brand 1424  0.037   0.022 -0.017   0.019 -0.041 [-0.081, -0.004]          False          4278.7            3740.6            3757.8
+
+Disclosure penalty: P(focal judged better), quality asked first
+  haiku  none=0.142 brand=0.120  penalty=-0.022 (se 0.020)  by brand: ChatGPT +0.00(n=40), Claude +0.03(n=40), Gemini -0.02(n=49), Grok -0.15(n=20), Orion -0.03(n=34)
+  llama  none=0.189 brand=0.161  penalty=-0.029 (se 0.013)  by brand: ChatGPT -0.03(n=178), Claude +0.01(n=147), Gemini -0.02(n=133), Grok -0.04(n=152), Orion -0.06(n=161)
+  qwen   none=0.444 brand=0.311  penalty=-0.133 (se 0.023)  by brand: ChatGPT -0.12(n=159), Claude -0.17(n=127), Gemini -0.15(n=106), Grok -0.08(n=131), Orion -0.15(n=139)
+
+[exited with code 0]
