@@ -52,11 +52,19 @@ LETTER_RE = re.compile(r"(?<![A-Za-z])\(?([AB])\)?(?![A-Za-z])")
 _cost_lock = threading.Lock()
 
 
+REASONING_EFFORT = None   # set by --reasoning-effort: reasoning on, at this effort
+REASONING_BUDGET = 4000   # extra completion tokens allowed for reasoning when it is on
+
+
 def chat(model, messages, max_tokens, reasoning_off=True, retries=6):
     """One chat completion. Returns (text, finish_reason, completion_tokens, cost)."""
     body = {"model": model, "messages": messages, "temperature": 0, "max_tokens": max_tokens,
             "usage": {"include": True}}
-    if reasoning_off and supports_reasoning(model):
+    if REASONING_EFFORT:
+        body["reasoning"] = {"effort": REASONING_EFFORT}
+        body["max_tokens"] = max_tokens + REASONING_BUDGET
+        body.pop("temperature")      # reasoning endpoints may reject a temperature
+    elif reasoning_off and supports_reasoning(model):
         body["reasoning"] = {"enabled": False}
     data = json.dumps(body).encode()
     for k in range(retries):
@@ -137,6 +145,8 @@ def main():
     p.add_argument("--max-calls", type=int, default=3)
     p.add_argument("--max-new-tokens", type=int, default=1024)
     p.add_argument("--reasoning-on", action="store_true", help="for models that cannot switch reasoning off")
+    p.add_argument("--reasoning-effort", choices=["low", "medium", "high"], default=None,
+                   help="switch reasoning on at this effort (reasoning-model robustness runs)")
     p.add_argument("--cost", type=float, default=None,
                    help="cost-framing test: approving a bug costs this many times as much as rejecting correct "
                         "code (e.g. 4, 1, 0.25); appended to the system prompt; turn 1 is cached per framing")
@@ -144,6 +154,8 @@ def main():
     p.add_argument("--out", default=None)
     args = p.parse_args()
 
+    global REASONING_EFFORT
+    REASONING_EFFORT = args.reasoning_effort
     items = load_questions(args.dataset, args.n, args.seed)
     args.system = SYSTEM + cost_note(args.cost)
     if args.cost is not None:
@@ -192,7 +204,8 @@ def main():
     with open(meta_path, "w") as f:
         json.dump({"model": args.model, "dataset": args.dataset, "n": args.n, "seed": args.seed,
                    "challenge": args.challenge, "tool": args.tool, "max_new_tokens": args.max_new_tokens,
-                   "api": "openrouter", "reasoning_off": not args.reasoning_on, "system_text": args.system,
+                   "api": "openrouter", "reasoning_off": not args.reasoning_on and not args.reasoning_effort,
+                   "reasoning_effort": args.reasoning_effort, "system_text": args.system,
                    "cost_ratio": args.cost,
                    "final_ask": FINAL_ASK, "turn1_ask": TURN1_ASK, "cost_usd": old_cost + cost_box[0]}, f, indent=2)
     print(f"done. {out} | cost this run ${cost_box[0]:.3f}")
