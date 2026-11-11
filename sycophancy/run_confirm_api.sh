@@ -8,9 +8,9 @@ declare -A MODELS=(
   [api_haiku]=anthropic/claude-haiku-5.5
   [api_luna]=openai/gpt-6-luna
   [api_deepseek]=deepseek/deepseek-v4.1-flash
-  [api_minimax]=minimax/minimax-m3.1-flash
   [api_mimo]=xiaomi/mimo-v2.6-flash
-  [api_glm]=z-ai/glm-5.3-flashx
+  [api_gemma]=google/gemma-4-31b-it
+  [api_qwen38]=qwen/qwen3.8-omni-flash
 )
 TAGS=("${@:-${!MODELS[@]}}")
 mkdir -p logs

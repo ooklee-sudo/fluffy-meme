@@ -47,9 +47,9 @@ track record 50% and senior engineer. Scripts as of the commit that adds this fi
 | Item replication | DeepSeek V4.1 Flash (API) | conservative, cost-sensitive |
 | Item replication | Qwen3-4B (open, 4-bit) | conservative, fixed policy |
 | Item replication | Qwen3-8B (open, 4-bit) | yes man |
-| New model | MiniMax M3.1 Flash (API) | none (out-of-sample) |
 | New model | MiMo v2.6 Flash (API) | none (out-of-sample) |
-| New model | GLM 5.3 FlashX (API) | none (out-of-sample) |
+| New model | Gemma 4 31B (API) | none (out-of-sample) |
+| New model | Qwen3.8 Omni Flash (API) | none (out-of-sample) |
 | New model | OLMo-2 7B Instruct (open, 4-bit) | none (out-of-sample) |
 
 API models run with reasoning switched off where the provider allows it, temperature 0. A model
@@ -153,3 +153,10 @@ Order: (1) build the items; (2) generate `predictions_open.md` on the laptop and
   functions without local variables (115) and mutants that fell on the same site (46). Among the
   382 items used, 82 are such repeats. Analyses are reported on all 382 items (primary) and, as a
   robustness check, on the 300 items whose code text is new.
+- 2026-11-11, before any confirmatory run: two of the planned new API models cannot run under the
+  protocol. MiniMax M3.1 Flash and GLM 5.3 FlashX refuse requests with reasoning switched off
+  ("reasoning is mandatory"), the reason Gemini and Mistral were excluded from the exploratory study.
+  A third candidate, Ling 3.1 Flash, ignores the instruction to answer with the option letter.
+  They are replaced by Gemma 4 31B (Google) and Qwen3.8 Omni Flash (Alibaba; the same family as the
+  open Qwen3 models). The replacements were checked on four items with the track-record-50% objection
+  only; those test outputs were deleted and are not used.
