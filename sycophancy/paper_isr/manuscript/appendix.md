@@ -106,4 +106,4 @@ All propositions, the first-best bound, and the evidence window were also verifi
 
 **Turn-1 verdicts.** Share of correct code approved at turn 1: Qwen3-4B 37%, Qwen3-8B 56%, Haiku 75%, Luna 68%, DeepSeek 82%. Share of buggy code approved: 5%, 10%, 6%, 1%, and 4%. Items whose turn-1 answer could not be parsed were dropped (at most 9 of 382 per model).
 
-**Code and data.** All scripts, item files, prompts, label files, and the confirmatory plan are available in the project repository (to be deposited at submission).
+**Code and data.** All scripts, item files, prompts, and label files are available in the project repository (to be deposited at submission).
