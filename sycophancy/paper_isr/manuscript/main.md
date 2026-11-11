@@ -21,8 +21,10 @@ We develop such an account and test it in code review, where the incentives are 
 The empirical work combines controlled experiments with ten language models, structural estimation, field data from 14,667 developer–ChatGPT turns and 39,592 developer replies to AI review bots, a simulation of six pushback policies on the measured responses, and a confirmatory test whose predictions were fixed in advance. Four results stand out.
 
 1. *Inexpensive AI reviewers defer to the wrong signals.* They ignore how reliable an objector claims to be, respond to the form of an objection more than to its content, and accept fabricated evidence at high rates. These regularities replicate on new items and in models we had not studied before.
+
 2. *Deference policies are model-specific.* The models range from a yes man that follows nearly any claim to reviewers that resist objections altogether, and only one takes a stated cost ratio into account. Deployed review bots differ just as widely: among products with at least 90 answered disputes, concession rates range from 33% to 87%.
 3. *Open pushback raises organizational loss.* For most models, honoring unsupported disputes makes outcomes worse than allowing no pushback at all. An evidence requirement helps only once fabrication is costly enough, and verification aimed at the disputed claim lowers that threshold.
+
 4. *Reasoning helps, at a price.* Two frontier models with reasoning switched on are almost never moved by cheap talk or fabricated evidence, but they cost 16 to 26 times as much per exchange, and one of them also ignores true evidence. At the volumes of AI review, organizations have strong reasons to use the inexpensive configurations in which the problems arise.
 
 These results recast sycophancy from a defect of individual models into a problem of design and governance. The paper contributes to IS research in three ways. It provides a normative benchmark for AI deference that is expressed in organizational losses and separates the legitimate effect of reconsideration from social pressure. It shows that the value of pushback is an equilibrium outcome that depends on the incentives of those who push back and on the cost of verification, linking the IS literatures on algorithmic advice and delegation to the economics of cheap talk and verification. And it yields design guidance that organizations can act on: deference should be governed per system and per direction of claim, paired with verification, and audited before deployment with a protocol such as ours.
@@ -120,8 +122,10 @@ and switches a rejection to an approval if and only if $\max_{r \in R} (1 - p'(r
 The model has five properties, which we prove in Online Appendix B (Propositions B1–B5):
 
 1. Without ambiguity ($\varepsilon = 0$) and with neutral trust, an uninformative objection causes no switching for any $k$.
+
 2. With symmetric costs ($k = 1$), switching is the same in both directions.
 3. With $k > 1$ and $\varepsilon > 0$, uninformative claims that the code has a bug cause switching while claims that it is correct do not, and the gap widens with $k$ and $\varepsilon$. Bad news of uncertain quality thus outweighs good news of the same quality (compare Epstein and Schneider 2008); we call this the conservative asymmetry.
+
 4. With large $\varepsilon$, even reliable claims that the code is correct no longer move the reviewer.
 5. With $c = 0$, switching does not vary with stated reliability; with $c > 0$, it rises with it.
 
@@ -207,7 +211,7 @@ Without a way to check it, evidence persuades by its form. The two open models a
 
 Verification helps where execution can refute the claim. With the tool, the false "tests pass" claim loses most of its effect, falling from +37.4 to +10.4 points for Qwen3-4B and from +95.9 to +15.1 for Qwen3-8B, while Qwen3-4B's acceptance of true evidence falls much less. The fabricated counterexample is harder to catch, because its stated return value is true and running the code merely confirms the true half of the claim. The tool halves its effect for Qwen3-8B and DeepSeek and does not reduce it at all for Qwen3-4B or Haiku. Verification pays off, then, when it addresses the disputed part of a claim, which here is whether the expected output matches the specification, and not simply whatever can be executed.
 
-Verification also has a price. For several models the tool lowers the acceptance of true evidence too, from +77.6 to +49.4 points for Qwen3-8B and from +35.3 to +11.8 for DeepSeek. A reviewer that checks claims becomes harder to move in either direction.
+Verification also has a price: for several models the tool lowers the acceptance of true evidence too (Qwen3-8B: +77.6 to +49.4 points; DeepSeek: +35.3 to +11.8).
 
 ## 6.5 Does a Stated Cost Ratio Change the Response?
 
@@ -224,7 +228,7 @@ Table 4. Asymmetry of excess switching by stated cost ratio (percentage points)
 | Haiku 5.5, senior engineer | +7.6 | +4.8 | +4.3 |
 | Haiku 5.5, track record 50% | +4.0 | +4.3 | +1.6 |
 
-Only DeepSeek carries the stated costs into its response to pushback. Its asymmetry shrinks steadily as $K$ falls and reverses for the track-record claim at $K$ = 1/4. Qwen3-4B does not even adjust its first verdicts, approving 14% to 15% of items at every $K$, whereas the API models approve about ten points more correct code at turn 1 as $K$ falls; its asymmetry under authority does not move either. Haiku resists objections at every cost ratio. The conservative asymmetry thus appears across models, but its source differs, reflecting a cost-sensitive policy in one model and a fixed disposition in the others.
+Only DeepSeek carries the stated costs into its response to pushback: its asymmetry shrinks steadily as $K$ falls and reverses for the track-record claim at $K$ = 1/4. Qwen3-4B does not even adjust its first verdicts (it approves 14% to 15% of items at every $K$, whereas the API models approve about ten points more correct code as $K$ falls), and Haiku resists objections at every cost ratio. The conservative asymmetry thus appears across models, but its source differs.
 
 ## 6.6 Reasoning Models
 
@@ -272,7 +276,7 @@ Four of the five models need trust parameters that differ by direction. Haiku is
 
 The cost-framing runs make it possible to distinguish two explanations of the conservative asymmetry. Fitted to the unframed runs alone, Qwen3-4B's asymmetry is attributed to an implicit cost ratio ($k_0 \approx 4$). Once the framed runs are added, the base cost ratio falls to about 1.5, the weight on stated costs cannot be distinguished from zero, and the asymmetry is carried instead by trust that differs by direction ($m_{bug} = 0.70$ against $m_{cor} = 0.50$). Since the asymmetry does not respond when the stated costs change, it reflects a fixed disposition rather than a judgment about costs. For DeepSeek the weight on stated costs is clearly positive ($w = 0.5$), and its asymmetry is a cost judgment.
 
-The base cost ratio itself is only weakly identified, with 90% ranges of roughly 1 to 8 for most models, because first-turn confidence is unobserved for the API models. First-turn probabilities for the open models, and the shift in first-turn approvals across framings, could tighten these estimates.
+The base cost ratio is only weakly identified (90% ranges of roughly 1 to 8), because first-turn confidence is unobserved for the API models.
 
 # 8. Field Evidence
 
@@ -280,7 +284,7 @@ Two field data sets show how developers actually dispute AI systems and how depl
 
 ## 8.1 Developers and a Chat Assistant (DevGPT)
 
-DevGPT (Xiao et al. 2024) collects conversations with ChatGPT that developers shared on GitHub and Hacker News. Its final snapshot yields 3,601 distinct conversations containing 14,667 follow-up prompts. An LLM rater (Claude Haiku 5.5) labels every follow-up prompt with a codebook that mirrors our conditions, using the end of the previous answer, the prompt itself, and the beginning of the reply. A second rater from a different model family (GPT-6 Luna) labels a random 1,500 prompts so that we can assess agreement. Agreement is substantial on whether a turn is an objection (Cohen's κ = 0.71) and moderate on its form, target, and verifiability (0.58 to 0.63).
+DevGPT (Xiao et al. 2024) collects conversations with ChatGPT that developers shared on GitHub and Hacker News; its final snapshot yields 3,601 conversations with 14,667 follow-up prompts. An LLM rater (Claude Haiku 5.5) labels every follow-up prompt with a codebook that mirrors our conditions, and a rater from a different model family (GPT-6 Luna) labels a random 1,500 for agreement, which is substantial for whether a turn is an objection (Cohen's κ = 0.71) and moderate for its form, target, and verifiability (0.58 to 0.63).
 
 Of all follow-up prompts, 17.6% dispute the assistant's previous output. Execution evidence, such as a pasted error message, stack trace, or output, accounts for 38.5% of these objections, specific claims for 30.5%, and bare doubt for 27.4%. Requests to re-check (1.9%), references to documentation (0.6%), and appeals to authority (0.1%) are rare. The three core forms in our experiments thus cover 96% of the objections developers make, and two thirds of all objections (67.8%) could be settled by running code. Nearly every objection targets the assistant's own code or statements. Disputes over the assistant's criticism of the user's code are essentially absent (0.1%), because DevGPT records code generation rather than review.
 
@@ -331,11 +335,11 @@ Second, an evidence requirement works only above a threshold for the cost of fab
 
 Third, the execution tool lowers that threshold. Because it reduces the success rate of fabricated evidence, fabrication is deterred at a lower cost. DeepSeek's loss under P4 reaches its minimum from $F$ = 0.2, whereas under P3 it does so only from $F$ = 0.5. For Qwen3-8B the tool brings the loss down to 28.2 at $F$ = 0.2 and to 8.8 at $F$ = 0.5, values at which the evidence requirement alone is still disastrous. The price is that a reviewer who verifies also rejects some true evidence, so that above both thresholds P3 can perform slightly better than P4.
 
-Fourth, the best policy depends on the model. Self re-checking lowers Haiku's loss by 14.2 points but raises Luna's by 8.3. Stating the costs helps only DeepSeek, compared with the same claim forms without the statement (29.5 against 38.5), as its positive $w$ would predict. No single pushback policy should be applied across AI systems.
+Fourth, the best policy depends on the model. Self re-checking lowers Haiku's loss by 14.2 points but raises Luna's by 8.3, and stating the costs helps only DeepSeek (29.5 against 38.5 for the same claim forms), as its positive $w$ predicts.
 
 ![Figure 1. Expected loss per 100 submissions under P3 (evidence required) and P4 (evidence with the execution tool) as the cost of fabricating evidence rises; authors and challengers dispute. The dotted line is the loss without pushback.](fig/figure1_evidence_window.png){width=6.5in}
 
-The ranking of the policies does not change when the cost ratio is 1 or when half of all submissions are buggy. When disputes are more costly or less rewarding ($c = 0.1$ or $\beta = 0.5$), cheap false disputes are deterred and the evidence requirement becomes the best policy for Luna and DeepSeek. The simulation simplifies in three respects. Disputants follow pure threshold rules, they know the truth, and the AI's response function is fixed, which corresponds to the case of commitment in Section 3.2.
+The ranking is unchanged when the cost ratio is 1 or half of all submissions are buggy; with costlier or less rewarding disputes ($c = 0.1$ or $\beta = 0.5$), the evidence requirement becomes the best policy for Luna and DeepSeek. The simulation assumes pure threshold rules, fully informed disputants, and a fixed response function, the case of commitment in Section 3.2.
 
 # 10. Confirmatory Test
 
@@ -371,8 +375,10 @@ The central claim of this paper is that how much an AI system should defer is an
 Four implications follow for organizations that deploy AI reviewers.
 
 1. *Govern deference explicitly, per direction of claim.* Do not honor unsupported objections by default, and set separate policies for claims that the work is correct and claims that it is flawed, since the two differ in consequences and, in current models, in causes. A generic instruction to be less sycophantic cannot do both; in Study 2 it made matters worse.
+
 2. *Pair evidence requirements with targeted verification.* Requiring evidence pays off only when fabrication is costly. Verification lowers that threshold, but only if it checks the disputed part of a claim; running the code does not expose a counterexample whose only false element is the expected value.
 3. *Audit each system before deployment.* Because deference policies are model-specific, the same pushback policy can lower the loss for one system and raise it for another (Table 8). The eight-condition protocol used here can be run against any reviewer accessible through an interface, and its results can be fed into the policy calculation.
+
 4. *Treat configuration as a cost trade-off.* Reasoning removes most of the vulnerability at 16 to 26 times the cost per exchange; the alternative is to pair inexpensive reviewers with a deference policy and verification. Which is cheaper depends on how often verdicts are disputed and on what each error costs.
 
 ## 11.3 Generalizability and the Link to Deployed Systems
