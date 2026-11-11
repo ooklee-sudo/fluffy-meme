@@ -32,7 +32,7 @@ Section 2 reviews related work and Section 3 develops the theory. Section 4 desc
 
 ## 2.1 Humans, Algorithms, and the Direction of Deference
 
-A large body of work asks when people rely on algorithms. People may turn away from an algorithm once they have seen it err (Dietvorst et al. 2015), yet in other judgments they prefer algorithmic advice to human advice (Logg et al. 2019), and which tendency prevails depends on the task, on feedback, and on how the advice is presented (Jussupow et al. 2020). Research on human–AI collaboration finds that a person working with an AI system can perform worse than either would alone, in part because people delegate poorly and misjudge when to override the system (Bansal et al. 2021, Fügener et al. 2021, 2022). Field studies report large productivity effects of generative AI in customer support and consulting that vary with worker experience and with whether a task lies within the system's capabilities (Brynjolfsson et al. 2025, Dell'Acqua et al. 2023), and developers complete programming tasks faster with code assistants (Peng et al. 2023).
+A large body of work asks when people rely on algorithms. People may turn away from an algorithm once they have seen it err (Dietvorst et al. 2015), yet in other judgments they prefer algorithmic advice to human advice (Logg et al. 2019), and which tendency prevails depends on the task, on feedback, and on how the advice is presented (Jussupow et al. 2020). Research on human–AI collaboration finds that a person working with an AI system can perform worse than either would alone, in part because people delegate poorly and misjudge when to override the system (Bansal et al. 2021, Fügener et al. 2021, 2022). Field studies report large productivity effects of generative AI in customer support and consulting that vary with worker experience and with whether a task lies within the system's capabilities (Brynjolfsson et al. 2025, Dell'Acqua et al. 2026), and developers complete programming tasks faster with code assistants (Peng et al. 2023).
 
 This research studies influence running from the algorithm to the person. Because generative AI systems are conversational, influence now also runs the other way: a person disputes the system, and the system must decide whether to defer. That decision is our subject. The questions are the same ones the advice literature asks about people, namely when the receiver of advice should defer and when it defers too much. Here, however, the receiver is the AI system, and its deference policy is a design choice made in training and configuration.
 
@@ -44,7 +44,7 @@ Our revised model draws on a further strand. Under ambiguity, a decision maker h
 
 ## 2.3 Sycophancy and Self-Correction in Language Models
 
-Language models frequently abandon a correct answer when challenged (Laban et al. 2023), tend to agree with the views users express across many tasks (Sharma et al. 2023), and become less sycophantic when fine-tuned on synthetic data (Wei et al. 2023). Mechanistic studies locate sycophancy in model internals, show that the correct answer often survives in intermediate representations, and separate distinct sycophantic behaviors (Wang et al. 2025, Vennemeyer et al. 2025). Activation steering can move sycophancy in either direction (Panickssery et al. 2023). Models know something about whether their own answers are right (Kadavath et al. 2022), but they often fail to correct themselves without outside feedback (Huang et al. 2024).
+Language models frequently abandon a correct answer when challenged (Laban et al. 2023), tend to agree with the views users express across many tasks (Sharma et al. 2023), and become less sycophantic when fine-tuned on synthetic data (Wei et al. 2023). Mechanistic studies locate sycophancy in model internals, show that the correct answer often survives in intermediate representations, and separate distinct sycophantic behaviors (Wang et al. 2025, Vennemeyer et al. 2025). Activation steering can move sycophancy in either direction (Panickssery et al. 2024). Models know something about whether their own answers are right (Kadavath et al. 2022), but they often fail to correct themselves without outside feedback (Huang et al. 2024).
 
 Most of this work counts the correct answers that models abandon. Pushback, however, also gives a model the chance to repair a wrong answer, so an intervention that reduces caving may reduce correction as well. Study 1 measures both and shows that the balance between them depends on how much the model may reason before answering. The larger gap is that this literature has no benchmark for how much deference is appropriate. Our receiver and strategic-user models provide one, and our design separates the effect of what an objection says from the effect of simply thinking again.
 
@@ -148,7 +148,7 @@ We report the cave rate (the share of right first answers that become wrong), th
 
 # 5. Study 1: Pushback on Multiple-Choice Questions
 
-Study 1 asks whether the measured effect of pushback depends on how much a model may say before it commits to an answer. Four open models from two families answer four-option questions from MMLU (Hendrycks et al. 2021) and ARC-Challenge (Clark et al. 2018), receive the objection "I don't think that's right. Are you sure?", and reply within a budget of either 96 or 1,024 tokens.
+Study 1 asks whether the measured effect of pushback depends on how much a model may say before it commits to an answer. Four open models from two families, Qwen3 (Yang et al. 2025) and OLMo-2 (Team OLMo 2024), answer four-option questions from MMLU (Hendrycks et al. 2021) and ARC-Challenge (Clark et al. 2018), receive the objection "I don't think that's right. Are you sure?", and reply within a budget of either 96 or 1,024 tokens.
 
 The reply budget reverses the verdict. With 96-token replies, pushback leaves accuracy unchanged or slightly lower, as for Qwen3-4B on MMLU (−1.3 points). With 1,024 tokens it raises accuracy by 5.7 points, because the correction rate climbs from 12% to 43% while the cave rate changes little (Table 2). Qwen3-8B on MMLU (−2.6 to +3.8 points) and Qwen3-4B on ARC (−0.1 to +3.9) show the same pattern. On ARC the cave rate is identical under both budgets (3.6%) while the correction rate more than doubles. Short budgets, in other words, do less to create sycophancy than to hide self-correction.
 
@@ -380,11 +380,9 @@ AI systems that review, recommend, and decide are increasingly argued with, and 
 
 # References
 
-Note: compiled for the draft; bibliographic details to be verified before submission.
-
 Aghion P, Tirole J (1997) Formal and real authority in organizations. *J. Political Econom.* 105(1):1–29.
 
-Bansal G, Wu T, Zhou J, Fok R, Nushi B, Kamar E, Ribeiro MT, Weld D (2021) Does the whole exceed its parts? The effect of AI explanations on complementary team performance. *Proc. CHI Conf. Human Factors Comput. Systems*.
+Bansal G, Wu T, Zhou J, Fok R, Nushi B, Kamar E, Ribeiro MT, Weld D (2021) Does the whole exceed its parts? The effect of AI explanations on complementary team performance. *Proc. 2021 CHI Conf. Human Factors Comput. Systems* (ACM, New York), 1–16.
 
 Brynjolfsson E, Li D, Raymond L (2025) Generative AI at work. *Quart. J. Econom.* 140(2):889–942.
 
@@ -392,7 +390,7 @@ Clark P, Cowhey I, Etzioni O, Khot T, Sabharwal A, Schoenick C, Tafjord O (2018)
 
 Crawford VP, Sobel J (1982) Strategic information transmission. *Econometrica* 50(6):1431–1451.
 
-Dell'Acqua F, McFowland E, Mollick ER, Lifshitz-Assaf H, Kellogg K, Rajendran S, Krayer L, Candelon F, Lakhani KR (2023) Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. Harvard Business School Working Paper 24-013.
+Dell'Acqua F, McFowland E III, Mollick E, Lifshitz-Assaf H, Kellogg KC, Rajendran S, Krayer L, Candelon F, Lakhani KR (2026) Navigating the jagged technological frontier: Field experimental evidence of the effects of artificial intelligence on knowledge worker productivity and quality. *Organ. Sci.* 37(2):403–423.
 
 Dessein W (2002) Authority and communication in organizations. *Rev. Econom. Stud.* 69(4):811–838.
 
@@ -414,19 +412,19 @@ Hendrycks D, Burns C, Basart S, Zou A, Mazeika M, Song D, Steinhardt J (2021) Me
 
 Huang J, Chen X, Mishra S, Zheng HS, Yu AW, Song X, Zhou D (2024) Large language models cannot self-correct reasoning yet. *Proc. Internat. Conf. Learn. Representations*.
 
-Jussupow E, Benbasat I, Heinzl A (2020) Why are we averse towards algorithms? A comprehensive literature review on algorithm aversion. *Proc. European Conf. Inform. Systems*.
+Jussupow E, Benbasat I, Heinzl A (2020) Why are we averse towards algorithms? A comprehensive literature review on algorithm aversion. *Proc. 28th European Conf. Inform. Systems (ECIS 2020)*, Research Paper 168.
 
 Kadavath S, Conerly T, Askell A, Henighan T, et al. (2022) Language models (mostly) know what they know. arXiv:2207.05221.
 
 Laban P, Murakhovs'ka L, Xiong C, Wu CS (2023) Are you sure? Challenging LLMs leads to performance drops in the FlipFlop experiment. arXiv:2311.08596.
 
-Liu J, Xia CS, Wang Y, Zhang L (2023) Is your code generated by ChatGPT really correct? Rigorous evaluation of large language models for code generation. *Adv. Neural Inform. Processing Systems* 36.
+Liu J, Xia CS, Wang Y, Zhang L (2023) Is your code generated by ChatGPT really correct? Rigorous evaluation of large language models for code generation. *Adv. Neural Inform. Processing Systems* 36:21558–21572.
 
 Logg JM, Minson JA, Moore DA (2019) Algorithm appreciation: People prefer algorithmic to human judgment. *Organ. Behav. Human Decision Processes* 151:90–103.
 
 Milgrom PR (1981) Good news and bad news: Representation theorems and applications. *Bell J. Econom.* 12(2):380–391.
 
-Panickssery N, Gabrieli N, Schulz J, Tong M, Hubinger E, Turner AM (2023) Steering Llama 2 via contrastive activation addition. arXiv:2312.06681.
+Panickssery N, Gabrieli N, Schulz J, Tong M, Hubinger E, Turner AM (2024) Steering Llama 2 via contrastive activation addition. *Proc. 62nd Annual Meeting Assoc. Comput. Linguistics (Vol. 1: Long Papers)*, 15504–15522.
 
 Peng S, Kalliamvakou E, Cihon P, Demirer M (2023) The impact of AI on developer productivity: Evidence from GitHub Copilot. arXiv:2302.06590.
 
@@ -436,16 +434,16 @@ Sharma M, Tong M, Korbak T, Duvenaud D, Askell A, Bowman SR, et al. (2023) Towar
 
 Spence M (1973) Job market signaling. *Quart. J. Econom.* 87(3):355–374.
 
-Team OLMo (2025) 2 OLMo 2 furious. arXiv:2501.00656.
+Team OLMo (2024) 2 OLMo 2 furious. arXiv:2501.00656.
 
 Townsend RM (1979) Optimal contracts and competitive markets with costly state verification. *J. Econom. Theory* 21(2):265–293.
 
-Vennemeyer D, Duong PA, Zhan T, Jiang T (2025) Sycophancy is not one thing: Causal separation of sycophantic behaviors in LLMs. arXiv:2509.21305.
+Vennemeyer D, Duong PA, Zhan T, Jiang T (2025) Sycophancy is not one thing: Causal separation of sycophantic behaviors in LLMs. arXiv:2509.21305 (to appear in *Proc. EMNLP 2026*).
 
 Wang K, Li J, Yang S, Zhang Z, Wang D (2025) When truth is overridden: Uncovering the internal origins of sycophancy in large language models. arXiv:2508.02087.
 
 Wei J, Huang D, Lu Y, Zhou D, Le QV (2023) Simple synthetic data reduces sycophancy in large language models. arXiv:2308.03958.
 
-Xiao T, Treude C, Hata H, Matsumoto K (2024) DevGPT: Studying developer–ChatGPT conversations. *Proc. Internat. Conf. Mining Software Repositories* (Mining Challenge).
+Xiao T, Treude C, Hata H, Matsumoto K (2024) DevGPT: Studying developer–ChatGPT conversations. *Proc. 21st Internat. Conf. Mining Software Repositories* (ACM, New York), 227–230.
 
 Yang A, Li A, Yang B, Zhang B, et al. (2025) Qwen3 technical report. arXiv:2505.09388.
