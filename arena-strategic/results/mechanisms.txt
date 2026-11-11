@@ -1,0 +1,28 @@
+132541 {'none': 130236, 'generic': 1541, 'unprompted': 563, 'prompted': 108, 'thirdparty': 93}
+
+Effect on outcome relative to no-mention conversations (pp, cluster SE):
+  win      unprompted=-3.4(2.0)  prompted=-1.7(4.7)  generic=-0.4(1.2)  thirdparty=-0.7(4.9)
+  lose     unprompted=+6.1(2.0)  prompted=+6.9(5.2)  generic=+3.3(1.2)  thirdparty=+8.0(4.9)
+  tie      unprompted=-3.4(1.5)  prompted=-4.7(3.1)  generic=-0.5(0.9)  thirdparty=-4.8(3.2)
+  bothbad  unprompted=+0.6(1.5)  prompted=-0.5(2.9)  generic=-2.5(0.9)  thirdparty=-2.5(2.8)
+  test unprompted = prompted (lose): p=0.889 | unprompted = generic: p=0.24
+  net (win-lose): unprompted=-9.5(3.5)  prompted=-8.5(9.2)  generic=-3.7(2.0)  thirdparty=-8.7(9.0)
+  unprompted, opens reply: -6.1 (4.6)   buried later: -15.5 (5.6)
+  unprompted, greeting prompt: -4.8 (6.0)   substantive prompt: -12.5 (4.4)
+  by developer (net): xai=-6.0(4.4) n=318  anthropic=-12.9(6.6) n=163  google=-32.6(12.4) n=45  rest=+5.8(13.7) n=37
+132541 {'none': 130236, 'generic': 1541, 'unprompted': 563, 'prompted': 108, 'thirdparty': 93}
+small/cheap-tier model discloses: -12.0 (4.3) n=340 | flagship discloses: -5.6 (5.7) n=223
+model  model                                       
+False  claude-sonnet-4-20250514                         31
+       grok-4-0709                                      29
+       claude-opus-4-20250514                           28
+       claude-sonnet-4-20250514-thinking-32k            25
+       grok-3-preview-02-24                             22
+       claude-3-7-sonnet-20250219-thinking-32k          20
+True   grok-3-mini-beta                                192
+       grok-3-mini-high                                 75
+       claude-3-5-haiku-20241022                        18
+       gemma-3-27b-it                                   12
+       gemini-2.5-flash-lite-preview-06-17-thinking      7
+       minimax-m1                                        6
+Name: count, dtype: int64
