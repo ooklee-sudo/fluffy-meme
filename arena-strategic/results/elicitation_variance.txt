@@ -1,0 +1,26 @@
+
+Non-informative elicitations (direct, after bug question, CI unknown) x label mapping: share of variance in program-level approval rates (type II sums of squares)
+  C(item)              0.356
+  C(model)             0.016
+  C(elic)              0.085
+  C(model):C(elic)     0.063
+  Residual             0.481
+  print('  approval range across elicitation configurations, by model:', (rng.max(1) - rng.min(1)).round(3).to_dict())
+  print('  approval range across elicitation configurations, by model:', (rng.max(1) - rng.min(1)).round(3).to_dict())
+  approval range across elicitation configurations, by model: {'deepseek': 0.177, 'haiku': 0.154, 'llama': 0.633, 'qwen': 0.517}
+  print('  approval range across models, averaged over configurations:', round(float((rng.max(0) - rng.min(0)).mean()), 3))
+  print('  approval range across models, averaged over configurations:', round(float((rng.max(0) - rng.min(0)).mean()), 3))
+  approval range across models, averaged over configurations: 0.262
+
+All elicitations including CI passed / failed: share of variance in program-level approval rates (type II sums of squares)
+  C(item)              0.284
+  C(model)             0.016
+  C(elic)              0.123
+  C(model):C(elic)     0.088
+  Residual             0.488
+  print('  approval range across elicitation configurations, by model:', (rng.max(1) - rng.min(1)).round(3).to_dict())
+  print('  approval range across elicitation configurations, by model:', (rng.max(1) - rng.min(1)).round(3).to_dict())
+  approval range across elicitation configurations, by model: {'deepseek': 0.238, 'haiku': 0.42, 'llama': 0.633, 'qwen': 0.608}
+  print('  approval range across models, averaged over configurations:', round(float((rng.max(0) - rng.min(0)).mean()), 3))
+  print('  approval range across models, averaged over configurations:', round(float((rng.max(0) - rng.min(0)).mean()), 3))
+  approval range across models, averaged over configurations: 0.269
