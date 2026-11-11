@@ -22,6 +22,7 @@ Example:
 """
 
 import argparse
+import http.client
 import json
 import os
 import re
@@ -71,7 +72,8 @@ def chat(model, messages, max_tokens, reasoning_off=True, retries=6):
             msg = e.read()[:300]
             if e.code in (400, 401, 403, 404):
                 raise SystemExit(f"{model}: HTTP {e.code} {msg!r}")
-        except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError):
+        except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError, ValueError, OSError,
+                http.client.HTTPException):   # dropped or truncated responses: retry
             pass
         time.sleep(2 ** k)
     raise RuntimeError(f"{model}: no answer after {retries} tries")
