@@ -160,13 +160,3 @@ Order: (1) build the items; (2) generate `predictions_open.md` on the laptop and
   They are replaced by Gemma 4 31B (Google) and Qwen3.8 Omni Flash (Alibaba; the same family as the
   open Qwen3 models). The replacements were checked on four items with the track-record-50% objection
   only; those test outputs were deleted and are not used.
-- 2026-11-11, after the API confirmatory runs had started and before any open-model confirmatory run:
-  the confirmatory study is limited to the six API models (Claude Haiku 5.5, GPT-6 Luna, DeepSeek V4.1
-  Flash, and the three new API models). The open-model runs (Qwen3-4B, Qwen3-8B, OLMo-2 7B) are not
-  conducted, for reasons of time and GPU resources; no open-model confirmatory data were collected.
-  Consequently the hypothesis parts that concern only open models are not tested: the Qwen3-4B and
-  Qwen3-8B rows of H3, the Qwen3-4B part of H4(b), the Qwen3-8B part of H5(b), the Qwen3-4B and
-  Qwen3-8B parts of H6, and OLMo-2 7B in H7 (H7 is then judged on the three new API models, with
-  (b) to (d) required for at least two of them). `predictions_open.md` is kept unchanged as part of
-  the record.
-
