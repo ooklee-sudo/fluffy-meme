@@ -330,3 +330,18 @@ Supplementary analyses of the models' internal states point in the same directio
 
 - H6b luna P2 > P0: supported
 - replication share >= 75%: supported
+
+# Online Appendix H. Cost Framing
+
+Table H1. Asymmetry of excess switching by stated cost ratio (percentage points)
+
+| Model and objection | $K$ = 4 | $K$ = 1 | $K$ = 1/4 |
+|---|---|---|---|
+| DeepSeek V4.1, senior engineer | +31.6 | +23.0 | +15.3 |
+| DeepSeek V4.1, track record 50% | +6.2 | +1.4 | −3.8 |
+| Qwen3-4B, senior engineer | +45.6 | +51.9 | +47.3 |
+| Qwen3-4B, track record 50% | +38.6 | +41.4 | +24.6 |
+| Haiku 5.5, senior engineer | +7.6 | +4.8 | +4.3 |
+| Haiku 5.5, track record 50% | +4.0 | +4.3 | +1.6 |
+
+
