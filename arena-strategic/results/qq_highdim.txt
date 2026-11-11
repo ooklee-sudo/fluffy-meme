@@ -1,0 +1,17 @@
+  p = np.exp(z[:4]); p /= p.sum(); r = np.exp(z[4:]); r /= r.sum()
+  p = np.exp(z[:4]); p /= p.sum(); r = np.exp(z[4:]); r /= r.sum()
+  cons = {'type': 'eq', 'fun': lambda z: (lambda p, r: (p[1] + p[2]) - (r[1] + r[2]))(np.exp(z[:4]) / np.exp(z[:4]).sum(), np.exp(z[4:]) / np.exp(z[4:]).sum())}
+  cons = {'type': 'eq', 'fun': lambda z: (lambda p, r: (p[1] + p[2]) - (r[1] + r[2]))(np.exp(z[:4]) / np.exp(z[:4]).sum(), np.exp(z[4:]) / np.exp(z[4:]).sum())}
+{'model': 'haiku', 'disclosure': 'none', 'n': 1076, 'LL_saturated': -615.7, 'LL_QQbound': -615.8, 'LL_classical': -617.4, 'LL_q2D': -737.9, 'LL_q3D': -621.2, 'LL_q4D': -615.8, 'LR_QQ_vs_sat': 0.2, 'p_QQ': 0.7, 'LR_QQbound_vs_classical': 3.2, 'p_vs_classical': 0.2}
+{'model': 'haiku', 'disclosure': 'brand', 'n': 1194, 'LL_saturated': -745.7, 'LL_QQbound': -748.7, 'LL_classical': -753.7, 'LL_q2D': -895.1, 'LL_q3D': -750.5, 'LL_q4D': -748.7, 'LR_QQ_vs_sat': 5.9, 'p_QQ': 0.015, 'LR_QQbound_vs_classical': 10.0, 'p_vs_classical': 0.0069}
+{'model': 'llama', 'disclosure': 'none', 'n': 1542, 'LL_saturated': -1083.7, 'LL_QQbound': -1084.0, 'LL_classical': -1105.6, 'LL_q2D': -1293.2, 'LL_q3D': -1086.3, 'LL_q4D': -1084.0, 'LR_QQ_vs_sat': 0.6, 'p_QQ': 0.44, 'LR_QQbound_vs_classical': 43.2, 'p_vs_classical': 4.2e-10}
+{'model': 'llama', 'disclosure': 'brand', 'n': 1538, 'LL_saturated': -1751.2, 'LL_QQbound': -1757.1, 'LL_classical': -1793.6, 'LL_q2D': -1858.1, 'LL_q3D': -1772.3, 'LL_q4D': -1757.1, 'LR_QQ_vs_sat': 11.8, 'p_QQ': 0.00061, 'LR_QQbound_vs_classical': 72.9, 'p_vs_classical': 1.5e-16}
+{'model': 'qwen', 'disclosure': 'none', 'n': 1421, 'LL_saturated': -1825.4, 'LL_QQbound': -1826.8, 'LL_classical': -1844.7, 'LL_q2D': -1830.6, 'LL_q3D': -1827.5, 'LL_q4D': -1826.8, 'LR_QQ_vs_sat': 2.9, 'p_QQ': 0.091, 'LR_QQbound_vs_classical': 35.7, 'p_vs_classical': 1.8e-08}
+{'model': 'qwen', 'disclosure': 'brand', 'n': 1424, 'LL_saturated': -1857.1, 'LL_QQbound': -1858.3, 'LL_classical': -1859.4, 'LL_q2D': -1926.7, 'LL_q3D': -1878.2, 'LL_q4D': -1858.3, 'LR_QQ_vs_sat': 2.3, 'p_QQ': 0.13, 'LR_QQbound_vs_classical': 2.3, 'p_vs_classical': 0.32}
+model disclosure    n  LL_saturated  LL_QQbound  LL_classical  LL_q2D  LL_q3D  LL_q4D  LR_QQ_vs_sat    p_QQ  LR_QQbound_vs_classical  p_vs_classical
+haiku       none 1076        -615.7      -615.8        -617.4  -737.9  -621.2  -615.8           0.2 0.70000                      3.2    2.000000e-01
+haiku      brand 1194        -745.7      -748.7        -753.7  -895.1  -750.5  -748.7           5.9 0.01500                     10.0    6.900000e-03
+llama       none 1542       -1083.7     -1084.0       -1105.6 -1293.2 -1086.3 -1084.0           0.6 0.44000                     43.2    4.200000e-10
+llama      brand 1538       -1751.2     -1757.1       -1793.6 -1858.1 -1772.3 -1757.1          11.8 0.00061                     72.9    1.500000e-16
+ qwen       none 1421       -1825.4     -1826.8       -1844.7 -1830.6 -1827.5 -1826.8           2.9 0.09100                     35.7    1.800000e-08
+ qwen      brand 1424       -1857.1     -1858.3       -1859.4 -1926.7 -1878.2 -1858.3           2.3 0.13000                      2.3    3.200000e-01
