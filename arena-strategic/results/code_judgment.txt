@@ -1,0 +1,32 @@
+A trials 3600 valid 3542 | B trials 2880 valid 2792 | cost $0.207
+
+[exited with code 0]
+STUDY A: signal detection (signal = bug present; c < 0 = leans toward "wrong")
+model frame   n  false_alarm  miss  d_prime     c         c_95ci  H1_c_below_0
+haiku    F1 600        0.364 0.002     3.28 -1.29 [-1.46, -1.13]          True
+haiku    F2 600        0.327 0.002     3.38 -1.24 [-1.40, -1.08]          True
+llama    F1 600        0.437 0.035     1.97 -0.83 [-1.19, -0.57]          True
+llama    F2 600        0.198 0.384     1.15  0.28   [0.06, 0.51]         False
+ qwen    F1 570        0.543 0.009     2.28 -1.25 [-1.59, -1.03]          True
+ qwen    F2 572        0.145 0.152     2.09  0.02  [-0.18, 0.20]         False
+
+STUDY A: framing (share judged wrong, F2 "contains a bug?" minus F1 "is it correct?"), one-sided bootstrap
+  haiku  buggy    F1=1.000 F2=1.000 diff=+0.000  one-sided p(F2>F1)=1.0000
+  haiku  correct  F1=0.363 F2=0.327 diff=-0.037  one-sided p(F2>F1)=0.8760
+  llama  buggy    F1=0.967 F2=0.617 diff=-0.350  one-sided p(F2>F1)=1.0000
+  llama  correct  F1=0.437 F2=0.197 diff=-0.240  one-sided p(F2>F1)=1.0000
+  qwen   buggy    F1=0.992 F2=0.848 diff=-0.144  one-sided p(F2>F1)=1.0000
+  qwen   correct  F1=0.531 F2=0.139 diff=-0.392  one-sided p(F2>F1)=1.0000
+
+STUDY B: order effects and QQ (Q = correct?, R = well written?)
+  haiku                  n= 959  P(correct=yes) Q first 0.319 / Q second 0.405  order p=2.1e-07  q=-0.059 (p=0.017) 90%CI[-0.110,-0.009] equiv0.05=False
+  llama                  n= 960  P(correct=yes) Q first 0.304 / Q second 0.312  order p=0.36  q=-0.023 (p=0.35) 90%CI[-0.071,+0.023] equiv0.05=False
+  qwen                   n= 873  P(correct=yes) Q first 0.248 / Q second 0.266  order p=0.0017  q=-0.012 (p=0.61) 90%CI[-0.042,+0.018] equiv0.05=True
+  ('haiku', 'buggy')     n= 479  P(correct=yes) Q first 0.000 / Q second 0.029  order p=0.0016  q=+0.012 (p=0.46) 90%CI[-0.038,+0.067] equiv0.05=False
+  ('haiku', 'correct')   n= 480  P(correct=yes) Q first 0.637 / Q second 0.779  order p=2.2e-05  q=-0.129 (p=0.0022) 90%CI[-0.208,-0.050] equiv0.05=False
+  ('llama', 'buggy')     n= 480  P(correct=yes) Q first 0.037 / Q second 0.083  order p=0.12  q=-0.046 (p=0.046) 90%CI[-0.104,+0.013] equiv0.05=False
+  ('llama', 'correct')   n= 480  P(correct=yes) Q first 0.571 / Q second 0.542  order p=0.15  q=+0.000 (p=1) 90%CI[-0.075,+0.071] equiv0.05=False
+  ('qwen', 'buggy')      n= 438  P(correct=yes) Q first 0.009 / Q second 0.019  order p=0.14  q=+0.017 (p=0.28) 90%CI[-0.005,+0.044] equiv0.05=True
+  ('qwen', 'correct')    n= 435  P(correct=yes) Q first 0.489 / Q second 0.514  order p=0.029  q=-0.041 (p=0.33) 90%CI[-0.095,+0.011] equiv0.05=False
+
+[exited with code 0]
