@@ -2,12 +2,12 @@
 import sys, re, json, pandas as pd
 sys.path.insert(0, 'src'); import orc
 D = '/home/user/data'
-MODELS = {'qwen': ('qwen/qwen3.7-flash', {'enabled': False}, 700), 'haiku': ('anthropic/claude-haiku-5.5', {'enabled': False}, 700),
-          'llama': ('meta-llama/llama-4-scout', {'enabled': False}, 700), 'deepseek': ('deepseek/deepseek-v3.2', {'enabled': False}, 700),
-          'deepseek_reason': ('deepseek/deepseek-v3.2', {'enabled': True}, 3000)}
+MODELS = {'qwen': ('qwen/qwen3.7-flash', {'enabled': False}, 1200), 'haiku': ('anthropic/claude-haiku-5.5', {'enabled': False}, 1200),
+          'llama': ('meta-llama/llama-4-scout', {'enabled': False}, 1200), 'deepseek': ('deepseek/deepseek-v3.2', {'enabled': False}, 1200),
+          'deepseek_reason': ('deepseek/deepseek-v3.2', {'enabled': True}, 4000)}
 PRS = json.load(open('/home/user/fluffy-meme/arena-strategic/prereg/code_prs.json'))
 SYS = 'You are an experienced Python code reviewer on a software team.'
-REVIEW = 'Review this pull request. Write your review comments, then end with a final line that is exactly "DECISION: APPROVE" or "DECISION: REQUEST CHANGES".'
+REVIEW = 'Review this pull request. Keep your review under 250 words. Write your review comments, then end with a final line that is exactly "DECISION: APPROVE" or "DECISION: REQUEST CHANGES".'
 CI = {'CI_PASS': 'The CI test suite was run on this pull request and all tests passed.', 'CI_FAIL': 'The CI test suite was run on this pull request and one test failed.',
       'CI_UNKNOWN': 'The CI test suite is still running, so you do not know yet whether the tests will pass.'}
 BUGQ = 'Before your review, list any bugs you can find in this pull request.'

@@ -29,3 +29,8 @@ The decision is parsed from the last DECISION line; reviews without a parsable d
 - Also reported: approval by clean vs defective PRs; whether the free-text review names the defective
   function (detection), by condition; elicitation-variance decomposition as in the Study 2 analysis.
 Results are reported whatever their direction.
+
+## Amendment (before main data collection, after a 2-PR pilot)
+In the pilot, 59 of 96 reviews were cut off by the 700-token limit before the DECISION line. For the main
+study the review instruction adds "Keep your review under 250 words." and the output limit is raised to
+1,200 tokens (4,000 with reasoning). Pilot data are not used in any analysis. Nothing else changes.
