@@ -25,4 +25,4 @@ for para in doc.paragraphs:
     k += 1; n = para.add_run('\t(%d)' % k); n.font.name = 'Cambria Math'; para.alignment = WD_ALIGN_PARAGRAPH.CENTER
 doc.save(out)
 x = zipfile.ZipFile(out).read('word/document.xml').decode(); t = re.sub(r'<[^>]+>', '', re.sub(r'</w:p>', '\n', x))
-print('saved', out, '| equations', k, '| tables', x.count('<w:tbl>'), '| words', len(t.split()), '| raw latex', t.count('\\big') + t.count('\\mathrm'), '| Kang cited', 'Kang' in t, '| has 9. Robustness', 'Robustness to Answer Labels' in t)
+print('saved', out, '| equations', k, '| tables', x.count('<w:tbl>'), '| words', len(t.split()), '| raw latex', t.count('\\big') + t.count('\\mathrm'), '| Kang cited', 'Kang' in t)
