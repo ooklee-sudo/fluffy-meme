@@ -327,10 +327,10 @@ Table 9. Expected loss per 100 submissions, authors and challengers disputing
 | P1 Self re-check | 35.9 | 35.9 | 10.6 | 31.9 | 14.4 |
 | P2 Open disputes | 52.4 | 106.1 | 11.5 | 38.2 | 36.5 |
 | P3 Evidence required | 77.4 | 140.4 | 11.9 | 34.8 | 25.7 |
-| P4 Evidence + tool | **25.3**^a^ | **28.2** | **8.9** | 34.8 | **7.3** |
+| P4 Evidence + tool | **24.9** | **28.2** | **8.9** | 34.8 | **7.3** |
 | P5 Costs stated (reference) | 50.0 (52.4) | — | 15.8 (13.8) | 39.9 (37.6) | 29.5 (38.5) |
 
-Note. Lower is better; the best policy per model is in bold. P5's reference is P2 restricted to the same two claim forms. ^a^ To be updated with the rerun of the Qwen3-4B tool condition. Qwen3-8B was not run under cost framing.
+Note. Lower is better; the best policy per model is in bold. P5's reference is P2 restricted to the same two claim forms. Qwen3-8B was not run under cost framing.
 
 Table 9 and Figure 1 support four conclusions. First, open disputes raise the loss once challengers can dispute approvals. Relative to no pushback, the loss rises by 14.6 points for Luna, 19.0 for DeepSeek, and 63.0 for Qwen3-8B, and the 90% intervals exclude zero. Only Haiku, which resists objections, comes out ahead. This is the empirical counterpart of Proposition 1.
 
@@ -340,7 +340,7 @@ Third, the execution tool lowers that threshold. Because it reduces the success 
 
 Fourth, the best policy depends on the model. Self re-checking lowers Haiku's loss by 14.2 points but raises Luna's by 8.3. Stating the costs helps only DeepSeek, compared with the same claim forms without the statement (29.5 against 38.5), as its positive $w$ would predict. No single pushback policy should be applied across AI systems.
 
-![Figure 1. Expected loss per 100 submissions under P3 (evidence required) and P4 (evidence with the execution tool) as the cost of fabricating evidence rises; authors and challengers dispute. The dotted line is the loss without pushback. The Qwen3-4B P4 series uses the first run of its tool condition and will be updated.](fig/figure1_evidence_window.png){width=6.5in}
+![Figure 1. Expected loss per 100 submissions under P3 (evidence required) and P4 (evidence with the execution tool) as the cost of fabricating evidence rises; authors and challengers dispute. The dotted line is the loss without pushback.](fig/figure1_evidence_window.png){width=6.5in}
 
 The ranking of the policies does not change when the cost ratio is 1 or when half of all submissions are buggy. When disputes are more costly or less rewarding ($c = 0.1$ or $\beta = 0.5$), cheap false disputes are deterred and the evidence requirement becomes the best policy for Luna and DeepSeek. The simulation simplifies in three respects. Disputants follow pure threshold rules, they know the truth, and the AI's response function is fixed, which corresponds to the case of commitment in Section 3.2.
 
