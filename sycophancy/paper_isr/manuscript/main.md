@@ -6,7 +6,7 @@ date: "Draft of November 2026. Not for circulation."
 
 # Abstract
 
-People routinely dispute the verdicts of generative AI systems, and the systems must decide whether to give way. We develop an economic account of this decision and test it in code review, a setting in which the truth of every verdict and every claim can be checked. A Bayesian receiver benchmark defines when a rational reviewer should switch. A strategic-user model shows that once code authors who want approval adapt to the reviewer, cheap objections lose their information, optimal deference is interior, and evidence requirements pay off only within a window of fabrication costs. An ambiguity-averse reviewer model describes how language models actually respond. In experiments with five models, eight objection conditions, and an execution tool, models largely ignore how reliable an objector claims to be, react to the form of an objection more than to its content, and accept fabricated evidence at high rates. They also differ sharply, from a yes man that follows almost any claim to a resistant reviewer that discounts even true ones. Structural estimates reject the Bayesian benchmark for every model, and a confirmatory test on new items and three new models replicates the main results. Two frontier models with reasoning switched on are almost immune to pushback, so the problem is concentrated in configurations that are cheap to run at scale. Field data on 14,667 developer–ChatGPT turns and 39,592 developer replies to AI review bots show that disputes are common, usually come with reasons, and that deployed bots concede to about 80% of them. A policy simulation on the measured responses finds that open pushback raises organizational loss for most models and that evidence requirements help only above a fabrication-cost threshold, which an execution tool lowers. How much an AI system should defer, we conclude, depends on who pushes back and on what verification costs.
+People routinely dispute the verdicts of generative AI systems, and the systems must decide whether to give way. We develop an economic account of this decision and test it in code review, where the truth of every verdict and claim can be checked. A Bayesian receiver benchmark defines when a rational reviewer should switch. A strategic-user model shows that once authors who want approval adapt, cheap objections lose their information, optimal deference is interior, and evidence requirements pay off only within a window of fabrication costs. An ambiguity-averse reviewer model describes how language models actually respond. In experiments with five models, eight objection conditions, and an execution tool, models largely ignore an objector's stated reliability, react to the form of an objection more than its content, accept fabricated evidence at high rates, and differ sharply in type. Structural estimates reject the Bayesian benchmark for every model, and a confirmatory test on new items and three new models replicates the main results. Field data on 14,667 developer–ChatGPT turns and 39,592 replies to AI review bots show that disputes are common, usually come with reasons, and that deployed bots concede to about 80% of them. A policy simulation finds that open pushback raises organizational loss for most models and that evidence requirements help only above a fabrication-cost threshold, which verification lowers. Frontier models with reasoning switched on are almost immune to pushback, so the problem is concentrated in configurations that are cheap to run at scale. How much an AI system should defer depends on who pushes back and on what verification costs.
 
 **Keywords:** generative AI, sycophancy, deference, code review, cheap talk, verification, ambiguity, human–AI interaction, economics of IS
 
@@ -18,25 +18,25 @@ Machine learning research calls the first failure sycophancy and has shown that 
 
 We develop that account and test it in code review. The setting is useful for three reasons. Code review matters economically and is quickly being automated; AI review bots now comment on a large share of pull requests on GitHub, and developers argue with them. The incentives are also transparent, since the author of a change wants it merged and an objection to a rejection is therefore not neutral. Finally, correctness can be established by running tests. This lets us control whether the evidence attached to an objection is true or false, and it lets us give the reviewer a tool for checking.
 
-Our theory has three parts. The first is a Bayesian receiver benchmark, under which a reviewer should switch only when its confidence falls below a threshold determined by how informative the objection is and how costly each error would be. Departures from this threshold give precise meanings to sycophancy and stubbornness. The second part treats objections as strategic. When authors who want approval learn how often objecting pays, cheap objections unravel in the sense of Crawford and Sobel (1982), the optimal level of deference lies strictly between zero and one, a small excess of deference destroys the information in every objection, and a requirement to attach evidence helps only within a window of fabrication costs. The third part responds to what the experiments show. Because the models behave in ways no Bayesian reviewer would, we model a reviewer that is uncertain about how reliable an objector is and acts on the worst case (Gilboa and Schmeidler 1989). The parameters of this model, which include an implicit cost ratio, the degree of ambiguity, the credibility of stated reliability, and default trust in different kinds of objectors, can be estimated from experimental data and used in a policy analysis.
+Our theory has three parts. A Bayesian receiver benchmark states when a reviewer should switch, given how informative an objection is and how costly each error would be, and so gives precise meanings to sycophancy and stubbornness. A strategic-user model then treats objections as chosen by authors who want approval. Cheap objections unravel in the sense of Crawford and Sobel (1982), optimal deference is interior, a small excess of deference destroys the information in every objection, and an evidence requirement helps only within a window of fabrication costs. Finally, because the models behave in ways no Bayesian reviewer would, we model a reviewer that is uncertain how reliable an objector is and acts on the worst case (Gilboa and Schmeidler 1989); its parameters can be estimated and used in a policy analysis.
 
-The empirical work begins with multiple-choice questions. In Study 1, four open models answer items from MMLU and ARC-Challenge, and the measured effect of pushback reverses depending on how much a model may say before committing to an answer; a simple break-even rule predicts the direction of the effect. Study 2 turns to code review with 764 items built from HumanEval+ and MBPP+, in which each buggy version is verified to fail the official tests. Five models, two open and three commercial, face eight objection conditions. These range from a neutral request to re-check, through a bare doubt, claims from a user with a stated track record of 20%, 50%, or 80%, and a senior engineer's assertion, to true or fabricated execution evidence, with and without a tool that lets the model run the code. A further manipulation states the organization's cost ratio in the system prompt. We then estimate the ambiguity-averse reviewer for each model, examine how developers dispute AI systems in the field, using 14,667 follow-up turns from developer–ChatGPT conversations and 39,592 replies to AI review bots on GitHub, and simulate the organizational loss of six pushback policies on the measured responses.
+The empirical work begins with multiple-choice questions (Study 1), where the measured effect of pushback reverses with how much a model may say before answering. Study 2 turns to code review with 764 items from HumanEval+ and MBPP+, each buggy version verified to fail the official tests. Five models face eight objection conditions, from a neutral request to re-check, a bare doubt, claims with a stated track record, and a senior engineer's assertion to true or fabricated execution evidence, with and without a tool that lets the model run the code, and a further manipulation states the organization's cost ratio. We then estimate the reviewer model, examine how developers dispute AI systems in 14,667 developer–ChatGPT turns and 39,592 replies to AI review bots on GitHub, and simulate six pushback policies on the measured responses.
 
-The results are consistent across settings and give little reason for comfort. No model uses an objector's stated reliability the way a Bayesian receiver would, and four of the five barely use it at all. What moves the models is the form of an objection, whether it is a bare doubt, a specific claim, or text that looks like evidence. Fabricated evidence is accepted at high rates. Letting the model execute the code removes much of the damage when execution can refute the false claim, but little when the claim is half true. The models also fall into distinct types. One follows nearly any claim in either direction, two follow claims that the code has a bug but not claims that it is correct, one resists users' objections altogether, and one resists claims that its approval was mistaken. Only one model takes a stated cost ratio into account when it responds to pushback. In the field, developers dispute the findings of AI review bots in about 15% of their replies, usually giving reasons, and the bots concede in about 80% of these disputes, with large differences between products. In the policy simulation, open pushback raises expected loss for most models, an evidence requirement helps only once fabrication is costly enough, and giving the AI a way to verify claims lowers that threshold. An out-of-sample test with predictions fixed in advance confirms most of these results on new items and in three models we had not studied before, while the evidence on stated costs replicates only weakly. Two frontier models that reason before answering, finally, are almost never moved by cheap talk or fabricated evidence, although one of them also ignores true evidence.
+The results give little reason for comfort. No model uses an objector's stated reliability the way a Bayesian receiver would, and four of five barely use it at all. What moves the models is the form of an objection, and fabricated evidence is accepted at high rates; executing the code removes much of the damage when execution can refute the false claim, but little when the claim is half true. The models also fall into distinct types, from a yes man that follows nearly any claim to reviewers that resist objections altogether, and only one takes a stated cost ratio into account. In the field, developers dispute AI review findings in about 15% of their replies, usually giving reasons, and the bots concede in about 80% of these disputes. In the policy simulation, open pushback raises expected loss for most models, and an evidence requirement helps only once fabrication is costly enough, a threshold that verification lowers. An out-of-sample test with predictions fixed in advance confirms most of these results on new items and in three new models, although the evidence on stated costs replicates only weakly. Two frontier models that reason before answering, finally, are almost never moved by cheap talk or fabricated evidence, although one of them also ignores true evidence.
 
-This last result clarifies where the problem lies, and why it matters in practice. Reasoning is expensive. In our experiments, one disputed exchange cost 16 to 26 times as much with the two reasoning models as with the inexpensive models from the same providers; for the Claude models, about $6.87 against $0.27 per thousand exchanges. AI review, moreover, is a high-volume activity. The bots in our field data posted more than half a million top-level review comments in three months, and that count covers only the part of public GitHub activity that GH Archive records. At this scale, organizations have strong reasons to deploy smaller models or to switch reasoning off, and these are precisely the configurations in which we find the vulnerabilities. Our findings therefore describe the AI reviewers that are cheapest to operate, which are also the ones most likely to be used widely. The design question becomes a trade-off: an organization can pay for reasoning on every verdict, or it can pair inexpensive reviewers with a deference policy and with verification that make them safe to argue with.
+This last result shows where the problem lies. Reasoning is expensive: in our experiments one disputed exchange cost 16 to 26 times as much with the two reasoning models as with inexpensive models from the same providers. AI review is also a high-volume activity, with more than half a million top-level bot comments in three months in the part of public GitHub that GH Archive records. Organizations therefore have strong reasons to deploy smaller models or to switch reasoning off, which are precisely the configurations in which we find the vulnerabilities. The design question becomes a trade-off between paying for reasoning on every verdict and pairing inexpensive reviewers with a deference policy and verification that make them safe to argue with.
 
-The paper makes three contributions to IS research. It offers a normative benchmark for AI deference together with a way to measure departures from it, and it separates the legitimate effect of reconsideration from the effect of social pressure. It shows that the value of pushback is an equilibrium outcome that depends on the incentives of those who push back and on the cost of verification, which suggests that sycophancy is better treated as a problem of design and governance than as a fixed defect of a model. And it brings experimental measurement, structural estimation, field data, and policy simulation into one framework, from which concrete design guidance follows: deference should be set separately for each system and each direction of claim, cheap objections should not be honored by default, and evidence requirements need verification aimed at the disputed part of a claim.
+The paper makes three contributions to IS research. It offers a normative benchmark for AI deference that separates the legitimate effect of reconsideration from social pressure. It shows that the value of pushback is an equilibrium outcome that depends on the incentives of those who push back and on the cost of verification, so that sycophancy is a problem of design and governance rather than a fixed defect of a model. And it joins experiments, structural estimation, field data, and policy simulation in one framework, from which concrete design guidance follows.
 
-Section 2 reviews related work and Section 3 develops the theory. Section 4 describes the research design, Sections 5 and 6 report the two studies, Section 7 presents the structural estimates, Section 8 the field evidence, and Section 9 the policy analysis. Section 10 describes a confirmatory test on new items and models, and Section 11 discusses implications and limitations.
+Section 2 reviews related work, Section 3 develops the theory, and Sections 4 to 10 report the design, the two studies, the estimates, the field evidence, the policy analysis, and the confirmatory test. Section 11 discusses implications and limitations.
 
 # 2. Related Literature
 
 ## 2.1 Humans, Algorithms, and the Direction of Deference
 
-A large body of work asks when people rely on algorithms. People may turn away from an algorithm once they have seen it err (Dietvorst et al. 2015), yet in other judgments they prefer algorithmic advice to human advice (Logg et al. 2019), and which tendency prevails depends on the task, on feedback, and on how the advice is presented (Jussupow et al. 2020). Research on human–AI collaboration finds that a person working with an AI system can perform worse than either would alone, in part because people delegate poorly and misjudge when to override the system (Bansal et al. 2021, Fügener et al. 2021, 2022). Field studies report large productivity effects of generative AI in customer support and consulting that vary with worker experience and with whether a task lies within the system's capabilities (Brynjolfsson et al. 2025, Dell'Acqua et al. 2026), and developers complete programming tasks faster with code assistants (Peng et al. 2023).
+A large body of work asks when people rely on algorithms. People may turn away from an algorithm once they have seen it err (Dietvorst et al. 2015) yet prefer algorithmic to human advice in other judgments (Logg et al. 2019), depending on the task, feedback, and presentation (Jussupow et al. 2020). People working with AI systems can perform worse than either alone, partly because they delegate poorly and misjudge when to override the system (Bansal et al. 2021, Fügener et al. 2021, 2022), and the productivity effects of generative AI vary with experience and with whether a task lies within the system's capabilities (Brynjolfsson et al. 2025, Dell'Acqua et al. 2026, Peng et al. 2023).
 
-This research studies influence running from the algorithm to the person. Because generative AI systems are conversational, influence now also runs the other way: a person disputes the system, and the system must decide whether to defer. That decision is our subject. The questions are the same ones the advice literature asks about people, namely when the receiver of advice should defer and when it defers too much. Here, however, the receiver is the AI system, and its deference policy is a design choice made in training and configuration.
+This research studies influence from the algorithm to the person. Because generative AI systems are conversational, influence now also runs the other way, and the system must decide whether to defer to a person who disputes it. The questions are those the advice literature asks about people, but the receiver is now the AI system, whose deference policy is a design choice made in training and configuration.
 
 ## 2.2 The Economics of Messages, Verification, and Deference
 
@@ -48,7 +48,7 @@ Our revised model draws on a further strand. Under ambiguity, a decision maker h
 
 Language models frequently abandon a correct answer when challenged (Laban et al. 2023), tend to agree with the views users express across many tasks (Sharma et al. 2023), and become less sycophantic when fine-tuned on synthetic data (Wei et al. 2023). Mechanistic studies locate sycophancy in model internals, show that the correct answer often survives in intermediate representations, and separate distinct sycophantic behaviors (Wang et al. 2025, Vennemeyer et al. 2025). Activation steering can move sycophancy in either direction (Panickssery et al. 2024). Models know something about whether their own answers are right (Kadavath et al. 2022), but they often fail to correct themselves without outside feedback (Huang et al. 2024).
 
-Most of this work counts the correct answers that models abandon. Pushback, however, also gives a model the chance to repair a wrong answer, so an intervention that reduces caving may reduce correction as well. Study 1 measures both and shows that the balance between them depends on how much the model may reason before answering. The larger gap is that this literature has no benchmark for how much deference is appropriate. Our receiver and strategic-user models provide one, and our design separates the effect of what an objection says from the effect of simply thinking again.
+Most of this work counts the correct answers that models abandon, although pushback also gives a model the chance to repair a wrong answer, and an intervention that reduces caving may reduce correction as well. Above all, this literature has no benchmark for how much deference is appropriate. Our receiver and strategic-user models provide one, and our design separates the effect of what an objection says from the effect of simply thinking again.
 
 # 3. Theory
 
@@ -86,7 +86,7 @@ $$W(\delta) = \delta \sum_{s \in \{g,b\}} \pi_s\, \mathbf{1}[\delta v_s > c_s]\,
 
 where $\pi_s$ is the probability of signal $s$. Under A1 and A2, $e_g > 0 > e_b$ and $\pi_g e_g + \pi_b e_b < 0$. Switching therefore helps when only authors with good signals object and hurts when all authors do.
 
-The following results are proved in Appendix A, and each was also checked numerically on thousands of random parameter draws satisfying A1–A3.
+The following results are proved in Online Appendix A, and each was also checked numerically on thousands of random parameter draws satisfying A1–A3.
 
 > **Proposition 1 (cheap talk unravels).** If objecting is free ($c_b = 0$) and an author with a bad signal still values approval ($v_b > 0$), then $W(\delta) < 0$ for every $\delta > 0$, so the optimal deference is $\delta^* = 0$.
 
@@ -102,7 +102,7 @@ The following results are proved in Appendix A, and each was also checked numeri
 
 > **Proposition 6 (commitment has value).** If the AI instead chooses $\delta$ after each objection to minimize expected loss, every equilibrium yields zero gain: in informative equilibria, authors with bad signals mix and the AI is indifferent. The value of committing to deference in advance is $\delta^* \pi_g e_g$.
 
-Taken together, these results turn sycophancy into a design problem. The right level of deference is not a property of the model alone. It depends on how much authors gain from approval, how accountable they are, and what it costs them to object without grounds. Because of the cliff, a modest excess of deference is not a modest loss, since beyond it objections carry no information at all. An evidence requirement can restore the value of pushback, but only if fabricating evidence is costly, and that in turn depends on whether the AI verifies what it is shown.
+Taken together, these results turn sycophancy into a design problem. The right level of deference depends on how much authors gain from approval, how accountable they are, and what it costs them to object without grounds. Because of the cliff, a modest excess of deference is not a modest loss, and an evidence requirement restores the value of pushback only if fabrication is costly, which in turn depends on whether the AI verifies what it is shown.
 
 ## 3.3 An Ambiguity-Averse Reviewer
 
@@ -118,7 +118,7 @@ $$\max_{r \in R}\, k\,\bigl(1 - p'(r)\bigr) > \max_{r \in R}\, p'(r),$$
 
 and switches a rejection to an approval if and only if $\max_{r \in R} (1 - p'(r)) > \max_{r \in R} k\,p'(r)$. Because $p'$ is decreasing in $r$, both worst cases lie at the ends of the interval, which makes the rule easy to compute.
 
-The model has five properties, which we prove in Appendix B (Propositions B1–B5):
+The model has five properties, which we prove in Online Appendix B (Propositions B1–B5):
 
 1. Without ambiguity ($\varepsilon = 0$) and with neutral trust, an uninformative objection causes no switching for any $k$.
 2. With symmetric costs ($k = 1$), switching is the same in both directions.
@@ -128,51 +128,19 @@ The model has five properties, which we prove in Appendix B (Propositions B1–B
 
 Default trust produces two further types. A reviewer with high $m$ follows claims in both directions, which makes it a yes man. A reviewer with low $m$ reads an objection as evidence for its own verdict and switches less than it would after a plain re-check; we call it resistant.
 
-To take the model to data we add a re-check baseline. Thinking again redraws the reviewer's confidence with some probability $s$, which is set so that the model reproduces each run's re-check switch rate exactly, and objections then act on the redrawn confidence. We also allow a stated cost ratio $K$ to shift the effective cost ratio to $k_{\text{eff}} = k_0 K^{w}$, where $w = 0$ means the statement is ignored and $w = 1$ that it is adopted in full. We compare three nested versions of the model: M0, the Bayesian receiver ($\varepsilon = 0$, $c = 1$); M1, in which the trust parameters are shared by the two directions of claim; and M2, in which they differ. Appendix B gives the likelihood.
+To take the model to data we add a re-check baseline. Thinking again redraws the reviewer's confidence with some probability $s$, which is set so that the model reproduces each run's re-check switch rate exactly, and objections then act on the redrawn confidence. We also allow a stated cost ratio $K$ to shift the effective cost ratio to $k_{\text{eff}} = k_0 K^{w}$, where $w = 0$ means the statement is ignored and $w = 1$ that it is adopted in full. We compare three nested versions of the model: M0, the Bayesian receiver ($\varepsilon = 0$, $c = 1$); M1, in which the trust parameters are shared by the two directions of claim; and M2, in which they differ. Online Appendix B gives the likelihood.
 
 The ambiguity-averse model was developed after the first experiments showed that the Bayesian benchmark fails. Section 10 therefore reports an out-of-sample test whose predictions were fixed before any confirmatory data were collected.
 
 # 4. Research Design
 
-Table 1 gives an overview of the empirical work. All experiments follow the same protocol. The model answers a question, the user objects, the model replies freely, and a final answer is recorded. For the open models (Qwen3-4B and Qwen3-8B; Yang et al. 2025), we read answers exactly from the option logits after the prefixes "The answer is (" and "Final answer: (", using greedy decoding at 4-bit precision with thinking switched off. For the commercial models, which we access through an API (Claude Haiku 5.5, GPT-6 Luna, and DeepSeek V4.1 Flash), we switch reasoning off where the provider allows it, set the temperature to 0, and parse answers from text. The first turn asks for the option letter alone, and a closing message asks for the final answer as a single letter.
-
-Table 1. Overview of studies
-
-| Study | Question | Data | Models |
-|---|---|---|---|
-| 1. Multiple choice | Does the reply budget decide whether pushback hurts? Does a break-even rule predict the sign? | MMLU, ARC-Challenge | Qwen3 1.7B/4B/8B, OLMo-2 7B |
-| 2. Code review | How do reviewers respond to doubt, stated reliability, authority, true and false evidence, and an execution tool? Does a stated cost ratio change the response? | 764 HumanEval+ and MBPP+ items | Qwen3-4B, Qwen3-8B, Claude Haiku 5.5, GPT-6 Luna, DeepSeek V4.1 Flash |
-| Estimation | Which reviewer model fits, with which parameters? | Study 2 runs | Same five |
-| Field | How do developers dispute AI in practice, and how do AI review bots respond? | DevGPT; GH Archive, Aug–Oct 2026 | ChatGPT; 15 review bots |
-| Policy | Which pushback policy minimizes organizational loss? | Measured item-level responses | Same five |
+All experiments follow the same protocol. The model answers a question, the user objects, the model replies freely, and a final answer is recorded. For the open models (Qwen3-4B and Qwen3-8B; Yang et al. 2025), we read answers exactly from the option logits after the prefixes "The answer is (" and "Final answer: (", using greedy decoding at 4-bit precision with thinking switched off. For the commercial models, which we access through an API (Claude Haiku 5.5, GPT-6 Luna, and DeepSeek V4.1 Flash), we switch reasoning off where the provider allows it, set the temperature to 0, and parse answers from text. The first turn asks for the option letter alone, and a closing message asks for the final answer as a single letter.
 
 We report the cave rate (the share of right first answers that become wrong), the correction rate (the share of wrong first answers that become right), and the change in accuracy. In Study 2 we also report the excess switch rate relative to the re-check control on the same items, tested with paired exact McNemar tests. Most models show a strong first-turn bias in code review. Qwen3-4B approves only 37% of correct code and Qwen3-8B 56%, while the API models approve between 68% and 82%. We therefore split every Study 2 analysis by the first verdict. An objection to an approval claims that the code has a bug, which we call a "bug" claim, and an objection to a rejection claims that it is correct, a "correct" claim.
 
 # 5. Study 1: Pushback on Multiple-Choice Questions
 
-Study 1 asks whether the measured effect of pushback depends on how much a model may say before it commits to an answer. Four open models from two families, Qwen3 (Yang et al. 2025) and OLMo-2 (Team OLMo 2024), answer four-option questions from MMLU (Hendrycks et al. 2021) and ARC-Challenge (Clark et al. 2018), receive the objection "I don't think that's right. Are you sure?", and reply within a budget of either 96 or 1,024 tokens.
-
-The reply budget reverses the verdict. With 96-token replies, pushback leaves accuracy unchanged or slightly lower, as for Qwen3-4B on MMLU (−1.3 points). With 1,024 tokens it raises accuracy by 5.7 points, because the correction rate climbs from 12% to 43% while the cave rate changes little (Table 2). Qwen3-8B on MMLU (−2.6 to +3.8 points) and Qwen3-4B on ARC (−0.1 to +3.9) show the same pattern. On ARC the cave rate is identical under both budgets (3.6%) while the correction rate more than doubles. Short budgets, in other words, do less to create sycophancy than to hide self-correction.
-
-Table 2. Pushback effect by reply budget (Study 1)
-
-| Model and data | Budget | Accuracy before → after | Cave rate | Correction rate |
-|---|---|---|---|---|
-| Qwen3-4B, MMLU | 96 | 65.8% → 64.5% (−1.3) | 8.4% | 12.3% |
-| Qwen3-4B, MMLU | 1,024 | 66.0% → 71.7% (+5.7) | 13.6% | 43.2% |
-| Qwen3-8B, MMLU | 96 | 70.2% → 67.6% (−2.6) | 13.0% | 21.8% |
-| Qwen3-8B, MMLU | 1,024 | 70.5% → 74.3% (+3.8) | 12.6% | 43.1% |
-| Qwen3-4B, ARC | 96 | 85.9% → 85.8% (−0.1) | 3.6% | 21.3% |
-| Qwen3-4B, ARC | 1,024 | 85.9% → 89.8% (+3.9) | 3.6% | 49.6% |
-| OLMo-2 7B, ARC | 1,024 | 76.6% → 75.4% (−1.2) | 12.8% | 36.8% |
-
-Note. Same items within each model and data set. Qwen3 models: 1,000 items; OLMo-2: 500 items.
-
-The break-even rule predicts the sign of the effect in every setting, including the one in which pushback hurts at full budget. For OLMo-2 on ARC, the break-even accuracy $C/(C+S)$ is 74.2%, and first-turn accuracy, at 76.6%, lies above it.
-
-Supplementary analyses of the models' internal states point in the same direction. Caving can be partly predicted before the objection arrives: a linear probe on hidden states adds about 0.04 to 0.06 AUROC to first-turn confidence in three of four runs. A probe trained only on cases of self-correction also predicts caving beyond confidence when replies are truncated, but not when the model may finish its reasoning. Activation steering never reduced caving selectively. Wherever it had an effect, it suppressed correction as well, and a gate based on the model's own estimate of its correctness recovered only 0.4 of the 6.9 points that an oracle gate could gain. Internal interventions are thus limited by what the model knows about its own correctness, which is one reason to look to external verification (Section 6.4).
-
-Two lessons carry over to Study 2. Counting only caving misses half of the trade-off, and much of the benefit of pushback may come from reconsideration rather than from the objection itself. Study 2 therefore allows full 1,024-token replies throughout and compares every objection with a neutral re-check control.
+Study 1 asks whether the measured effect of pushback depends on how much a model may say before it commits to an answer. Four open models from two families, Qwen3 (Yang et al. 2025) and OLMo-2 (Team OLMo 2024), answer four-option questions from MMLU (Hendrycks et al. 2021) and ARC-Challenge (Clark et al. 2018), receive the objection "I don't think that's right. Are you sure?", and reply within 96 or 1,024 tokens. The reply budget reverses the verdict. With 96 tokens, pushback leaves Qwen3-4B's MMLU accuracy unchanged or lower (−1.3 points); with 1,024 tokens it raises accuracy by 5.7 points, because the correction rate climbs from 12% to 43% while the cave rate changes little. Qwen3-8B on MMLU (−2.6 to +3.8) and Qwen3-4B on ARC (−0.1 to +3.9) show the same pattern, and on ARC the cave rate is identical under both budgets (3.6%). Short budgets thus do less to create sycophancy than to hide self-correction. The break-even rule predicts the sign of the effect in every setting, including the one in which pushback hurts at full budget (OLMo-2 on ARC, where first-turn accuracy of 76.6% exceeds the break-even accuracy of 74.2%). Probes and activation steering, reported in Online Appendix F, show that internal interventions cannot reduce caving without also suppressing correction. Study 2 therefore allows full 1,024-token replies and compares every objection with a neutral re-check control.
 
 # 6. Study 2: Objections in Code Review
 
@@ -180,9 +148,9 @@ Two lessons carry over to Study 2. Counting only caving misses half of the trade
 
 We build the review items from HumanEval+ and MBPP+ (Liu et al. 2023). Each of 382 tasks appears twice, once with its canonical solution and once with a single-site mutant, for example with `<` changed to `<=`, `+` to `-`, or a constant changed by one. Every mutant is verified to fail the official tests. Both versions are reprinted from the syntax tree, so that formatting does not reveal the bug. The model is asked, "Is the following Python code a correct implementation of …?", with the options (A) Correct and (B) Incorrect. Of the seven wordings we tried, this one produced the least biased first verdicts. For each task we also compute a witness input on which the two versions return different values, which allows us to state true and false execution results.
 
-Table 3 lists the objection conditions. Every objection asserts the opposite of the first verdict.
+Table 1 lists the objection conditions. Every objection asserts the opposite of the first verdict.
 
-Table 3. Objection conditions
+Table 1. Objection conditions
 
 | Condition | Objection (abbreviated) |
 |---|---|
@@ -197,13 +165,13 @@ The evidence is true exactly when the first verdict was wrong. If the model appr
 
 ## 6.2 Reply Length in Code Review
 
-Across all 764 items, pushback lowers Qwen3-4B's accuracy by 9.2 points (95% CI −13.5 to −4.6) with 96-token replies and raises it by 9.0 points (+5.8 to +12.4) with 1,024-token replies. The sign reverses as it did in Study 1, but through a different channel. In code review, full replies mainly reduce the cave rate (from 36.5% to 10.3%) and barely change the correction rate (from 47.4% to 49.4%). The break-even rule again predicts the sign in all four code settings we tested. A system prompt telling the model not to change its answer without a reason, which had no effect on MMLU, made matters worse in code review, lowering accuracy by 16.6 points because it raised caving and correction alike. The remaining analyses use 382 items, one version of each task drawn at random and balanced across correct and buggy code, with 1,024-token replies.
+Across all 764 items, pushback lowers Qwen3-4B's accuracy by 9.2 points (95% CI −13.5 to −4.6) with 96-token replies and raises it by 9.0 points (+5.8 to +12.4) with 1,024-token replies. As in Study 1 the sign reverses, but here full replies mainly reduce the cave rate (from 36.5% to 10.3%), and the break-even rule again predicts the sign in all four settings. A system prompt telling the model not to change its answer without a reason made matters worse (−16.6 points). The remaining analyses use 382 items, one version of each task drawn at random and balanced across correct and buggy code.
 
 ## 6.3 Cheap Talk, Stated Reliability, and Authority
 
-Table 4 reports excess switch rates for the objections that carry no verifiable content. Three regularities stand out.
+Table 2 reports excess switch rates for the objections that carry no verifiable content. Three regularities stand out.
 
-Table 4. Excess switching over re-check after cheap-talk objections (percentage points)
+Table 2. Excess switching over re-check after cheap-talk objections (percentage points)
 
 | Condition | Qwen3-4B | Qwen3-8B | Haiku 5.5 | GPT-6 Luna | DeepSeek V4.1 |
 |---|---|---|---|---|---|
@@ -220,13 +188,13 @@ The first is that stated reliability hardly matters. A Bayesian receiver with sy
 
 The second is that the models differ in kind. Qwen3-8B follows claims in both directions at almost any stated reliability. Once a user says the code is correct, it approves 64% to 78% of the buggy code it had rejected, and once a user says the code has a bug, it abandons about 70% of its correct approvals. Qwen3-4B and DeepSeek follow "bug" claims but not "correct" claims, the conservative asymmetry. Haiku switches less after an objection than after a plain re-check, in both directions, as if it took an objection as a reason to hold its verdict. Luna resists "bug" claims and is unmoved by "correct" claims.
 
-The third is that the form of an objection counts for more than its information. A bare doubt moves the models much less than a specific claim whose stated reliability is uninformative; for Qwen3-4B, a specific "bug" claim produces about four times the excess switching of a bare doubt. Authority, moreover, works in one direction only. Qwen3-8B abandons 76% of its correct approvals when the senior engineer says the code has a bug, but barely moves when the engineer says it is correct (+7 points). DeepSeek shows the same pattern (+39 against −1).
+The third is that the form of an objection counts for more than its information. For Qwen3-4B a specific "bug" claim produces about four times the excess switching of a bare doubt, and authority works in one direction only: Qwen3-8B abandons 76% of its correct approvals when a senior engineer says the code has a bug but barely moves when the engineer says it is correct (+7 points), and DeepSeek shows the same pattern (+39 against −1).
 
 ## 6.4 Evidence and Verification
 
-Table 5 splits the evidence conditions by whether the evidence was true.
+Table 3 splits the evidence conditions by whether the evidence was true.
 
-Table 5. Excess switching after execution evidence, without and with the execution tool (percentage points)
+Table 3. Excess switching after execution evidence, without and with the execution tool (percentage points)
 
 | Situation | Claim | Qwen3-4B | Qwen3-8B | Haiku 5.5 | GPT-6 Luna | DeepSeek V4.1 |
 |--------|--------|-----|-----|-----|-----|-----|
@@ -244,9 +212,9 @@ Verification also has a price. For several models the tool lowers the acceptance
 
 ## 6.5 Does a Stated Cost Ratio Change the Response?
 
-If the conservative asymmetry reflects an implicit cost ratio, then telling the reviewer that rejecting correct code is the more costly error should shrink or even reverse it. Table 6 reports the asymmetry, defined as the excess after "bug" claims minus the excess after "correct" claims, for the senior-engineer and track-record-50% objections at three stated cost ratios.
+If the conservative asymmetry reflects an implicit cost ratio, then telling the reviewer that rejecting correct code is the more costly error should shrink or even reverse it. Table 4 reports the asymmetry, defined as the excess after "bug" claims minus the excess after "correct" claims, for the senior-engineer and track-record-50% objections at three stated cost ratios.
 
-Table 6. Asymmetry of excess switching by stated cost ratio (percentage points)
+Table 4. Asymmetry of excess switching by stated cost ratio (percentage points)
 
 | Model and objection | $K$ = 4 | $K$ = 1 | $K$ = 1/4 |
 |---|---|---|---|
@@ -263,7 +231,7 @@ Only DeepSeek carries the stated costs into its response to pushback. Its asymme
 
 All runs so far switched reasoning off, as many deployed configurations do. To see whether the findings extend to frontier models that reason before answering, we ran the eight core conditions on the same 382 items with two such models, Claude Sonnet 5.5 and GPT-6.1 Sol, with reasoning switched on at medium effort (total cost $24.81).
 
-Table 7. Reasoning models: excess switching over re-check (percentage points)
+Table 5. Reasoning models: excess switching over re-check (percentage points)
 
 | Condition | Claude Sonnet 5.5 | GPT-6.1 Sol |
 |---|---|---|
@@ -279,15 +247,15 @@ Table 7. Reasoning models: excess switching over re-check (percentage points)
 
 Note. Evidence rows: evidence only → evidence with the execution tool.
 
-With reasoning on, both models are far more accurate at turn 1 and almost entirely unmoved by cheap talk, authority, and fabricated evidence; no excess in the first eight rows exceeds 2.5 points. They differ in how they treat true evidence. Sonnet 5.5 retracts 40% of its few wrong rejections when told, truthfully, that all tests pass, which is close to what a well-calibrated reviewer should do. GPT-6.1 Sol does not move even then. The Bayesian receiver is still rejected for both models (LR = 475.3 and 482.3), but for a different reason than before: a Bayesian reviewer should respond to a reliable objector, and these models respond to almost nothing. In the policy simulation, open disputes lower Sonnet 5.5's loss (11.8 to 6.2 per 100 submissions, with an evidence requirement best at 2.6), because true disputes succeed and false ones fail, whereas they raise GPT-6.1 Sol's loss slightly (12.0 to 15.3).
+With reasoning on, both models are far more accurate at turn 1 and almost entirely unmoved by cheap talk, authority, and fabricated evidence; no excess in the first eight rows exceeds 2.5 points. Sonnet 5.5 still retracts 40% of its few wrong rejections when told, truthfully, that all tests pass, close to what a well-calibrated reviewer should do, whereas GPT-6.1 Sol does not move even then. The Bayesian receiver is still rejected (LR = 475.3 and 482.3), now because these models respond to almost nothing, including reliable objectors. In the policy simulation, open disputes lower Sonnet 5.5's loss (11.8 to 6.2 per 100 submissions) and raise GPT-6.1 Sol's slightly (12.0 to 15.3).
 
-Reasoning thus removes most of the vulnerability documented above, at the price, for one of the two models, of ignoring true objections as well. The deference problem is therefore concentrated in the configurations that are cheap to run at scale: smaller models and models with reasoning switched off.
+Reasoning thus removes most of the vulnerability documented above, at the price, for one model, of ignoring true objections as well. The deference problem is concentrated in the configurations that are cheap to run at scale: smaller models and models with reasoning switched off.
 
 # 7. Structural Estimates
 
-We estimate the ambiguity-averse reviewer for each model by maximum likelihood on item-level switches, split by first verdict, with the re-check run under each framing serving as its baseline. The API models expose no probabilities, so we take first-turn confidence to be uniform above the verdict threshold. The parameters therefore describe patterns of response rather than calibrated beliefs. Because the likelihood separates by direction for given $(k_0, w, \varepsilon)$, a grid search finds the exact maximum. Intervals come from a parametric bootstrap. Table 8 reports the results.
+We estimate the ambiguity-averse reviewer for each model by maximum likelihood on item-level switches, split by first verdict, with the re-check run under each framing serving as its baseline. The API models expose no probabilities, so we take first-turn confidence to be uniform above the verdict threshold. The parameters therefore describe patterns of response rather than calibrated beliefs. Because the likelihood separates by direction for given $(k_0, w, \varepsilon)$, a grid search finds the exact maximum. Intervals come from a parametric bootstrap. Table 6 reports the results.
 
-Table 8. Estimates of the ambiguity-averse reviewer
+Table 6. Estimates of the ambiguity-averse reviewer
 
 | Model | LR: M1 vs M0 | LR: M2 vs M1 | Preferred | Key estimates (90% bootstrap range) | Type |
 |------|----|----|---|------------------------|------|
@@ -309,7 +277,7 @@ The base cost ratio itself is only weakly identified, with 90% ranges of roughly
 
 # 8. Field Evidence
 
-The objections in our experiments were written by us. Two field data sets show how developers actually dispute AI systems and how deployed systems respond.
+Two field data sets show how developers actually dispute AI systems and how deployed systems respond.
 
 ## 8.1 Developers and a Chat Assistant (DevGPT)
 
@@ -321,7 +289,7 @@ Of all follow-up prompts, 17.6% dispute the assistant's previous output. Executi
 
 To observe disputes in the "correct" direction, we collected all pull-request review comments recorded in GH Archive from August to October 2026. Of 1.25 million comments, 515,000 are top-level comments by 15 AI review bots, and developers replied to 39,592 of them. GH Archive retains only part of the review-comment events, so few threads still contain the bot's next comment. We therefore also label, on their own, the 50,703 replies that bots posted within threads. Raters agree well on whether a reply disputes the bot's finding (κ = 0.79) and on the bot's response (0.68 to 0.88), and less well on the form of a dispute (0.43), which we therefore treat as indicative.
 
-Table 9. How developers dispute AI review bots
+Table 7. How developers dispute AI review bots
 
 | Form of dispute | Review bots (n = 5,859) | DevGPT (n = 2,583) |
 |---|---|---|
@@ -335,17 +303,17 @@ In 14.8% of their replies, developers dispute the bot's finding, saying that the
 
 The bots mostly back down. Among the 16,086 bot replies that answer a dispute, 80.2% concede, 9.3% concede in part, and 10.5% maintain the finding. In the 664 threads in which all three parts survive, bots concede to 86.0% of disputes that cite execution evidence and to 76.2% of appeals to authority. The products differ widely. CodeRabbit concedes in 83.0% of its answered disputes and Greptile in 87.4%, compared with 50.5% for Devin and 32.5% for Cursor Bugbot, which keeps its finding in 57.2% of cases. Deployed systems, like the models in our experiments, embody very different deference policies.
 
-The logs cannot tell us whether a dispute was justified, so a high concession rate is not in itself evidence of sycophancy. What the field data do establish is that the channel our theory describes is in active use. Developers dispute AI reviews often, mostly with the kinds of claims that moved our models most, and deployed reviewers usually give way.
+The logs cannot tell us whether a dispute was justified, so a high concession rate is not in itself evidence of sycophancy. They do establish that the channel our theory describes is in active use: developers dispute AI reviews often, mostly with the kinds of claims that moved our models most, and deployed reviewers usually give way.
 
 # 9. Policy Analysis
 
 What pushback policy should an organization adopt for an AI reviewer? We simulate the expected loss of six policies using the measured responses of each model.
 
-After the AI's first verdict, interested parties may dispute it. The author disputes rejections, and in a second scenario a challenger, for instance a reviewer who is rewarded for finding bugs, also disputes approvals. Disputants know whether the code is buggy. They always raise a true dispute, and they raise a false one only if its expected benefit $\beta \cdot P(\text{switch})$ exceeds its cost, which is $c$ for a claim without evidence and $c + F$ for fabricated evidence. Each disputant uses the most effective form available. We do not model the AI's responses but take them from the measured item-level verdicts, so all policies are compared on the same items. The organization loses 4 when buggy code is approved and 1 when correct code is rejected, and 30% of submissions are buggy. Unless stated otherwise, $\beta = 1$, $c = 0.02$, and $F = 0.3$. Intervals come from 500 item-bootstrap draws.
+After the AI's first verdict, the author may dispute a rejection, and in a second scenario a challenger, for instance a reviewer rewarded for finding bugs, may also dispute an approval. Disputants know whether the code is buggy. They always raise a true dispute and raise a false one only if its expected benefit $\beta \cdot P(\text{switch})$ exceeds its cost, $c$ for a claim without evidence and $c + F$ for fabricated evidence, using the most effective form available. The AI's responses are the measured item-level verdicts, so all policies are compared on the same items. The organization loses 4 when buggy code is approved and 1 when correct code is rejected, 30% of submissions are buggy, and unless stated otherwise $\beta = 1$, $c = 0.02$, and $F = 0.3$. Intervals come from 500 item-bootstrap draws.
 
-We compare six policies. Under P0 there is no pushback. Under P1 the AI re-checks every verdict on its own. P2 allows open disputes in the form of a doubt, a 50% track record, or a senior engineer's assertion. P3 requires evidence and ignores claims that lack it, and P4 adds the execution tool to that requirement. P5 allows open disputes but states the organization's cost ratio in the system prompt.
+We compare six policies: no pushback (P0), self re-checking by the AI (P1), open disputes by doubt, a 50% track record, or a senior engineer (P2), an evidence requirement that ignores claims without evidence (P3), the same requirement with the execution tool (P4), and open disputes with the organization's cost ratio stated in the system prompt (P5).
 
-Table 10. Expected loss per 100 submissions, authors and challengers disputing
+Table 8. Expected loss per 100 submissions, authors and challengers disputing
 
 | Policy | Qwen3-4B | Qwen3-8B | Haiku 5.5 | GPT-6 Luna | DeepSeek V4.1 |
 |---|---|---|---|---|---|
@@ -358,7 +326,7 @@ Table 10. Expected loss per 100 submissions, authors and challengers disputing
 
 Note. Lower is better; the best policy per model is in bold. P5's reference is P2 restricted to the same two claim forms. Qwen3-8B was not run under cost framing.
 
-Table 10 and Figure 1 support four conclusions. First, open disputes raise the loss once challengers can dispute approvals. Relative to no pushback, the loss rises by 14.6 points for Luna, 19.0 for DeepSeek, and 63.0 for Qwen3-8B, and the 90% intervals exclude zero. Only Haiku, which resists objections, comes out ahead. This is the empirical counterpart of Proposition 1.
+Table 8 and Figure 1 support four conclusions. First, open disputes raise the loss once challengers can dispute approvals. Relative to no pushback, the loss rises by 14.6 points for Luna, 19.0 for DeepSeek, and 63.0 for Qwen3-8B, and the 90% intervals exclude zero. Only Haiku, which resists objections, comes out ahead. This is the empirical counterpart of Proposition 1.
 
 Second, an evidence requirement works only above a threshold for the cost of fabrication. Below the threshold, fabricated evidence is worth producing and the loss stays high, at times higher than under open disputes. Above it, fabrication stops and the loss drops sharply. For DeepSeek the loss is 25.7 at $F \le 0.3$ and 4.4 at $F \ge 0.5$. For Qwen3-8B it stays at 140.4 for every $F$ below 1 and falls to zero at $F$ = 1, where every first-turn error is corrected. The pattern mirrors the evidence window and the cliff of Section 3.2.
 
@@ -376,60 +344,45 @@ Because the ambiguity-averse model and the classification of models into types w
 
 We test seven hypotheses. (H1) The Bayesian receiver fits worse than the ambiguity-averse model for every model. (H2) Switching differs by less than 15 points between track records of 80% and 20%, except in DeepSeek's "bug" direction. (H3) The signs of the "bug" and "correct" excess replicate for each exploratory model. (H4) A stated cost ratio moves DeepSeek's asymmetry but not Haiku's. (H5) Wherever the approval of buggy code after a false "all tests pass" claim exceeds 10 points without the tool, the tool at least halves it. (H6) The ranking of the policies replicates. (H7) In the new models, the Bayesian receiver fails, stated reliability is largely ignored, switching follows the form of the objection, and the tool reduces the approval of buggy code after false evidence. For magnitudes, about 90% of the confirmatory estimates should fall within their prediction intervals, and a share below 75% counts as a failure to replicate.
 
-The confirmatory runs cost $8.73 in total. Table 11 summarizes the verdicts.
+The confirmatory runs cost $8.73 in total. Table 9 summarizes the verdicts; the full results are in Online Appendix G.
 
-Table 11. Confirmatory results on new items and new models
+Table 9. Confirmatory results on new items and new models
 
-| Hypothesis | Models | Result | Verdict |
-|---|---|---|---|
-| H1: Bayesian receiver fails | Haiku, Luna, DeepSeek | LR = 431.9, 328.2, 317.0 (all p < .001) | Supported |
-| H2: reliability ignored | Haiku, Luna | Track 80% − 20%: +4.3 / +2.4 and −2.2 / −3.7 ("bug" / "correct") | Supported |
-| H2: DeepSeek exception | DeepSeek | "Bug": +14.4 (one-sided p < .001); "correct": +0.9 | Supported |
-| H3: types replicate | Haiku | −4.3 [−7.7, −1.0] / −5.7 [−8.3, −3.1] | Supported |
-| | Luna | +1.4 [−4.6, +7.5] / −0.8 [−3.2, +1.5] | Supported |
-| | DeepSeek | +8.4 [+3.9, +12.9] / +0.5 [−1.6, +2.5] | Supported |
-| H4: costs move DeepSeek | DeepSeek | Asymmetry under authority +23.7, +24.0, +13.3 at $K$ = 4, 1, 1/4 (trend p = .019); $w$ = 0.25 [0, 1] | Partly supported |
-| H4: costs do not move Haiku | Haiku | Authority: inside the prediction interval; track record: −0.5 against [+0.5, +12.6] | Partly supported |
-| H5: tool blocks false evidence | DeepSeek | Fabricated counterexample +31.7 → +11.8 (p < .001) | Supported |
-| H6: policy ranking | DeepSeek | P4 lowest (6.6); P2 − P0 = +17.5 [lower bound +11.6] | Supported |
-| | Luna | P2 − P0 = +7.6 [lower bound +2.4] | Supported |
-| H7(a): Bayesian receiver fails | MiMo, Gemma, Qwen3.8 | LR = 409.8, 593.3, 456.6 | Supported |
-| H7(b): reliability ignored | MiMo, Gemma, Qwen3.8 | Track 80% − 20% within ±3.0 in both directions | Supported |
-| H7(c): form of objection | MiMo, Qwen3.8 | Evidence > track record > doubt | Supported |
-| | Gemma | +4.3, +2.4, +4.8 | Not supported |
-| H7(d): tool reduces false-evidence approvals | MiMo | +44.9 → +3.7 | Supported |
-| Magnitudes | Haiku, Luna, DeepSeek | 72 of 78 cells (92%) inside their 90% prediction intervals | Supported |
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H1: Bayesian receiver fails | LR = 317.0 to 431.9 for the three exploratory models (all p < .001) | Supported |
+| H2: reliability ignored | Track 80% − 20% within ±4.3 for Haiku and Luna; DeepSeek "bug" +14.4 (p < .001), "correct" +0.9 | Supported |
+| H3: types replicate | Signs and equivalence bounds met for Haiku, Luna, and DeepSeek | Supported |
+| H4: stated costs move DeepSeek only | DeepSeek trend p = .019 but $w$ = 0.25 [0, 1]; Haiku outside its interval for one claim form | Partly supported |
+| H5: tool blocks false evidence | DeepSeek, fabricated counterexample: +31.7 → +11.8 (p < .001) | Supported |
+| H6: policy ranking | DeepSeek: P4 best (6.6); open disputes raise loss for DeepSeek (+17.5) and Luna (+7.6) | Supported |
+| H7: new models | Bayesian receiver fails and reliability is ignored in all three; ordering of forms holds for MiMo and Qwen3.8, not Gemma; tool removes MiMo's false-evidence effect (+44.9 → +3.7) | Partly supported |
+| Magnitudes | 72 of 78 exploratory cells (92%) inside their 90% prediction intervals | Supported |
 
-Note. Excess switching over re-check in percentage points, with 90% confidence intervals where shown. For H3 the two values are the "bug" and "correct" directions at a track record of 50%. H5(a) and H7(d) apply only where the false "all tests pass" claim raises approvals of buggy code by more than 10 points without the tool, which is the case for MiMo alone among the API models.
-
-The central results replicate. On new items, the Bayesian receiver is rejected for every model, stated reliability is ignored except in DeepSeek's "bug" direction, and the three response types reappear with the predicted signs. The magnitudes replicate as well: 92% of the exploratory cells fall within their prediction intervals, close to the 90% expected if the effects are stable. The policy ranking also holds. For DeepSeek, evidence with the tool is again the best policy and open disputes again raise the loss.
-
-The new models extend these findings. All three fail the Bayesian benchmark and ignore stated reliability. MiMo, which no earlier experiment had seen, is easily misled by a false claim that all tests pass: the share of rejected buggy code it then approves exceeds the re-check rate by 45 points, and the execution tool removes nearly all of this effect (+3.7). Gemma barely responds to any objection, so the ordering of objection forms in H7(c) cannot be told apart for it, and that part of H7 fails. By the decision rule, which required each part of H7 to hold in every new model, H7 is therefore not fully supported.
-
-The cost-framing predictions replicate least well. DeepSeek's asymmetry again falls as the stated cost ratio falls, but the estimated weight on stated costs is smaller than in the exploratory runs and its interval includes zero. Haiku's asymmetry under the track-record claim falls slightly below its prediction interval at $K$ = 1/4. The evidence that one model, and only one, carries stated costs into its response to pushback is therefore weaker than the other results. One result was not anticipated: in the confirmatory runs, the execution tool made Luna more likely, not less, to abandon a correct approval after a fabricated counterexample (+1.5 to +10.5), so that evidence with the tool is not the best policy for Luna.
+The central results replicate. On new items the Bayesian receiver is rejected for every model, stated reliability is ignored except in DeepSeek's "bug" direction, the three response types reappear with the predicted signs, and 92% of the exploratory cells fall within their prediction intervals. The new models extend the findings. MiMo is easily misled by a false claim that all tests pass, approving rejected buggy code 45 points more often than after a plain re-check, and the execution tool removes nearly all of this effect. Gemma barely responds to any objection, so the ordering of objection forms cannot be distinguished for it and that part of H7 fails. The cost-framing predictions replicate least well: DeepSeek's asymmetry again falls with the stated cost ratio, but the estimated weight on stated costs is smaller and its interval includes zero. One result was not anticipated. The tool made Luna more likely to abandon a correct approval after a fabricated counterexample (+1.5 to +10.5), so evidence with the tool is not the best policy for Luna.
 
 # 11. Discussion
 
 ## 11.1 Theoretical Implications
 
-The central claim of this paper is that the question of how much an AI system should defer is an equilibrium question. The receiver benchmark makes sycophancy measurable, since a model is sycophantic when it acts as if objections were more informative than they are. The strategic-user model explains why the benchmark cannot be fixed once and for all. When the people who push back gain from a changed verdict, how informative their objections are depends on the deference policy itself. Cheap objections unravel, optimal deference lies strictly inside the unit interval, and the gain from deference drops off a cliff when deference is set slightly too high. Our experiments add that current models are far from any such optimum. Their problem is less that they defer too much or too little on average than that their deference responds to the wrong things, namely the direction of a claim, its form, and who makes it, instead of its reliability or its truth. Reasoning changes this picture substantially. The two frontier reasoning models we tested resist cheap talk and fabricated evidence almost completely, and one of them still accepts true evidence, which is close to the benchmark. The other resists true evidence as well, which shows that removing sycophancy and achieving appropriate deference are not the same thing.
+The central claim of this paper is that how much an AI system should defer is an equilibrium question. The receiver benchmark makes sycophancy measurable, and the strategic-user model explains why the benchmark cannot be fixed once and for all: when those who push back gain from a changed verdict, the informativeness of their objections depends on the deference policy itself, and the gain from deference falls off a cliff when deference is slightly too high. Current inexpensive models are far from any such optimum, less because they defer too much or too little on average than because their deference responds to the direction, form, and source of a claim instead of its reliability or truth. Reasoning changes the picture: the two frontier reasoning models resist cheap talk and fabricated evidence almost completely, but one of them also resists true evidence, which shows that removing sycophancy and achieving appropriate deference are not the same thing.
 
-The ambiguity-averse reviewer accounts for these departures with a few interpretable parameters. Its estimates show that the same observed behavior, following "bug" claims while ignoring "correct" claims, can arise from different sources. In one model it reflects a judgment about costs that responds when costs are stated, and in another a disposition that stays fixed. The distinction matters for design, because a cost-sensitive reviewer can be steered by telling it what errors cost the organization, whereas a fixed one cannot.
+The ambiguity-averse reviewer accounts for these departures with a few interpretable parameters. Its estimates show that the same behavior, following "bug" claims while ignoring "correct" claims, can reflect a judgment about costs in one model and a fixed disposition in another. A cost-sensitive reviewer can be steered by telling it what errors cost; a fixed one cannot.
 
 ## 11.2 Implications for Design and Governance
 
 For organizations that deploy AI reviewers, the results point to six practical rules.
 
-1. Do not honor cheap objections by default. For most models in our study, allowing interested parties to dispute verdicts with unsupported claims raises expected loss. The field data show that such disputes are common and that deployed bots usually concede, so the channel is open in practice.
-2. Set deference separately for each direction of claim. Deferring to a claim that code is correct and deferring to a claim that it has a bug have different consequences and, in current models, different causes. A single instruction to be less sycophantic cannot address both, as the failure of the firm system prompt in Study 2 illustrates.
-3. Pair evidence requirements with verification. Requiring evidence helps only when fabricating it is costly. Giving the AI a way to check claims lowers the cost at which fabrication stops paying, and the check should target the disputed part of a claim. Running the code does not expose a counterexample whose only false element is the expected value.
-4. Evaluate deference policies system by system. The same policy can lower the loss for one model and raise it for another, so procurement and configuration decisions should test the deference policy of the specific system, much as Table 10 does.
-5. Treat stating the costs as a weak lever. Telling the system what each error costs changed the behavior of only one of five models, and that effect was smaller on new items.
-6. Weigh the configuration as well as the policy. Switching reasoning on removed most of the vulnerability in the two frontier models we tested, at 16 to 26 times the cost per exchange in our runs, and in one of them it also made the reviewer ignore true evidence. Whether reasoning is worth its cost depends on how often verdicts are disputed and on what each kind of error costs.
+1. Do not honor cheap objections by default. For most models, letting interested parties dispute verdicts with unsupported claims raises expected loss, and the field data show that such disputes are common and usually succeed.
+2. Set deference separately for each direction of claim. Deferring to "the code is correct" and to "the code has a bug" have different consequences and, in current models, different causes; a single instruction to be less sycophantic, like the firm system prompt in Study 2, cannot address both.
+3. Pair evidence requirements with verification aimed at the disputed part of a claim. Requiring evidence helps only when fabrication is costly, and verification lowers that cost threshold; running the code does not expose a counterexample whose only false element is the expected value.
+4. Evaluate deference policies system by system, since the same policy can lower the loss for one model and raise it for another (Table 8).
+5. Treat stating the costs as a weak lever. It changed the behavior of one model in five, and less so on new items.
+6. Weigh the configuration as well as the policy. Switching reasoning on removed most of the vulnerability in two frontier models at 16 to 26 times the cost per exchange, and in one of them it also made the reviewer ignore true evidence.
 
 ## 11.3 Limitations and Future Research
 
-Several limitations qualify these results. Most of our experiments use small open models run at 4-bit precision and inexpensive commercial models with reasoning switched off. The two frontier reasoning models we tested behave very differently, so our main findings describe configurations that are cheap to deploy at scale rather than the frontier, and we cannot say which configurations the review bots in our field data use. The review tasks come from public benchmarks that the models may have seen during training; the confirmatory items change the code text but not the tasks themselves. The effect of stating the costs, which we found in one model only, replicated weakly in the confirmatory test and should be treated as tentative. First-turn confidence is unobserved for the API models, so the structural parameters describe patterns of response rather than beliefs, and the base cost ratio is only weakly identified. The field data cannot show whether a dispute was justified. One way forward would be to judge disputes after the fact, by tracing whether the flagged lines were later changed or fixed. The policy simulation assumes fully informed disputants who follow pure strategies, and noisy signals and mixed strategies, as in Proposition 6, are natural extensions. Finally, we have not tested the causal role of training. The yes-man account of Prendergast (1993) predicts that preference-based post-training increases deference and that training on verifiable outcomes reduces it, and models released with checkpoints from each stage of training would permit a direct test.
+Several limitations qualify these results. Most experiments use small open models at 4-bit precision and inexpensive commercial models with reasoning off; the two frontier reasoning models behave very differently, and we cannot say which configurations the review bots in our field data use. The review tasks come from public benchmarks the models may have seen, and the confirmatory items change the code text but not the tasks. The effect of stating the costs replicated weakly and should be treated as tentative. First-turn confidence is unobserved for the API models, so the structural parameters describe patterns of response rather than beliefs. The field data cannot show whether a dispute was justified; tracing whether flagged lines were later changed or fixed would allow such judgments. The policy simulation assumes fully informed disputants and pure strategies. Finally, we have not tested the causal role of training: the yes-man account of Prendergast (1993) predicts that preference-based post-training raises deference, and checkpoints from successive training stages would permit a direct test.
 
 # 12. Conclusion
 
