@@ -74,7 +74,49 @@ All propositions, the first-best bound, and the evidence window were also verifi
 
 **Worst cases.** Because $p'(r)$ is decreasing in $r$, for an approved item $\max_{r \in R} k(1-p'(r)) = k(1-p'(r_{hi}))$ and $\max_{r \in R} p'(r) = p'(r_{lo})$, where $r_{lo}$ and $r_{hi}$ are the ends of $R$ (clipped to $(0,1)$). The switching rule is therefore $k(1-p'(r_{hi})) > p'(r_{lo})$ for approved items and $1-p'(r_{hi}) > k\,p'(r_{lo})$ for rejected items.
 
-**Properties.** With $p$ uniform over the region where the first verdict is optimal ($p > k/(1+k)$ for approvals and $p > 1/(1+k)$ for rejections), the five properties in Section 3.3 hold on grids of $k \in \{1, 2, 4\}$, $\varepsilon \in \{0, 0.2, 0.4\}$, $c \in \{0, 1\}$, and $r \in \{0.2, 0.5, 0.8\}$. With a re-check baseline (confidence redrawn uniformly with probability $s$), four parameter settings reproduce the four types observed at $r = 1/2$ (excess switching over re-check, "bug" / "correct"): $\varepsilon = 0$, $m = 0.5$ gives 0 / 0; $k = 3$, $\varepsilon = 0.3$, $m = 0.5$ gives +45 / −4 (conservative); $k = 2$, $\varepsilon = 0.2$, $m = 0.85$ gives +80 / +43 (yes man); and $k = 3$, $\varepsilon = 0.2$, $m = 0.25$ gives −3 / −6 (resistant). Formal proofs of these properties are left for a later version.
+**Notation.** Write $o = p/(1-p)$ for the reviewer's prior odds that its first verdict is right, and $\omega(r) = (1-r)/r$, which is decreasing in $r$. Bayes' rule gives the posterior odds $p'(r)/(1-p'(r)) = o\,\omega(r)$. Let $u = \omega(r_{hi})$ and $v = \omega(r_{lo})$, so $0 \le u \le v$. The first verdict is optimal if $o > k$ for an approval and $o > 1/k$ for a rejection; we call these the verdict regions. Writing $1 - p'(r_{hi}) = 1/(1 + o u)$ and $p'(r_{lo}) = o v / (1 + o v)$, the switching rules become
+
+$$\text{approved:}\quad k\,(1 + o v) > o v\,(1 + o u) \iff Q_A(o) \equiv u v\, o^2 + v(1-k)\, o - k < 0,$$
+
+$$\text{rejected:}\quad 1 + o v > k\, o v\,(1 + o u) \iff Q_R(o) \equiv k u v\, o^2 + v(k-1)\, o - 1 < 0.$$
+
+The results below concern the response to an objection at a given confidence; under the re-check baseline of Section 3.3 they apply to the redrawn confidence.
+
+**Proposition B1 (no ambiguity, no response to uninformative claims).** If $\varepsilon = 0$ and the interval is centred at $1/2$, no item in its verdict region switches, for any $k > 0$. Under the re-check baseline the objection therefore switches exactly the items that re-checking alone switches, and the excess is zero.
+
+*Proof.* With $r_{lo} = r_{hi} = 1/2$, $u = v = 1$ and $p' = p$. An approval switches iff $k(1-p) > p$, that is $o < k$, and a rejection iff $1 - p > k p$, that is $o < 1/k$. Both contradict the verdict regions. Since $p' = p$, the objection switches a redrawn confidence exactly when re-checking does. $\square$
+
+**Proposition B2 (no cost asymmetry, no directional asymmetry).** If $k = 1$, the switching rule and the verdict region are the same for approved and rejected items, for every interval $R$. Hence, for any common distribution of confidence, the share of items that switch is the same in both directions.
+
+*Proof.* With $k = 1$, $Q_A(o) = Q_R(o) = u v\,o^2 - 1$, and both verdict regions are $o > 1$. $\square$
+
+**Proposition B3 (the conservative asymmetry).** Let $k > 1$, $0 < \varepsilon < 1/2$, and centre $1/2$, and write $t = (1/2+\varepsilon)/(1/2-\varepsilon) > 1$. Then (i) an approved item switches if and only if $k < o < o^*$, where
+
+$$o^* = \frac{1}{2}\left[t(k-1) + \sqrt{t^2(k-1)^2 + 4k}\right] > k;$$
+
+(ii) no rejected item in its verdict region switches; and (iii) if confidence is uniform on the verdict region, the share of approved items that switch is
+
+$$S = \frac{(t-1)\, o^*(o^*-1)}{(1+o^*)(1+o^* t)},$$
+
+which is positive and strictly increasing in both $k$ and $\varepsilon$.
+
+*Proof.* Here $r_{lo} = 1/2 - \varepsilon$ and $r_{hi} = 1/2 + \varepsilon$, so $v = t$ and $u = 1/t$, and $uv = 1$. (i) $Q_A(o) = o^2 + t(1-k)o - k$ has the single positive root $o^*$. At $o = k$, $Q_A(k) = k(k-1)(1-t) < 0$, so $o^* > k$, and $Q_A < 0$ exactly on $(0, o^*)$. (ii) $Q_R(o) = k o^2 + t(k-1) o - 1$ is increasing for $o > 0$, and $Q_R(1/k) = (k-1)(t-1)/k > 0$, so $Q_R > 0$ on the whole verdict region. (iii) With $p$ uniform on $(k/(1+k), 1)$, the share is $(1+k)\,o^*/(1+o^*) - k$. From $Q_A(o^*) = 0$, $k = o^*(o^*+t)/(1+o^* t)$, and substituting gives the expression for $S$. The map $o \mapsto o(o+t)/(1+ot)$ has derivative $(o^2 t + 2o + t)/(1+ot)^2 > 0$, so $o^*$ is strictly increasing in $k$, and $o^* > 1$ for $k > 1$. For $o > 1$,
+
+$$\frac{d}{do}\log\frac{o(o-1)}{(1+o)(1+ot)} = \left(\frac1o - \frac{t}{1+ot}\right) + \left(\frac1{o-1} - \frac1{1+o}\right) > 0,$$
+
+so $S$ is strictly increasing in $k$. For fixed $k$, $o^*$ is strictly increasing in $t$, hence in $\varepsilon$, and $S = (1+k)\,o^*/(1+o^*) - k$ is strictly increasing in $o^*$. $\square$
+
+Part (i) does not depend on the uniform distribution: under any distribution of confidence with positive density just above the threshold $k/(1+k)$, a positive share of approvals switches after an uninformative "bug" claim, while by part (ii) no rejection switches after an uninformative "correct" claim.
+
+**Proposition B4 (reliable good news is discounted).** Let $k > 1$ and the interval be $[\bar r - \varepsilon, \bar r + \varepsilon] \cap (0, 1]$ for a centre $\bar r \in (0,1)$. If $\bar r - \varepsilon \le (k-1)/(2k-1)$, no rejected item in its verdict region switches. In particular, for any stated reliability, even $r = 0.8$, a sufficiently ambiguous reviewer ignores claims that its rejection was wrong.
+
+*Proof.* $Q_R$ has non-negative leading and positive linear coefficients, so it is increasing for $o > 0$, and it suffices that $Q_R(1/k) \ge 0$, that is $uv + v(k-1) \ge k$. Since $u \ge 0$, it is enough that $v \ge k/(k-1)$, which is equivalent to $r_{lo} \le (k-1)/(2k-1)$. $\square$
+
+**Proposition B5 (credibility governs sensitivity to reliability).** If $c = 0$, the switching rule does not depend on the stated reliability $r$. If $c > 0$, the set of confidences at which an item switches is weakly increasing in $r$ in both directions; hence, for any distribution of confidence, the share of items that switch is weakly increasing in $r$.
+
+*Proof.* The centre is $c\,r + (1-c)\,m$. If $c = 0$ it does not depend on $r$. If $c > 0$ it increases with $r$, so both ends of the interval weakly increase, and $u$ and $v$ weakly decrease. For approvals the switching condition $k/(1+ou) > ov/(1+ov)$ has a left side that rises and a right side that falls as $u$ and $v$ fall; for rejections, $1/(1+ou) > k\,ov/(1+ov)$ behaves the same way. Any confidence that switches at a lower $r$ therefore also switches at a higher $r$. $\square$
+
+**Types.** With a re-check baseline (confidence redrawn uniformly with probability $s$), four parameter settings reproduce the four types observed at $r = 1/2$ (excess switching over re-check, "bug" / "correct"): $\varepsilon = 0$, $m = 0.5$ gives 0 / 0; $k = 3$, $\varepsilon = 0.3$, $m = 0.5$ gives +45 / −4 (conservative); $k = 2$, $\varepsilon = 0.2$, $m = 0.85$ gives +80 / +43 (yes man); and $k = 3$, $\varepsilon = 0.2$, $m = 0.25$ gives −3 / −6 (resistant). All five propositions were also checked numerically on parameter grids.
 
 **Likelihood.** For each model, framing $K \in \{\text{none}, 4, 1, 1/4\}$, condition, and direction (approved or rejected at turn 1), let $x$ be the number of items that switch among the $n$ items with that first verdict, using the items shared by all runs of a framing. The first-turn confidence is uniform above the verdict threshold $\ell$ ($\ell = k/(1+k)$ for approvals, $1/(1+k)$ for rejections). With probability $s$ the confidence is redrawn uniformly on $(0,1)$; $s = \min(1, \hat x_0/\ell)$ reproduces the observed re-check switch rate $\hat x_0$ of that framing and direction. The predicted switch rate $q(\cdot)$ for an objection with interval centre $\bar r$ is computed by Monte Carlo with common random numbers (3,000 draws) on a grid of centres and interpolated. Centres are $c\,r + (1-c)\,m$ for track-record conditions, $g$ for doubt, and $a$ for the senior engineer; the effective cost ratio is $k_0 K^w$ under framing and $k_0$ without. The log-likelihood is $\sum x \log q + (n - x) \log(1-q)$.
 

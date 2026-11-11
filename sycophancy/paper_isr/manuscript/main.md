@@ -118,7 +118,7 @@ $$\max_{r \in R}\, k\,\bigl(1 - p'(r)\bigr) > \max_{r \in R}\, p'(r),$$
 
 and switches a rejection to an approval if and only if $\max_{r \in R} (1 - p'(r)) > \max_{r \in R} k\,p'(r)$. Because $p'$ is decreasing in $r$, both worst cases lie at the ends of the interval, which makes the rule easy to compute.
 
-The model has five properties, which we verify on fine parameter grids in Appendix B:
+The model has five properties, which we prove in Appendix B (Propositions B1–B5):
 
 1. Without ambiguity ($\varepsilon = 0$) and with neutral trust, an uninformative objection causes no switching for any $k$.
 2. With symmetric costs ($k = 1$), switching is the same in both directions.
