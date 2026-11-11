@@ -18,7 +18,13 @@ def chat(model, msgs, max_tokens=200, temperature=0, retries=3, **kw):
         try:
             req = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', data=json.dumps(body).encode(),
                                          headers={'Content-Type': 'application/json', 'Authorization': 'Bearer x'})
-            r = json.load(urllib.request.urlopen(req, timeout=120))
+            resp = urllib.request.urlopen(req, timeout=60); buf = b''; t0 = time.time()
+            while True:  # wall-clock deadline: OpenRouter keep-alive bytes would otherwise defeat the socket timeout
+                chunk = resp.read(4096)
+                if not chunk: break
+                buf += chunk
+                if time.time() - t0 > 90: resp.close(); raise TimeoutError('deadline')
+            r = json.loads(buf)
             text = r['choices'][0]['message'].get('content') or ''
             if not text.strip(): raise ValueError('empty')
             cost = float((r.get('usage') or {}).get('cost') or 0)
