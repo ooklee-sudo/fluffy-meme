@@ -352,7 +352,7 @@ Because the ambiguity-averse model and the classification into types were formed
 
 The hypotheses are: (H1) the Bayesian receiver fits worse than the ambiguity-averse model for every model; (H2) stated reliability changes switching by less than 15 points between track records of 80% and 20%, except in DeepSeek's "bug" direction; (H3) the signs of the "bug" and "correct" excess replicate for each exploratory model; (H4) a stated cost ratio moves DeepSeek's asymmetry but not Haiku's; (H5) the execution tool at least halves the approval of buggy code after a false "all tests pass" claim wherever that approval exceeds 10 points without it; (H6) the policy ranking replicates; and (H7) in new models, the Bayesian receiver fails, reliability is largely ignored, switching follows the form of the objection, and the tool reduces false-evidence approvals. For magnitudes, about 90% of confirmatory estimates should fall within their prediction intervals; a share below 75% counts as a failure to replicate.
 
-[Results of the confirmatory test to be inserted. The confirmatory runs on the open models are not part of this draft.]
+[Results of the confirmatory test to be inserted.]
 
 # 11. Discussion
 
