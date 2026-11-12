@@ -92,9 +92,11 @@ python analyze.py
 | `--targets` | `q_proj,v_proj` | 어댑터를 붙일 층 |
 | `--d` | 4 | 어댑터당 TT 코어 수 |
 | `--probe-rank`, `--probe-steps` | 8, 60 | probe의 bond dimension과 학습 step |
-| `--ranks`, `--steps` | `1,2,4,8,16`, 300 | sweep할 bond dimension과 run당 step |
+| `--ranks` | `1,2,4,8,16` | sweep할 bond dimension |
 | `--frac` | 0.9 | 필요 용량 기준 (최대 개선폭 대비 비율) |
-| `--n-train`, `--n-eval` | 320, 80 | 브랜드당 학습·검증 쌍 수 |
+| `--n-train`, `--n-dev`, `--n-eval` | 320, 40, 80 | 브랜드당 학습, 조기 종료용, 평가용 쌍 수 (서로 겹치지 않음) |
+| `--steps`, `--eval-every` | 300, 50 | run당 최대 step과 dev 평가 간격. dev 손실이 가장 낮았던 시점(0 step 포함)으로 되돌림 |
+| `--lr`, `--rank-scale` | 1e-3, `rs` | 학습률과 rank 보정. `rs`는 업데이트에 1/√(bond dimension)을 곱해 큰 rank가 더 크게 움직이지 않게 함 (rsLoRA와 같은 방식) |
 
 ## 알아둘 점
 

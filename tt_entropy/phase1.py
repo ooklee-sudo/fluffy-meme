@@ -23,7 +23,7 @@ import torch
 import torch.nn.functional as F
 
 from data import encode_tenant, features, load_jsonl, synthetic_tenants
-from tt import adapter_params, add_tt_adapters, bond_profile, reset_adapters
+from tt import adapter_params, add_tt_adapters, bond_profile, get_state, reset_adapters, set_state
 
 
 def get_args():
@@ -36,13 +36,17 @@ def get_args():
     a.add_argument("--tenants", default="", help="comma-separated tenant names (overrides --n-tenants)")
     a.add_argument("--select", default="spread", choices=["spread", "largest"],
                    help="spread: evenly across the size ranking (default); largest: the biggest tenants")
-    a.add_argument("--min-examples", type=int, default=400)
+    a.add_argument("--min-examples", type=int, default=440)
     a.add_argument("--n-train", type=int, default=320)
+    a.add_argument("--n-dev", type=int, default=40, help="early-stopping split, disjoint from train and eval")
     a.add_argument("--n-eval", type=int, default=80)
     a.add_argument("--max-len", type=int, default=256)
     a.add_argument("--bs", type=int, default=4)
-    a.add_argument("--lr", type=float, default=2e-3)
-    a.add_argument("--steps", type=int, default=300, help="steps per sweep run")
+    a.add_argument("--lr", type=float, default=1e-3)
+    a.add_argument("--steps", type=int, default=300, help="max steps per sweep run (early stopping on dev)")
+    a.add_argument("--eval-every", type=int, default=50)
+    a.add_argument("--rank-scale", default="rs", choices=["rs", "none"],
+                   help="rs: scale the update by 1/sqrt(bond dimension), as in rank-stabilized LoRA")
     a.add_argument("--probe-steps", type=int, default=60)
     a.add_argument("--probe-rank", type=int, default=8)
     a.add_argument("--ranks", default="1,2,4,8,16")
@@ -55,8 +59,9 @@ def get_args():
     a.add_argument("--no-ckpt", action="store_true", help="disable gradient checkpointing")
     args = a.parse_args()
     if args.tiny:
-        args.n_tenants, args.min_examples, args.n_train, args.n_eval = 4, 0, 96, 32
+        args.n_tenants, args.min_examples, args.n_train, args.n_dev, args.n_eval = 4, 0, 96, 32, 32
         args.steps, args.probe_steps, args.bs, args.ranks, args.dtype = 80, 30, 8, "1,2,4,8", "fp32"
+        args.eval_every = 20
         args.lr = 1e-2
     if args.out is None:
         args.out = "results/phase1_tiny" if args.tiny else "results/phase1"
@@ -116,20 +121,37 @@ def evaluate(model, data, args, pad, device):
     return tot / max(n, 1)
 
 
-def train(model, adapters, data, steps, args, pad, device, seed):
+def train(model, adapters, data, steps, args, pad, device, seed, dev=None):
+    """AdamW with warmup and cosine decay. With `dev`, evaluates every --eval-every steps (step 0 = no update
+    included) and restores the best checkpoint, so extra capacity cannot hurt through overfitting."""
     params = adapter_params(adapters)
     opt = torch.optim.AdamW(params, lr=args.lr, weight_decay=0.0)
     warm = max(1, steps // 10)
-    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / warm))
+    sched = torch.optim.lr_scheduler.LambdaLR(
+        opt, lambda s: min(1.0, (s + 1) / warm) * 0.5 * (1 + math.cos(math.pi * min(s, steps) / steps)))
     rng = random.Random(seed)
+    curve, best = [], None
+    if dev is not None:
+        best = (evaluate(model, dev, args, pad, device), 0, get_state(adapters))
+        curve.append((0, best[0]))
     model.train()
-    for _ in range(steps):
+    for step in range(1, steps + 1):
         s, k = response_nll(model, rng.sample(data, min(args.bs, len(data))), pad, args.max_len, device)
         (s / max(k, 1)).backward()
         torch.nn.utils.clip_grad_norm_(params, 1.0)
         opt.step()
         sched.step()
         opt.zero_grad(set_to_none=True)
+        if dev is not None and (step % args.eval_every == 0 or step == steps):
+            v = evaluate(model, dev, args, pad, device)
+            curve.append((step, v))
+            if v < best[0]:
+                best = (v, step, get_state(adapters))
+            model.train()
+    if dev is None:
+        return None
+    set_state(adapters, best[2])
+    return dict(best_step=best[1], best_dev_nll=best[0], dev_curve=curve)
 
 
 def probe_summary(profiles, probe_rank):
@@ -159,12 +181,13 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     os.makedirs(args.out, exist_ok=True)
     model, tok, pad = load_model(args, device)
-    adapters = add_tt_adapters(model, targets=tuple(args.targets.split(",")), ranks=args.probe_rank, d=args.d)
+    adapters = add_tt_adapters(model, targets=tuple(args.targets.split(",")), ranks=args.probe_rank, d=args.d,
+                               rank_scale=args.rank_scale)
     print(f"device={device}  adapted modules={len(adapters)}  e.g. {next(iter(adapters))}: "
           f"out={next(iter(adapters.values())).out_f} in={next(iter(adapters.values())).in_f}")
 
     if args.tiny:
-        raw = synthetic_tenants(args.n_tenants, args.n_train + args.n_eval, vocab=64)
+        raw = synthetic_tenants(args.n_tenants, args.n_train + args.n_dev + args.n_eval, vocab=64)
     else:
         raw = load_jsonl(args.data)
     if args.tenants:
@@ -188,8 +211,10 @@ def main():
         t0 = time.time()
         pairs = list(raw[name])
         random.Random(args.seed).shuffle(pairs)
-        enc = pairs if args.tiny else encode_tenant(pairs[: args.n_train + args.n_eval], tok, args.max_len)
-        tr, ev = enc[: args.n_train], enc[args.n_train: args.n_train + args.n_eval]
+        n_all = args.n_train + args.n_dev + args.n_eval
+        enc = pairs[:n_all] if args.tiny else encode_tenant(pairs[:n_all], tok, args.max_len)
+        tr, dv = enc[: args.n_train], enc[args.n_train: args.n_train + args.n_dev]
+        ev = enc[args.n_train + args.n_dev: n_all]
 
         reset_adapters(adapters, args.probe_rank)  # last core zero -> no update
         nll_none = evaluate(model, ev, args, pad, device)
@@ -206,13 +231,13 @@ def main():
             torch.manual_seed(args.seed)
             reset_adapters(adapters, r)
             ts = time.time()
-            train(model, adapters, tr, args.steps, args, pad, device, args.seed)
+            es = train(model, adapters, tr, args.steps, args, pad, device, args.seed, dev=dv)
             nll = evaluate(model, ev, args, pad, device)
             sweep.append(dict(rank=r, nll=nll, gain=nll_none - nll, seconds=time.time() - ts,
-                              trainable_params=sum(ad.n_params() for ad in adapters.values())))
-            print(f"    r={r:<3d} nll={nll:.4f} gain={nll_none - nll:+.4f}")
+                              trainable_params=sum(ad.n_params() for ad in adapters.values()), **es))
+            print(f"    r={r:<3d} nll={nll:.4f} gain={nll_none - nll:+.4f}  best step {es['best_step']}/{args.steps}")
 
-        res = dict(tenant=name, n_train=len(tr), n_eval=len(ev), features=features(tr), nll_none=nll_none,
+        res = dict(tenant=name, n_train=len(tr), n_dev=len(dv), n_eval=len(ev), features=features(tr), nll_none=nll_none,
                    probe=probe, sweep=sweep, capacity_need=capacity_need(sweep, args.frac),
                    seconds=time.time() - t0, config=vars(args))
         with open(path, "w") as f:

@@ -72,13 +72,18 @@ def bond_profile(w, out_f, in_f, energy=0.99):
 
 
 class TTAdapterLinear(nn.Module):
-    """Frozen base linear layer plus a trainable TT-format update: y = base(x) + scale * x dW^T."""
+    """Frozen base linear layer plus a trainable TT-format update: y = base(x) + scale * c(r) * x dW^T.
 
-    def __init__(self, base, ranks, d=4, scale=1.0):
+    c(r) is a rank-dependent factor so that larger bond dimensions do not take larger effective steps:
+    "rs" = 1 / sqrt(mean bond dimension), as in rank-stabilized LoRA (Kalajdzievski 2023); "none" = 1.
+    """
+
+    def __init__(self, base, ranks, d=4, scale=1.0, rank_scale="rs"):
         super().__init__()
         self.base = base
         self.d = d
         self.scale = scale
+        self.rank_scale = rank_scale
         self.out_f = factorize(base.out_features, d)
         self.in_f = factorize(base.in_features, d)
         self.cores = nn.ParameterList()
@@ -90,6 +95,7 @@ class TTAdapterLinear(nn.Module):
             ranks = [ranks] * (self.d - 1)
         assert len(ranks) == self.d - 1
         self.ranks = list(ranks)
+        self.c = 1.0 / math.sqrt(sum(self.ranks) / len(self.ranks)) if self.rank_scale == "rs" else 1.0
         r = [1] + self.ranks + [1]
         dev = self.base.weight.device
         cores = []
@@ -109,10 +115,10 @@ class TTAdapterLinear(nn.Module):
         return sum(c.numel() for c in self.cores)
 
     def forward(self, x):
-        return self.base(x) + self.scale * F.linear(x, self.delta().to(x.dtype))
+        return self.base(x) + (self.scale * self.c) * F.linear(x, self.delta().to(x.dtype))
 
 
-def add_tt_adapters(model, targets=("q_proj", "v_proj"), ranks=4, d=4, scale=1.0):
+def add_tt_adapters(model, targets=("q_proj", "v_proj"), ranks=4, d=4, scale=1.0, rank_scale="rs"):
     """Freeze the model and wrap every target linear layer; returns {module name: adapter}."""
     for p in model.parameters():
         p.requires_grad_(False)
@@ -121,7 +127,7 @@ def add_tt_adapters(model, targets=("q_proj", "v_proj"), ranks=4, d=4, scale=1.0
         for t in targets:
             lin = getattr(mod, t, None)
             if isinstance(lin, nn.Linear):
-                ad = TTAdapterLinear(lin, ranks, d=d, scale=scale)
+                ad = TTAdapterLinear(lin, ranks, d=d, scale=scale, rank_scale=rank_scale)
                 setattr(mod, t, ad)
                 wrapped[f"{name}.{t}" if name else t] = ad
     if not wrapped:
@@ -136,3 +142,14 @@ def reset_adapters(adapters, ranks):
 
 def adapter_params(adapters):
     return [c for ad in adapters.values() for c in ad.cores]
+
+
+def get_state(adapters):
+    return {k: [c.detach().clone() for c in ad.cores] for k, ad in adapters.items()}
+
+
+@torch.no_grad()
+def set_state(adapters, state):
+    for k, ad in adapters.items():
+        for c, v in zip(ad.cores, state[k]):
+            c.copy_(v)
