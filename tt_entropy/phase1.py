@@ -65,7 +65,7 @@ def get_args():
                    "gains are averaged over seeds before the capacity need is computed")
     a.add_argument("--probe-tokens", type=int, default=4000,
                    help="response-token budget for the gradient probe, equal for every tenant (0 = all training data)")
-    a.add_argument("--exclude-dir", default="", help="skip tenants that already have results in this folder")
+    a.add_argument("--exclude-dir", default="", help="skip tenants with results in these folders (comma-separated)")
     a.add_argument("--list-only", action="store_true", help="print the selected tenants and exit")
     a.add_argument("--dtype", default="bf16", choices=["bf16", "fp32"])
     a.add_argument("--no-ckpt", action="store_true", help="disable gradient checkpointing")
@@ -260,11 +260,14 @@ def main():
         names = args.tenants.split(",")
     else:
         excl = set()
-        if args.exclude_dir:
-            for f in os.listdir(args.exclude_dir) if os.path.isdir(args.exclude_dir) else []:
+        for d in filter(None, args.exclude_dir.split(",")):
+            if not os.path.isdir(d):
+                raise SystemExit(f"--exclude-dir: folder not found: {d}")
+            for f in os.listdir(d):
                 if f.endswith(".json"):
-                    with open(os.path.join(args.exclude_dir, f)) as fh:
+                    with open(os.path.join(d, f)) as fh:
                         excl.add(json.load(fh)["tenant"])
+        if excl:
             print(f"excluding {len(excl)} tenants found in {args.exclude_dir}")
         names = sorted([t for t, v in raw.items() if len(v) >= args.min_examples and t not in excl],
                        key=lambda t: -len(raw[t]))

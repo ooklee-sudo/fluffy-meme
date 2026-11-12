@@ -135,3 +135,19 @@ python phase1.py --exclude-dir results/phase1 --n-tenants 30 --seeds 0,1 --out r
 python analyze.py results/phase1_confirm
 ```
 
+## 두 번째 확인용 실행 (H1′: 엔트로피와 맞춤화 이득)
+
+첫 확인용 검정에서 H1은 지지되지 않았습니다(`PREREGISTRATION.md` 9절). 그 뒤 탐색 분석(`python explore.py`)에서 엔트로피가 맞춤화 이득과 연결되는 신호가 보여서, 아직 쓰지 않은 브랜드 30개로 다시 검정합니다. 가설, 표본, 주 검정(상대 gain, 네 특성 통제, 양측)은 `PREREGISTRATION_H1prime.md`에 고정했습니다.
+
+```bash
+python phase1.py --exclude-dir results/phase1,results/phase1_confirm --n-tenants 30 --list-only
+```
+
+```bash
+python phase1.py --exclude-dir results/phase1,results/phase1_confirm --n-tenants 30 --seeds 0,1 --out results/phase1_value
+```
+
+```bash
+python analyze_value.py results/phase1_value
+```
+
