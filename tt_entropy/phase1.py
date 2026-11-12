@@ -34,6 +34,8 @@ def get_args():
     a.add_argument("--out", default=None, help="default: results/phase1 (results/phase1_tiny with --tiny)")
     a.add_argument("--n-tenants", type=int, default=10)
     a.add_argument("--tenants", default="", help="comma-separated tenant names (overrides --n-tenants)")
+    a.add_argument("--select", default="spread", choices=["spread", "largest"],
+                   help="spread: evenly across the size ranking (default); largest: the biggest tenants")
     a.add_argument("--min-examples", type=int, default=400)
     a.add_argument("--n-train", type=int, default=320)
     a.add_argument("--n-eval", type=int, default=80)
@@ -169,9 +171,14 @@ def main():
         names = args.tenants.split(",")
     else:
         names = sorted([t for t, v in raw.items() if len(v) >= args.min_examples], key=lambda t: -len(raw[t]))
-        names = sorted(names[: args.n_tenants])
+        k = min(args.n_tenants, len(names))
+        if args.select == "spread" and k > 1:
+            names = [names[round(i * (len(names) - 1) / (k - 1))] for i in range(k)]
+        else:
+            names = names[:k]
+        names = sorted(names)
     ranks = [int(r) for r in args.ranks.split(",")]
-    print(f"{len(names)} tenants, bond dimensions {ranks}")
+    print(f"{len(names)} tenants ({args.select}): {', '.join(names)}\nbond dimensions {ranks}")
 
     for ti, name in enumerate(names):
         path = os.path.join(args.out, re.sub(r"[^\w.-]", "_", name) + ".json")

@@ -76,6 +76,8 @@ python phase1.py --n-tenants 10
 python analyze.py
 ```
 
+브랜드는 기본적으로 답글 수 순위 전체에서 고르게 뽑습니다(`--select spread`). 가장 큰 브랜드만 쓰려면 `--select largest`, 특정 브랜드만 쓰려면 `--tenants AppleSupport,Delta`를 주세요.
+
 결과는 `results/phase1/<브랜드>.json`, `results/phase1_summary.json`, `results/phase1_h1.png`에 저장됩니다.
 
 **메모리가 부족하면(CUDA out of memory):** `--bs 2`, `--max-len 192`, 또는 `--model Qwen/Qwen2.5-0.5B` 순서로 줄이세요.
