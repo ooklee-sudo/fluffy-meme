@@ -96,3 +96,30 @@ TwitterSupport, UPSHelp, VirginAtlantic, ask_progressive, asksalesforce, sizehel
 
 All 30 hold at least 4,000 response tokens in their 320 training pairs with the Qwen2.5 tokenizer
 (minimum 5,682, Postmates_Help), so the token-budget exclusion is not expected to remove any brand.
+
+## 9. Results (added after the run, 2026-11-12)
+
+The run followed sections 3 to 6 with no deviations. All 30 brands were used (none failed the gain or
+token-budget rules).
+
+**Primary test.** Partial Spearman correlation of gradient entropy and log2(capacity need), controlling
+for mean response length: rho = -0.334, p = 0.076, n = 30, two-sided. **H1 is not supported at
+alpha = 0.05.** The approximate 95% interval (Fisher z, df adjusted for one covariate) is -0.62 to +0.04,
+so a moderate negative effect is not ruled out, but an effect of the size the study was powered for
+(|rho| about 0.5) is less likely.
+
+**Secondary results (do not bear on H1):**
+
+- Zero-order correlation of gradient entropy with capacity need: rho = -0.236 (p = 0.21).
+- Response length given gradient entropy: partial rho = +0.416 (p = 0.025). Longer responses went with
+  larger capacity need in both the exploratory and the confirmatory sample.
+- Seed reliability of capacity need (Spearman, seed 0 vs seed 1): 0.782.
+- TwitterSupport reached an evaluation NLL near 0.07, which suggests templated replies. It met the
+  preregistered rules and stays in the primary test; any analysis without it is a post hoc sensitivity
+  check.
+
+**Exploratory finding, not preregistered:** gradient entropy correlated with the best gain over the
+sweep (how much a brand benefits from personalization at all): rho = +0.586 (p = 0.001). Response
+diversity also correlated with best gain (type-token ratio rho = -0.719, distinct-response share
+rho = -0.583), so this may reflect templated versus varied replies. It is a hypothesis for a new
+preregistered test on unused brands, not a result.
