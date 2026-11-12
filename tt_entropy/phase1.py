@@ -31,7 +31,7 @@ def get_args():
     a.add_argument("--model", default="Qwen/Qwen2.5-1.5B")
     a.add_argument("--data", default="data/twcs_pairs.jsonl")
     a.add_argument("--tiny", action="store_true", help="random tiny Llama + synthetic tenants on CPU")
-    a.add_argument("--out", default="results/phase1")
+    a.add_argument("--out", default=None, help="default: results/phase1 (results/phase1_tiny with --tiny)")
     a.add_argument("--n-tenants", type=int, default=10)
     a.add_argument("--tenants", default="", help="comma-separated tenant names (overrides --n-tenants)")
     a.add_argument("--min-examples", type=int, default=400)
@@ -55,7 +55,9 @@ def get_args():
     if args.tiny:
         args.n_tenants, args.min_examples, args.n_train, args.n_eval = 4, 0, 96, 32
         args.steps, args.probe_steps, args.bs, args.ranks, args.dtype = 80, 30, 8, "1,2,4,8", "fp32"
-        args.lr, args.out = 1e-2, "results/phase1_tiny"
+        args.lr = 1e-2
+    if args.out is None:
+        args.out = "results/phase1_tiny" if args.tiny else "results/phase1"
     return args
 
 
