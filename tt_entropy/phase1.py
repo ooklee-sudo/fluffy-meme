@@ -2,10 +2,15 @@
 
 For each tenant:
   1. L_none: held-out response NLL of the base model with no adapter
-  2. Probe: a short TT-adapter fine-tune at a fixed bond dimension -> entanglement profile of every dW
-  3. Sweep: a full fine-tune at each bond dimension r in --ranks -> held-out NLL L_r
-  4. Capacity need = smallest r whose gain (L_none - L_r) reaches --frac of the best gain in the sweep
+  2. Gradient probe (primary): the loss gradient w.r.t. each frozen weight W, summed over the training set,
+     -> entanglement profile of every gradient matrix (no training, no initialization effects)
+  3. TT probe (secondary): a short TT-adapter fine-tune -> entanglement of dW. Its non-final cores start
+     random, so this profile partly reflects initialization; kept for comparison only.
+  4. Sweep: a fine-tune at each bond dimension r in --ranks (early stopping on dev) -> held-out NLL L_r
+  5. Capacity need = bond dimension at which the gain (L_none - L_r) reaches --frac of the best gain,
+     interpolated in log2(r) between grid points (capacity_need_grid = the grid value)
 One JSON per tenant goes to --out; reruns skip finished tenants. Then run: python analyze.py
+--reprobe adds the gradient probe to finished tenants without re-running their sweep.
 
 Usage:
   python phase1.py --tiny                                            # CPU smoke test, no downloads
@@ -23,7 +28,8 @@ import torch
 import torch.nn.functional as F
 
 from data import encode_tenant, features, load_jsonl, synthetic_tenants
-from tt import adapter_params, add_tt_adapters, bond_profile, get_state, reset_adapters, set_state
+from tt import (adapter_params, add_tt_adapters, bond_profile, get_state, matrix_profile, reset_adapters,
+                set_state)
 
 
 def get_args():
@@ -57,6 +63,8 @@ def get_args():
     a.add_argument("--seed", type=int, default=0)
     a.add_argument("--dtype", default="bf16", choices=["bf16", "fp32"])
     a.add_argument("--no-ckpt", action="store_true", help="disable gradient checkpointing")
+    a.add_argument("--reprobe", action="store_true",
+                   help="for finished tenants, (re)compute the gradient probe and capacity need; no sweep")
     args = a.parse_args()
     if args.tiny:
         args.n_tenants, args.min_examples, args.n_train, args.n_dev, args.n_eval = 4, 0, 96, 32, 32
@@ -154,22 +162,60 @@ def train(model, adapters, data, steps, args, pad, device, seed, dev=None):
     return dict(best_step=best[1], best_dev_nll=best[0], dev_curve=curve)
 
 
-def probe_summary(profiles, probe_rank):
+def probe_summary(profiles, cap=None):
+    """Average bond statistics over modules. Entropy is normalized by log of the largest rank the bond can
+    hold (capped at `cap`, the probe's bond dimension, for the TT probe)."""
     bonds = [b for prof in profiles.values() for b in prof]
-    norm = [b["entropy"] / math.log(min(probe_rank, b["max_rank"])) for b in bonds if min(probe_rank, b["max_rank"]) > 1]
-    return dict(
-        mean_entropy=sum(b["entropy"] for b in bonds) / len(bonds),
-        max_entropy=max(b["entropy"] for b in bonds),
-        mean_norm_entropy=sum(norm) / max(len(norm), 1),
-        mean_rank_at_energy=sum(b["rank_at_energy"] for b in bonds) / len(bonds),
-    )
+    lim = lambda b: min(cap, b["max_rank"]) if cap else b["max_rank"]
+    norm = [b["entropy"] / math.log(lim(b)) for b in bonds if lim(b) > 1]
+    mean = lambda key: sum(b[key] for b in bonds) / len(bonds)
+    return dict(mean_entropy=mean("entropy"), max_entropy=max(b["entropy"] for b in bonds),
+                mean_norm_entropy=sum(norm) / max(len(norm), 1),
+                mean_rank_at_energy=mean("rank_at_energy"), mean_rank_at_90=mean("rank_at_90"))
+
+
+def grad_probe(model, adapters, data, args, pad, device):
+    """Sum the loss gradient w.r.t. each wrapped base weight over `data` (adapters at zero), then profile it."""
+    reset_adapters(adapters, 1)  # last core zero -> the model is exactly the base model
+    ws = {k: ad.base.weight for k, ad in adapters.items()}
+    for w in ws.values():
+        w.requires_grad_(True)
+    acc = {k: torch.zeros(w.shape, dtype=torch.float32, device=w.device) for k, w in ws.items()}
+    model.train()  # needed for gradient checkpointing; Qwen and Llama use no dropout
+    for i in range(0, len(data), args.bs):
+        s, k = response_nll(model, data[i: i + args.bs], pad, args.max_len, device)
+        s.backward()
+        for key, w in ws.items():
+            acc[key] += w.grad.float()
+            w.grad = None
+        for c in adapter_params(adapters):
+            c.grad = None
+    for w in ws.values():
+        w.requires_grad_(False)
+    bonds = {k: bond_profile(acc[k], ad.out_f, ad.in_f, args.energy) for k, ad in adapters.items()}
+    mats = {k: matrix_profile(acc[k], args.energy) for k in adapters}
+    msum = dict(
+        mean_entropy=sum(m["entropy"] for m in mats.values()) / len(mats),
+        mean_norm_entropy=sum(m["entropy"] / math.log(m["max_rank"]) for m in mats.values()) / len(mats),
+        mean_rank_at_energy=sum(m["rank_at_energy"] for m in mats.values()) / len(mats),
+        mean_rank_at_90=sum(m["rank_at_90"] for m in mats.values()) / len(mats))
+    del acc
+    return dict(n_examples=len(data), summary=probe_summary(bonds), matrix_summary=msum, modules=bonds)
 
 
 def capacity_need(sweep, frac):
-    best = max(r["gain"] for r in sweep)
+    """(interpolated need, grid need): where the gain first reaches frac x best, in log2(r)."""
+    sw = sorted(sweep, key=lambda r: r["rank"])
+    best = max(r["gain"] for r in sw)
     if best <= 0:
-        return None
-    return min(r["rank"] for r in sweep if r["gain"] >= frac * best)
+        return None, None
+    t = frac * best
+    i = next(j for j, r in enumerate(sw) if r["gain"] >= t)
+    if i == 0:
+        return float(sw[0]["rank"]), sw[0]["rank"]
+    (r0, g0), (r1, g1) = (sw[i - 1]["rank"], sw[i - 1]["gain"]), (sw[i]["rank"], sw[i]["gain"])
+    x = math.log2(r0) + (t - g0) / (g1 - g0) * (math.log2(r1) - math.log2(r0))
+    return 2 ** x, r1
 
 
 # ---------------------------------------------------------------- main
@@ -205,7 +251,7 @@ def main():
 
     for ti, name in enumerate(names):
         path = os.path.join(args.out, re.sub(r"[^\w.-]", "_", name) + ".json")
-        if os.path.exists(path):
+        if os.path.exists(path) and not args.reprobe:
             print(f"[{ti + 1}/{len(names)}] {name}: done, skipping")
             continue
         t0 = time.time()
@@ -216,15 +262,30 @@ def main():
         tr, dv = enc[: args.n_train], enc[args.n_train: args.n_train + args.n_dev]
         ev = enc[args.n_train + args.n_dev: n_all]
 
+        if os.path.exists(path):  # --reprobe: keep the sweep, add the gradient probe
+            with open(path) as f:
+                res = json.load(f)
+            if res["n_train"] != len(tr):
+                raise SystemExit(f"{name}: saved n_train {res['n_train']} != {len(tr)}; use the original settings")
+            res["grad_probe"] = grad_probe(model, adapters, tr, args, pad, device)
+            res["capacity_need"], res["capacity_need_grid"] = capacity_need(res["sweep"], args.frac)
+            with open(path, "w") as f:
+                json.dump(res, f, indent=1)
+            g = res["grad_probe"]["summary"]
+            print(f"[{ti + 1}/{len(names)}] {name}: grad norm-entropy={g['mean_norm_entropy']:.3f} "
+                  f"need={res['capacity_need']:.2f}  ({(time.time() - t0) / 60:.1f} min)")
+            continue
+
         reset_adapters(adapters, args.probe_rank)  # last core zero -> no update
         nll_none = evaluate(model, ev, args, pad, device)
+        gprobe = grad_probe(model, adapters, tr, args, pad, device)
 
         torch.manual_seed(args.seed)
         reset_adapters(adapters, args.probe_rank)
         train(model, adapters, tr, args.probe_steps, args, pad, device, args.seed)
         profiles = {k: bond_profile(ad.delta(), ad.out_f, ad.in_f, args.energy) for k, ad in adapters.items()}
         probe = dict(rank=args.probe_rank, steps=args.probe_steps, nll=evaluate(model, ev, args, pad, device),
-                     summary=probe_summary(profiles, args.probe_rank), modules=profiles)
+                     summary=probe_summary(profiles, cap=args.probe_rank), modules=profiles)
 
         sweep = []
         for r in ranks:
@@ -237,14 +298,15 @@ def main():
                               trainable_params=sum(ad.n_params() for ad in adapters.values()), **es))
             print(f"    r={r:<3d} nll={nll:.4f} gain={nll_none - nll:+.4f}  best step {es['best_step']}/{args.steps}")
 
-        res = dict(tenant=name, n_train=len(tr), n_dev=len(dv), n_eval=len(ev), features=features(tr), nll_none=nll_none,
-                   probe=probe, sweep=sweep, capacity_need=capacity_need(sweep, args.frac),
-                   seconds=time.time() - t0, config=vars(args))
+        need, need_grid = capacity_need(sweep, args.frac)
+        res = dict(tenant=name, n_train=len(tr), n_dev=len(dv), n_eval=len(ev), features=features(tr),
+                   nll_none=nll_none, grad_probe=gprobe, probe=probe, sweep=sweep, capacity_need=need,
+                   capacity_need_grid=need_grid, seconds=time.time() - t0, config=vars(args))
         with open(path, "w") as f:
             json.dump(res, f, indent=1)
-        s = probe["summary"]
-        print(f"[{ti + 1}/{len(names)}] {name}: none={nll_none:.4f} probe norm-entropy={s['mean_norm_entropy']:.3f} "
-              f"need={res['capacity_need']}  ({res['seconds'] / 60:.1f} min)")
+        g = gprobe["summary"]
+        print(f"[{ti + 1}/{len(names)}] {name}: none={nll_none:.4f} grad norm-entropy={g['mean_norm_entropy']:.3f} "
+              f"need={need if need is None else round(need, 2)}  ({res['seconds'] / 60:.1f} min)")
 
 
 if __name__ == "__main__":

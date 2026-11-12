@@ -60,15 +60,28 @@ def bond_profile(w, out_f, in_f, energy=0.99):
         e = s ** 2
         tot = e.sum()
         if tot <= 0:
-            res.append(dict(bond=k, entropy=0.0, rank_at_energy=0, max_rank=len(s)))
+            res.append(dict(bond=k, entropy=0.0, rank_at_energy=0, rank_at_90=0, max_rank=len(s)))
             continue
         p = e / tot
         p = p[p > 0]
         ent = float(-(p * p.log()).sum())
         cum = torch.cumsum(e, 0) / tot
         rk = int((cum < energy).sum()) + 1
-        res.append(dict(bond=k, entropy=ent, rank_at_energy=min(rk, len(s)), max_rank=len(s)))
+        r90 = int((cum < 0.9).sum()) + 1
+        res.append(dict(bond=k, entropy=ent, rank_at_energy=min(rk, len(s)), rank_at_90=min(r90, len(s)),
+                        max_rank=len(s)))
     return res
+
+
+def matrix_profile(w, energy=0.99):
+    """Ordinary (out | in) singular-value entropy of w: the cut a LoRA rank acts on."""
+    s = torch.linalg.svdvals(w.detach().float())
+    e = s ** 2
+    tot = e.sum()
+    p = (e / tot)[e > 0]
+    cum = torch.cumsum(e, 0) / tot
+    return dict(entropy=float(-(p * p.log()).sum()), max_rank=len(s),
+                rank_at_energy=int((cum < energy).sum()) + 1, rank_at_90=int((cum < 0.9).sum()) + 1)
 
 
 class TTAdapterLinear(nn.Module):
