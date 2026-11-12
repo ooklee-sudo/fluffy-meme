@@ -106,3 +106,32 @@ python analyze.py
 - probe의 엔트로피는 bond마다 log(probe rank) 이하로 제한됩니다. 그래서 정규화 엔트로피(`mean_norm_entropy`)를 주 지표로 씁니다. probe rank를 바꿔 결과가 유지되는지 확인하는 것도 강건성 점검이 됩니다.
 - 필요 용량은 bond dimension 몇 단계 중 하나라서 동점이 많습니다. 브랜드 10개로 얻은 p값은 첫 신호로만 보세요. 본 실험에서는 브랜드 수와 반복(seed)을 늘립니다.
 - ΔW는 매 forward마다 코어에서 전체 행렬로 계산합니다. 1~2B 모델에서는 문제없지만 서빙 효율 측정(H3)용 구현은 아닙니다.
+
+## 확인용 실행 (사전 등록된 H1 검정)
+
+첫 10개 브랜드는 결과를 이미 본 탐색용입니다. 확인용 검정은 `PREREGISTRATION.md`에 가설, 표본(새 브랜드 30개), 주 검정(응답 길이를 통제한 편상관, 양측), 제외 기준을 실행 전에 고정해 두었습니다. 실행 중에 설정을 바꾸면 그 문서의 7절(Deviations)에 기록하세요.
+
+1. 탐색용 10개에 같은 토큰 예산(4,000) probe를 다시 계산합니다 (약 5분):
+
+```bash
+python phase1.py --n-tenants 10 --reprobe && python analyze.py
+```
+
+2. 확인용 30개 브랜드 목록이 `PREREGISTRATION.md` 8절과 같은지 확인합니다:
+
+```bash
+python phase1.py --exclude-dir results/phase1 --n-tenants 30 --list-only
+```
+
+3. 확인용 실행 (seed 2개, 브랜드당 약 10분, 전체 약 5시간):
+
+```bash
+python phase1.py --exclude-dir results/phase1 --n-tenants 30 --seeds 0,1 --out results/phase1_confirm
+```
+
+4. 분석. 출력의 `PRIMARY` 줄이 사전 등록한 검정입니다:
+
+```bash
+python analyze.py results/phase1_confirm
+```
+

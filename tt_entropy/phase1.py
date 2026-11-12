@@ -60,7 +60,13 @@ def get_args():
     a.add_argument("--targets", default="q_proj,v_proj")
     a.add_argument("--frac", type=float, default=0.9)
     a.add_argument("--energy", type=float, default=0.99)
-    a.add_argument("--seed", type=int, default=0)
+    a.add_argument("--seed", type=int, default=0, help="data seed: which pairs go to train, dev and eval")
+    a.add_argument("--seeds", default="", help="training seeds for the sweep, e.g. 0,1,2 (default: --seed); "
+                   "gains are averaged over seeds before the capacity need is computed")
+    a.add_argument("--probe-tokens", type=int, default=4000,
+                   help="response-token budget for the gradient probe, equal for every tenant (0 = all training data)")
+    a.add_argument("--exclude-dir", default="", help="skip tenants that already have results in this folder")
+    a.add_argument("--list-only", action="store_true", help="print the selected tenants and exit")
     a.add_argument("--dtype", default="bf16", choices=["bf16", "fp32"])
     a.add_argument("--no-ckpt", action="store_true", help="disable gradient checkpointing")
     a.add_argument("--reprobe", action="store_true",
@@ -69,7 +75,7 @@ def get_args():
     if args.tiny:
         args.n_tenants, args.min_examples, args.n_train, args.n_dev, args.n_eval = 4, 0, 96, 32, 32
         args.steps, args.probe_steps, args.bs, args.ranks, args.dtype = 80, 30, 8, "1,2,4,8", "fp32"
-        args.eval_every = 20
+        args.eval_every, args.probe_tokens = 20, 400
         args.lr = 1e-2
     if args.out is None:
         args.out = "results/phase1_tiny" if args.tiny else "results/phase1"
@@ -174,8 +180,25 @@ def probe_summary(profiles, cap=None):
                 mean_rank_at_energy=mean("rank_at_energy"), mean_rank_at_90=mean("rank_at_90"))
 
 
+def token_budget(data, budget):
+    """Leading examples holding exactly `budget` response tokens (the last one cut short); 0 = all."""
+    if not budget:
+        return data, sum(len(r) for _, r in data)
+    out, n = [], 0
+    for p, r in data:
+        if n >= budget:
+            break
+        r = r[: budget - n]
+        out.append((p, r))
+        n += len(r)
+    return out, n
+
+
 def grad_probe(model, adapters, data, args, pad, device):
-    """Sum the loss gradient w.r.t. each wrapped base weight over `data` (adapters at zero), then profile it."""
+    """Sum the loss gradient w.r.t. each wrapped base weight over a fixed response-token budget of `data`
+    (adapters at zero), then profile it. A fixed budget keeps the gradient noise level equal across tenants:
+    with more tokens, noise averages out and the entropy falls for reasons unrelated to the tenant."""
+    data, n_tokens = token_budget(data, args.probe_tokens)
     reset_adapters(adapters, 1)  # last core zero -> the model is exactly the base model
     ws = {k: ad.base.weight for k, ad in adapters.items()}
     for w in ws.values():
@@ -200,7 +223,9 @@ def grad_probe(model, adapters, data, args, pad, device):
         mean_rank_at_energy=sum(m["rank_at_energy"] for m in mats.values()) / len(mats),
         mean_rank_at_90=sum(m["rank_at_90"] for m in mats.values()) / len(mats))
     del acc
-    return dict(n_examples=len(data), summary=probe_summary(bonds), matrix_summary=msum, modules=bonds)
+    return dict(n_examples=len(data), n_tokens=n_tokens, budget=args.probe_tokens,
+                budget_met=(not args.probe_tokens) or n_tokens >= args.probe_tokens,
+                summary=probe_summary(bonds), matrix_summary=msum, modules=bonds)
 
 
 def capacity_need(sweep, frac):
@@ -226,20 +251,23 @@ def main():
                          "Make it first (README step 3): python data.py twcs data/twcs.csv data/twcs_pairs.jsonl 200")
     device = "cuda" if torch.cuda.is_available() else "cpu"
     os.makedirs(args.out, exist_ok=True)
-    model, tok, pad = load_model(args, device)
-    adapters = add_tt_adapters(model, targets=tuple(args.targets.split(",")), ranks=args.probe_rank, d=args.d,
-                               rank_scale=args.rank_scale)
-    print(f"device={device}  adapted modules={len(adapters)}  e.g. {next(iter(adapters))}: "
-          f"out={next(iter(adapters.values())).out_f} in={next(iter(adapters.values())).in_f}")
 
     if args.tiny:
-        raw = synthetic_tenants(args.n_tenants, args.n_train + args.n_dev + args.n_eval, vocab=64)
+        raw = synthetic_tenants(8, args.n_train + args.n_dev + args.n_eval, vocab=64)
     else:
         raw = load_jsonl(args.data)
     if args.tenants:
         names = args.tenants.split(",")
     else:
-        names = sorted([t for t, v in raw.items() if len(v) >= args.min_examples], key=lambda t: -len(raw[t]))
+        excl = set()
+        if args.exclude_dir:
+            for f in os.listdir(args.exclude_dir) if os.path.isdir(args.exclude_dir) else []:
+                if f.endswith(".json"):
+                    with open(os.path.join(args.exclude_dir, f)) as fh:
+                        excl.add(json.load(fh)["tenant"])
+            print(f"excluding {len(excl)} tenants found in {args.exclude_dir}")
+        names = sorted([t for t, v in raw.items() if len(v) >= args.min_examples and t not in excl],
+                       key=lambda t: -len(raw[t]))
         k = min(args.n_tenants, len(names))
         if args.select == "spread" and k > 1:
             names = [names[round(i * (len(names) - 1) / (k - 1))] for i in range(k)]
@@ -247,7 +275,16 @@ def main():
             names = names[:k]
         names = sorted(names)
     ranks = [int(r) for r in args.ranks.split(",")]
-    print(f"{len(names)} tenants ({args.select}): {', '.join(names)}\nbond dimensions {ranks}")
+    seeds = [int(s) for s in args.seeds.split(",")] if args.seeds else [args.seed]
+    print(f"{len(names)} tenants ({args.select}): {', '.join(names)}\nbond dimensions {ranks}, training seeds {seeds}")
+    if args.list_only:
+        return
+    model, tok, pad = load_model(args, device)
+    adapters = add_tt_adapters(model, targets=tuple(args.targets.split(",")), ranks=args.probe_rank, d=args.d,
+                               rank_scale=args.rank_scale)
+    print(f"device={device}  adapted modules={len(adapters)}  e.g. {next(iter(adapters))}: "
+          f"out={next(iter(adapters.values())).out_f} in={next(iter(adapters.values())).in_f}")
+
 
     for ti, name in enumerate(names):
         path = os.path.join(args.out, re.sub(r"[^\w.-]", "_", name) + ".json")
@@ -267,6 +304,8 @@ def main():
                 res = json.load(f)
             if res["n_train"] != len(tr):
                 raise SystemExit(f"{name}: saved n_train {res['n_train']} != {len(tr)}; use the original settings")
+            if "grad_probe" in res and "budget" not in res["grad_probe"]:
+                res["grad_probe_all_tokens"] = res.pop("grad_probe")  # keep the earlier full-data probe
             res["grad_probe"] = grad_probe(model, adapters, tr, args, pad, device)
             res["capacity_need"], res["capacity_need_grid"] = capacity_need(res["sweep"], args.frac)
             with open(path, "w") as f:
@@ -287,21 +326,30 @@ def main():
         probe = dict(rank=args.probe_rank, steps=args.probe_steps, nll=evaluate(model, ev, args, pad, device),
                      summary=probe_summary(profiles, cap=args.probe_rank), modules=profiles)
 
-        sweep = []
-        for r in ranks:
-            torch.manual_seed(args.seed)
-            reset_adapters(adapters, r)
-            ts = time.time()
-            es = train(model, adapters, tr, args.steps, args, pad, device, args.seed, dev=dv)
-            nll = evaluate(model, ev, args, pad, device)
-            sweep.append(dict(rank=r, nll=nll, gain=nll_none - nll, seconds=time.time() - ts,
-                              trainable_params=sum(ad.n_params() for ad in adapters.values()), **es))
-            print(f"    r={r:<3d} nll={nll:.4f} gain={nll_none - nll:+.4f}  best step {es['best_step']}/{args.steps}")
-
+        runs = {s: [] for s in seeds}
+        for s in seeds:
+            for r in ranks:
+                torch.manual_seed(s)
+                reset_adapters(adapters, r)
+                ts = time.time()
+                es = train(model, adapters, tr, args.steps, args, pad, device, s, dev=dv)
+                nll = evaluate(model, ev, args, pad, device)
+                runs[s].append(dict(rank=r, nll=nll, gain=nll_none - nll, seconds=time.time() - ts,
+                                    trainable_params=sum(ad.n_params() for ad in adapters.values()), **es))
+                print(f"    seed {s} r={r:<3d} nll={nll:.4f} gain={nll_none - nll:+.4f}  "
+                      f"best step {es['best_step']}/{args.steps}")
+        sweep = []  # gains averaged over seeds
+        for i, r in enumerate(ranks):
+            rs = [runs[s][i] for s in seeds]
+            sweep.append(dict(rank=r, nll=sum(x["nll"] for x in rs) / len(rs), gain=sum(x["gain"] for x in rs) / len(rs),
+                              gains=[x["gain"] for x in rs], trainable_params=rs[0]["trainable_params"],
+                              seconds=sum(x["seconds"] for x in rs)))
         need, need_grid = capacity_need(sweep, args.frac)
+        need_by_seed = [capacity_need(runs[s], args.frac)[0] for s in seeds]
         res = dict(tenant=name, n_train=len(tr), n_dev=len(dv), n_eval=len(ev), features=features(tr),
                    nll_none=nll_none, grad_probe=gprobe, probe=probe, sweep=sweep, capacity_need=need,
-                   capacity_need_grid=need_grid, seconds=time.time() - t0, config=vars(args))
+                   capacity_need_grid=need_grid, capacity_need_by_seed=need_by_seed,
+                   runs={str(s): v for s, v in runs.items()}, seeds=seeds, seconds=time.time() - t0, config=vars(args))
         with open(path, "w") as f:
             json.dump(res, f, indent=1)
         g = gprobe["summary"]

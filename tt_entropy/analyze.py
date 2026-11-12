@@ -1,7 +1,9 @@
 """H1 analysis of Phase 1 results: rank correlation of probe signals and tenant traits with capacity need.
 
-Primary test (fixed in advance): gradient-probe normalized bond entropy vs. log2 capacity need.
-Every other row is exploratory; Holm-adjusted p-values cover all probe rows.
+Primary test (PREREGISTRATION.md): partial Spearman correlation of the gradient-probe normalized bond entropy
+with log2 capacity need, controlling for mean response length; two-sided, alpha = 0.05. Tenants whose
+gradient probe did not reach its token budget are left out. Every other row is exploratory; Holm-adjusted
+p-values cover the probe rows of the zero-order table.
 
 Usage:
   python analyze.py                      # reads results/phase1/*.json
@@ -15,7 +17,8 @@ import os
 import sys
 import warnings
 
-from scipy.stats import spearmanr
+import numpy as np
+from scipy.stats import pearsonr, rankdata, spearmanr, t as tdist
 
 PRIMARY = ("grad", "mean_norm_entropy")
 SIGNALS = [  # (group, key, where in the result JSON)
@@ -28,6 +31,18 @@ SIGNALS = [  # (group, key, where in the result JSON)
     ("tt-probe", "mean_rank_at_energy", lambda r: r["probe"]["summary"]),
 ]
 TRAITS = ["mean_response_tokens", "response_type_token_ratio", "distinct_response_share", "mean_prompt_tokens"]
+
+
+def partial_spearman(x, y, z):
+    """Spearman correlation of x and y after removing a linear effect of z on the ranks; two-sided p, df n-3."""
+    rx, ry, rz = (rankdata(v) for v in (x, y, z))
+    res = lambda a: a - np.polyval(np.polyfit(rz, a, 1), rz)
+    r = float(pearsonr(res(rx), res(ry))[0])
+    n = len(x)
+    if n < 5 or abs(r) >= 1:
+        return r, float("nan")
+    tt = r * math.sqrt((n - 3) / (1 - r * r))
+    return r, float(2 * tdist.sf(abs(tt), n - 3))
 
 
 def holm(ps):
@@ -43,7 +58,10 @@ def main():
     d = sys.argv[1] if len(sys.argv) > 1 else "results/phase1"
     rows = [json.load(open(p)) for p in sorted(glob.glob(os.path.join(d, "*.json")))]
     ok = [r for r in rows if r["capacity_need"] is not None]
-    print(f"{len(rows)} tenants, {len(ok)} with a positive gain (others are left out)")
+    short = [r["tenant"] for r in ok if not r.get("grad_probe", {}).get("budget_met", True)]
+    ok = [r for r in ok if r["tenant"] not in short]
+    print(f"{len(rows)} tenants, {len(ok)} used (left out: {len(rows) - len(ok) - len(short)} without a positive gain,"
+          f" {len(short)} below the probe token budget{': ' + ', '.join(short) if short else ''})")
     missing = [r["tenant"] for r in ok if "grad_probe" not in r]
     if missing:
         print(f"no gradient probe for {len(missing)} tenants; run: python phase1.py --reprobe ...")
@@ -68,11 +86,28 @@ def main():
 
     print(f"\n{'signal':<34}{'rho(need)':>10}{'p':>8}{'p Holm':>8}{'rho(best)':>11}{'p':>8}")
     for g, k, rn, pn, rb, pb, ph in table:
-        mark = "  <- primary" if (g, k) == PRIMARY else ""
+        mark = "  <- primary signal (zero-order; the test is PRIMARY below)" if (g, k) == PRIMARY else ""
         print(f"{g + ':' + k:<34}{rn:>10.3f}{pn:>8.3f}{ph:>8.3f}{rb:>11.3f}{pb:>8.3f}{mark}")
     print("\nneed = log2 of the interpolated bond dimension where the gain reaches the target share of the best"
           " gain; best = best gain over the sweep.\nHolm adjusts over the probe rows only."
           " With few tenants, treat this as a first signal.")
+
+    # primary test
+    x = [r["grad_probe"]["summary"]["mean_norm_entropy"] for r in ok]
+    z = [r["features"]["mean_response_tokens"] for r in ok]
+    pr, pp = partial_spearman(x, need, z)
+    budget = ok[0]["grad_probe"].get("budget", "all")
+    print(f"\nPRIMARY (two-sided): partial rho(grad entropy, log2 need | response length) = {pr:.3f}, p = {pp:.4f}, "
+          f"n = {len(ok)}, probe budget = {budget} tokens -> {'significant' if pp < 0.05 else 'not significant'} at 0.05")
+    lr, lp = partial_spearman(z, need, x)
+    print(f"  for reference: partial rho(response length, log2 need | grad entropy) = {lr:.3f}, p = {lp:.4f}")
+    seeds = [r.get("capacity_need_by_seed") for r in ok]
+    if all(s and len(s) >= 2 for s in seeds):
+        a, b = [math.log2(s[0]) for s in seeds], [math.log2(s[1]) for s in seeds]
+        sr = spearmanr(a, b)[0]
+        print(f"  seed reliability: Spearman of capacity need between seed 1 and seed 2 = {sr:.3f}")
+    else:
+        sr = None
 
     print(f"\n{'tenant':<18}{'need':>6}{'grid':>6}{'best':>7}{'grad H':>8}{'grad r90':>9}{'resp tok':>9}")
     for r, b in sorted(zip(ok, best), key=lambda z: z[0]["capacity_need"]):
@@ -81,7 +116,10 @@ def main():
               f"{g['mean_norm_entropy']:>8.3f}{g['mean_rank_at_90']:>9.1f}{r['features']['mean_response_tokens']:>9.1f}")
 
     out = d.rstrip("/")
-    summary = dict(n_tenants=len(rows), n_used=len(ok), primary=":".join(PRIMARY), correlations=[
+    summary = dict(n_tenants=len(rows), n_used=len(ok), left_out_budget=short,
+                   primary=dict(test="partial Spearman, grad mean_norm_entropy vs log2 need | mean_response_tokens",
+                                rho=pr, p=pp, two_sided=True, alpha=0.05),
+                   length_given_entropy=dict(rho=lr, p=lp), seed_reliability=sr, correlations=[
         dict(group=t[0], signal=t[1], rho_need=t[2], p_need=t[3], rho_best_gain=t[4], p_best_gain=t[5],
              p_need_holm=t[6]) for t in table],
         tenants=[dict(tenant=r["tenant"], capacity_need=r["capacity_need"], best_gain=b,
@@ -102,7 +140,8 @@ def main():
         ax.set_yscale("log", base=2)
         ax.set_xlabel("gradient-probe entanglement entropy (normalized, mean over bonds)")
         ax.set_ylabel("capacity need (bond dimension, interpolated)")
-        ax.set_title(f"H1 primary: rho = {table[0][2]:.2f}, p = {table[0][3]:.3f} (n = {len(ok)})")
+        ax.set_title(f"zero-order rho = {table[0][2]:.2f}; partial (| length) rho = {pr:.2f}, p = {pp:.3f} (n = {len(ok)})",
+                     fontsize=9)
         fig.tight_layout()
         fig.savefig(out + "_h1.png", dpi=150)
         print(f"\nsaved {out}_summary.json and {out}_h1.png")
