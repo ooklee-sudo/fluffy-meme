@@ -149,6 +149,9 @@ def capacity_need(sweep, frac):
 # ---------------------------------------------------------------- main
 def main():
     args = get_args()
+    if not args.tiny and not os.path.exists(args.data):
+        raise SystemExit(f"data file not found: {args.data}\n"
+                         "Make it first (README step 3): python data.py twcs data/twcs.csv data/twcs_pairs.jsonl 200")
     device = "cuda" if torch.cuda.is_available() else "cpu"
     os.makedirs(args.out, exist_ok=True)
     model, tok, pad = load_model(args, device)
