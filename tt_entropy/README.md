@@ -165,3 +165,39 @@ python decision.py
 
 예산 때문에 일부 브랜드만 맞춤화할 때, 엔트로피, 단순 특성, 무작위 중 어떤 규칙이 전체 이득을 가장 많이 확보하는지 봅니다. 규칙은 한 표본에서 만들고 다른 표본에서 평가합니다. probe 비용은 `--probe-cost`로 바꿀 수 있습니다(기본 0.25, 어댑터 학습 1회 = 1).
 
+## 2단계: TT 어댑터 vs LoRA (H2, 사전 등록: `PREREGISTRATION_H2.md`)
+
+사용자당 파라미터 예산을 맞춘 상태에서 TT 어댑터, LoRA, VeRA의 상대 gain을 비교합니다. 어댑터 구현은 `adapters.py`, 실험은 `phase2.py`입니다.
+
+1. 학습률 조정. 탐색용 10개 브랜드로 약 1.5~2시간 걸립니다:
+
+```bash
+python phase2.py --tune --tenants-from results/phase1 --out results/phase2_tune
+```
+
+```bash
+python analyze_tune.py results/phase2_tune
+```
+
+마지막에 나온 `--lrs ...` 값을 `PREREGISTRATION_H2.md` 8절에 기록하고 커밋한 뒤에 본 실험을 시작합니다. 고른 값이 격자 끝이면 안내에 따라 격자를 넓혀 다시 조정합니다.
+
+2. 본 실험. 아직 쓰지 않은 31개 브랜드로 seed마다 약 5시간 걸립니다. 하룻밤에 seed 하나씩 돌리세요:
+
+```bash
+python phase2.py --exclude-dir results/phase1,results/phase1_confirm,results/phase1_value --n-tenants 31 --lrs <조정 결과> --seed 0 --out results/phase2_s0
+```
+
+```bash
+python phase2.py --exclude-dir results/phase1,results/phase1_confirm,results/phase1_value --n-tenants 31 --lrs <조정 결과> --seed 1 --out results/phase2_s1
+```
+
+3. 분석과 지연시간 측정:
+
+```bash
+python analyze_h2.py results/phase2_s0 results/phase2_s1
+```
+
+```bash
+python bench.py
+```
+
