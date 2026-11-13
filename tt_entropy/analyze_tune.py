@@ -2,7 +2,7 @@
 the lr with the highest mean dev relative gain over the tuning tenants. A choice at the edge of its grid is
 flagged; the preregistered rule then extends the grid by one step for that method and tunes again.
 
-Usage: python analyze_tune.py [results/phase2_tune]
+Usage: python analyze_tune.py [results/phase2_tune] [results/phase2_tune2 ...]   (folders are merged)
 Prints the --lrs argument for the main run and saves it to <dir>_choice.json.
 """
 import glob
@@ -13,15 +13,16 @@ from collections import defaultdict
 
 
 def main():
-    d = sys.argv[1] if len(sys.argv) > 1 else "results/phase2_tune"
-    rows = [json.load(open(p)) for p in sorted(glob.glob(os.path.join(d, "*.json")))]
+    dirs = sys.argv[1:] or ["results/phase2_tune"]
+    d = dirs[0]
+    rows = [json.load(open(p)) for x in dirs for p in sorted(glob.glob(os.path.join(x, "*.json")))]
     if not rows:
-        raise SystemExit(f"no results in {d}")
+        raise SystemExit(f"no results in {', '.join(dirs)}")
     acc = defaultdict(list)
     for r in rows:
         for run in r["runs"]:
             acc[(run["method"], run["config"], run["lr"])].append(run["dev_rel_gain"])
-    print(f"{len(rows)} tuning tenants\n\n{'config':<12}{'lr':>9}{'mean dev rel gain':>20}{'n':>4}")
+    print(f"{len({r['tenant'] for r in rows})} tuning tenants\n\n{'config':<12}{'lr':>9}{'mean dev rel gain':>20}{'n':>4}")
     best, grids = {}, defaultdict(list)
     for (m, c, lr), v in sorted(acc.items()):
         mean = sum(v) / len(v)
@@ -44,7 +45,7 @@ def main():
               "(PREREGISTRATION_H2.md section 5) before the main run.")
     with open(d.rstrip("/") + "_choice.json", "w") as f:
         json.dump(dict(lrs={m: best[m][0] for m in best}, mean_dev_rel_gain={m: best[m][1] for m in best},
-                       at_edge=edge, n_tenants=len(rows), arg=arg), f, indent=1)
+                       at_edge=edge, n_tenants=len({r["tenant"] for r in rows}), dirs=dirs, arg=arg), f, indent=1)
 
 
 if __name__ == "__main__":

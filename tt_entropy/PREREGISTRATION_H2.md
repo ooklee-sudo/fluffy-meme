@@ -79,4 +79,18 @@ Any change after the main run starts will be listed here with its reason and dat
 
 ## 8. Chosen learning rates
 
-To be filled in from `analyze_tune.py` before the main run.
+**Tuning round 1** (2026-11-13, `results/phase2_tune`, 10 tuning brands, seed 0). Mean dev relative gain:
+
+| Method (config) | 3e-4 | 1e-3 | 3e-3 | 1e-2 | 3e-2 |
+| --- | --- | --- | --- | --- | --- |
+| TT (r=10) | 0.432 | **0.447** | 0.428 | | |
+| LoRA (r=4) | 0.414 | 0.471 | **0.472** | | |
+| VeRA (r=1024) | | 0.059 | 0.217 | 0.413 | **0.467** |
+
+TT: 1e-3, inside its grid, fixed. LoRA and VeRA chose the top of their grids, so by section 5 their grids
+are extended by one step (LoRA 1e-2, VeRA 1e-1) in round 2 (`results/phase2_tune2`).
+
+**Tuning round 2:** to be filled in from `python analyze_tune.py results/phase2_tune results/phase2_tune2`.
+
+Run time note: tuning took about 2 minutes per run on the laptop GPU, about twice the earlier estimate, so
+each seed of the main run (31 brands x 10 configs) is expected to take about 10 hours.

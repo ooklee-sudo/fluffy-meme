@@ -76,8 +76,10 @@ def get_args():
             args.configs = "tt:1,tt:2,lora:1,lora:2,vera:16"
         if args.configs == TUNE_CONFIGS:
             args.configs = "tt:2,lora:1,vera:16"
-        args.tune_lrs = "tt=3e-3/1e-2,lora=3e-3/1e-2,vera=1e-2/3e-2"
-        args.lrs = "tt=1e-2,lora=1e-2,vera=1e-2"
+        if args.tune_lrs == a.get_default("tune_lrs"):
+            args.tune_lrs = "tt=3e-3/1e-2,lora=3e-3/1e-2,vera=1e-2/3e-2"
+        if args.lrs == a.get_default("lrs"):
+            args.lrs = "tt=1e-2,lora=1e-2,vera=1e-2"
     if args.out is None:
         args.out = "results/phase2_tiny" if args.tiny else ("results/phase2_tune" if args.tune else f"results/phase2_s{args.seed}")
     return args
