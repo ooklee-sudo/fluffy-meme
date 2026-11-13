@@ -151,3 +151,17 @@ python phase1.py --exclude-dir results/phase1,results/phase1_confirm --n-tenants
 python analyze_value.py results/phase1_value
 ```
 
+## 탐색 분석: 메커니즘과 의사결정 가치 (GPU 불필요, 사전 등록 아님)
+
+```bash
+python mechanism.py
+```
+
+신호가 어느 모듈(q, v), 어느 깊이, 어느 bond에 있는지, 그리고 MPO bond 엔트로피가 일반 SVD 엔트로피를 통제해도 효과가 남는지 봅니다.
+
+```bash
+python decision.py
+```
+
+예산 때문에 일부 브랜드만 맞춤화할 때, 엔트로피, 단순 특성, 무작위 중 어떤 규칙이 전체 이득을 가장 많이 확보하는지 봅니다. 규칙은 한 표본에서 만들고 다른 표본에서 평가합니다. probe 비용은 `--probe-cost`로 바꿀 수 있습니다(기본 0.25, 어댑터 학습 1회 = 1).
+
