@@ -90,7 +90,12 @@ Any change after the main run starts will be listed here with its reason and dat
 TT: 1e-3, inside its grid, fixed. LoRA and VeRA chose the top of their grids, so by section 5 their grids
 are extended by one step (LoRA 1e-2, VeRA 1e-1) in round 2 (`results/phase2_tune2`).
 
-**Tuning round 2:** to be filled in from `python analyze_tune.py results/phase2_tune results/phase2_tune2`.
+**Tuning round 2** (2026-11-13, `results/phase2_tune2`, same brands and seed): LoRA r=4 at 1e-2: 0.442
+(below 0.472 at 3e-3); VeRA r=1024 at 1e-1: 0.454 (below 0.467 at 3e-2). Both choices are now inside
+their grids, so tuning ends.
+
+**Fixed learning rates for the main run: TT 1e-3, LoRA 3e-3, VeRA 3e-2**
+(`--lrs tt=1e-3,lora=3e-3,vera=3e-2`). These were committed before any test-sample run.
 
 Run time note: tuning took about 2 minutes per run on the laptop GPU, about twice the earlier estimate, so
 each seed of the main run (31 brands x 10 configs) is expected to take about 10 hours.
