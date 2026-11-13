@@ -86,3 +86,27 @@ hulu_support, idea_cares, marksandspencer
 
 All 30 hold at least 4,000 response tokens in their 320 training pairs with the Qwen2.5 tokenizer
 (minimum 4,157, GreggsOfficial).
+
+## 9. Results (added after the run, 2026-11-13)
+
+The run followed sections 3 to 6 with no deviations. All 30 brands were used (none failed the gain or
+token-budget rules).
+
+**Primary test.** Partial Spearman correlation of gradient entropy with relative gain, controlling for
+type-token ratio, distinct-response share, mean response length and NLL without adapter:
+rho = +0.616, p = 0.0008, n = 30, two-sided. **H1' is supported at alpha = 0.05.** The approximate 95%
+interval (Fisher z, four covariates) is +0.30 to +0.81. Brands whose gradient has higher entanglement
+entropy gained more from personalization, relative to their loss without an adapter.
+
+**Secondary results (do not bear on H1'):**
+
+- Relative gain, no controls: rho = +0.655 (p < 0.001). Best gain, four controls: +0.553 (p = 0.003);
+  no controls: +0.509 (p = 0.004).
+- The H1 test repeated on this sample: partial rho(entropy, log2 capacity need | response length) =
+  -0.046 (p = 0.81). Entropy again did not predict capacity need.
+
+**Limits.** One dataset, one base model (Qwen2.5-1.5B), one probe setting. Entropy spans a narrow range
+(0.861 to 0.891), so the practical meaning of a given difference is not yet known. Gain is measured as
+response NLL, not a business outcome. The mechanism is not known. In the earlier 10 exploratory brands
+the relation was absent (n = 10, single seed); that inconsistency should be reported alongside this
+result.
