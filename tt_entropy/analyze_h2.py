@@ -45,6 +45,12 @@ def fmt(a, b, s):
 
 def main():
     dirs = sys.argv[1:] or ["results/phase2_s0"]
+    empty = [d for d in dirs if not glob.glob(os.path.join(d, "*.json"))]
+    if empty:
+        print(f"WARNING: no results in {', '.join(empty)}; those seeds are NOT included below.")
+    dirs = [d for d in dirs if d not in empty]
+    if not dirs:
+        raise SystemExit("no results to analyze")
     per = defaultdict(lambda: defaultdict(list))
     params = {}
     for d in dirs:
