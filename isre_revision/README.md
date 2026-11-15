@@ -31,6 +31,6 @@ python3 -I calibration/scripts/make_figures.py calibration/results/calibration_r
 
 ## Still to do before submission
 
-1. Optionally run the experiment (`experiment_protocol.md`) and fill Section 6.7, the one remaining placeholder.
+1. Optionally run the experiment (`experiment_protocol.md`); Section 6.7 was removed and can be added back with its results.
 2. Verify every newly added reference against the original source.
 3. Note for the authors: Qwen 2.5 7B Instruct is no longer available, so Gemma 3 12B replaces it in the core panel.
