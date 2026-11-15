@@ -1,6 +1,7 @@
 """H4 analysis (PREREGISTRATION_H4.md): knowledge injection, TT r=31 vs LoRA r=16 at about 11.5M parameters.
 
-  python analyze_h4.py tune results/h4_tune   learning rate per method = highest dev exact-match accuracy on
+  python analyze_h4.py tune results/h4_tune [results/h4_tune2 ...]   (folders merged)
+                                               learning rate per method = highest dev exact-match accuracy on
                                                the tuning fact set; edge choices are flagged
   python analyze_h4.py test results/h4        primary test: paired t-test, two-sided, alpha 0.05, on the
                                                per-fact-set difference in eval exact-match accuracy (TT - LoRA)
@@ -20,10 +21,10 @@ def load(d):
     return [json.load(open(p)) for p in sorted(glob.glob(os.path.join(d, "*.json")))]
 
 
-def tune(d):
-    rows = load(d)
+def tune(*dirs):
+    rows = [r for d in dirs for r in load(d)]
     if not rows:
-        raise SystemExit(f"no results in {d}")
+        raise SystemExit(f"no results in {', '.join(dirs)}")
     best, grid = {}, {}
     print(f"{'config':<10}{'lr':>9}{'dev acc':>9}{'eval acc':>10}{'best step':>11}")
     for r in rows:
@@ -85,4 +86,7 @@ def test(d):
 if __name__ == "__main__":
     if len(sys.argv) < 3 or sys.argv[1] not in ("tune", "test"):
         raise SystemExit(__doc__)
-    (tune if sys.argv[1] == "tune" else test)(sys.argv[2])
+    if sys.argv[1] == "tune":
+        tune(*sys.argv[2:])
+    else:
+        test(sys.argv[2])

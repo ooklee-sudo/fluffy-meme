@@ -75,4 +75,18 @@ Any change after the main run starts will be listed here with its reason and dat
 
 ## 8. Chosen learning rates
 
-To be filled in from `analyze_h4.py tune` before the main run.
+**Tuning round 1** (2026-11-15, `results/h4_tune`, task seed 100, 2,000 steps). Dev exact-match accuracy:
+
+| Config | 3e-4 | 1e-3 | 3e-3 | 1e-2 |
+| --- | --- | --- | --- | --- |
+| TT r=31 | 0.330 | **0.570** | 0.165 | |
+| LoRA r=16 | | **0.560** | 0.490 | 0.025 |
+
+TT: 1e-3, inside its grid, fixed. LoRA chose the bottom of its grid, so by section 5 its grid is extended
+to 3e-4 in round 2 (`results/h4_tune2`).
+
+Observed while tuning (not part of any test): the learned LoRA r=16 updates had an effective rank of
+about 2 in every module type; the TT r=31 updates had effective ranks of about 200 to 1,350, part of
+which may come from the TT cores' random initialization rather than from learning.
+
+**Tuning round 2:** to be filled in.
