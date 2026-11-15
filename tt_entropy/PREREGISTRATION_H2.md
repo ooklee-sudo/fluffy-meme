@@ -99,3 +99,32 @@ their grids, so tuning ends.
 
 Run time note: tuning took about 2 minutes per run on the laptop GPU, about twice the earlier estimate, so
 each seed of the main run (31 brands x 10 configs) is expected to take about 10 hours.
+
+## 9. Results (added after the run, 2026-11-15)
+
+Both training seeds were completed for all 31 brands with the learning rates of section 8; no deviations
+and no exclusions.
+
+**Primary test.** TT r=5 (127,120 parameters) minus LoRA r=1 (136,192) in seed-averaged relative gain:
+median -0.036, Hodges-Lehmann -0.036 (bootstrap 95% interval -0.041 to -0.031); TT was better for 0 of 31
+brands; Wilcoxon signed-rank two-sided p < 0.001. **H2 is supported: the methods differ, and LoRA is
+better.** Mean relative gain: TT r=5 0.355, LoRA r=1 0.391.
+
+**Secondary results:**
+
+| Comparison | Median difference | TT better | Holm p |
+| --- | --- | --- | --- |
+| TT r=10 - LoRA r=4 | -0.024 | 0 / 31 | < 0.001 |
+| TT r=15 - LoRA r=8 | -0.017 | 1 / 31 | < 0.001 |
+| TT r=2 - VeRA r=256 | -0.069 | 0 / 31 | (not adjusted) < 0.001 |
+| TT r=1 - VeRA r=256 | -0.116 | 0 / 31 | (not adjusted) < 0.001 |
+
+- LoRA's relative gain is flat from r=1 to r=8 (0.391 to 0.393), and VeRA r=256 (64,512 parameters, about
+  half of LoRA r=1) reaches 0.388. Brand-level personalization on these data needs very little capacity.
+- TT does not reach that level even at 1.04 million parameters (r=15: 0.375). TT r=1 (7,952 parameters,
+  16 KB per tenant in fp16) gives 0.269, about 69% of LoRA r=1's gain.
+- Small TT configs often stopped at their last checkpoint (best step 300 of 300), so they may be
+  undertrained within the common 300-step budget; slower convergence is itself a cost.
+
+**Limits.** One dataset, one base model, adapters on q and v only, one TT layout (4 cores, balanced
+factors), 300 training steps. The latency benchmark (`bench.py`) has not been run yet.
