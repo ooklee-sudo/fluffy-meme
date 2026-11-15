@@ -11,6 +11,12 @@ Pilot (exploratory) usage:
   python phase3.py --task facts --n-facts 8000 --task-seed 0
   python phase3.py --task math --n-math 5000
   python phase3.py --tiny                                   # CPU smoke test (random tiny model)
+
+H4 (PREREGISTRATION_H4.md) usage:
+  python phase3.py --task facts --n-facts 8000 --task-seed 100 --configs lora:16,tt:31 \
+                   --tune-lrs lora=1e-3/3e-3/1e-2,tt=3e-4/1e-3/3e-3 --steps 2000 --out results/h4_tune
+  python phase3.py --task facts --n-facts 8000 --task-seed 1 --configs lora:16,tt:31 --lrs tt=...,lora=... \
+                   --steps 6000 --out results/h4
 """
 import argparse
 import json
@@ -38,6 +44,8 @@ def get_args():
     a.add_argument("--task-seed", type=int, default=0)
     a.add_argument("--configs", default=PILOT_CONFIGS)
     a.add_argument("--lrs", default="tt=1e-3,lora=3e-3,vera=3e-2", help="Phase 2 choices until Phase 3 tuning")
+    a.add_argument("--tune-lrs", default="", help="lr grid per method, e.g. lora=1e-3/3e-3,tt=1e-3/3e-3 (tuning)")
+    a.add_argument("--no-rank", action="store_true", help="skip the effective-rank analysis of each learned dW")
     a.add_argument("--epochs", type=float, default=None, help="default: 8 for facts, 1 for math")
     a.add_argument("--steps", type=int, default=None, help="overrides --epochs")
     a.add_argument("--max-steps", type=int, default=6000)
@@ -59,7 +67,8 @@ def get_args():
         args.n_facts, args.dtype, args.max_steps = min(args.n_facts, 100), "fp32", 60
         if args.configs == PILOT_CONFIGS:
             args.configs = "lora:1,lora:4,tt:2,tt:4"
-        args.lrs = "tt=1e-2,lora=1e-2,vera=3e-2"
+        if args.lrs == a.get_default("lrs"):
+            args.lrs = "tt=1e-2,lora=1e-2,vera=3e-2"
     args.out = args.out or ("results/phase3_tiny" if args.tiny else "results/phase3_pilot")
     return args
 
@@ -98,12 +107,32 @@ def exact_match(model, data, args, pad, device):
     return hit / max(len(data), 1)
 
 
+@torch.no_grad()
+def effective_rank(slots):
+    """Per module type: mean effective rank exp(entropy of normalized squared singular values) of the learned
+    update dW, and mean number of singular values holding 90% of its squared norm."""
+    acc = {}
+    for name, s in slots.items():
+        if s.delta is None:
+            continue
+        sv = torch.linalg.svdvals(s.delta.matrix().float())
+        e = sv ** 2
+        if e.sum() <= 0:
+            continue
+        p = e / e.sum()
+        er = float(torch.exp(-(p[p > 0] * p[p > 0].log()).sum()))
+        r90 = int((torch.cumsum(p, 0) < 0.9).sum()) + 1
+        kind = name.rsplit(".", 1)[-1]
+        acc.setdefault(kind, []).append((er, r90))
+    return {k: dict(eff_rank=sum(x for x, _ in v) / len(v), rank90=sum(y for _, y in v) / len(v)) for k, v in acc.items()}
+
+
 def main():
     args = get_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     name = f"facts_n{args.n_facts}_s{args.task_seed}" if args.task == "facts" else f"math_n{args.n_math}_s{args.task_seed}"
     os.makedirs(args.out, exist_ok=True)
-    path = os.path.join(args.out, f"{name}_seed{args.seed}.json")
+    path = os.path.join(args.out, f"{name}_seed{args.seed}{'_tune' if args.tune_lrs else ''}.json")
     if os.path.exists(path):
         raise SystemExit(f"{path} exists; delete it to rerun")
 
@@ -118,6 +147,8 @@ def main():
     slots = add_slots(model, targets=tuple(args.targets.split(",")), d=args.d)
     configs = [parse_config(c) for c in args.configs.split(",")]
     lrs = {m: float(v) for m, v in (x.split("=") for x in args.lrs.split(","))}
+    grid = {m: [float(v) for v in vs.split("/")] for m, vs in (x.split("=") for x in args.tune_lrs.split(","))} \
+        if args.tune_lrs else None
     print(f"{name}: train {len(tr)}, dev {len(dv)}, eval {len(ev)}; {steps} steps, bs {args.bs}, max len {args.max_len}")
     print(f"device={device}  adapted modules={len(slots)}  configs {args.configs}  lrs {lrs}")
 
@@ -127,18 +158,24 @@ def main():
     print(f"  no adapter: nll={nll_none:.4f}" + (f" acc={acc_none:.3f}" if acc_none is not None else ""))
     runs = []
     for method, r in configs:
-        params = set_method(slots, method, r, seed=args.seed)
-        ts = time.time()
-        dev_best, best_step = train(model, slots, params, tr, dv, lrs[method], args, pad, device, args.seed)
-        nll = evaluate(model, ev, args, pad, device)
-        acc = exact_match(model, ev, args, pad, device) if args.task == "facts" else None
-        n = n_trainable(slots)
-        runs.append(dict(config=f"{method}:{r}", method=method, r=r, lr=lrs[method], params=n, nll=nll,
-                         gain=nll_none - nll, rel_gain=(nll_none - nll) / nll_none, acc=acc, dev_best=dev_best,
-                         best_step=best_step, seconds=time.time() - ts))
-        print(f"    {method}:{r:<4} params={n:>11,} nll={nll:.4f} rel gain={runs[-1]['rel_gain']:+.4f}"
-              + (f" acc={acc:.3f}" if acc is not None else "") + f"  best step {best_step}/{steps}"
-              f"  ({runs[-1]['seconds'] / 60:.1f} min)")
+        for lr in (grid[method] if grid else [lrs[method]]):
+            params = set_method(slots, method, r, seed=args.seed)
+            ts = time.time()
+            dev_best, best_step = train(model, slots, params, tr, dv, lr, args, pad, device, args.seed)
+            secs = time.time() - ts
+            nll = evaluate(model, ev, args, pad, device)
+            facts = args.task == "facts"
+            acc = exact_match(model, ev, args, pad, device) if facts else None
+            dev_acc = exact_match(model, dv, args, pad, device) if facts else None
+            n = n_trainable(slots)
+            rank = None if args.no_rank else effective_rank(slots)
+            runs.append(dict(config=f"{method}:{r}", method=method, r=r, lr=lr, params=n, nll=nll,
+                             gain=nll_none - nll, rel_gain=(nll_none - nll) / nll_none, acc=acc, dev_acc=dev_acc,
+                             dev_best=dev_best, best_step=best_step, seconds=secs, rank=rank))
+            rk = "" if rank is None else "  eff rank " + " ".join(f"{k}={v['eff_rank']:.0f}" for k, v in rank.items())
+            print(f"    {method}:{r:<4} lr={lr:.0e} params={n:>11,} nll={nll:.4f} rel gain={runs[-1]['rel_gain']:+.4f}"
+                  + (f" acc={acc:.3f} dev acc={dev_acc:.3f}" if facts else "") + f"  best step {best_step}/{steps}"
+                  f"  ({secs / 60:.1f} min){rk}")
     set_method(slots, "none", 0)
     with open(path, "w") as f:
         json.dump(dict(task=args.task, name=name, n_facts=args.n_facts if args.task == "facts" else None,

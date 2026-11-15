@@ -201,3 +201,29 @@ python analyze_h2.py results/phase2_s0 results/phase2_s1
 python bench.py
 ```
 
+## 지식 주입: TT vs LoRA (H4, 사전 등록: `PREREGISTRATION_H4.md`)
+
+파일럿에서 사실 8,000개를 외울 때 TT r31이 LoRA r16보다 크게 나았던 결과를, 새 사실 세트로 검정합니다. 파일럿의 중단 규칙을 넘어서 진행한다는 점과 그 이유를 사전 등록 문서 1절에 적어 두었습니다.
+
+1. 학습률 조정 (조정용 사실 세트 1개, 약 2시간):
+
+```bash
+python phase3.py --task facts --n-facts 8000 --task-seed 100 --configs lora:16,tt:31 --tune-lrs lora=1e-3/3e-3/1e-2,tt=3e-4/1e-3/3e-3 --steps 2000 --out results/h4_tune
+```
+
+```bash
+python analyze_h4.py tune results/h4_tune
+```
+
+2. 본 실험 (사실 세트 6개, 세트당 약 2~2.5시간, 전체 약 13~15시간). 학습률은 1단계 결과로 채웁니다:
+
+```bash
+for s in 1 2 3 4 5 6; do python phase3.py --task facts --n-facts 8000 --task-seed $s --configs lora:16,tt:31,lora:32 --lrs tt=<TT lr>,lora=<LoRA lr> --steps 6000 --out results/h4 || break; done
+```
+
+3. 분석. `PRIMARY H4` 줄이 사전 등록한 검정입니다:
+
+```bash
+python analyze_h4.py test results/h4
+```
+
