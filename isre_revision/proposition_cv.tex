@@ -1,0 +1,204 @@
+% =====================================================================
+%  Distribution-free offsetting result: drop-in text for Section 4 and
+%  Online Appendix B. Notation follows the manuscript (S, h, C, A, lambda,
+%  s, epsilon, k, theta). Requires amsmath, amssymb, amsthm.
+% =====================================================================
+
+% ---------------------------------------------------------------------
+%  Main text (replaces Corollary 1(iii) and the motivation of Prop. 2)
+% ---------------------------------------------------------------------
+
+\paragraph{Heterogeneous detectability.}
+Let each defect $j$ carry its own detection rate $\rho_j>0$, drawn independently
+from a distribution $G$ on $(0,\infty)$, and let a defect with rate $\rho_j$ be found
+after an exponentially distributed amount of effort with that rate. Then
+\[
+  S(e)=\int_0^\infty e^{-\rho e}\,dG(\rho).
+\]
+No parametric form is imposed on $G$. For $e\ge 0$ define the
+\emph{survivor distribution} $G_e$ by
+$dG_e(\rho)=e^{-\rho e}dG(\rho)/S(e)$: the distribution of detection rates
+among defects still undetected after effort $e$. Write $\mu_e$, $\sigma_e^2$ and
+$\mathrm{CV}_e=\sigma_e/\mu_e$ for its mean, variance and coefficient of variation.
+All three are finite for every $e>0$, whether or not $G$ has finite moments.
+
+\begin{proposition}[Offsetting is set by heterogeneity in detectability]
+\label{prop:cv}
+Under the standing assumptions and heterogeneous detectability:
+\begin{enumerate}
+\item[(a)] The hazard of detection is the mean detection rate among survivors, and
+  its slope is minus their variance: $h(e)=\mu_e$ and $h'(e)=-\sigma_e^2$. Hence
+  $h$ is non-increasing, and strictly decreasing unless $G$ is degenerate.
+\item[(b)] With $g(e)=C''(e)/C'(e)$, the elasticity in Proposition~1 is
+  \[
+    \varepsilon=\frac{g(e^*)+\sigma_{e^*}^2/\mu_{e^*}}
+                     {g(e^*)+\sigma_{e^*}^2/\mu_{e^*}+\mu_{e^*}} .
+  \]
+  With linear verification cost,
+  \[
+    \varepsilon=\frac{\mathrm{CV}_{e^*}^2}{1+\mathrm{CV}_{e^*}^2},
+    \qquad
+    1-\varepsilon=\frac{1}{1+\mathrm{CV}_{e^*}^2}.
+  \]
+  Offsetting is therefore complete ($\varepsilon=0$) if and only if all defects are
+  equally detectable. It is partial for every non-degenerate $G$, and convex cost
+  only makes it more partial, because $\varepsilon$ increases in $g$.
+\item[(c)] (Hardest-to-find defects govern the limit.) Suppose
+  $G(\rho)=\rho^{k}L(\rho)$ as $\rho\downarrow 0$, for some $k>0$ and a function $L$
+  slowly varying at $0$. Then $\mathrm{CV}_e^2\to 1/k$ as $e\to\infty$, so under linear
+  cost $\varepsilon(e)\to 1/(1+k)$. If instead $G$ puts no mass near zero,
+  $\underline\rho\equiv\operatorname{ess\,inf}\rho>0$, then $\mathrm{CV}_e\to 0$ and
+  $\varepsilon(e)\to 0$.
+\item[(d)] (Gamma case.) If $G$ is gamma with shape $k$, then $G_e$ is gamma with the
+  same shape for every $e$, so $\mathrm{CV}_e^2=1/k$ and $\varepsilon=1/(1+k)$ at every
+  effort level. This is Corollary~1(iii).
+\end{enumerate}
+\end{proposition}
+
+Proposition~\ref{prop:cv} answers the question of which results depend on the
+functional form. That offsetting is partial depends on nothing but heterogeneity in
+how easy defects are to find. Its size is a single moment of a measurable object, the
+detection rates of the defects that verification has not yet found. The constant
+$1/(1+k)$ of Proposition~2 is the gamma case. More generally it is the high-effort
+limit for any technology whose density of detection rates behaves like
+$\rho^{k-1}$ near zero, so $k$ is best read as an index of how much mass sits on
+defects that are almost impossible to find. Where testing eventually exhausts the
+supply of hard defects, as when detection rates are bounded away from zero,
+high-effort verification reverts to complete offsetting. The same happens, slowly,
+when the density near zero vanishes faster than any power: for lognormal detection rates
+with $\sigma=1$, $\varepsilon(e)$ falls from about $0.6$ at low effort to $0.15$ at
+$e=1000$ (Online Appendix C).
+
+% ---------------------------------------------------------------------
+%  AI-specific extension: tool quality that changes the mix of errors
+% ---------------------------------------------------------------------
+
+\paragraph{When better tools make subtler errors.}
+A better code generator need not merely produce fewer defects; it may produce
+different ones. Write detection rates as $\rho=\theta\xi$, where $\xi\sim G$ has a
+fixed distribution and $\theta$ scales how easy the tool's defects are to detect, and
+let tool quality move both intensity and detectability, $\theta\propto\lambda^{\eta}$.
+The parameter $\eta>0$ means that better tools ($\lambda\downarrow$) make defects that are harder to
+find ($\theta\downarrow$). We call this case \emph{plausible-but-wrong} code.
+
+\begin{proposition}[Verification-adjusted quality]
+\label{prop:eta}
+Under linear verification cost, holding detectability fixed the elasticity of
+expected residual defects with respect to defect intensity is $\varepsilon$
+of Proposition~\ref{prop:cv}, and holding intensity fixed the elasticity with
+respect to detectability is $-(1-\varepsilon)$. Hence
+\[
+  R^*\;\propto\;\lambda^{\varepsilon}\,\theta^{-(1-\varepsilon)}
+  \quad\text{locally, and}\quad
+  \frac{d\ln R^*}{d\ln\lambda}=\varepsilon-\eta\,(1-\varepsilon).
+\]
+A better tool reduces residual defects if and only if
+$\eta<\varepsilon/(1-\varepsilon)=\mathrm{CV}_{e^*}^2$. Under gamma-mixed detection
+this threshold is $1/k$, and with $\hat k\approx 0.63$ it is about $1.6$.
+\end{proposition}
+
+The index $\lambda^{\varepsilon}\theta^{-(1-\varepsilon)}$ is a
+\emph{verification-adjusted} measure of tool quality. Benchmark pass rates measure
+$\lambda$ alone. What users receive depends on $\lambda$ and $\theta$ together, with
+weights fixed by the heterogeneity of detectability. The same heterogeneity that makes
+offsetting partial also sets how far a tool can shift its errors toward the hard-to-find
+before its improvements stop reaching users.
+
+% =====================================================================
+%  Online Appendix B: proofs
+% =====================================================================
+
+\begin{proof}[Proof of Proposition~\ref{prop:cv}]
+(a) For $e>0$ differentiation under the integral is justified because
+$\rho^m e^{-\rho e}$ is bounded on $(0,\infty)$ for each $m$. Thus
+$S'(e)=-\int\rho e^{-\rho e}dG$ and $S''(e)=\int\rho^2e^{-\rho e}dG$, and
+$h(e)=-S'(e)/S(e)=\int\rho\,dG_e=\mu_e$. Then
+\[
+  h'(e)=-\frac{S''}{S}+\Bigl(\frac{S'}{S}\Bigr)^2
+       =-\Bigl(\int\rho^2dG_e-\mu_e^2\Bigr)=-\sigma_e^2 .
+\]
+Because $G_e$ is absolutely continuous with respect to $G$ with a strictly positive
+density, $G_e$ is degenerate if and only if $G$ is.
+
+(b) By (a), $-h'/h=\sigma_e^2/\mu_e$, so $a=g+\sigma_e^2/\mu_e$ and
+$a+h=g+\sigma_e^2/\mu_e+\mu_e$. Substitute into $\varepsilon=a/(a+h)$ from
+Proposition~1. With $g=0$,
+$\varepsilon=\sigma^2/(\sigma^2+\mu^2)=\mathrm{CV}^2/(1+\mathrm{CV}^2)$.
+Monotonicity in $g$ follows from $\partial\varepsilon/\partial g
+=\mu/(g+\sigma^2/\mu+\mu)^2>0$.
+
+(c) Let $Y_e=e\rho$ under $G_e$. For $y>0$,
+\[
+  \Pr(Y_e\le y)=\frac{\int_0^{y/e}e^{-\rho e}dG(\rho)}{\int_0^\infty e^{-\rho e}dG(\rho)}
+  =\frac{\int_0^{y}e^{-u}\,dG(u/e)}{\int_0^\infty e^{-u}\,dG(u/e)} .
+\]
+Divide numerator and denominator by $G(1/e)$. Regular variation gives
+$G(u/e)/G(1/e)\to u^{k}$ for each $u>0$, and Potter's bounds
+(Bingham, Goldie and Teugels 1987, Thm.~1.5.6) give an integrable dominating function
+once the factor $e^{-u}$ is applied, uniformly for large $e$. Dominated convergence then yields
+$\int_0^\infty u^m e^{-u}dG(u/e)/G(1/e)\to\int_0^\infty u^m e^{-u}\,d(u^k)
+=k\,\Gamma(k+m)$ for $m=0,1,2$. (This is the Abelian half of Karamata's Tauberian
+theorem; Feller 1971, \S XIII.5.) Hence $E[Y_e^m]\to\Gamma(k+m)/\Gamma(k)$, that is,
+$Y_e$ has the moments of a Gamma$(k,1)$ variable in the limit. Since $\mathrm{CV}$ is
+scale-invariant, $\mathrm{CV}_e^2=\mathrm{Var}(Y_e)/E[Y_e]^2\to
+\bigl(k(k+1)-k^2\bigr)/k^2=1/k$.
+
+If $\underline\rho>0$, fix $\delta>0$. On $(\underline\rho+\delta,\infty)$ the tilt
+$e^{-\rho e}$ is at most $e^{-(\underline\rho+\delta)e}$, and on
+$[\underline\rho,\underline\rho+\delta/2]$ it is at least $e^{-(\underline\rho+\delta/2)e}$, so
+\[
+  \frac{G_e\bigl((\underline\rho+\delta,\infty)\bigr)}
+       {G_e\bigl([\underline\rho,\underline\rho+\delta/2]\bigr)}
+  \le\frac{e^{-\delta e/2}}{G\bigl([\underline\rho,\underline\rho+\delta/2]\bigr)}\to0,
+\]
+where the denominator is positive by definition of the essential infimum. Hence $G_e$
+concentrates on $\underline\rho$, so $\sigma_e\to0$ while $\mu_e\to\underline\rho>0$, and
+$\mathrm{CV}_e\to0$.
+
+(d) If $dG\propto\rho^{k-1}e^{-\beta\rho}$ then
+$dG_e\propto\rho^{k-1}e^{-(\beta+e)\rho}$, a gamma density with shape $k$ and rate
+$\beta+e$, so $\mathrm{CV}_e^2=1/k$ for all $e$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:eta}]
+Let $x=\theta e$ denote effort in units of the tool's detectability and
+$S_\xi(x)=\int e^{-\xi x}dG(\xi)$, so $S(e)=S_\xi(\theta e)$. With $C(e)=ce$ the
+developer chooses $x$ to minimise $(c/\theta)x+A\lambda s\,S_\xi(x)$, whose
+first-order condition $c=A\lambda s\,\theta\,(-S_\xi'(x))$ depends on $(\lambda,\theta)$
+only through $Z=\lambda\theta$. Hence $x^*=x^*(Z)$ and
+$\ln R^*=\ln\lambda+\ln s+\ln S_\xi(x^*(Z))$. Let
+$\kappa\equiv d\ln S_\xi(x^*)/d\ln Z$. Holding $\theta$ fixed,
+$\partial\ln R^*/\partial\ln\lambda=1+\kappa$, which equals $\varepsilon$ by
+Proposition~1. Holding $\lambda$ fixed,
+$\partial\ln R^*/\partial\ln\theta=\kappa=\varepsilon-1$. With
+$\theta\propto\lambda^\eta$, $d\ln R^*/d\ln\lambda=\varepsilon+\eta(\varepsilon-1)$,
+which is positive if and only if $\eta<\varepsilon/(1-\varepsilon)$. By
+Proposition~\ref{prop:cv}(b) the right side equals $\mathrm{CV}_{e^*}^2$, where the survivor
+distribution is taken in units of $\xi$; the CV is scale-free.
+\end{proof}
+
+% ---------------------------------------------------------------------
+%  Remark for Section 7: nonparametric estimation
+% ---------------------------------------------------------------------
+
+\paragraph{Remark (estimating $\varepsilon$ without a parametric form).}
+For defect $j$ in a task with $M$ test inputs, of which $f_j$ fail, a random test
+order leaves the defect undetected after a fraction $u$ of the suite with probability
+approximately $(1-f_j/M)^{uM}=\exp(-\hat\rho_j u)$, where
+$\hat\rho_j=-M\ln(1-f_j/M)$. (Exact hypergeometric survival can be used instead.)
+The survivor CV at effort $u$ is the CV of $\{\hat\rho_j\}$ weighted by
+$\exp(-\hat\rho_j u)$, so
+\[
+  \hat\varepsilon(u)=\frac{\widehat{\mathrm{CV}}_u^2}{1+\widehat{\mathrm{CV}}_u^2},
+\]
+with intervals from the task bootstrap already in use. Defects that fail every input
+($f_j=M$) have $\hat\rho_j=\infty$ and weight zero for any $u>0$. We recommend reporting
+the curve $\hat\varepsilon(u)$ as the primary estimate and the gamma fit as a summary.
+Part (c) says what to expect: $\hat\varepsilon(u)$ should flatten at $1/(1+k)$ if the
+lower tail of $\hat\rho_j$ is power-like, and drift toward zero if it is thin. The
+lower-tail index $k$ can be estimated directly, for example with a Hill-type estimator on
+the smallest values of $f_j/M$.
+
+% References to add:
+% Bingham NH, Goldie CM, Teugels JL (1987) Regular Variation (Cambridge University Press).
+% Feller W (1971) An Introduction to Probability Theory and Its Applications, Vol. II, 2nd ed. (Wiley).
