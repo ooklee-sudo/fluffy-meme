@@ -13,10 +13,24 @@ Revision of ISRE-2026-4635 (desk-rejected at ISR), retargeted to **Management Sc
 | `experiment_protocol.md` | Preregistrable design for the verification experiment (N ≈ 240). |
 | `manuscript_edits.md` | Edit list against the ISR version, with the reasoning for each change. |
 
+## Calibration (regenerated, November 2026)
+
+`calibration/` rebuilds the detectability data from scratch: 26 models x 157 HumanEval+ tasks x 20 samples
+(81,640 solutions) sampled through OpenRouter, run in a sandboxed harness, and analysed by
+`calibration/scripts/analyze.py` and `analyze_extra.py`. All Section 6 and EC.3-EC.5 numbers come from
+`calibration/results/calibration_results.json`. Pipeline:
+
+```
+python3 -I calibration/scripts/prep_tasks.py calibration/data/humanevalplus/test.parquet calibration/data/tasks.json
+python3 -I calibration/scripts/sample.py calibration/data/tasks.json calibration/data/samples MODEL ...
+python3 -I calibration/scripts/harness.py calibration/data/tasks.json calibration/data/results.jsonl.gz calibration/data/samples/*.jsonl
+python3 -I calibration/scripts/analyze.py calibration/data/tasks.json calibration/data/results.jsonl.gz calibration/results --core MODEL ...
+python3 -I calibration/scripts/analyze_extra.py calibration/data/tasks.json calibration/data/results.jsonl.gz calibration/results/calibration_results.json
+python3 -I calibration/scripts/make_figures.py calibration/results/calibration_results.json calibration/results/figures
+```
+
 ## Still to do before submission
 
-1. Compute the nonparametric survivor-CV estimates and the Hill estimate of k (Table 2, Section 6.3) from the calibration data.
-2. Estimate η across models (Section 6.4), ideally with more than eight models.
-3. Fill Table EC.4 with per-model bootstrap intervals and mean detectability.
-4. Optionally run the experiment and add Section 6.7.
-5. Verify every newly added reference against the original source.
+1. Optionally run the experiment (`experiment_protocol.md`) and fill Section 6.7, the one remaining placeholder.
+2. Verify every newly added reference against the original source.
+3. Note for the authors: Qwen 2.5 7B Instruct is no longer available, so Gemma 3 12B replaces it in the core panel.

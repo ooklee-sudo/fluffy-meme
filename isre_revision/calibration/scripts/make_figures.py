@@ -52,7 +52,7 @@ ax.spines[["top", "right"]].set_visible(False)
 fig.tight_layout(); fig.savefig(os.path.join(out, "fig2.png"), dpi=300); plt.close(fig)
 
 # Figure 3: detectability against defect intensity across models -----------------
-pm = R["eta_all"]["per_model"]
+pm = R["eta_main"]["per_model"]
 core = set(R["core_models"])
 fig, ax = plt.subplots(figsize=(6.2, 4.0))
 xs, ys = [], []
@@ -63,7 +63,7 @@ for m, v in pm.items():
     xs.append(x); ys.append(yv)
     ax.plot(x, yv, "o", color="#2a6fdb" if m in core else "#9aa5b1", ms=6)
 xs, ys = np.array(xs), np.array(ys)
-eta = R["eta_all"]["eta"]
+eta = R["eta_main"]["eta"]
 xx = np.linspace(xs.min() - 0.1, xs.max() + 0.1, 50)
 ax.plot(xx, ys.mean() + eta * (xx - xs.mean()), "-", color="black", lw=1,
         label=f"Task fixed-effects slope, η̂ = {eta:.2f}")

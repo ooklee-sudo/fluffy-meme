@@ -11,7 +11,7 @@ Abstract
 :::
 
 ::: {custom-style="Abstract"}
-AI coding tools lower the rate at which defects enter software, but developers may respond by verifying less. We ask how much of a better tool's quality reaches users as fewer shipped defects. In a model in which defects arrive as a Poisson process and verification detects each defect at its own rate, the answer depends on how unevenly detectable the defects are. With linear verification cost, the elasticity of shipped defects with respect to the tool's defect intensity equals CV²/(1 + CV²), where CV is the coefficient of variation of detection rates among the defects that verification has not yet found. Complete offsetting, the benchmark case of risk compensation, occurs only when every defect is equally easy to find. Because AI tools change which errors they make as well as how many, a better tool reduces shipped defects only if its errors do not become harder to detect faster than a threshold equal to CV². When detection is heavy-tailed, developer liability and tool quality are complements, and weak liability lowers vendors' investment in quality. In 8,659 defects from 25,120 solutions written by eight language models, we estimate that about 38% of a proportional quality gain would be absorbed by reduced verification. The analysis yields a verification-adjusted measure of tool quality that can be estimated from test-execution data.
+AI coding tools lower the rate at which defects enter software, but developers may respond by verifying less. We ask how much of a better tool's quality reaches users as fewer shipped defects. In a model in which defects arrive as a Poisson process and verification detects each defect at its own rate, the answer depends on how unevenly detectable defects are. With linear verification cost, the elasticity of shipped defects with respect to the tool's defect intensity equals CV²/(1 + CV²), where CV is the coefficient of variation of detection rates among defects not yet found. Complete offsetting, the risk-compensation benchmark, requires every defect to be equally easy to find. Because AI tools change which errors they make, a better tool reduces shipped defects only if its errors do not become harder to detect faster than a threshold equal to CV². Under heavy-tailed detection, developer liability and tool quality are complements. In 8,775 defects from 25,120 solutions by eight language models, about 40% of a proportional quality gain would be absorbed by reduced verification. Across 25 models, stronger models make harder-to-detect defects, which absorbs a further 17 percentage points. The results define a verification-adjusted measure of tool quality.
 :::
 
 ::: {custom-style="Keywords"}
@@ -34,7 +34,7 @@ The second result speaks to what is particular about AI-generated code. As langu
 
 The same quantity matters for liability. A developer who bears only part of the loss from shipped defects verifies too little, as in any model of moral hazard. When detection is heavy-tailed, weak liability also reduces how much she is willing to pay for a better tool, because that willingness to pay scales with her share of the loss raised to the power ε (Proposition 6). Developer liability and tool quality are then complements. This channel disappears when detection is homogeneous, which separates our setting from analyses of software liability in which vendor quality and user care act as substitutes (August and Tunca 2011). A vendor with market power under-supplies quality, and the shortfall grows as developer liability weakens, but only to the extent that detectability varies across defects (Corollary 2).
 
-Finally, we measure the detection technology. We ran 25,120 solutions written by eight language models for 157 HumanEval+ tasks against the benchmark's extended test suites. Detectability turns out to be very uneven. A quarter of the defects break at least 85 percent of a task's test inputs and are found almost immediately, while a tenth break fewer than half of one percent and survive most of the suite. The estimated tail parameter is k = 0.63, with a 95 percent interval of 0.52 to 0.78. This implies that about 38 percent of a proportional quality gain would be absorbed by reduced verification. The estimate is stable across reasonable definitions of a defect and orders of testing, and it agrees with a nonparametric estimate of the survivor CV [[report value]]. [[Across models, more capable tools produce defects that are η̂ = … (95% CI …) harder to detect, which is below/above the threshold of 1/k ≈ 1.6.]]
+Finally, we measure the detection technology. We ran 25,120 solutions written by eight language models for 157 HumanEval+ tasks against the benchmark's extended test suites. Detectability turns out to be very uneven. A quarter of the defects break at least 85 percent of a task's test inputs and are found almost immediately, while about a tenth break fewer than half of one percent and survive most of the suite. The estimated tail parameter is k = 0.66, with a 95 percent interval of 0.56 to 0.82, which implies that about 40 percent of a proportional quality gain would be absorbed by reduced verification. The estimate is stable across reasonable definitions of a defect and orders of testing. A nonparametric estimate of the survivor CV, which uses no distributional assumption, puts the elasticity higher still, at about 0.7, at the levels of testing a developer is likely to reach. We then extend the panel to 25 models. More capable models make defects that are harder to detect: the elasticity of detectability with respect to defect intensity is η̂ = 0.43 (95 percent interval 0.24 to 0.64). This is well below the threshold at which improvements would stop reaching users, but it is far from zero, and it absorbs a further 17 percentage points of a proportional quality gain. Taken together, less than half of the reduction in defects that a better model achieves on a benchmark survives as fewer shipped defects in our calibration.
 
 The paper contributes to three conversations in information systems research. For work on human–AI collaboration and over-reliance, it replaces a directional prediction with a magnitude tied to a measurable property of AI errors, and it identifies a channel, the composition of errors, through which better AI can worsen outcomes without any behavioral bias. For work on the economics of software quality and liability, it shows that whether liability rules affect investment in tool quality depends on the detection technology. For practice, it suggests that organizations should value AI coding tools by what they deliver after verification rather than by their accuracy on benchmarks.
 
@@ -134,7 +134,7 @@ So far a better tool has meant one that introduces fewer defects of an unchanged
 
 $$R^*\propto\lambda^{\varepsilon}\,\theta^{-(1-\varepsilon)},\qquad \frac{d\ln R^*}{d\ln\lambda}=\varepsilon-\eta(1-\varepsilon).$$
 
-*A better tool reduces residual defects if and only if $\eta<\varepsilon/(1-\varepsilon)=\mathrm{CV}_{e^*}^2$. Under gamma-mixed detection the threshold is $1/k$, about 1.6 at the estimated $k$.*
+*A better tool reduces residual defects if and only if $\eta<\varepsilon/(1-\varepsilon)=\mathrm{CV}_{e^*}^2$. Under gamma-mixed detection the threshold is $1/k$, about 1.5 at the estimated $k$.*
 
 The index $\lambda^{\varepsilon}\theta^{-(1-\varepsilon)}$ is a verification-adjusted measure of tool quality. Benchmark pass rates and defect counts measure $\lambda$. What reaches users depends on $\lambda$ and $\theta$ together, and the weights are set by the same heterogeneity that makes offsetting partial. When detection is very uneven, the weight on $\lambda$ is high and that on $\theta$ low, so a tool can afford to make its remaining errors somewhat subtler without losing ground. When detection is nearly homogeneous, $\mathrm{CV}^2$ is small and even a modest shift toward subtle errors can cancel the gain from making fewer of them. In that case shipped defects can rise as the tool improves, through a change in the technology and without any bias in how developers behave.
 
@@ -164,7 +164,7 @@ $$L(\lambda;\delta)=\frac{c}{\theta}\left(\frac{\ell\lambda s\theta}{c}\right)^{
 
 *and it increases in $\lambda$ with elasticity $\varepsilon$.*
 
-Three consequences stand out. First, at the estimated $k=0.63$, halving the developer's share of the loss cuts the value of a quality improvement to about 65 percent of its value under full liability, because $0.5^{0.614}\approx 0.65$. Weak liability therefore lowers the return to better tools, not only the amount of verification. Second, the social value of a tool exceeds its private value by the factor $\psi$, which equals 1.6 when $\delta=0.5$ and 3.5 when $\delta=0.2$. Third, better tools reduce the cost of weak liability, since $L$ rises with $\lambda$ at rate $\varepsilon$, but only by a power of the improvement. Developer liability and tool quality are complements, in that each makes the other more valuable. None of this happens in the exponential benchmark, where $\psi=1$ and $\varepsilon=0$. These statements use the constancy of $\varepsilon$ in the gamma case. For a general $G$ they hold locally, with $\varepsilon$ evaluated at the optimum.
+Three consequences stand out. First, at the estimated $k=0.66$, halving the developer's share of the loss cuts the value of a quality improvement to about 66 percent of its value under full liability, because $0.5^{0.603}\approx 0.66$. Weak liability therefore lowers the return to better tools, not only the amount of verification. Second, the social value of a tool exceeds its private value by the factor $\psi$, which equals 1.6 when $\delta=0.5$ and 3.4 when $\delta=0.2$. Third, better tools reduce the cost of weak liability, since $L$ rises with $\lambda$ at rate $\varepsilon$, but only by a power of the improvement. Developer liability and tool quality are complements, in that each makes the other more valuable. None of this happens in the exponential benchmark, where $\psi=1$ and $\varepsilon=0$. These statements use the constancy of $\varepsilon$ in the gamma case. For a general $G$ they hold locally, with $\varepsilon$ evaluated at the optimum.
 
 The gap between social and private value carries over to the vendor. Suppose $N$ developers differ in a scalar type $\nu$, uniform on $[0,\bar\nu]$, that scales their willingness to pay, so that type $\nu$ values the move from $\lambda_0$ to $\lambda$ at $\nu(\lambda_0^{\varepsilon}-\lambda^{\varepsilon})/\varepsilon$. Such variation arises, for example, when developers differ in the unit cost of verification. A vendor reaches quality $\lambda$ at fixed cost $K_0/\lambda$, has no marginal cost, and sets one quality and one price.
 
@@ -172,82 +172,88 @@ The gap between social and private value carries over to the vendor. Suppose $N$
 
 $$\frac{\lambda_M}{\lambda_S}=(2\psi)^{1/(1+\varepsilon)}.$$
 
-The factor of two is the familiar distortion that arises because a monopolist ignores the surplus of inframarginal buyers. The new element is $\psi$. Weak developer liability depresses vendor quality only through heterogeneity in detectability. In the homogeneous benchmark ($k\to\infty$) $\psi=1$ whatever the liability share, whereas with $k=0.63$ the ratio rises from 1.54 under full developer liability to 2.07 at $\delta=0.5$ and 3.31 at $\delta=0.2$. For $k$ between 0.5 and 0.8 these ratios change by less than 0.05. Liability rules for generated code thus affect the quality of the tools themselves, and the detection technology determines by how much.
+The factor of two is the familiar distortion that arises because a monopolist ignores the surplus of inframarginal buyers. The new element is $\psi$. Weak developer liability depresses vendor quality only through heterogeneity in detectability. In the homogeneous benchmark ($k\to\infty$) $\psi=1$ whatever the liability share, whereas with $k=0.66$ the ratio rises from 1.54 under full developer liability to 2.07 at $\delta=0.5$ and 3.31 at $\delta=0.2$. For $k$ between 0.5 and 0.8 these ratios change by less than 0.05. Liability rules for generated code thus affect the quality of the tools themselves, and the detection technology determines by how much.
 
 # 6. Measuring the Detection Technology
 
-The elasticity $\varepsilon$ depends on how the defects in AI-generated code are distributed in detectability. This section measures that distribution directly.
+The elasticity $\varepsilon$ depends on how the defects in AI-generated code are distributed in detectability. This section measures that distribution directly, and then asks whether it changes with model quality.
 
 ## 6.1 Data
 
-We use the HumanEval+ benchmark (Chen et al. 2021, Liu et al. 2023), which pairs 164 Python programming tasks with test suites of between 12 and 1,100 inputs (median 985) designed to stress edge cases. We excluded six tasks whose tests do not list inputs and expected outputs in a standard layout, and one task whose reference solution relies on a custom checker that our harness does not support. That leaves 157 tasks, on which the reference solutions pass every test input.
+We use the HumanEval+ benchmark (Chen et al. 2021, Liu et al. 2023), which pairs 164 Python programming tasks with test suites of between 12 and 1,100 inputs (median 985) designed to stress edge cases. We excluded six tasks whose tests do not list inputs and expected outputs in a standard layout, and one task whose test relies on a custom checker that our harness does not support. That leaves 157 tasks, on which the reference solutions pass every test input.
 
-We sampled solutions from eight language models that span a wide range of quality: Claude Haiku 5.5, Qwen3 Coder 30B-A3B, Mistral Small 3.2 24B, GPT-4o mini, Qwen 2.5 7B Instruct, Ministral 3B, Llama 3.1 8B Instruct, and Llama 3.2 3B Instruct. Each model wrote 20 solutions per task at temperature 0.8 from a single prompt, for a total of 25,120 solutions. Each solution ran in an isolated process on the test inputs one at a time, with a one-second limit per input. A solution failed on an input if it raised an exception, returned a wrong answer, or exceeded the time limit, and a run was stopped after five timeouts, with the remaining inputs counted as failures. Table 1 shows that the models differ by about an order of magnitude in the number of defects they introduce, which gives the calibration useful variation in $\lambda$.
+Our core panel consists of eight language models that span a wide range of quality: Claude Haiku 5.5, Qwen3 Coder 30B-A3B, Mistral Small 3.2 24B, GPT-4o mini, Gemma 3 12B, Ministral 3B, Llama 3.1 8B Instruct, and Llama 3.2 3B Instruct. Each model wrote 20 solutions per task at temperature 0.8 from a single prompt, for a total of 25,120 solutions. Each solution ran in an isolated process on the test inputs one at a time, with a one-second limit per input. A solution failed on an input if it raised an exception, returned a wrong answer, or exceeded the time limit, and a run was stopped after five timeouts, with the remaining inputs counted as failures. Table 1 shows that the models differ by about an order of magnitude in the number of defects they introduce, which gives the calibration useful variation in $\lambda$. For the analysis of Section 6.4 we added 18 further models under the same protocol, for 81,640 solutions in all (Table EC.3).
 
-Table: Table 1. Quality of the eight models on HumanEval+ (157 tasks, 20 samples per task). A defect is a distinct failure signature within a solution.
+Table: Table 1. Quality of the eight core models on HumanEval+ (157 tasks, 20 samples per task). A defect is a distinct failure signature within a solution.
 
 | Model | Pass rate | Mean defects per sample | Samples |
 |:--|--:|--:|--:|
-| Claude Haiku 5.5 | 0.933 | 0.078 | 3,140 |
-| Qwen3 Coder 30B-A3B | 0.891 | 0.139 | 3,140 |
-| Mistral Small 3.2 24B | 0.826 | 0.219 | 3,140 |
-| GPT-4o mini | 0.823 | 0.219 | 3,140 |
-| Qwen 2.5 7B Instruct | 0.781 | 0.289 | 3,140 |
-| Ministral 3B | 0.712 | 0.382 | 3,140 |
-| Llama 3.1 8B Instruct | 0.543 | 0.652 | 3,140 |
-| Llama 3.2 3B Instruct | 0.419 | 0.779 | 3,140 |
+| Claude Haiku 5.5 | 0.925 | 0.086 | 3,140 |
+| Qwen3 Coder 30B-A3B | 0.891 | 0.140 | 3,140 |
+| Mistral Small 3.2 24B | 0.841 | 0.202 | 3,140 |
+| GPT-4o mini | 0.833 | 0.210 | 3,140 |
+| Gemma 3 12B | 0.747 | 0.314 | 3,140 |
+| Ministral 3B | 0.718 | 0.376 | 3,140 |
+| Llama 3.1 8B Instruct | 0.522 | 0.698 | 3,140 |
+| Llama 3.2 3B Instruct | 0.410 | 0.768 | 3,140 |
 
 ## 6.2 Measuring detectability
 
 We need a unit of "defect." Within each solution we group failing inputs by failure signature: the type of exception raised, the shape of a wrong answer (its type compared with the expected type and, where defined, whether it is too low or too high, too short or too long), a timeout, or a failure to load. A solution with $n$ distinct signatures contains $n$ defects. This is an imperfect proxy, and we vary it below.
 
-To trace the effect of verification effort, we suppose that tests are run in a uniformly random order. A defect that causes $f$ of the $M$ tests in its task to fail is still undetected after $e$ tests with probability $\binom{M-f}{e}/\binom{M}{e}$. Averaging this probability over all 8,659 defects at each effort level $u=e/M$ gives an empirical survival curve for the population of defects. We fit it on the logarithmic scale with the gamma-mixed and the exponential forms, and we obtain intervals by resampling tasks with replacement.
+To trace the effect of verification effort, we suppose that tests are run in a uniformly random order. A defect that causes $f$ of the $M$ tests in its task to fail is still undetected after $e$ tests with probability $\binom{M-f}{e}/\binom{M}{e}$. Averaging this probability over all 8,775 defects in the core panel at each effort level $u=e/M$ gives an empirical survival curve for the population of defects. We fit it on the logarithmic scale with the gamma-mixed and the exponential forms, and we obtain intervals by resampling tasks with replacement.
 
-Proposition 2 also suggests an estimator that does not rely on a parametric form. Under random ordering, defect $j$ survives a fraction $u$ of the suite with probability close to $(1-f_j/M)^{uM}=\exp(-\hat\rho_j u)$, where $\hat\rho_j=-M\ln(1-f_j/M)$. The survivor CV at effort $u$ is the CV of the $\hat\rho_j$ weighted by $\exp(-\hat\rho_j u)$, and $\hat\varepsilon(u)=\widehat{\mathrm{CV}}_u^2/(1+\widehat{\mathrm{CV}}_u^2)$. Defects that fail every input have $\hat\rho_j=\infty$ and receive zero weight at any positive effort. We also estimate the lower-tail index $k$ directly with a Hill-type estimator on the smallest values of $f_j/M$.
+Proposition 2 suggests two further estimators that do not rely on the gamma form. Under random ordering, defect $j$ survives a fraction $u$ of the suite with probability close to $(1-f_j/M)^{uM}=\exp(-\hat\rho_j u)$, where $\hat\rho_j=-M\ln(1-f_j/M)$. The survivor CV at effort $u$ is then the CV of the $\hat\rho_j$ weighted by $\exp(-\hat\rho_j u)$, and $\hat\varepsilon(u)=\widehat{\mathrm{CV}}_u^2/(1+\widehat{\mathrm{CV}}_u^2)$. Defects that fail every input have $\hat\rho_j=\infty$ and receive zero weight at any positive effort. Second, Proposition 2(c) implies that the survival curve behaves like $u^{-k}$ at high effort when detection rates have a power-like lower tail, so the slope of $\ln S$ against $\ln u$ estimates the lower-tail index directly.
 
 ## 6.3 Results
 
-The data reject the exponential form and favor a heavy tail (Figure 1). The sum of squared errors on the log scale is 8.8 for the exponential fit and 1.3 for the gamma-mixed fit. The estimated shape is $k=0.63$ with a 95 percent interval of 0.52 to 0.78, which gives $\varepsilon=0.615$ (0.561 to 0.660) and an offset share of $k/(1+k)=0.385$ (0.340 to 0.439).
+The data reject the exponential form and favor a heavy tail (Figure 1). The sum of squared errors on the log scale is 8.7 for the exponential fit and 1.2 for the gamma-mixed fit. The estimated shape is $k=0.66$ with a 95 percent interval of 0.56 to 0.82, which gives $\varepsilon=0.603$ (0.549 to 0.643) and an offset share of $k/(1+k)=0.397$ (0.357 to 0.451).
 
-![Figure 1. Share of defects not yet detected as a function of the fraction of the test suite executed. Points are observed values over 8,659 defects in 25,120 solutions; lines are least-squares fits on the log scale.](fig1.jpg){width=5.8in}
+![Figure 1. Share of defects not yet detected as a function of the fraction of the test suite executed. Points are observed values over 8,775 defects in 25,120 solutions; lines are least-squares fits on the log scale.](fig1.png){width=5.8in}
 
-The heavy tail reflects a very uneven mix of defects. Across defects, the share of a task's tests that a defect causes to fail has a median of 22 percent and quartiles of 4 and 85 percent. A quarter of the defects break at least 85 percent of a task's inputs and are found by the first test or two. At the other extreme, a tenth fail on fewer than half of one percent of inputs and are likely to survive most of the suite. The gamma-mixed form captures this pattern broadly but not perfectly. In Figure 1 the observed curve lies below the fitted curve at very low effort and above it in the middle range, because a block of defects is found by the first few tests, which a single gamma mixture does not reproduce.
+The heavy tail reflects a very uneven mix of defects. Across defects, the share of a task's tests that a defect causes to fail has a median of 24 percent and quartiles of 4 and 85 percent. A quarter of the defects break at least 85 percent of a task's inputs and are found by the first test or two. At the other extreme, 11 percent fail on fewer than half of one percent of inputs and are likely to survive most of the suite. The gamma-mixed form captures this pattern broadly but not perfectly. In Figure 1 the observed curve lies below the fitted curve at very low effort and above it in the middle range, because a block of defects is found by the first few tests, which a single gamma mixture does not reproduce.
 
-The nonparametric estimates agree with the parametric one. [[Table 2 reports $\hat\varepsilon(u)$ at $u\in\{0.01, 0.05, 0.25, 1\}$, with task-bootstrap intervals, together with the Hill estimate of $k$. Insert the values and one sentence on whether $\hat\varepsilon(u)$ flattens, as Proposition 2(c) predicts for a power-like lower tail, or drifts toward zero.]]
+The nonparametric estimates confirm that offsetting is partial, and they suggest that the gamma fit understates the elasticity at realistic levels of effort (Table 2 and Figure EC.2). When a developer runs 1 to 5 percent of a large suite, roughly 10 to 50 tests for a typical task, the survivor CV² is between 2.2 and 2.7, and $\hat\varepsilon(u)$ is 0.69 to 0.73. The log-log slope of the survival curve over the same range gives a lower-tail index of $k=0.37$ (0.32 to 0.44), and hence an elasticity of 0.73, in close agreement. The gamma fit averages over the whole curve, including the steep initial drop, and gives the more conservative 0.60. At higher effort the nonparametric estimate falls, to 0.47 at a quarter of the suite and 0.22 when the whole suite is run. This decline is largely a property of the benchmark rather than of the code. A defect enters our data only if at least one test catches it, so the observed detection rates are bounded away from zero, and Proposition 2(c) then implies that the estimate must approach zero as the suite is exhausted. Defects that no test in the suite would catch, which are the ones that matter most at high effort, are invisible to this design.
 
-Table: Table 2. Nonparametric estimates of the elasticity at selected levels of effort. Intervals are 95% task-bootstrap intervals.
+Table: Table 2. Nonparametric estimates of the elasticity. The first four rows report the survivor CV² and $\hat\varepsilon(u)$ at selected levels of effort; the last row reports the lower-tail index from the log-log slope of the survival curve for $u\in[0.01,0.1]$. Intervals are 95% task-bootstrap intervals (300 resamples for $\hat\varepsilon(u)$, 1,000 for the slope).
 
-| Fraction of suite executed, $u$ | $\widehat{\mathrm{CV}}_u^2$ | $\hat\varepsilon(u)$ (95% CI) |
-|:--|--:|--:|
-| 0.01 | [[ ]] | [[ ]] |
-| 0.05 | [[ ]] | [[ ]] |
-| 0.25 | [[ ]] | [[ ]] |
-| 1.00 | [[ ]] | [[ ]] |
-| Hill estimate of lower-tail $k$ | | [[ ]] |
+| Fraction of suite executed, $u$ | $\widehat{\mathrm{CV}}_u^2$ (95% CI) | $\hat\varepsilon(u)$ (95% CI) |
+|:------------------------------|--------------------:|--------------------:|
+| 0.01 | 2.69 (2.01, 3.56) | 0.73 (0.67, 0.78) |
+| 0.05 | 2.18 (1.65, 2.88) | 0.69 (0.62, 0.74) |
+| 0.25 | 0.87 (0.65, 1.12) | 0.47 (0.40, 0.53) |
+| 1.00 | 0.27 (0.21, 0.35) | 0.22 (0.17, 0.26) |
+| Tail slope over $u\in[0.01,0.1]$ | $k=0.37$ (0.32, 0.44) | 0.73 (0.69, 0.76) |
 
-On counts, defects per solution are overdispersed relative to a Poisson distribution when pooled across tasks and models (Pearson ratio 1.39; Cameron and Trivedi 1990 test, $p<10^{-25}$), which reflects differences in difficulty across tasks and in quality across models. Within a model and task the counts are, if anything, underdispersed (Pearson ratio 0.63), because the number of distinct signatures is bounded. The Poisson assumption is therefore a modeling device that delivers the thinning property, and the data do not establish it.
+On counts, defects per solution are overdispersed relative to a Poisson distribution when pooled across tasks and models (Pearson ratio 1.37; Cameron and Trivedi 1990 test, $p\approx 4\times10^{-23}$), which reflects differences in difficulty across tasks and in quality across models. Within a model and task the counts are, if anything, underdispersed (Pearson ratio 0.62), because the number of distinct signatures is bounded. The Poisson assumption is therefore a modeling device that delivers the thinning property, and the data do not establish it.
 
 ## 6.4 Do better models make subtler errors?
 
-Proposition 4 turns on whether detectability changes with quality. We do not find a robust relation between model quality and the tail parameter: the rank correlation of $k$ with defect intensity across the eight models is −0.38, with an interval that spans zero, and the estimate for the strongest model is very imprecise because it makes few errors (Table EC.4). [[The mean detectability $\theta_m$ of each model's defects gives a direct estimate of $\eta$. In a regression of $\ln\hat\rho_{jmt}$ on $\ln\lambda_m$ with task fixed effects, $\hat\eta=\ldots$ (95% CI …). Compare with the threshold $\widehat{\mathrm{CV}}^2\approx 1.6$ and state the implication for whether the observed quality gains reach users.]] With eight models this comparison has limited power, and a larger panel of models and harder tasks is the natural next step.
+Proposition 4 turns on whether detectability changes with quality. Two pieces of evidence bear on this. The shape of the tail does not vary systematically with quality: the rank correlation between $k$ and defect intensity is −0.12 across the eight core models and 0.29 across the extended panel, and neither is distinguishable from zero (Table EC.3). The scale of detectability, however, does vary. To estimate $\eta$ we regress $\ln\hat\rho_j$, the log detection rate of defect $j$, on the log defect intensity of the model that wrote it, with task fixed effects, so that the comparison is between defects that different models make on the same task. Defects that fail every input are given $f=M-0.5$. We use 25 models: the core panel plus 17 of the 18 additional models. We set aside Qwen 2.5 Coder 32B, whose served endpoint dropped the closing quotes of the docstring in 63 percent of its samples, which produced syntax errors that reflect the deployment rather than the model.
+
+The estimate is $\hat\eta=0.43$ with a 95 percent task-bootstrap interval of 0.24 to 0.64 (Figure 3). A model with half the defect intensity of another makes defects that are, on the same task, about 26 percent less detectable. The estimate is 0.40 (0.21 to 0.59) when load errors are excluded, 0.56 (0.38 to 0.80) when the excluded model is included, and 0.59 (0.31 to 0.91) in the core panel alone.
+
+![Figure 3. Detectability of defects against defect intensity across 25 models. Each point is a model's mean log detection rate after removing task means; the line has the slope of the task fixed-effects regression.](fig3.png){width=5.8in}
+
+By Proposition 4, the net elasticity of shipped defects with respect to defect intensity is $\varepsilon-\eta(1-\varepsilon)$. With the gamma estimate of $\varepsilon$ this is $0.603-0.43\times0.397=0.43$ (0.35 to 0.51 over the interval for $\eta$). The estimated $\eta$ lies well below the threshold $\mathrm{CV}^2$, which is about 1.5 under the gamma fit and 2.2 to 2.7 by the nonparametric estimates, so better models still deliver fewer shipped defects. The shift toward harder-to-detect errors is nonetheless large enough to absorb a further 17 percentage points of a proportional improvement, on top of the 40 points absorbed by reduced verification. With the nonparametric elasticity at low effort the net figure is 0.55 to 0.61. The comparison is across models rather than within one model over time, and models differ in more than quality, so we read $\hat\eta$ as a description of how the errors of stronger and weaker models differ on the same tasks, not as a causal effect of improving a given model.
 
 ## 6.5 Sensitivity
 
-Table 3 and Figure 2 vary the two arbitrary choices in the procedure, the definition of a defect and the order of tests. Counting a whole solution as a single defect, discarding defects that fail at least half of the tests, and dropping solutions with timeouts or load errors all keep $\varepsilon$ between 0.52 and 0.66. Running tests in the order in which the dataset lists them, or shortest inputs first, gives 0.62 and 0.54. Only an adversarial order that runs the longest inputs first moves the estimate materially, to 0.82. In every variant the gamma-mixed form fits far better than the exponential, and $k$ is below one.
+Table 3 and Figure 2 vary the two arbitrary choices in the procedure, the definition of a defect and the order of tests. Counting a whole solution as a single defect, discarding defects that fail at least half of the tests, and dropping solutions with timeouts or load errors keep $\varepsilon$ between 0.50 and 0.64. Running tests in the order in which the dataset lists them, or shortest inputs first, gives 0.63 and 0.56. Only an adversarial order that runs the longest inputs first moves the estimate materially, to 0.82. In every variant the gamma-mixed form fits far better than the exponential, and $k$ is below one.
 
 Table: Table 3. Sensitivity of the tail index $k$ and the implied elasticity $\varepsilon=1/(1+k)$ to the definition of a defect and to the order of tests. Intervals are 95% task-bootstrap intervals (300 resamples).
 
 | Variant | Defects | $k$ (95% CI) | $\varepsilon$ (95% CI) |
 |:--|--:|:-:|:-:|
-| Baseline (random order) | 8,659 | 0.63 (0.52, 0.78) | 0.61 (0.56, 0.66) |
-| Whole sample counted as one defect | 6,504 | 0.52 (0.42, 0.69) | 0.66 (0.59, 0.71) |
-| Subtle defects only (fail < 50% of tests) | 5,488 | 0.94 (0.73, 1.29) | 0.52 (0.44, 0.58) |
-| Drop samples with timeouts or load errors | 7,286 | 0.72 (0.59, 0.90) | 0.58 (0.53, 0.63) |
-| Dataset order | 8,659 | 0.62 (0.44, 1.68) | 0.62 (0.37, 0.70) |
-| Short inputs first | 8,659 | 0.84 (0.60, 1.36) | 0.54 (0.42, 0.63) |
-| Long inputs first | 8,659 | 0.23 (0.18, 0.30) | 0.82 (0.77, 0.85) |
+| Baseline (random order) | 8,775 | 0.66 (0.56, 0.82) | 0.60 (0.55, 0.64) |
+| Whole sample counted as one defect | 6,633 | 0.55 (0.46, 0.72) | 0.64 (0.58, 0.69) |
+| Subtle defects only (fail < 50% of tests) | 5,469 | 0.98 (0.74, 1.41) | 0.50 (0.42, 0.57) |
+| Drop samples with timeouts or load errors | 7,232 | 0.76 (0.63, 0.95) | 0.57 (0.51, 0.61) |
+| Dataset order | 8,775 | 0.59 (0.41, 2.17) | 0.63 (0.32, 0.71) |
+| Short inputs first | 8,775 | 0.79 (0.55, 1.43) | 0.56 (0.41, 0.64) |
+| Long inputs first | 8,775 | 0.22 (0.17, 0.28) | 0.82 (0.78, 0.86) |
 
-![Figure 2. Implied elasticity of residual defects with respect to tool quality under alternative defect definitions and test orders. Markers are point estimates and bars are 95% task-bootstrap intervals; the dotted line marks the baseline.](fig2.jpg){width=5.8in}
+![Figure 2. Implied elasticity of residual defects with respect to tool quality under alternative defect definitions and test orders. Markers are point estimates and bars are 95% task-bootstrap intervals; the dotted line marks the baseline.](fig2.png){width=5.8in}
 
 ## 6.6 What the calibration does and does not show
 
@@ -259,9 +265,9 @@ We also looked for the behavioral response in field data on pull requests writte
 
 # 7. Discussion
 
-**For organizations adopting AI coding tools.** The model implies that the benefit of a better tool arrives in two forms. Under the estimated tail, about 38 percent of a proportional quality improvement is spent on reduced verification and the rest is kept as fewer residual defects. An organization that evaluates a tool by the reduction in production defects it expects may overstate the benefit if its developers will check less. One that evaluates it by time saved alone ignores the part of the gain that is kept. Verification standards that do not depend on the tool, such as a minimum test coverage for merging, remove the offset altogether, because residual defects then scale one for one with the tool's defect intensity. Such standards also over-verify for the best tools, since the optimal level of verification falls as quality rises.
+**For organizations adopting AI coding tools.** The model implies that the benefit of a better tool arrives in two forms. Under the estimated tail, about 40 percent of a proportional quality improvement is spent on reduced verification and the rest is kept as fewer residual defects, and the nonparametric estimates suggest the share may be closer to 30 percent at the levels of testing developers typically reach. An organization that evaluates a tool by the reduction in production defects it expects may overstate the benefit if its developers will check less. One that evaluates it by time saved alone ignores the part of the gain that is kept. Verification standards that do not depend on the tool, such as a minimum test coverage for merging, remove the offset altogether, because residual defects then scale one for one with the tool's defect intensity. Such standards also over-verify for the best tools, since the optimal level of verification falls as quality rises.
 
-**For evaluating tools.** Benchmark pass rates measure only one of the two inputs to what users receive. Proposition 4 implies that a tool's value after verification also depends on how detectable its remaining errors are, so a vendor whose newer model makes fewer but subtler errors may deliver less than its pass rate suggests. Buyers and independent evaluators would learn more from reporting how failures are distributed across tests (for instance, the share of a suite each failure breaks) alongside pass rates. Section 6 shows that these quantities can be computed from the same test runs that produce pass rates.
+**For evaluating tools.** Benchmark pass rates measure only one of the two inputs to what users receive. Proposition 4 implies that a tool's value after verification also depends on how detectable its remaining errors are, so a vendor whose newer model makes fewer but subtler errors may deliver less than its pass rate suggests. Section 6.4 shows that this is not a hypothetical concern: across 25 models, stronger models make errors that are harder to detect, and the shift absorbs about 17 percentage points of a proportional improvement. Buyers and independent evaluators would learn more from reporting how failures are distributed across tests (for instance, the share of a suite each failure breaks) alongside pass rates. Section 6 shows that these quantities can be computed from the same test runs that produce pass rates.
 
 **For liability.** The loss from under-verification arises because the party who controls verification does not bear the full cost of residual defects. In the exponential benchmark this loss does not depend on the tool, and with heavy-tailed detection it falls only slowly as tools improve (Propositions 5 and 6). Moving loss from the developer to the vendor, for instance through strict vendor liability for defects in generated code or through a warranty, lowers the developer's share and raises expected residual defects by the factor by which the share falls, unless verification requirements come with it. In the heavy-tailed case it also lowers the value of tool quality, so the vendor's incentive to improve weakens at the same time. Shifting loss between the vendor and users, with the developer's share held fixed, changes no behavior in the model and only redistributes. These results support assigning liability to the party that controls verification, as the least-cost-avoider principle recommends, and they show that the case for doing so rests on efficiency as well as fairness.
 
@@ -271,7 +277,7 @@ We also looked for the behavioral response in field data on pull requests writte
 
 The analysis has limits. The model has one risk-neutral developer who chooses a single dimension of effort, with no dynamics. The Poisson structure is a device, and the data depart from it. The vendor result assumes that willingness to pay varies by a scalar uniform type and that the vendor sells a single product with market power; we do not model competition between vendors. The propositions hold under regularity conditions, and we check them numerically for several distributions of detectability (Section EC.3), not over the whole parameter space. The calibration uses one benchmark of short functions, one sampling temperature, a proxy for defects, and a random order of tests. Our field evidence does not test the behavioral prediction. We have not examined whether the welfare comparisons survive risk aversion, correlated defects, or differences among developers in detection skill.
 
-Within these limits, the paper's message is straightforward. How much of a better tool's promise survives verification depends on how unevenly detectable its defects are. Offsetting is complete only when every defect is equally easy to find, and it is partial under the heavy tail we measure. Because AI tools can change the kind of errors they make, a better tool can even increase shipped defects, and the threshold at which this happens is set by the same heterogeneity. The effect of liability on the value of tools depends on it as well. When the party who controls verification bears only part of the loss, verification is too low, and when detection is heavy-tailed, tool quality is too low as well. These quantities can be estimated from the test runs that developers and vendors already perform, which gives the discussion of AI liability and verification an empirical footing.
+Within these limits, the paper's message is straightforward. How much of a better tool's promise survives verification depends on how unevenly detectable its defects are. Offsetting is complete only when every defect is equally easy to find, and it is partial under the heavy tail we measure. Because AI tools can change the kind of errors they make, a better tool can even increase shipped defects, and the threshold at which this happens is set by the same heterogeneity. Stronger models in our data do make subtler errors, though not nearly enough to cross that threshold. The effect of liability on the value of tools depends on it as well. When the party who controls verification bears only part of the loss, verification is too low, and when detection is heavy-tailed, tool quality is too low as well. These quantities can be estimated from the test runs that developers and vendors already perform, which gives the discussion of AI liability and verification an empirical footing.
 
 # References
 
@@ -451,7 +457,7 @@ Hence $W(\lambda_0)-W(\lambda)=(c/\theta)(k+1/\delta)(\delta\ell\theta s/c)^{\va
 
 # EC.3 Numerical Verification
 
-We checked every analytical result against numerical solutions of the developer's problem for six distributions of detection rates, each normalized to mean one: gamma with shape 0.63 and 2; a scaled beta distribution on $[0,4]$ with shape parameters 0.63 and 1.89, which has the same lower-tail index as the estimated gamma but bounded support; the uniform distribution on $[0,2]$, with lower-tail index one; the lognormal with $\sigma=1$, whose density vanishes faster than any power at zero; and a two-point distribution on $\{0.2,1.8\}$. The script `sim_cv_elasticity.py` in the replication package reproduces all results.
+We checked every analytical result against numerical solutions of the developer's problem for six distributions of detection rates, each normalized to mean one: gamma with shape 0.63 and 2; a scaled beta distribution on $[0,4]$ with shape parameters 0.63 and 1.89, which has the same lower-tail index as the gamma with shape 0.63 but bounded support; the uniform distribution on $[0,2]$, with lower-tail index one; the lognormal with $\sigma=1$, whose density vanishes faster than any power at zero; and a two-point distribution on $\{0.2,1.8\}$. The script `sim_cv_elasticity.py` in the replication package reproduces all results.
 
 *Hazard identities.* Finite differences of $\ln S$ and of $h$ agree with the survivor mean and minus the survivor variance to within $3\times 10^{-7}$ at all distributions and effort levels tested.
 
@@ -483,20 +489,38 @@ Table: Table EC.1. Elasticity of residual defects under linear cost: numerical c
 
 # EC.4 Calibration Details
 
-**Models and sampling.** Solutions were sampled through a commercial model-aggregation API in October 2026. Every call used temperature 0.8, a limit of 1,024 output tokens, and a single prompt, and no calls failed. The user message was: "Complete the following Python function. Reply with the complete implementation, including any imports it needs, in a single python code block and nothing else," followed by the task's function signature and docstring in a code block. The solution is the first code block that defines the required function; failing that, the first code block; failing that, the raw reply.
+**Models and sampling.** Solutions were sampled through a commercial model-aggregation API (OpenRouter) in November 2026. Every call used temperature 0.8, a limit of 1,024 output tokens, and a single prompt, and no calls failed. The user message was: "Complete the following Python function. Reply with the complete implementation, including any imports it needs, in a single python code block and nothing else," followed by the task's function signature and docstring in a code block. The solution is the first code block that defines the required function; failing that, the first code block; failing that, the raw reply. Replies cut off at the token limit have no closing code fence, so the raw reply is used and the solution fails to load; such solutions count as defective, and the sensitivity variant that drops load errors removes them. Qwen 2.5 7B Instruct, part of an earlier version of the core panel, was no longer offered when we sampled, and Gemma 3 12B takes its place.
 
-Table: Table EC.2. Models.
+Table: Table EC.2. Models. Core models form the panel of Table 1; all models except Qwen 2.5 Coder 32B enter the estimate of $\eta$ in Section 6.4.
 
-| Model | Identifier |
-|:--|:--|
-| Claude Haiku 5.5 | anthropic/claude-haiku-5.5 |
-| Qwen3 Coder 30B-A3B | qwen/qwen3-coder-30b-a3b-instruct |
-| Mistral Small 3.2 24B | mistralai/mistral-small-3.2-24b-instruct |
-| GPT-4o mini | openai/gpt-4o-mini |
-| Qwen 2.5 7B Instruct | qwen/qwen-2.5-7b-instruct |
-| Ministral 3B | mistralai/ministral-3b-2512 |
-| Llama 3.1 8B Instruct | meta-llama/llama-3.1-8b-instruct |
-| Llama 3.2 3B Instruct | meta-llama/llama-3.2-3b-instruct |
+| Model | Identifier | Panel |
+|:-------------------------|:-----------------------------------------|:--------------------------|
+| Claude Haiku 5.5 | anthropic/claude-haiku-5.5 | Core |
+| DeepSeek V3.2 | deepseek/deepseek-v3.2 | Extended |
+| Qwen3 30B-A3B Instruct | qwen/qwen3-30b-a3b-instruct-2507 | Extended |
+| Qwen3 Coder 30B-A3B | qwen/qwen3-coder-30b-a3b-instruct | Core |
+| Codestral | mistralai/codestral-2508 | Extended |
+| Gemini 2.5 Flash Lite | google/gemini-2.5-flash-lite | Extended |
+| GPT-4.1 nano | openai/gpt-4.1-nano | Extended |
+| Mistral Small 3.2 24B | mistralai/mistral-small-3.2-24b-instruct | Core |
+| GPT-4o mini | openai/gpt-4o-mini | Core |
+| Qwen 2.5 72B Instruct | qwen/qwen-2.5-72b-instruct | Extended |
+| Phi-4 | microsoft/phi-4 | Extended |
+| Ministral 8B | mistralai/ministral-8b-2512 | Extended |
+| Gemma 3 27B | google/gemma-3-27b-it | Extended |
+| Llama 3.3 70B Instruct | meta-llama/llama-3.3-70b-instruct | Extended |
+| Nova Lite | amazon/nova-lite-v1 | Extended |
+| Llama 4 Scout | meta-llama/llama-4-scout | Extended |
+| Gemma 3 12B | google/gemma-3-12b-it | Core |
+| Nova Micro | amazon/nova-micro-v1 | Extended |
+| Ministral 3B | mistralai/ministral-3b-2512 | Core |
+| Gemma 3 4B | google/gemma-3-4b-it | Extended |
+| Mistral Nemo 12B | mistralai/mistral-nemo | Extended |
+| Command R7B | cohere/command-r7b-12-2024 | Extended |
+| Llama 3.1 8B Instruct | meta-llama/llama-3.1-8b-instruct | Core |
+| Llama 3.2 3B Instruct | meta-llama/llama-3.2-3b-instruct | Core |
+| Qwen 2.5 Coder 32B | qwen/qwen-2.5-coder-32b-instruct | Extended (excluded from main $\eta$) |
+| Llama 3.2 1B Instruct | meta-llama/llama-3.2-1b-instruct | Extended |
 
 **Tasks and test harness.** HumanEval+ contains 164 tasks. Six (HumanEval/14, /15, /83, /100, /130, /139) use a test layout that does not list inputs and expected outputs in a standard way and were excluded. HumanEval/32 was excluded because its test uses a custom checker (the residual of a polynomial at the returned root) that our harness does not support. Each solution was executed in a separate Python process. The task's stub runs first, then the candidate code, and test inputs are run one at a time on deep copies of the inputs. A result is correct if it equals the expected value. Floating-point values are compared with tolerance $10^{-6}$, as in EvalPlus, and tuples and lists are treated as equal by converting tuples to lists recursively before comparison. Each input has a one-second limit, and a run stops after five timeouts, with the remaining inputs counted as timeouts. Each process is limited to 4 GB of memory and 80 seconds of CPU time, with a 120-second wall-clock limit per solution.
 
@@ -504,20 +528,42 @@ Before sampling, we ran the reference solutions through the harness. The first r
 
 **Failure signatures.** A solution's defects are its distinct failure signatures. A signature is one of the following: the exception class name (for example, EXC:IndexError); TIMEOUT; LOAD plus the exception class, when the code fails to define the required function, in which case every input counts as failing; or a wrong-answer signature of the form WA followed by the type of the returned value, the type of the expected value, and a relation (for numbers, lo or hi; for sequences, short, long, or samelen; for booleans, flip; otherwise neq).
 
-Table: Table EC.3. Tail index by model, from the detection curve of each model's own defects.
+Table: Table EC.3. Quality and detection tail by model (157 tasks, 20 samples per task). $k$ is fitted to each model's own defects; intervals are 95% task-bootstrap intervals (400 resamples).
 
-| Model | Defects | $k$ | $1/(1+k)$ |
-|:--|--:|--:|--:|
-| Claude Haiku 5.5 | 244 | 1.646 | 0.378 |
-| Qwen3 Coder 30B-A3B | 438 | 0.491 | 0.671 |
-| Mistral Small 3.2 24B | 688 | 0.671 | 0.598 |
-| GPT-4o mini | 689 | 0.948 | 0.513 |
-| Qwen 2.5 7B Instruct | 906 | 0.663 | 0.601 |
-| Ministral 3B | 1,199 | 0.771 | 0.565 |
-| Llama 3.1 8B Instruct | 2,048 | 0.623 | 0.616 |
-| Llama 3.2 3B Instruct | 2,447 | 0.570 | 0.637 |
+| Model | Pass rate | Defects per sample | Defects | $k$ (95% CI) | $1/(1+k)$ | Median $f/M$ |
+|:-----------------------------|-------:|---------:|---------:|:------------------:|------:|----------:|
+| Claude Haiku 5.5† | 0.925 | 0.086 | 269 | 1.45 (0.24, >20) | 0.41 | 0.014 |
+| DeepSeek V3.2 | 0.918 | 0.093 | 293 | 0.71 (0.40, 2.22) | 0.59 | 0.049 |
+| Qwen3 30B-A3B Instruct | 0.898 | 0.132 | 415 | 0.61 (0.36, 2.15) | 0.62 | 0.131 |
+| Qwen3 Coder 30B-A3B† | 0.891 | 0.140 | 441 | 0.51 (0.36, 1.07) | 0.66 | 0.148 |
+| Codestral | 0.883 | 0.141 | 442 | 0.60 (0.41, 1.86) | 0.62 | 0.225 |
+| Gemini 2.5 Flash Lite | 0.878 | 0.141 | 443 | 0.60 (0.42, 1.33) | 0.62 | 0.103 |
+| GPT-4.1 nano | 0.848 | 0.185 | 580 | 0.60 (0.41, 1.41) | 0.63 | 0.181 |
+| Mistral Small 3.2 24B† | 0.841 | 0.202 | 635 | 0.62 (0.47, 0.98) | 0.62 | 0.148 |
+| GPT-4o mini† | 0.833 | 0.210 | 659 | 0.90 (0.56, 3.33) | 0.53 | 0.131 |
+| Qwen 2.5 72B Instruct | 0.832 | 0.197 | 619 | 0.70 (0.50, 1.28) | 0.59 | 0.181 |
+| Phi-4 | 0.821 | 0.219 | 688 | 0.59 (0.43, 0.97) | 0.63 | 0.174 |
+| Ministral 8B | 0.810 | 0.238 | 747 | 0.69 (0.53, 0.95) | 0.59 | 0.221 |
+| Gemma 3 27B | 0.803 | 0.231 | 726 | 0.59 (0.43, 1.23) | 0.63 | 0.306 |
+| Llama 3.3 70B Instruct | 0.790 | 0.268 | 841 | 0.65 (0.50, 1.11) | 0.61 | 0.150 |
+| Nova Lite | 0.784 | 0.286 | 899 | 0.60 (0.48, 0.80) | 0.62 | 0.204 |
+| Llama 4 Scout | 0.761 | 0.289 | 906 | 0.59 (0.44, 0.84) | 0.63 | 0.221 |
+| Gemma 3 12B† | 0.747 | 0.314 | 987 | 0.75 (0.51, 1.82) | 0.57 | 0.203 |
+| Nova Micro | 0.731 | 0.348 | 1,094 | 0.76 (0.57, 1.14) | 0.57 | 0.176 |
+| Ministral 3B† | 0.718 | 0.376 | 1,180 | 0.84 (0.65, 1.26) | 0.54 | 0.204 |
+| Gemma 3 4B | 0.650 | 0.485 | 1,523 | 0.70 (0.54, 1.03) | 0.59 | 0.287 |
+| Mistral Nemo 12B | 0.591 | 0.587 | 1,844 | 0.76 (0.62, 1.04) | 0.57 | 0.234 |
+| Command R7B | 0.540 | 0.629 | 1,974 | 0.79 (0.65, 1.00) | 0.56 | 0.290 |
+| Llama 3.1 8B Instruct† | 0.522 | 0.698 | 2,193 | 0.66 (0.57, 0.78) | 0.60 | 0.232 |
+| Llama 3.2 3B Instruct† | 0.410 | 0.768 | 2,411 | 0.64 (0.55, 0.79) | 0.61 | 0.625 |
+| Qwen 2.5 Coder 32B‡ | 0.297 | 0.716 | 2,249 | 0.92 (0.72, 5.95) | 0.52 | 1.000 |
+| Llama 3.2 1B Instruct | 0.219 | 1.196 | 3,756 | 0.69 (0.61, 0.78) | 0.59 | 0.433 |
 
-[[Table EC.4: add the bootstrap intervals for each model (400 task-bootstrap resamples) from the original Table D3, and the per-model mean detectability $\hat\theta_m$ used in Section 6.4.]] Per-model estimates are precise for the weaker models, which account for most of the defects, and very imprecise for the strongest model.
+† Core panel. ‡ Excluded from the main estimate of $\eta$ (see Section 6.4).
+
+Per-model estimates are precise for the weaker models, which account for most of the defects, and imprecise for the strongest models, which make few errors. The estimate for Claude Haiku 5.5 rests on 269 defects and its interval is unbounded above. Qwen 2.5 Coder 32B has a median failure share of one because most of its defects are load failures.
+
+![Figure EC.2. Nonparametric estimate of the elasticity, $\hat\varepsilon(u)=\widehat{\mathrm{CV}}_u^2/(1+\widehat{\mathrm{CV}}_u^2)$, against the fraction of the suite executed, with 95% task-bootstrap intervals. The dotted line is the gamma-fit value.](figEC2.png){width=5.8in}
 
 # EC.5 Sensitivity Analysis
 
@@ -529,7 +575,7 @@ Each variant in Table 3 changes one choice relative to the baseline. In "whole s
 
 **Design.** Claude Code, the agent with the most pull requests (172,597), records the model it used in commit trailers, which identifies the model for 114,085 pull requests whose commits all name a single model. The share of identified pull requests naming one particular model rose from 0.9 percent in the 21 days before February 5, 2026 to 79.5 percent in the 21 days after, and most of the rise took place within two days (1.5 percent on February 3, 18.0 percent on February 5, and 83.2 percent on February 7). We read this as a change in the default model, although the data cannot confirm it. We compare outcomes within the same repositories before and after the change, with repository fixed effects and standard errors clustered by repository, and we also estimate the jump at the change date with separate linear trends on each side. The sample has 35,636 pull requests in 1,431 repositories.
 
-Table: Table EC.5. Pull-request outcomes before and after the change in the default model (21-day windows, repository fixed effects, standard errors clustered by repository).
+Table: Table EC.4. Pull-request outcomes before and after the change in the default model (21-day windows, repository fixed effects, standard errors clustered by repository).
 
 | Outcome | Pre-period mean | Post − pre (SE) | Jump with trends (SE) | $p$ (jump) |
 |:--|--:|--:|--:|--:|
@@ -541,9 +587,9 @@ Table: Table EC.5. Pull-request outcomes before and after the change in the defa
 | Any test file changed | 0.440 | 0.013 (0.009) | 0.005 (0.013) | 0.70 |
 | Test share of added lines | 0.202 | 0.017 (0.007) | 0.006 (0.009) | 0.48 |
 
-Neither specification shows a detectable change in human review, change requests, merging, pull request size, or test code. Simple before-and-after differences for the share of test code (+1.7 percentage points) and for log size (−0.12) are statistically significant, but placebo dates in the weeks before and after produce differences of similar size (Table EC.6), and the estimates disappear once trends are removed. The 95 percent interval for the jump in the probability of any human review is about ±1.9 points on a base of 26 points, so declines of more than a few points are ruled out and smaller ones are not.
+Neither specification shows a detectable change in human review, change requests, merging, pull request size, or test code. Simple before-and-after differences for the share of test code (+1.7 percentage points) and for log size (−0.12) are statistically significant, but placebo dates in the weeks before and after produce differences of similar size (Table EC.5), and the estimates disappear once trends are removed. The 95 percent interval for the jump in the probability of any human review is about ±1.9 points on a base of 26 points, so declines of more than a few points are ruled out and smaller ones are not.
 
-Table: Table EC.6. True and placebo dates.
+Table: Table EC.5. True and placebo dates.
 
 | Date | Any review: post − pre (SE) | Any review: jump (SE) | Test share: post − pre (SE) | Test share: jump (SE) |
 |:--|--:|--:|--:|--:|
@@ -556,4 +602,4 @@ This is a weak test of the model, for three reasons. We do not observe that the 
 
 # EC.7 Replication Materials
 
-The replication package contains all scripts and the data produced in the calibration: the 25,120 sampled solutions, the execution results (failing inputs per signature for every solution), the task file derived from the public HumanEval+ benchmark, and the result tables used in the paper. A README gives the order in which to run the scripts. The calibration analyses run on the included data in minutes without external access. The field analyses download the public AIDev tables. The numerical checks of the analytical results (Section EC.3) run in a few minutes.
+The replication package contains all scripts and the data produced in the calibration: the 81,640 sampled solutions with the raw model replies, the execution results (failing inputs per signature for every solution), the task file derived from the public HumanEval+ benchmark, and the result tables used in the paper. The pipeline has four steps: `prep_tasks.py` extracts inputs and expected outputs from the benchmark by parsing, without executing, its test code; `sample.py` draws solutions; `harness.py` runs them; and `analyze.py` with `analyze_extra.py` produce every estimate in Section 6 and Sections EC.4–EC.5. The harness and analysis run on the included data in about an hour on a four-core machine without external access. The field analyses download the public AIDev tables. The numerical checks of the analytical results (Section EC.3) run in a few minutes.
