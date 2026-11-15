@@ -218,7 +218,7 @@ python analyze_h4.py tune results/h4_tune
 2. 본 실험 (사실 세트 6개, 세트당 약 2~2.5시간, 전체 약 13~15시간). 학습률은 1단계 결과로 채웁니다:
 
 ```bash
-for s in 1 2 3 4 5 6; do python phase3.py --task facts --n-facts 8000 --task-seed $s --configs lora:16,tt:31,lora:32 --lrs tt=<TT lr>,lora=<LoRA lr> --steps 6000 --out results/h4 || break; done
+for s in 1 2 3 4 5 6; do python phase3.py --task facts --n-facts 8000 --task-seed $s --configs lora:16,tt:31,lora:32 --lrs tt=1e-3,lora=1e-3 --steps 6000 --out results/h4 || break; done
 ```
 
 3. 분석. `PRIMARY H4` 줄이 사전 등록한 검정입니다:

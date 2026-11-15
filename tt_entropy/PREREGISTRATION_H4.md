@@ -89,4 +89,8 @@ Observed while tuning (not part of any test): the learned LoRA r=16 updates had 
 about 2 in every module type; the TT r=31 updates had effective ranks of about 200 to 1,350, part of
 which may come from the TT cores' random initialization rather than from learning.
 
-**Tuning round 2:** to be filled in.
+**Tuning round 2** (2026-11-15, `results/h4_tune2`): LoRA r=16 at 3e-4 reached dev accuracy 0.035, below
+0.560 at 1e-3, so LoRA's choice is now inside its grid and tuning ends.
+
+**Fixed learning rates for the main run: TT 1e-3, LoRA 1e-3** (`--lrs tt=1e-3,lora=1e-3`; LoRA r=32 uses
+LoRA's rate). These were committed before any test-set run.
