@@ -110,7 +110,7 @@ def task_sums(dfs, S):
     return tids, A, n
 
 
-def fit_curves(Sobs, u=U_GRID):
+def fit_curves(Sobs, u=U_GRID, x0=None):
     y = np.log(np.clip(Sobs, 1e-12, None))
 
     def sse_gamma(p):
@@ -121,9 +121,11 @@ def fit_curves(Sobs, u=U_GRID):
         return np.sum((y + np.exp(p[0]) * u) ** 2)
 
     best = None
-    for k0 in (0.3, 0.6, 1.0, 2.0):
-        for th0 in (3.0, 10.0, 30.0, 100.0):
-            r = optimize.minimize(sse_gamma, np.log([th0, k0]), method="Nelder-Mead",
+    starts = [x0] if x0 is not None else [np.log([th0, k0]) for k0 in (0.3, 0.6, 1.0, 2.0)
+                                          for th0 in (3.0, 10.0, 30.0, 100.0)]
+    for st in starts:
+        if True:
+            r = optimize.minimize(sse_gamma, st, method="Nelder-Mead",
                                   options=dict(xatol=1e-9, fatol=1e-12, maxiter=4000))
             if best is None or r.fun < best.fun:
                 best = r
@@ -140,7 +142,7 @@ def k_with_ci(A, n, B):
     for _ in range(B):
         w = rng.multinomial(T, np.ones(T) / T)
         Sb = (w[:, None] * A).sum(0) / (w * n).sum()
-        ks.append(fit_curves(Sb)["k"])
+        ks.append(fit_curves(Sb, x0=np.log([est["theta"], est["k"]]))["k"])
     lo, hi = np.quantile(ks, [0.025, 0.975])
     eps = 1 / (1 + np.array(ks))
     return est, (float(lo), float(hi)), tuple(float(x) for x in np.quantile(eps, [0.025, 0.975]))
@@ -364,6 +366,7 @@ def main():
     R["rank_corr_all"] = float(stats.spearmanr([a for a, _ in ks_all], [b for _, b in ks_all]).statistic)
 
     # eta ------------------------------------------------------------------------
+    R["core_models"] = sorted(core)
     R["eta_core"] = eta_regression(dfs, {m: lam[m] for m in core})
     R["eta_all"] = eta_regression(all_dfs, lam)
 
