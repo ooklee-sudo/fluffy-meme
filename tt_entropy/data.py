@@ -39,7 +39,11 @@ def convert_twcs(csv_path, out_path, min_pairs=200):
                 continue
             p, r = _clean(cust[row.in_response_to_tweet_id]), _clean(row.text)
             if p and r:
-                f.write(json.dumps({"tenant": row.author_id, "prompt": p, "response": r}) + "\n")
+                t = pd.to_datetime(row.created_at, format="%a %b %d %H:%M:%S %z %Y", errors="coerce")
+                rec = {"tenant": row.author_id, "prompt": p, "response": r}
+                if t is not pd.NaT:
+                    rec["time"] = t.isoformat()
+                f.write(json.dumps(rec) + "\n")
                 n += 1
     print(f"wrote {n} pairs for {len(keep)} brands (>= {min_pairs} pairs each) to {out_path}")
 
@@ -50,6 +54,18 @@ def load_jsonl(path):
         for line in f:
             row = json.loads(line)
             tenants[row["tenant"]].append((row["prompt"], row["response"]))
+    return dict(tenants)
+
+
+def load_jsonl_time(path):
+    """{tenant: [(prompt, response, ISO time), ...]} for files converted with timestamps."""
+    tenants = defaultdict(list)
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            row = json.loads(line)
+            if "time" not in row:
+                raise SystemExit(f"{path} has no timestamps; convert again: python data.py twcs data/twcs.csv {path} 200")
+            tenants[row["tenant"]].append((row["prompt"], row["response"], row["time"]))
     return dict(tenants)
 
 
