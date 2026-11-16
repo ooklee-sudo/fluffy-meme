@@ -90,3 +90,35 @@ about 1,200 requests (train once) to about 7,000-10,000 requests per year.
 
 Caveats as above, plus: drift is measured over 9 weeks only and extrapolated; the decay is roughly linear
 over that span, so longer horizons may differ; the upgrade intensity (2 per year) is assumed, not measured.
+
+## Real-options link: when to retrain for drift (`real_options_econ.py`)
+
+The real-options model of adapter maintenance (`real_options.py`, Proposition 2: retrain when annual
+adapter value v >= v* = beta/(beta-1) C_N / k(R)) is applied to drift with the measured parameters:
+R = 0.887 per drift epoch, mean epoch 7 weeks (mu = 7.43 per year), C_N = 45 GPU-s, and the paper's
+defaults rho = 0.10, g = 0.20, sigma = 0.40. Drift is modeled as Poisson events of the same average rate
+(an approximation of the measured gradual decay). Annual value v = requests per year x lambda x 0.441,
+where lambda is the value of one unit of relative gain per request in GPU-seconds; a firm that buys RAG-8
+reveals lambda >= 0.140 s (39.85 ms for a 0.284 gain).
+
+Result: beta = 8.98, v* = 3,284 GPU-s per year (73 x C_N).
+
+| lambda | Retrain threshold (requests per year) | Brands above (of 106) | Yearly cost, optimal policy | Retrain every epoch | Never retrain for drift |
+| --- | --- | --- | --- | --- | --- |
+| 0.14 s (lower bound) | 53,074 | 40 | 5.9 GPU-h | 9.8 | 14.9 |
+| 1.4 s (10x) | 5,307 | 88 | 9.4 | 9.8 | 148.7 |
+| 14 s (100x) | 531 | 106 | 9.8 | 9.8 | 1,487 |
+
+Costs combine retraining and the value lost to a stale adapter, in GPU-hour equivalents, for all brands.
+A Monte Carlo run of the threshold policy matches the closed form within about 1% (25.6 +/- 0.1 vs 25.3
+GPU-s at v = v*/2; daily time steps).
+
+Reading: the optimal policy is heterogeneous. High-volume brands should be retrained at every drift epoch;
+low-volume brands should keep a stale adapter, which still beats fresh-index RAG for about 11 weeks. At the
+conservative lambda this saves 40% of maintenance cost against retraining everyone. Maintenance is small
+next to serving in every scenario (at most about 10 GPU-h per year against about 57 for serving with
+LoRA), so the choice of method (adapter vs RAG) matters more than the retraining schedule.
+
+Additional caveats: lambda is not measured (only bounded from below); drift as Poisson jumps is an
+approximation; g and sigma are assumed; base-model upgrades are analyzed in the original paper and not
+combined with drift here.
