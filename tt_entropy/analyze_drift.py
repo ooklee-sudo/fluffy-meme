@@ -58,8 +58,13 @@ def main():
            if r["weeks"][last].get("lora_fresh_rel", 0) > 0]
     ret = [r["weeks"][last]["lora_stale_rel"] / r["weeks"]["in-period"]["lora_stale_rel"] for r in rows
            if r["weeks"]["in-period"]["lora_stale_rel"] > 0]
-    print(f"\nWeek {last}: stale adapter keeps {np.mean(ret):.1%} of its in-period gain (mean over brands);")
-    print(f"recovery R = stale / fresh adapter gain = {np.mean(rec):.3f} (median {np.median(rec):.3f}, n = {len(rec)})")
+    st = np.mean([r["weeks"][last]["lora_stale_rel"] for r in rows])
+    fr = np.mean([r["weeks"][last].get("lora_fresh_rel", np.nan) for r in rows])
+    ip = np.mean([r["weeks"]["in-period"]["lora_stale_rel"] for r in rows])
+    print(f"\nWeek {last}: stale adapter keeps {st / ip:.1%} of its in-period gain (ratio of means; per-brand median "
+          f"{np.median(ret):.1%})")
+    print(f"recovery R = stale / fresh adapter gain = {st / fr:.3f} (ratio of means; per-brand median "
+          f"{np.median(rec):.3f}, n = {len(rec)})")
     gap = [r["weeks"][last]["lora_stale_rel"] - r["weeks"][last]["rag_fresh_rel"] for r in rows]
     print(f"stale adapter minus fresh-index RAG in week {last}: mean {np.mean(gap):+.3f}, "
           f"adapter ahead for {sum(g > 0 for g in gap)}/{len(gap)} brands")
