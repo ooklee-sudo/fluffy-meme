@@ -19,6 +19,13 @@ usage: python3 -I harness.py TASKS_JSON OUT_JSONL.gz SAMPLES_JSONL [SAMPLES_JSON
 import copy
 import gzip
 import json
+import pickle as _pickle
+
+
+def load_tasks(path):
+    if path.endswith('.pkl'):
+        return _pickle.load(open(path, 'rb'))
+    return json.load(open(path))
 import math
 import os
 import pickle
@@ -98,6 +105,11 @@ def run_in_child(task, code):
     fails = {}
     env = {"__name__": "__candidate__"}
     try:
+        if task.get("test_imports"):
+            exec(compile("\n".join(task["test_imports"]), "<imports>", "exec"), env)
+    except BaseException:
+        pass
+    try:
         exec(compile(task["prompt"], "<stub>", "exec"), env)
     except BaseException:
         pass
@@ -162,7 +174,7 @@ def child(task, code, wfd):
 
 
 def main():
-    tasks = {t["task_id"]: t for t in json.load(open(sys.argv[1]))}
+    tasks = {t["task_id"]: t for t in load_tasks(sys.argv[1])}
     out_path = sys.argv[2]
     if sys.argv[3] == "--reference":
         jobs = [dict(model="reference", task_id=t, sample=0,

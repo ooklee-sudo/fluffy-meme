@@ -18,7 +18,8 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 URL = "https://openrouter.ai/api/v1/chat/completions"
-N_SAMPLES, TEMP, MAX_TOK, WORKERS = 20, 0.8, 1024, 24
+N_SAMPLES = int(os.environ.get("N_SAMPLES", 20))
+TEMP, MAX_TOK, WORKERS = 0.8, 1024, 24
 INSTR = ("Complete the following Python function. Reply with the complete implementation, "
          "including any imports it needs, in a single python code block and nothing else.")
 KEY = os.environ.get("OPENROUTER_API_KEY", "sk-or-proxy-injected")  # the proxy injects the real key

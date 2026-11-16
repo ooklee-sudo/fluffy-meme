@@ -16,6 +16,13 @@ usage: python3 -I analyze.py TASKS_JSON RESULTS_JSONL.gz OUT_DIR --core MODEL ..
 import argparse
 import gzip
 import json
+import pickle as _pickle
+
+
+def load_tasks(path):
+    if path.endswith('.pkl'):
+        return _pickle.load(open(path, 'rb'))
+    return json.load(open(path))
 import math
 import os
 from collections import defaultdict
@@ -30,7 +37,7 @@ U_NP = np.array([0.01, 0.05, 0.25, 1.0])
 
 # ----------------------------------------------------------------------------- loading
 def load(tasks_path, results_path, models):
-    tasks = {t["task_id"]: t for t in json.load(open(tasks_path))}
+    tasks = {t["task_id"]: t for t in load_tasks(tasks_path)}
     sols = []
     seen = set()
     with gzip.open(results_path, "rt") as f:
