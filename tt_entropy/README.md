@@ -227,3 +227,33 @@ for s in 1 2 3 4 5 6; do python phase3.py --task facts --n-facts 8000 --task-see
 python analyze_h4.py test results/h4
 ```
 
+## 경제성 확인적 검정 (H5, H7, H10, 사전 등록: `PREREGISTRATION_H5_H7.md`)
+
+1. 답변 생성 (노트북, 브랜드 50개, 약 3시간):
+
+```bash
+python gen_replies.py --tenants-file h5_brands.txt --out results/h5_gen
+```
+
+2. drift 재검정 (노트북, 브랜드 35개, 약 2시간):
+
+```bash
+python drift.py --tenants $(grep -v '^#' h7_brands.txt | paste -sd, -) --out results/h7_drift
+```
+
+3. 결과를 push하면, LLM 판정(`judge.py`)은 OpenRouter가 연결된 클라우드 세션에서 실행합니다:
+
+```bash
+git add -f results/h5_gen results/h7_drift && git commit -m "Add H5 generations and H7 drift results" && git push
+```
+
+4. 분석:
+
+```bash
+python analyze_h5.py results/h5_gen results/h5_judge.jsonl
+```
+
+```bash
+python analyze_h7.py results/h7_drift
+```
+
