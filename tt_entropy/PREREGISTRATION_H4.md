@@ -94,3 +94,39 @@ which may come from the TT cores' random initialization rather than from learnin
 
 **Fixed learning rates for the main run: TT 1e-3, LoRA 1e-3** (`--lrs tt=1e-3,lora=1e-3`; LoRA r=32 uses
 LoRA's rate). These were committed before any test-set run.
+
+## 9. Results (added after the run, 2026-11-16)
+
+All six test fact sets ran with the learning rates of section 8; no deviations and no exclusions.
+
+| Fact set | LoRA r=16 accuracy | TT r=31 accuracy | Difference |
+| --- | --- | --- | --- |
+| 1 | 1.000 | 0.981 | -0.019 |
+| 2 | 1.000 | 0.987 | -0.013 |
+| 3 | 1.000 | 0.999 | -0.001 |
+| 4 | 0.999 | 0.997 | -0.002 |
+| 5 | 1.000 | 0.999 | -0.001 |
+| 6 | 1.000 | 0.831 | -0.169 |
+
+**Primary test.** Paired t-test on the accuracy difference (TT r=31 minus LoRA r=16): mean -0.034, 95% CI
+-0.104 to +0.036, p = 0.26, n = 6. **H4 is not supported at alpha = 0.05.** TT was better on 0 of 6 sets;
+the t-test is not significant mainly because TT failed badly on set 6, which widens the interval.
+
+**Secondary results:**
+
+- Wilcoxon signed-rank on the same differences: p = 0.031 (the smallest value possible with six pairs,
+  reached because every difference favors LoRA).
+- LoRA r=32 (23.2M parameters) vs TT r=31: mean accuracy difference TT - LoRA = -0.034; LoRA r=16 already
+  reaches 0.999 to 1.000, so LoRA needed no extra parameters to match or beat TT.
+- Training time per run: TT about 81 minutes, LoRA r=16 about 29 minutes.
+- Effective rank of the learned updates: LoRA r=16 about 2 to 3 in every module type; TT about 220 to
+  1,340. LoRA stored 8,000 facts almost perfectly with very low-rank updates, which contradicts the idea
+  that knowledge injection needs high-rank updates.
+
+**Interpretation.** The pilot's TT advantage (0.961 vs 0.823) did not replicate. The pilot used LoRA at the
+Phase 2 learning rate (3e-3) and 4,000 steps; with LoRA's rate tuned for this task (1e-3, chosen on a
+separate fact set) and 6,000 steps, LoRA was at least as accurate as TT on every test set, three times
+faster to train, and more stable. The pilot result is best explained by an untuned baseline.
+
+**Limits.** One base model, one TT layout, six fact sets, one training seed, and a task that both methods
+nearly solve at 6,000 steps (ceiling), which limits how large a difference could appear.
