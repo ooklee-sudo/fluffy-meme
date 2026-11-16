@@ -18,7 +18,7 @@ for el in list(body):
     if el.tag != qn("w:sectPr"): body.remove(el)
 cp = doc.core_properties
 for a in ("author", "last_modified_by", "title", "subject", "comments", "keywords", "category"): setattr(cp, a, "")
-cp.title = "Blinded manuscript"; cp.author = "Anonymous"; cp.last_modified_by = "Anonymous"
+cp.title = "Keeping Language-Model Legal Assistants Current After Statutory Amendments"; cp.author = "Ook Lee"; cp.last_modified_by = "Ook Lee"
 
 # ------------------------------------------------------------------ references, numbered by first citation
 REFS = {
@@ -108,8 +108,8 @@ def FIG(path, caption, alt, width=4.9):
 # ------------------------------------------------------------------ front matter
 para("Keeping Language-Model Legal Assistants Current After Statutory Amendments: Update Anomalies, Pattern Listing and the Economics of Maintenance", "Title_document")
 para("Update Anomalies in Language-Model Legal Systems", "Short Title")
-para("Anonymous Author(s)", "Authors")
-para("Anonymous Institution", "Affiliation")
+para("Ook Lee", "Authors")
+para("Department of Information System, Hanyang University, Seoul, Korea, ooklee@hanyang.ac.kr", "Affiliation")
 P_ABS = ("Organizations that deploy language-model assistants for legal and compliance questions have to keep them current when statutes change, but a model keeps no record of which provisions depend on which. "
  "We examine what an amendment does to a model that has already learned the earlier text. Our data are 171 real amendments to 15 United Kingdom Acts, 166 unchanged control provisions, and three open models from two families (Qwen2.5-7B, Qwen3-8B-Base and Olmo-3-7B). "
  "Fine-tuning on the listed amendments alone damaged unrelated provisions, and an easy control test understated the damage by a factor of three to six. "
@@ -122,7 +122,7 @@ para(P_ABS, "Abstract")
 para("CCS CONCEPTS • Information systems → Information systems applications; • Computing methodologies → Natural language processing; • Applied computing → Law.", "CCSDescription")
 para("Additional Keywords and Phrases: statutory amendment, update anomaly, knowledge editing, legal information systems, maintenance economics, large language models", "KeyWords")
 para("ACM Reference Format:", "ACMRefHead")
-para("Anonymous Author(s). 2026. Keeping Language-Model Legal Assistants Current After Statutory Amendments: Update Anomalies, Pattern Listing and the Economics of Maintenance. ACM Trans. Manag. Inf. Syst. (2026). Manuscript submitted for review.", "ACMRef")
+para("Ook Lee. 2026. Keeping Language-Model Legal Assistants Current After Statutory Amendments: Update Anomalies, Pattern Listing and the Economics of Maintenance. ACM Trans. Manag. Inf. Syst. (2026). Manuscript submitted for review.", "ACMRef")
 
 # ------------------------------------------------------------------ 1 Introduction
 bank = A["bank"]
@@ -288,7 +288,7 @@ P("When a statute is amended, drafting practice lists the consequential amendmen
 
 # ------------------------------------------------------------------ Declarations, references, appendices
 para("DECLARATIONS", "AckHead")
-para("Funding: none. Competing interests: none. Use of large language models: a large language model was used to assist with drafting and editing the text and with writing and running the experiment code. The authors checked the content and the results and take full responsibility for the paper. Data and code availability: the fact banks, scripts and results are withheld from this blinded version and can be provided to the editor and reviewers on request. Statutory text quoted in the fact banks was retrieved from legislation.gov.uk and is Crown copyright, reproduced under the Open Government Licence v3.0; its terms should be checked before redistribution. Nothing in the paper is legal advice.", "AckPara")
+para("Funding: none. Competing interests: none. Use of large language models: a large language model was used to assist with drafting and editing the text and with writing and running the experiment code. The authors checked the content and the results and take full responsibility for the paper. Data and code availability: the fact banks, scripts and results are available from the author on request. Statutory text quoted in the fact banks was retrieved from legislation.gov.uk and is Crown copyright, reproduced under the Open Government Licence v3.0; its terms should be checked before redistribution. Nothing in the paper is legal advice.", "AckPara")
 para("REFERENCES", "ReferenceHead")
 REF_IDX = len(doc.paragraphs)  # references are inserted at the end after all text is written (numbers fixed by first citation)
 
