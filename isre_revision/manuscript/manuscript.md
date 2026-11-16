@@ -34,7 +34,7 @@ The second result speaks to what is particular about AI-generated code. As langu
 
 The same quantity matters for liability. A developer who bears only part of the loss from shipped defects verifies too little, as in any model of moral hazard. When detection is heavy-tailed, weak liability also reduces how much she is willing to pay for a better tool, because that willingness to pay scales with her share of the loss raised to the power ε (Proposition 6). Developer liability and tool quality are then complements. This channel disappears when detection is homogeneous, which separates our setting from analyses of software liability in which vendor quality and user care act as substitutes (August and Tunca 2011). A vendor with market power under-supplies quality, and the shortfall grows as developer liability weakens, but only to the extent that detectability varies across defects (Corollary 3).
 
-Finally, we measure the detection technology. We ran 25,120 solutions written by eight language models for 157 HumanEval+ tasks against the benchmark's extended test suites. Detectability turns out to be very uneven. A quarter of the defects break at least 85 percent of a task's test inputs and are found almost immediately, while about a tenth break fewer than half of one percent and survive most of the suite. The estimated tail parameter is k = 0.66, with a 95 percent interval of 0.56 to 0.82, which implies that about 40 percent of a proportional quality gain would be absorbed by reduced verification. The estimate is stable across reasonable definitions of a defect and orders of testing. A nonparametric estimate of the survivor CV, which uses no distributional assumption, puts the elasticity higher still, at about 0.7, at the levels of testing a developer is likely to reach. We then extend the panel to 25 models. More capable models make defects that are harder to detect: the elasticity of detectability with respect to defect intensity is η̂ = 0.43 (95 percent interval 0.24 to 0.64). This is well below the threshold at which improvements would stop reaching users, but it is far from zero, and it absorbs a further 17 percentage points of a proportional quality gain. Taken together, less than half of the reduction in defects that a better model achieves on a benchmark survives as fewer shipped defects in our calibration.
+Finally, we measure the detection technology. We ran 25,120 solutions written by eight language models for 157 HumanEval+ tasks against the benchmark's extended test suites. Detectability turns out to be very uneven. A quarter of the defects break at least 85 percent of a task's test inputs and are found almost immediately, while about a tenth break fewer than half of one percent and survive most of the suite. The estimated tail parameter is k = 0.66, with a 95 percent interval of 0.56 to 0.82, which implies that about 40 percent of a proportional quality gain would be absorbed by reduced verification. The estimate is stable across reasonable definitions of a defect and orders of testing, and the heavy tail reappears on a second benchmark, MBPP+. A nonparametric estimate of the survivor CV, which uses no distributional assumption, puts the elasticity higher still, at about 0.7, at the levels of testing a developer is likely to reach. We then extend the panel to 25 models. More capable models make defects that are harder to detect: the elasticity of detectability with respect to defect intensity is η̂ = 0.43 (95 percent interval 0.24 to 0.64). This is well below the threshold at which improvements would stop reaching users, but it is far from zero, and it absorbs a further 17 percentage points of a proportional quality gain. Taken together, less than half of the reduction in defects that a better model achieves on a benchmark survives as fewer shipped defects in our calibration.
 
 The paper contributes to three conversations in information systems research. For work on human–AI collaboration and over-reliance, it replaces a directional prediction with a magnitude tied to a measurable property of AI errors, and it identifies a channel, the composition of errors, through which better AI can worsen outcomes without any behavioral bias. For work on the economics of software quality and liability, it shows that whether liability rules affect investment in tool quality depends on the detection technology. For practice, it suggests that organizations should value AI coding tools by what they deliver after verification rather than by their accuracy on benchmarks.
 
@@ -267,7 +267,27 @@ Table: Table 3. Sensitivity of the tail index $k$ and the implied elasticity $\v
 
 ![Figure 2. Implied elasticity of residual defects with respect to tool quality under alternative defect definitions and test orders. Markers are point estimates and bars are 95% task-bootstrap intervals; the dotted line marks the baseline.](fig2.png){width=5.8in}
 
-## 6.6 What the calibration does and does not show
+## 6.6 A second benchmark
+
+To check that the heavy tail is not a feature of one benchmark, we repeated the calibration for the eight core models on MBPP+ (Austin et al. 2021, Liu et al. 2023), a separate set of short Python tasks with expanded test suites. After excluding six tasks with non-standard tests and seven whose reference solutions fail in our harness, 365 tasks remain, with a median of 108 test inputs. Each model wrote 10 solutions per task, for 29,200 solutions and 12,734 defects. Table 4 compares the two benchmarks.
+
+Table: Table 4. Detection technology on two benchmarks, core panel of eight models. Intervals are 95% task-bootstrap intervals.
+
+| | HumanEval+ | MBPP+ |
+|:------------------------------------------|:--------------------:|:--------------------:|
+| Tasks; median test inputs per task | 157; 985 | 365; 108 |
+| Solutions; defects | 25,120; 8,775 | 29,200; 12,734 |
+| Log-scale SSE, exponential / gamma fit | 8.7 / 1.2 | 5.2 / 0.9 |
+| Gamma shape $k$ | 0.66 (0.56, 0.82) | 0.87 (0.77, 1.04) |
+| $\varepsilon=1/(1+k)$ | 0.60 (0.55, 0.64) | 0.53 (0.49, 0.57) |
+| Nonparametric $\hat\varepsilon(0.01)$ | 0.73 (0.67, 0.78) | 0.71 (0.67, 0.74) |
+| Nonparametric $\hat\varepsilon(0.05)$ | 0.69 (0.62, 0.74) | 0.65 (0.61, 0.69) |
+| Tail-slope $k$, $u\in[0.01,0.1]$ | 0.37 (0.32, 0.44) | 0.38 (0.34, 0.44) |
+| $\hat\eta$, eight core models | 0.59 (0.31, 0.91) | 0.49 (0.24, 0.76) |
+
+The main findings carry over. Detection is again heavy-tailed, and the gamma form fits far better than the exponential. The gamma shape is somewhat larger on MBPP+, so the gamma summary implies a smaller elasticity, 0.53, and an offset of 47 percent. The two estimators that use the lower tail directly, which Proposition 2 says is what matters, are almost identical across benchmarks: the nonparametric elasticity at low effort is about 0.7 on both, and the tail-slope estimate of $k$ is 0.37 on one and 0.38 on the other. Stronger models also make harder-to-detect defects on MBPP+, with an estimate of $\eta$ close to the one on HumanEval+. The difference in the gamma fit reflects the smaller MBPP+ suites. With about a hundred inputs per task, no defect can fail on fewer than about one percent of them, and a quarter of the defects fail on every input, so the coarser suites compress the part of the distribution that the gamma fit is most sensitive to. Both benchmarks consist of single functions, and how far the tail extends to code at the scale of a repository remains open (Section 8).
+
+## 6.7 What the calibration does and does not show
 
 The estimates describe how an automated test suite detects defects in code written by language models. They measure the detection technology, which the model takes as given, and they are a reasonable stand-in for the hazard a developer faces when she verifies. They do not measure how developers verify. Real developers do not run tests in random order, and the sensitivity analysis shows that order matters at the margin. The benchmark consists of short functions with sharp specifications, and the tail may be thicker or thinner in production code. And $\varepsilon\approx 0.6$ is the implication of Proposition 2 only under linear verification cost. Convex cost would raise the elasticity, so we regard 0.6 as a benchmark for the technology, not as a prediction of behavior.
 
@@ -307,6 +327,8 @@ Arora A, Caulkins JP, Telang R (2006) Sell first, fix later: Impact of patching 
 August T, Tunca TI (2006) Network software security and user incentives. *Management Sci.* 52(11):1703–1720.
 
 August T, Tunca TI (2011) Who should be responsible for software security? A comparative analysis of liability policies in network environments. *Management Sci.* 57(5):934–959.
+
+Austin J, Odena A, Nye M, Bosma M, Michalewski H, Dohan D, Jiang E, Cai C, Terry M, Le Q, Sutton C (2021) Program synthesis with large language models. Preprint, submitted August 16, arXiv:2108.07732.
 
 Austin RD (2001) The effects of time pressure on quality in software development: An agency model. *Inform. Systems Res.* 12(2):195–207.
 
@@ -581,6 +603,21 @@ Per-model estimates are precise for the weaker models, which account for most of
 
 ![Figure EC.2. Nonparametric estimate of the elasticity, $\hat\varepsilon(u)=\widehat{\mathrm{CV}}_u^2/(1+\widehat{\mathrm{CV}}_u^2)$, against the fraction of the suite executed, with 95% task-bootstrap intervals. The dotted line is the gamma-fit value.](figEC2.png){width=5.8in}
 
+**MBPP+.** We used the EvalPlus release of MBPP+ (Austin et al. 2021, Liu et al. 2023), 378 tasks. Six tasks call a helper function or use a non-literal value in their tests and were excluded, and seven (Mbpp/2, /579, /599, /737, /769, /787, /794) were excluded because their reference solutions fail in our harness: two return tuples built from sets, whose element order differs from the stored answers; three return a regular-expression match object where the stored answer is a Boolean; one times out; and one produces a single output that differs from the stored answer. Inputs are stored with their Python types, so tuples, sets, and complex numbers are passed to candidate functions as they appear in the benchmark. The prompt follows EvalPlus: the task description and the first example assertion inside a docstring, preceded by the same instruction as for HumanEval+. Each core model wrote 10 solutions per task. The harness, defect definition, and analysis are otherwise identical. The rank correlation between $k$ and defect intensity across the eight models is -0.55.
+
+Table: Table EC.4. MBPP+: quality and detection tail by model (365 tasks, 10 samples per task). Intervals are 95% task-bootstrap intervals (400 resamples).
+
+| Model | Pass rate | Defects per sample | Defects | $k$ (95% CI) | $1/(1+k)$ |
+|:-----------------------------|-------:|---------:|---------:|:------------------:|------:|
+| Claude Haiku 5.5 | 0.845 | 0.205 | 747 | 1.02 (0.76, 1.47) | 0.50 |
+| Qwen3 Coder 30B-A3B | 0.761 | 0.315 | 1,148 | 0.95 (0.73, 1.28) | 0.51 |
+| GPT-4o mini | 0.735 | 0.342 | 1,250 | 0.77 (0.63, 1.05) | 0.56 |
+| Gemma 3 12B | 0.730 | 0.392 | 1,432 | 1.11 (0.92, 1.46) | 0.47 |
+| Mistral Small 3.2 24B | 0.712 | 0.403 | 1,472 | 0.97 (0.82, 1.20) | 0.51 |
+| Ministral 3B | 0.619 | 0.539 | 1,966 | 0.88 (0.73, 1.11) | 0.53 |
+| Llama 3.1 8B Instruct | 0.571 | 0.607 | 2,215 | 0.91 (0.78, 1.07) | 0.52 |
+| Llama 3.2 3B Instruct | 0.454 | 0.686 | 2,504 | 0.74 (0.66, 0.87) | 0.57 |
+
 # EC.5 Sensitivity Analysis
 
 Each variant in Table 3 changes one choice relative to the baseline. In "whole sample counted as one defect," all failing inputs of a solution form a single defect. In "subtle defects only," defects that fail at least half of a task's inputs, and load errors, are dropped. In "drop samples with timeouts or load errors," any solution that timed out or failed to load is dropped. In the three order variants, tests are no longer run in random order. A defect is found at the first failing input in the dataset's own order ("dataset order"), in order of increasing length of the input's printed representation ("short inputs first"), or in order of decreasing length ("long inputs first").
@@ -593,7 +630,7 @@ Public data on pull requests written by AI coding agents seem a natural place to
 
 **Design.** Claude Code, the agent with the most pull requests (172,597), records the model it used in commit trailers, which identifies the model for 114,085 pull requests whose commits all name a single model. The share of identified pull requests naming one particular model rose from 0.9 percent in the 21 days before February 5, 2026 to 79.5 percent in the 21 days after, and most of the rise took place within two days (1.5 percent on February 3, 18.0 percent on February 5, and 83.2 percent on February 7). We read this as a change in the default model, although the data cannot confirm it. We compare outcomes within the same repositories before and after the change, with repository fixed effects and standard errors clustered by repository, and we also estimate the jump at the change date with separate linear trends on each side. The sample has 35,636 pull requests in 1,431 repositories.
 
-Table: Table EC.4. Pull-request outcomes before and after the change in the default model (21-day windows, repository fixed effects, standard errors clustered by repository).
+Table: Table EC.5. Pull-request outcomes before and after the change in the default model (21-day windows, repository fixed effects, standard errors clustered by repository).
 
 | Outcome | Pre-period mean | Post − pre (SE) | Jump with trends (SE) | $p$ (jump) |
 |:--|--:|--:|--:|--:|
@@ -605,9 +642,9 @@ Table: Table EC.4. Pull-request outcomes before and after the change in the defa
 | Any test file changed | 0.440 | 0.013 (0.009) | 0.005 (0.013) | 0.70 |
 | Test share of added lines | 0.202 | 0.017 (0.007) | 0.006 (0.009) | 0.48 |
 
-Neither specification shows a detectable change in human review, change requests, merging, pull request size, or test code. Simple before-and-after differences for the share of test code (+1.7 percentage points) and for log size (−0.12) are statistically significant, but placebo dates in the weeks before and after produce differences of similar size (Table EC.5), and the estimates disappear once trends are removed. The 95 percent interval for the jump in the probability of any human review is about ±1.9 points on a base of 26 points, so declines of more than a few points are ruled out and smaller ones are not.
+Neither specification shows a detectable change in human review, change requests, merging, pull request size, or test code. Simple before-and-after differences for the share of test code (+1.7 percentage points) and for log size (−0.12) are statistically significant, but placebo dates in the weeks before and after produce differences of similar size (Table EC.6), and the estimates disappear once trends are removed. The 95 percent interval for the jump in the probability of any human review is about ±1.9 points on a base of 26 points, so declines of more than a few points are ruled out and smaller ones are not.
 
-Table: Table EC.5. True and placebo dates.
+Table: Table EC.6. True and placebo dates.
 
 | Date | Any review: post − pre (SE) | Any review: jump (SE) | Test share: post − pre (SE) | Test share: jump (SE) |
 |:--|--:|--:|--:|--:|
