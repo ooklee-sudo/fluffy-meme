@@ -107,7 +107,6 @@ def FIG(path, caption, alt, width=4.9):
 
 # ------------------------------------------------------------------ front matter
 para("Keeping Language-Model Legal Assistants Current After Statutory Amendments: Update Anomalies, Pattern Listing and the Economics of Maintenance", "Title_document")
-para("Update Anomalies in Language-Model Legal Systems", "Short Title")
 para("Ook Lee", "Authors")
 para("Department of Information System, Hanyang University, Seoul, Korea, ooklee@hanyang.ac.kr", "Affiliation")
 P_ABS = ("Organizations that deploy language-model assistants for legal and compliance questions have to keep them current when statutes change, but a model keeps no record of which provisions depend on which. "
@@ -314,7 +313,7 @@ for k in CITED:
     ref_heading = [q for q in doc.paragraphs if q.text == "REFERENCES"][0]
     ref_heading._p.addnext(p._p) if k == CITED[0] else prev._p.addnext(p._p)
     prev = p
-out = "/home/user/fluffy-meme/tmis/TMIS_manuscript_blinded.docx"
+out = "/home/user/fluffy-meme/tmis/TMIS_manuscript.docx"
 os.makedirs(os.path.dirname(out), exist_ok=True); doc.save(out)
 txt = " ".join(p.text for p in doc.paragraphs)
 print("saved", out, "| words:", len(txt.split()), "| tables:", NT[0], "| figures:", NF[0], "| refs:", len(CITED))
