@@ -58,7 +58,7 @@ By the standard most often reported, the model labels are reliable. The two orig
 
 Agreement with the human labels tells a different story (Panel B). Every model label set reaches only $\kappa = 0.44$ to 0.49, and Gwet's prevalence-robust AC1 \citep{gwet2008} gives nearly the same values. The disagreement is concentrated in one class. The humans label 28 posts escalation; each model run labels between 63 and 85. Escalation precision is therefore 0.29 to 0.35 while recall is 0.79 to 0.93: the models rarely miss a human escalation post but add many others. Escalation is also where human judgment is least settled: when the third coder replaced the investigator's adjudications, the human escalation class shrank from 41 to 28 posts.
 
-A natural objection is that the original model never saw the codebook. Before the v2 runs, we fixed a rule: the gap would count as a prompt problem if they reached $\kappa \geq 0.60$ and escalation precision $\geq 0.70$. No run comes close. The two claude-sonnet-5-5 runs, which differ from the original only in the prompt, agree with the humans at $\kappa = 0.44$ and 0.45, against 0.48 for the original. We tested one vendor's model family with default sampling; other configurations may do better, but showing that would require the same validation. Agreement between runs certifies that a model gives the same answer twice, not that the answer is one a human reader would give.
+A natural objection is that the original model never saw the codebook. Before the v2 runs, we fixed a rule: the gap would count as a prompt problem if they reached $\kappa \geq 0.60$ and escalation precision $\geq 0.70$. No run comes close. The two claude-sonnet-5-5 runs, which differ from the original only in the prompt, agree with the humans at $\kappa = 0.44$ and 0.45, against 0.48 for the original. Agreement between runs certifies that a model gives the same answer twice, not that the answer is one a human reader would give.
 
 \begin{table}[t]
 \centering
@@ -104,7 +104,7 @@ Because every label set is applied to the same 95 events, the estimates differ o
 
 This is what produced the original one-sided finding. Under model~1, the escalation response cannot be distinguished from zero (0.17\%, $p = 0.53$); under the v2 majority, it is 0.32\% ($p = 0.047$). Whether escalation posts ``matter'' depends on which model run one uses.
 
-The comparison establishes less than it may seem. With ten human escalation events, no human--model difference is distinguishable from zero; the largest, for model~1, is 0.28 points (95\% CI $-0.07$ to 0.69), and the difference between a significant and a non-significant estimate is not itself a test \citep{gelman2006}. The human escalation estimate is also fragile (SI Table S6). What the evidence supports is a pattern: the shortfall has the same sign under all five model label sets and leaves the de-escalation estimate untouched, which suggests a systematic feature of which posts the models place in the escalation class.
+With ten human escalation events, no human--model difference is distinguishable from zero; the largest, for model~1, is 0.28 points (95\% CI $-0.07$ to 0.69), and the difference between a significant and a non-significant estimate is not itself a test \citep{gelman2006}. The human escalation estimate is also fragile (SI Table S6). What the evidence supports is a pattern: the shortfall has the same sign under all five model label sets and leaves the de-escalation estimate untouched, which suggests a systematic feature of which posts the models place in the escalation class.
 
 \begin{figure}[t]
 \centering
@@ -131,7 +131,7 @@ where $\pi(h \mid e)$ is the share of the model's class-$e$ events that humans l
 \end{equation}
 Equation~(\ref{eq:mixture}) is an accounting identity that requires no assumption about the error process, but it makes concrete the result that misclassification bias is a weighted sum of outcome gaps between classes \citep{aigner1973, mahajan2006, lewbel2007}.
 
-Table~\ref{tab:decomp} reports every term for the escalation class. Under model~1, the gap of $-0.28$ points divides into $+0.02$ from selection within the class, $-0.24$ from posts that humans label de-escalation, $+0.02$ from mixed posts, and $-0.08$ from other posts. Under the v2 majority, the gap of $-0.13$ divides into 0.00, $-0.16$, $+0.09$, and $-0.06$. Three results follow.
+Table~\ref{tab:decomp} reports every term for the escalation class. Under model~1, the gap of $-0.28$ points divides into $+0.02$ from selection within the class, $-0.24$ from posts that humans label de-escalation, $+0.02$ from mixed posts, and $-0.08$ from other posts. Under the v2 majority, the gap of $-0.13$ divides into 0.00, $-0.16$, $+0.09$, and $-0.06$.
 
 First, the shortfall is not a weaker response among correctly labelled posts: events that both humans and models call escalation move oil by 0.52\% and 0.44\%, against 0.45\% for the human class.
 
@@ -180,7 +180,7 @@ Prediction-powered inference \citep{angelopoulos2023} and design-based supervise
 %======================================================================
 \section{Recommendations and Limits}
 
-Our case suggests four reporting practices for research that carries LLM labels into downstream inference.
+We suggest four reporting practices.
 
 \begin{enumerate}
 \item \textbf{Report validity by class, not only consistency.} Report agreement between runs as reliability, and agreement with human coders for each class, with a prevalence-robust measure alongside $\kappa$ and with precision and recall for the classes analysed.
