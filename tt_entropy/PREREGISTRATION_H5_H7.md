@@ -81,7 +81,7 @@ for the corresponding exploratory analyses:
 
 Any change after the runs start will be listed here with its reason and date.
 
-None for H5 and H10 (judging ran 2026-11-17). All 6,000 primary-judge and 373 second-judge judgments were
+None for H5, H10 or H7 (judging and the H7 run on 2026-11-17). All 6,000 primary-judge and 373 second-judge judgments were
 obtained; no brand or judgment was excluded. Cost US$2.47.
 
 ## 8. Results
@@ -111,6 +111,13 @@ Personalizing the 17 brands with the lowest response type-token ratio captures 4
 relative gain, against 34.0% for a random 17 (oracle 46.2%); permutation p < 0.0001 (no random draw of 20,000
 reached it).
 
-### H7
+### H7 (supported)
 
-Pending (laptop run).
+Mean weekly slope of relative gain over weeks 2-8: stale LoRA r=1 adapter -0.0147, RAG-8 with a weekly refreshed
+index -0.0026. Per-brand difference (adapter minus RAG): median -0.0104; the adapter declines faster for 32 of
+35 brands; Wilcoxon p = 1.5e-8. H0 is rejected: the adapter becomes obsolete faster than refreshed retrieval.
+
+Secondary: in week 8 the stale adapter keeps 78.4% of its in-period gain; recovery R (stale / retrained adapter)
+= 0.885; the stale adapter is still ahead of refreshed RAG for 29 of 35 brands; linear horizon over which it stays
+ahead, from week 2: 12.2 weeks. All four values replicate exploratory E4 (79%, 0.887, 26 of 30, about 11-12
+weeks) on brands not used there.
