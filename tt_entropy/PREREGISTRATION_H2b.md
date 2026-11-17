@@ -50,4 +50,39 @@ python analyze_h2b.py results/h2b_main results/h2b_tt_d3 results/h2b_tt_d5
 
 ## 6. Deviations
 
-Any change after the runs start will be listed here with its reason and date.
+None (runs on 2026-11-17). The QuanTA tuning chose lr 1e-3, an interior point of the grid (mean dev relative
+gain: 3e-4 0.448, 1e-3 0.453, 3e-3 0.426, 1e-2 0.324), so the grid was not extended. No brand was excluded.
+
+## 7. Results
+
+### H2b (supported: QuanTA is worse)
+
+`quanta:4` minus `lora:4`: QuanTA ahead for 0 of 16 brands; median -0.0184; Hodges-Lehmann -0.0181 [-0.0201,
+-0.0148]; Wilcoxon p = 3.1e-5 (the smallest attainable with 16 brands). H0 is rejected, against QuanTA, although
+it had 16% more parameters.
+
+| config | parameters | mean relative gain | seconds per run |
+|---|---|---|---|
+| lora:1 | 136,192 | 0.421 | 45 |
+| lora:4 | 544,768 | 0.419 | 46 |
+| quanta:5 | 215,040 | 0.401 | 110 |
+| quanta:4 | 634,368 | 0.401 | 82 |
+| tt:2 (4 cores) | 24,640 | 0.333 | 57 |
+| tt:2, 3 cores | 53,760 | 0.371 | 54 |
+| tt:2, 5 cores | 14,560 | 0.312 | 61 |
+| tt:10 (4 cores) | 472,640 | 0.399 | 59 |
+| tt:10, 3 cores | 806,400 | 0.400 | 54 |
+| tt:10, 5 cores | 269,920 | 0.393 | 63 |
+
+Secondary:
+- `quanta:5` minus `lora:1`: ahead for 0 of 16, HL -0.0197 [-0.0246, -0.0150].
+- TT layout: at bond dimension 2, fewer cores help (3 vs 4 cores: +0.039, 15 of 16 brands; 5 cores: -0.022,
+  0 of 16), largely because fewer cores means more parameters at the same bond dimension. At bond dimension
+  10 the layout matters little (3 cores +0.002, n.s.; 5 cores -0.006).
+- The best of all eight TT and QuanTA configurations per brand, picked on the evaluation set itself (an
+  optimistic choice), is still below `lora:1` for 15 of 16 brands (median -0.015).
+- QuanTA trains 1.8-2.4 times slower than LoRA per run on this laptop GPU.
+
+The H2 result is therefore not specific to our TT implementation or to its 4-core layout: a published
+tensor-network adapter, ported from its authors' code and tuned by the same rule, is also below LoRA r=1 on
+every brand.
