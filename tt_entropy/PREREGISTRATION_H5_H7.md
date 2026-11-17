@@ -80,3 +80,37 @@ for the corresponding exploratory analyses:
 ## 7. Deviations
 
 Any change after the runs start will be listed here with its reason and date.
+
+None for H5 and H10 (judging ran 2026-11-17). All 6,000 primary-judge and 373 second-judge judgments were
+obtained; no brand or judgment was excluded. Cost US$2.47.
+
+## 8. Results
+
+### H5 (supported)
+
+Per-brand win rate of LoRA r=1 over RAG-8 on "overall" (primary judge): mean 0.565, above 0.5 for 33 of 50 brands
+and below for 13; Wilcoxon p = 0.0006. H0 is rejected: the judge prefers the adapter's replies.
+
+Secondary (primary judge, 40 messages x 50 brands per pair):
+
+| pair | overall | voice | helpfulness | send as is (first / second) | unsupported claims (first / second) |
+|---|---|---|---|---|---|
+| LoRA r=1 vs RAG-8 | 0.565 (p = 0.0006) | 0.579 (p < 0.0001) | 0.500 (p = 0.98) | 0.546 / 0.422 | 0.334 / 0.453 |
+| VeRA r=256 vs RAG-8 | 0.588 (p < 0.0001) | 0.588 (p < 0.0001) | 0.497 (p = 0.91) | 0.581 / 0.414 | 0.299 / 0.464 |
+| LoRA r=1 vs none | 0.758 (50/50 brands) | 0.959 | 0.634 | 0.605 / 0.199 | 0.321 / 0.355 |
+
+The advantage over retrieval is in voice, not helpfulness, and retrieval replies more often contain unsupported
+specifics (copied from retrieved replies to other customers). The second judge (`openai/gpt-5-mini`) agreed with
+the primary judge on 75.1% of 373 primary comparisons (Cohen's kappa 0.52) but put LoRA's win rate at only
+0.512, so the size of the quality advantage depends on the judge; human ratings (H6) are needed before the
+quality claim is made strongly.
+
+### H10 (supported)
+
+Personalizing the 17 brands with the lowest response type-token ratio captures 45.4% of the total LoRA r=1 NLL
+relative gain, against 34.0% for a random 17 (oracle 46.2%); permutation p < 0.0001 (no random draw of 20,000
+reached it).
+
+### H7
+
+Pending (laptop run).
