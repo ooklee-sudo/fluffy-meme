@@ -4,14 +4,21 @@
 
 ## A. 원 자료에서 채워야 할 숫자
 
-| # | 위치 | 내용 | 비고 |
+원 원고 PDF의 Table 2와 Table 4에서 확인해 모두 채웠습니다 (2026-11-17).
+
+| # | 위치 | 채운 값 | 출처 |
 |---|---|---|---|
-| A1 | 3절 본문, Table 1 Panel B | v2 각 실행(opus, sonnet, haiku, sonnet repeat, majority)의 escalation 라벨 수 | 원 원고 Table 2의 "Escalation predicted" 열. PDF 추출에서 누락. 본문에는 "73–85"로만 나옴 |
-| A2 | 3절 본문 | escalation 라벨 수 범위 `[63]`–`[85]` | 63은 model 1(22/63). 85는 v2 최댓값으로 추정 |
-| A3 | Table 1 Panel A | Model 1과 두 번째 실행의 κ = 0.74가 계산된 게시물 수 | 원고에는 "human-validation sample"로만 표기 |
-| A4 | Table 2 | Human mixed / other 사건 수: Model 1 = 7 / 3, v2 majority = 12 / 5 | **역산한 값.** 식 (2)의 각 항과 평균이 모두 원고와 일치하지만 원 자료로 확인 필요 |
-| A5 | 6절 | DSL에 쓴 "five model runs"가 어느 실행인지 | model 1 + v2 4회인지, model 2 포함 여부 |
-| A6 | 2절 | 사람 코더가 191개 전체를 codebook v2로 코딩했는지 | 원고상 2라운드(61개)와 3라운드(130개) 모두 v2. 사람 간 κ = 0.67은 원고 Table 1의 191개 값 |
+| A1 | Table 1 Panel B, escalation 라벨 수 | v2 opus 78, v2 sonnet 85, v2 haiku 76, v2 sonnet repeat 73, v2 majority 77 | 원 원고 Table 2 "Escalation predicted" |
+| A2 | 3절 본문 범위 | 63–85 (model 1 63, v2 최댓값 85) | 같음 |
+| A3 | Table 1 Panel A, κ = 0.74의 게시물 수 | 150 (1라운드 검증 표본; 표 주석에 명시) | 원 원고 2.2절, Appendix C |
+| A4 | Table 2 mixed / other 사건 수 | Model 1 = 7 / 3, v2 majority = 12 / 5 (역산값과 일치) | 원 원고 Table 4 |
+
+남은 확인 사항:
+
+| # | 위치 | 내용 |
+|---|---|---|
+| A5 | 6절 | DSL에 쓴 "five model runs"가 model 1 + v2 4회인지 (model 2 포함 여부) |
+| A6 | 2절 | 사람 코더가 191개 전체를 codebook v2로 코딩했는지 |
 
 ## B. SI 번호 (SI를 만든 뒤 채우기)
 
