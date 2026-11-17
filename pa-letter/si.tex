@@ -72,7 +72,7 @@ The revision was written after the first round showed moderate agreement ($\kapp
 \item[OTHER:] covers domestic politics, attacks on the media or critics without a stance on the conflict, boasts without a stance on what happens next, polls, unrelated topics, and re-posts and bare links with no stated stance in the visible text; if the visible text quotes a headline with a clear stance, the stance of that headline is coded.
 \end{description}
 
-\noindent Eighteen of the 61 second-round posts had been coded in the first round and provide a test--retest comparison. Codebook v2 was written after the investigators knew where the model had gone wrong, and it was fixed before the second- and third-round labels were returned. This is a researcher degree of freedom; Table~S6 partly addresses it by repeating the main result on posts on which the coders agreed before adjudication.
+\noindent Eighteen of the 61 second-round posts had been coded in the first round and provide a test--retest comparison. Codebook v2 was written after the investigators knew where the model had gone wrong, and it was fixed before the second- and third-round labels were returned. This is a researcher degree of freedom; Table~S7 partly addresses it by repeating the main result on posts on which the coders agreed before adjudication.
 
 %======================================================================
 \section{Human Validation by Round and Investigator-Adjudicated Labels}
@@ -195,7 +195,32 @@ Human estimate $\mu_H(e)$ & $+0.94$ & $+0.94$ \\
 \end{minipage}
 \end{figure}
 
-\paragraph{Validated escalation events per draw.} \chk{Report the distribution of the number of human escalation events in the validated subset at each share (the main text states an average of three at 30\%).}
+\paragraph{Validated escalation events per draw.} Table~S4 gives the number of human escalation and de-escalation events that a random subset contains at each validated share. Because each subset is a simple random sample of posts drawn without replacement, and each of the ten human escalation events in the 95-event frame is a distinct post among the 191, the count follows a hypergeometric distribution, which we compute exactly. At 10\%, a third of the subsets contain no escalation event at all, so the correction must rest entirely on the model labels; at 30\%, the median subset contains three, and almost two in five contain two or fewer. Even at 50\%, the validated escalation sample is about five events. This is why the variance cost of correction is large for escalation but not for de-escalation.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Number of Human-Labelled Events in a Random Validated Subset}
+\label{tab:valcount}
+\begin{tabular}{lccccccc}
+\toprule
+ & & \multicolumn{5}{c}{Escalation events (of 10)} & De-escalation (of 32) \\
+\cmidrule(lr){3-7}\cmidrule(lr){8-8}
+Share & Posts & Mean & Median (IQR) & 90\% range & $P(0)$ & $P(\leq 2)$ & Mean \\
+\midrule
+10\% & 19 & 0.99 & 1 (0--2) & 0--3 & 0.34 & 0.94 & 3.2 \\
+20\% & 38 & 1.99 & 2 (1--3) & 0--4 & 0.10 & 0.68 & 6.4 \\
+30\% & 57 & 2.98 & 3 (2--4) & 1--5 & 0.03 & 0.38 & 9.5 \\
+40\% & 76 & 3.98 & 4 (3--5) & 2--6 & 0.005 & 0.16 & 12.7 \\
+50\% & 95 & 4.97 & 5 (4--6) & 2--7 & 0.001 & 0.05 & 15.9 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Exact hypergeometric distribution for a simple random sample of the stated number of posts from 191, of which 10 are human escalation events and 32 human de-escalation events in the 95-event frame. The 90\% range runs from the 5th to the 95th percentile. The figures match the simulation if each draw validates a fixed number of posts; with 96 posts at 50\%, the mean is 5.03.
+\end{minipage}
+\end{table}
 
 %======================================================================
 \section{Event Sample, Market Result, and Robustness}
@@ -348,7 +373,6 @@ Post $-$ pre excess at 30 minutes & S6.8 & Amended; borderline in robustness \\
 Placebo and pre-post drift & S6.6--S6.7 & Planned before placebo data were analysed; applied to human labels after the sample was fixed \\
 Adjudication split; two-sided and day-clustered restatement & 4; S6.5 & Planned after the round-3 review, before computation \\
 Robustness variants & S6.8 & Planned after the baseline was known; unadjusted \\
-Second case: tariff tweets & S8 & Pre-specified tests on model labels; human validation added later \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -369,7 +393,6 @@ Placebo and drift & ANALYSIS\_PLAN\_H5C\_H8.md & Placebo exceeded; pre-post drif
 Robustness of headline & hf/ANALYSIS\_PLAN\_ROBUST\_HEADLINE.md & Direction robust in every variant; post $-$ pre excess borderline and window-dependent \\
 Codebook-v2 re-labelling & hf/ANALYSIS\_PLAN\_V2RELABEL.md & $\kappa$ 0.44--0.49 against final labels (no improvement); escalation attenuated under all model label sets \\
 Independent third coder & hf/ANALYSIS\_PLAN\_THIRD\_CODER.md & Controls $\kappa = 0.45$ (above threshold 0.40); 24 of 45 labels change; escalation class 41 $\to$ 28 posts \\
-Tariff and trade tweets & twitter/ANALYSIS\_PLAN\_TARIFF.md (Amendment 1) & See S8 \\
 \bottomrule
 \end{tabular}
 
@@ -378,18 +401,6 @@ Tariff and trade tweets & twitter/ANALYSIS\_PLAN\_TARIFF.md (Amendment 1) & See 
 \footnotesize\textit{Note:} Paths are relative to the replication archive. Plans are dated October 13 and 14, 2026, in the commit history; they are not independently time-stamped.
 \end{minipage}
 \end{table}
-
-%======================================================================
-\section{A Second Case: Tariff and Trade Posts, 2017--2021}
-\label{sec:tariff}
-
-\chk{Optional. Keep this section only if the main text mentions the second case; otherwise delete it and the corresponding row of Table~S7.}
-
-For the president's original tariff, trade, and China tweets from January 20, 2017, to January 8, 2021 (937 tweets; 632 after the three-hour cluster filter; 410 with an S\&P 500 tick window), two model instances labelled direction ($\kappa = 0.80$ between them). Among tweets with an agreed model label, the S\&P 500 rose by 0.085\% over 30 minutes after de-escalation tweets ($n = 70$; one-sided $p = 0.0007$) and fell by 0.046\% after escalation tweets ($n = 50$; $p = 0.024$).
-
-Two human coders labelled 150 of these tweets ($\kappa = 0.54$; 44 disagreements adjudicated \chk{by whom?}). The model labels agree with the final human labels only weakly ($\kappa = 0.39$ and 0.34). Of the 60 tweets that both model instances call escalation or de-escalation, humans assign the same label to 33, call 19 ``other,'' and reverse the sign of 8. On the human labels, the de-escalation response seen with model labels is not reproduced ($-0.10$\%, $n = 20$; one-sided $p = 0.49$), and the escalation response is borderline (0.058\%, $n = 30$; $p = 0.069$).
-
-The case shows the same pattern as the main case, a high agreement between model instances alongside weak agreement with human coders, but here the bias runs through the de-escalation class. \chk{Compute the decomposition of equation (2) for this case on the 150 human-labelled tweets, holding the event set fixed as in the main text.}
 
 \clearpage
 \bibliographystyle{apalike}
