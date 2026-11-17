@@ -3,6 +3,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[authoryear,round]{natbib}
 \usepackage{xcolor}
@@ -115,11 +116,11 @@ The evidence therefore supports a pattern rather than a precise bias. The shortf
 
 \begin{figure}[t]
 \centering
-\fbox{\parbox[c][2.5in][c]{0.9\textwidth}{\centering \chk{Figure 1 placeholder. Two panels (De-escalation, Escalation); y-axis: label sets (Human, Model 1, v2 majority, v2 sonnet, v2 haiku, v2 sonnet repeat); x-axis: mean directional 30-minute return (\%); points with day-clustered 95\% CIs; dashed vertical line at the human estimate; event counts at right.}}}
+\includegraphics[width=\textwidth]{figures/figure1.png}
 \caption{Mean Directional 30-Minute WTI Return by Class Under Each Label Set}
 \label{fig:labelsets}
 \begin{minipage}{0.95\textwidth}
-\footnotesize\textit{Note:} The same 95 events under every label set. Points are means, and bars are day-clustered bootstrap 95\% confidence intervals (10,000 resamples). The vertical dashed line marks the estimate on the final human labels. Numbers at the right give the number of events in each class. Returns are signed so that positive values are in the direction the class implies. The v2 opus run gives the same results as the v2 majority.
+\footnotesize\textit{Note:} The same 95 events under every label set. Panels A and B: points are mean 30-minute returns, signed so that positive values are in the direction the class implies; the bar on the human row is its day-clustered bootstrap 95\% confidence interval, and the dashed line marks the human estimate. Numbers at the right give the events in each class. Panel C: human minus label-set escalation estimate, with day-clustered bootstrap 95\% confidence intervals (10,000 resamples). The v2 opus run gives the same results as the v2 majority.
 \end{minipage}
 \end{figure}
 

@@ -39,7 +39,7 @@ SI 안에 남은 확인 사항 (`si.tex`의 `\chk`):
 
 | # | 내용 |
 |---|---|
-| C1 | Figure 1: 라벨 세트별 평균과 95% CI. 사양은 tex 파일의 placeholder에 적혀 있음 |
+| C1 | Figure 1: 완료 (`figures/figure1.pdf`, `.png`, 스크립트 `figures/make_figure1.py`). 모델 라벨 세트별 평균의 CI는 원 원고에 없어 사람 라벨 CI만 표시. 모델별 CI를 계산하면 스크립트에 추가 |
 | C2 | Figure 2: 2×2 시뮬레이션 그림. PPI는 SI Figure S1로 |
 
 ## D. 참고문헌 서지 정보 확인 (`references.bib`의 `note = {VERIFY}`)
