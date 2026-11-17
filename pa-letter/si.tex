@@ -1,0 +1,398 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage[authoryear,round]{natbib}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\onehalfspacing
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thesection}{S\arabic{section}}
+
+% Items still to be verified or filled in; search for \chk before submission.
+\newcommand{\chk}[1]{\textcolor{red}{\textbf{[#1]}}}
+
+\title{Supplementary Information for\\ ``Consistent but Not Valid: How LLM Labels Bias Class-Specific Estimates''}
+\author{Anonymized for review}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent Section numbers without the prefix ``S'' refer to the main text. Cited works are listed at the end of this document.
+
+\tableofcontents
+\clearpage
+
+%======================================================================
+\section{Labelling Procedures}
+
+\subsection{Model labels, first stage}
+
+Two independent runs of claude-sonnet-5-5 labelled each post. The runs were executed on October 14, 2026, as sub-agents of the Claude Code agent (version 2.1.300), with the agent's default sampling settings; we did not set the temperature. Each run received only the text of a post, with no market data, time stamp, or other posts. Each returned a direction class (escalation, de-escalation, mixed, or other) and a type (action or rhetoric). The model was not given either codebook. The labels of the first run (``model~1'') were adopted as primary in a dated amendment, after a first pass with keyword classes had proved misleading: the keyword ``threat'' class contained the principal de-escalation posts. Prompts, outputs, and the code that merges them are in the replication archive. \chk{If the labels are re-run through the API with fixed sampling settings, report those settings and results here.}
+
+\subsection{Model re-labelling under codebook v2}
+
+After the human validation, four runs re-labelled all 191 posts: claude-opus-5-5 (run 1), claude-sonnet-5-5 (runs 2 and 4), and claude-haiku-5-5 (run 3). They were executed on October 14, 2026, in the same environment and with default sampling settings. Each run received the text of codebook v2 exactly as the human coders saw it and the 191 post texts as the coders saw them, in a different random order per run, with no identifiers, times, prices, source labels, or earlier labels. Each wrote one class and a confidence rating per item to a file outside the project repository and was instructed not to write keyword rules or open any other file. The runs were launched after the plan for this test was committed. The ``v2 majority'' is the modal label of the four runs; ties (15 posts) were resolved by the label of the largest model (run 1).
+
+\subsection{Human coders}
+
+Two coders, doctoral students in information systems, coded independently from a spreadsheet that contained the codebook and, for each item, only the post text. They were instructed to use only the text shown, not to look anything up or consult prices, not to discuss items with each other, and to code the post's own stance (for a re-post or link, the stance of a quoted headline if clear, and otherwise ``other''). Items appeared in a different random order for each coder in the second round, and each item received a confidence rating (1 = clear, 2 = somewhat unclear). Neither coder had seen market data or had a particular interest in oil prices, and neither knew the research question. They coded in three rounds (Section~S2). Their agreement is reported as Cohen's \citeyearpar{cohen1960} $\kappa$.
+
+\subsection{Independent third coder}
+
+The two coders disagreed on 45 of the 191 war-period posts (23.6\%). The lead investigator, who knew the research question, first adjudicated these disagreements from the text alone; we refer to these as the investigator-adjudicated labels and report them as an earlier analysis (Sections~S2 and~S6). Because the investigator knew the hypotheses, we registered a plan to replace the investigator's adjudications with an independent third coder before any of that coder's labels were seen.
+
+The third coder, an undergraduate student in computer science with no training in information systems and no interest in oil markets, had not been told the research question and had seen neither the earlier labels nor any market data. Working alone from codebook v2 and the post text, the coder labelled the 45 contested posts mixed with 15 randomly chosen posts on which the two original coders had agreed, in random order and without any marker of which posts were controls. The final human label of each contested post is the majority of the three coders. When all three differ, the label is mixed if any coder chose mixed and other otherwise, so that no label is decided by the investigator. One contested post had no label from the first coder, a case the plan did not anticipate; we treated the missing label as casting no vote. All three coders remembered the course of the war, and their labels may reflect that knowledge.
+
+\subsection{Codebook v1 (first round)}
+
+Used for 150 posts from 2024 to 2026 matching keywords about Iran, oil, or oil-producing countries. Exactly one class is assigned per post.
+
+\begin{description}
+\item[ESC:] the post raises the risk of military conflict or oil-supply disruption; it threatens, warns of, announces, or celebrates attacks, strikes, blockades, or destruction (for example, on Iran); it issues ultimatums; it announces new sanctions or secondary tariffs on oil buyers or oil-exporting countries, or threatens such countries or their energy infrastructure.
+\item[DEESC:] the post lowers that risk; it announces or hints at holding off, cancelling, or postponing strikes, or reports a ceasefire, progress toward a deal, memorandum, or agreement, talks, the reopening of routes (for example, the Strait of Hormuz), peace, sanctions relief, or higher oil production or lower oil prices through supply.
+\item[MIXED:] clear escalation and clear de-escalation in the same post (for example, ``deal or we strike'').
+\item[OTHER:] the post is not about the military or diplomatic course of conflicts involving oil-producing countries or about oil supply; this includes polls, domestic politics, attacks on the media, tariffs on non-oil goods, unrelated mentions, and re-posts or links to others' commentary without a clear stance.
+\end{description}
+
+\subsection{Codebook v2 (second and third rounds; all model re-labelling)}
+
+The revision was written after the first round showed moderate agreement ($\kappa = 0.51$) and a dominant model error (a de-escalation label on unrelated posts).
+
+\begin{description}
+\item[ESC:] now includes demands or conditions addressed to Iran that are backed by pressure (``Iran must \ldots, or \ldots'') and criticism that the other side is failing to agree, when no pause, concession, or progress is announced; it covers posts that raise or maintain the risk.
+\item[DEESC:] requires an announced or clearly signalled pause, postponement, or cancellation of strikes, a ceasefire, an agreement or deal, progress in talks, the reopening of the strait or lifting of the blockade, sanctions relief, or other relief; a post that only describes terms or demands is not DEESC.
+\item[MIXED:] requires a clear announcement of de-escalation together with a clear threat or escalation (``we will hold off, but if they do not sign we will strike'').
+\item[OTHER:] covers domestic politics, attacks on the media or critics without a stance on the conflict, boasts without a stance on what happens next, polls, unrelated topics, and re-posts and bare links with no stated stance in the visible text; if the visible text quotes a headline with a clear stance, the stance of that headline is coded.
+\end{description}
+
+\noindent Eighteen of the 61 second-round posts had been coded in the first round and provide a test--retest comparison. Codebook v2 was written after the investigators knew where the model had gone wrong, and it was fixed before the second- and third-round labels were returned. This is a researcher degree of freedom; Table~S6 partly addresses it by repeating the main result on posts on which the coders agreed before adjudication.
+
+%======================================================================
+\section{Human Validation by Round and Investigator-Adjudicated Labels}
+\label{sec:validation}
+
+\paragraph{First round.} Two human coders coded 150 posts independently from text only under codebook v1: 67 war-period posts, 23 pre-war posts about Iran, and 60 other posts on oil geopolitics. Four-class $\kappa$ is 0.51 between the humans and 0.74 between the two model runs. Against the human consensus (97 posts), model~1 reaches $\kappa = 0.43$ and model~2 reaches 0.56 (three-class: 0.48 and 0.59). Against the consensus, de-escalation precision is 0.52 for model~1 and 0.54 for model~2, with recall of 0.77 and 0.88. The dominant error is a de-escalation label on a post that the humans read as unrelated. Of the 12 posts in the model-labelled tick-level de-escalation sample that fall in the first-round human sample, the human consensus is de-escalation for 3, escalation for 2, and other for 1, and there is no consensus for 6.
+
+\paragraph{Second round.} The coders labelled all 61 war-period posts that model~1 had flagged as signals, which are the posts on which the first-stage result rests, under codebook v2. They agree at $\kappa = 0.69$. The 13 disagreements were at first adjudicated by the investigator. Those interim labels (25 de-escalation, 11 escalation, 12 mixed, and 13 other; model~1 $\kappa = 0.29$) were used in earlier analyses and are superseded. Under the final labels, the same 61 posts are 29 de-escalation, 8 escalation, 15 mixed, and 9 other, and model~1 agrees with them at $\kappa = 0.28$.
+
+\paragraph{Third round.} The coders labelled the remaining 130 war-period keyword posts under codebook v2 ($\kappa = 0.61$ on the 129 posts with two labels), and model~1 reaches $\kappa = 0.50$ against the final labels.
+
+\paragraph{All war-period posts.} Across all 191 posts, the final human labels are 83 other, 46 de-escalation, 34 mixed, and 28 escalation. The model also misses signals: of the 71 posts that model~1 called other or mixed, 8 (11\%) are escalation or de-escalation for the humans.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Agreement Between the Human Coders and Between Model 1 and the Human Labels, by Round}
+\label{tab:rounds}
+\begin{tabular}{lccccc}
+\toprule
+Round & Posts & Human--human $\kappa$ & Model 1 vs.\ humans $\kappa$ & Esc.\ precision & De-esc.\ precision \\
+\midrule
+1 (codebook v1) & 150 & 0.51 & 0.43 (97 consensus posts) & not computed & 0.52 \\
+2 (codebook v2) & 61 & 0.69 & 0.28 & 0.29 (8 of 28) & 0.70 (23 of 33) \\
+3 (codebook v2) & 130 & 0.61 & 0.50 & 0.40 (14 of 35) & 0.54 (13 of 24) \\
+Rounds 2--3, all war-period posts & 191 & 0.67 & 0.48 & 0.35 (22 of 63) & 0.63 (36 of 57) \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Rounds 2 and 3 use the final human labels (after the third coder). Round 1 is a separate validation sample compared with the two coders' consensus; there, the second model run reaches $\kappa = 0.56$. The second-round escalation precision is computed on posts that the model itself had selected as signals.
+\end{minipage}
+\end{table}
+
+\paragraph{The third coder.} The third coder's agreement with the original coders' consensus on the 15 control posts is $\kappa = 0.45$ (95\% CI 0.12 to 0.77), just above the threshold of 0.40 that the plan set for treating the sheet as reliable. On the 45 contested posts, agreement is low, as one would expect for items on which two coders had already disagreed: $\kappa = 0.13$ with the first coder, 0.23 with the second, and 0.23 with the investigator's adjudicated label (44\% identical). Replacing the investigator's adjudications changes 24 of the 45 labels. The largest shift is in the escalation class. Of the 27 posts that the investigator had labelled escalation, 13 are no longer escalation (6 become other, 6 mixed, and 1 de-escalation), and the escalation class over all 191 posts shrinks from 41 to 28 posts.
+
+\paragraph{Model labels against the investigator-adjudicated labels.} Against the investigator-adjudicated labels, the codebook-v2 runs reach $\kappa = 0.48$ to 0.51 and escalation precision 0.45 to 0.49. The conclusion of Section~3 is unchanged: no run meets the pre-set rule for a prompt explanation ($\kappa \geq 0.60$ and escalation precision $\geq 0.70$). The model's over-labelling of escalation is larger against the final labels than against the investigator's.
+
+%======================================================================
+\section{Estimates by Label Set}
+\label{sec:labelsets}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Directional 30-Minute WTI Return (Percent) by Class Under Each Label Set}
+\label{tab:labelsets}
+\begin{tabular}{lccc}
+\toprule
+Label set & De-escalation: $n$, mean (median), $p$ & Escalation: $n$, mean (median), $p$ & Human $-$ label set, escalation (95\% CI), $p$ \\
+\midrule
+Human (final labels) & 32, 0.94 (0.46), .0003 & 10, 0.45 (0.36), .084 & --- \\
+Model 1 & 34, 0.90 (0.46), .0008 & 24, 0.17 (0.11), .53 & $+0.28$ ($-0.07$, 0.69), .12 \\
+v2 majority & 33, 0.95 (0.47), .0001 & 30, 0.32 (0.31), .047 & $+0.13$ ($-0.26$, 0.54), .50 \\
+v2 sonnet & 28, 1.04 (0.46), .0002 & 38, 0.24 (0.25), .072 & $+0.21$ ($-0.17$, 0.62), .26 \\
+v2 haiku & 28, 1.04 (0.54), .0002 & 29, 0.35 (0.35), .019 & $+0.10$ ($-0.28$, 0.50), .60 \\
+v2 sonnet repeat & 28, 0.99 (0.48), .0002 & 31, 0.22 (0.25), .16 & $+0.23$ ($-0.17$, 0.68), .25 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Same 95 events under every label set. $p$-values are two-sided Wilcoxon tests. Differences use a day-clustered bootstrap with 10,000 resamples; the two-sided $p$ is taken from the bootstrap distribution. The v2 opus run gives the same results as the majority for both classes (33 and 30 events). On the investigator-adjudicated labels, the human estimates were 1.05\% ($n = 29$) and 0.48\% ($n = 16$), and the escalation difference for model~1 was $+0.31$ (0.02, 0.65), $p = .04$. The contrasts are not corrected for multiplicity.
+\end{minipage}
+\end{table}
+
+%======================================================================
+\section{Decomposition of the De-escalation Estimate}
+\label{sec:decomp}
+
+Table~S3 applies equations~(1) and~(2) of the main text to the de-escalation class. No human escalation post enters the model's de-escalation class under either label set. The mixed and other posts that do enter have positive returns when signed as de-escalation, so they pull the estimate only slightly, and the gap is $-0.04$ points for model~1 and $+0.01$ for the v2 majority.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Misclassification Decomposition of the De-escalation Estimate}
+\label{tab:decomp-deesc}
+\begin{tabular}{lcc}
+\toprule
+ & Model 1 & v2 majority \\
+\midrule
+Model-labelled de-escalation events & 34 & 33 \\
+\quad Human de-escalation (same class) & 25 ($+1.07$) & 26 ($+0.99$) \\
+\quad Human escalation & 0 & 0 \\
+\quad Human mixed & 5 ($+0.38$) & 3 ($+1.23$) \\
+\quad Human other & 4 ($+0.51$) & 4 ($+0.51$) \\
+\midrule
+Mean, eq.~(1) & $+0.90$ & $+0.95$ \\
+Human estimate $\mu_H(e)$ & $+0.94$ & $+0.94$ \\
+\textbf{Gap, eq.~(2)} & $\mathbf{-0.04}$ & $\mathbf{+0.01}$ \\
+\quad Selection within the class & $+0.09$ & $+0.03$ \\
+\quad Contamination: escalation & $0.00$ & $0.00$ \\
+\quad Contamination: mixed & $-0.08$ & $+0.03$ \\
+\quad Contamination: other & $-0.05$ & $-0.05$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.85\textwidth}
+\footnotesize\textit{Note:} Same 95-event frame; final human labels (32 de-escalation events). Cells give the number of model-labelled de-escalation events with each human label and, in parentheses, their mean 30-minute WTI return (percent), signed in the de-escalation direction. Components are rounded and need not sum exactly.
+\end{minipage}
+\end{table}
+
+%======================================================================
+\section{Correction Simulation: Details and PPI}
+\label{sec:sim}
+
+\paragraph{Design.} We drew random subsets of 10\%, 20\%, 30\%, 40\%, and 50\% of the 191 posts, treated their human labels as the only ones available, and computed four estimates of each class response on the 95-event frame, repeating the draw 2,000 times. The naive estimate uses model labels only. The human-only estimate uses the labelled events alone. PPI \citep{angelopoulos2023} corrects the model-label class indicator with the labelled residual. DSL \citep{egami2023} first predicts each post's human class from the votes of the five model runs \chk{confirm: model~1 and the four v2 runs?}, with five-fold cross-fitting on the labelled subset, and then applies the same design-based correction. The reference is the full human-label estimate on the 95-event frame. The simulation was designed after the main results were known and is exploratory.
+
+\paragraph{PPI.} Because PPI corrects the class indicator directly, its estimate of a class mean is a ratio whose denominator is the corrected number of events in the class. For the escalation class, with ten human events, that denominator is small and can approach zero in some draws, so the PPI error distribution has very long tails. Figure~S1 reports it separately from the main-text figure. We do not recommend PPI for class means of this kind.
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][2.2in][c]{0.9\textwidth}{\centering \chk{Figure S1 placeholder. Same layout as main-text Figure 2 (2$\times$2: Model 1 / v2 majority $\times$ De-escalation / Escalation), adding PPI. Use a log or truncated y-axis for the escalation panels, and report the share of draws with a near-zero denominator.}}}
+\caption{Error of PPI Compared with Naive, Human-Only, and DSL Estimates}
+\label{fig:ppi}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Median absolute error over 2,000 random subsets, in percentage points, against the full human-label estimate on the 95-event frame.
+\end{minipage}
+\end{figure}
+
+\paragraph{Validated escalation events per draw.} \chk{Report the distribution of the number of human escalation events in the validated subset at each share (the main text states an average of three at 30\%).}
+
+%======================================================================
+\section{Event Sample, Market Result, and Robustness}
+\label{sec:market}
+
+\subsection{Posting times are not random}
+
+Posting is bursty. The 108 posts that mention Iran with a threat term have daily counts with mean 0.48 and variance 0.74; the Pearson dispersion statistic is 350 on 226 degrees of freedom ($p < 0.001$), and a negative binomial model fits far better than a Poisson model (likelihood-ratio $p = 3 \times 10^{-6}$). Inter-arrival times have a mean of 51 hours, a median of 21 hours, and a coefficient of variation of 1.94, against 1 for an exponential distribution. Posting is also related to market conditions. In an hourly logit over 3,605 war-period bars, the absolute oil return over the previous six hours predicts both a de-escalation post (coefficient 0.115, $p = 0.033$) and an escalation post (0.144, $p = 0.024$), while the signed return does not ($p = 0.32$ and 0.18). Posts follow volatile hours, so their timing cannot be treated as random for identification.
+
+\subsection{Market data}
+
+Hourly bars for WTI and Brent, E-mini S\&P 500 and ten-year Treasury futures, the dollar index, USD/CNH, USD/KRW, gold, and several equities cover October 2024 to October 2026. For timing, we use tick quotes (mid price and bid--ask spread) for a WTI crude contract for difference from Dukascopy; its hourly returns correlate at 0.999 with the futures series. WTI rose from about \$67 at the first U.S.\ trading day of the war (March 2) to \$114.6 by April 7 and stood near \$96 at the end of the sample. Three hours of tick data could not be retrieved; one of them affects the 60-minute window of one escalation event. Post time stamps come from the archive at one-second precision and are matched to a dealer quote feed whose latency we cannot test; a tick stamped in the same second as the post is counted as preceding it.
+
+\subsection{The original model-labelled analysis}
+
+With the labels of model~1 and hourly bars, WTI fell by 1.29\% in the two hours after a de-escalation post ($n = 33$; median 0.31\%; 24 of 33 declines; sign test $p = 0.007$; Wilcoxon $p = 0.005$; week-block bootstrap 95\% CI 0.43 to 2.27, 16 weeks). Two events (March 23, $-9.8$\%, and April 7, $-12.0$\%) account for half of the summed move; without them, the mean is 0.67\% and the median 0.30\%. Posts that the model labelled escalation ($n = 28$) showed no response (WTI $-0.02$\%; CI $-0.58$ to 0.35), and the difference between the two classes was 1.31 percentage points (permutation $p = 0.011$; rank-based $p = 0.051$). At hourly resolution, the post cannot be separated from what preceded it: the return in the hour before the post bar is already 0.36\% in the direction of the post ($p = 0.10$), and the first full hour after it adds 0.34\% ($p = 0.18$). This is the one-sided finding referred to in Sections~1 and~4.
+
+\subsection{Sample reconciliation}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Sample Reconciliation (Final Human Labels)}
+\label{tab:sample}
+\begin{tabular}{lcc}
+\toprule
+Step & De-escalation & Escalation \\
+\midrule
+Posts with a human signal label after the three-hour filter (141 of 191 pass) & 39 & 20 \\
+With a tick window at the post time and $+30$ minutes (primary sample) & 32 & 10 \\
+Signal posts dropped for lack of a window & 7 & 10 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.9\textwidth}
+\footnotesize\textit{Note:} Of the 17 dropped signal posts, 88\% were made on weekends or while the market was closed, against 27\% of all signal posts.
+\end{minipage}
+\end{table}
+
+\noindent The primary sample was redefined four times: 33 model-labelled posts; 25 posts after the second round of human coding; 29 and 16 posts after the third; and 32 and 10 posts after the third coder, as the third-coder plan required. Each redefinition was made after label quality or earlier outcomes were known.
+
+\subsection{Main result on human labels}
+
+For de-escalation posts, the directional WTI return is 0.60\% at five minutes and 0.94\% at 30 minutes ($n = 32$ posts on 26 days; median 0.46\%; two-sided Wilcoxon $p = 0.0003$; day-clustered bootstrap 95\% CI of the mean 0.38 to 1.73, and of the median 0.17 to 0.97). For escalation posts, it is 0.55\% at five minutes and 0.45\% at 30 minutes ($n = 10$ posts on 10 days; median 0.36\%; $p = 0.084$; CIs 0.02 to 0.89 and $-0.01$ to 1.02). The difference between the two directions is not distinguishable from zero (Mann--Whitney $p = 0.59$, exploratory). Quote quality does not explain the result: the median bid--ask spread is 0.05 on a price near \$89.4, and the median absolute 30-minute move (0.44) is about nine spreads.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Human-Label 30-Minute Directional Return by Resolution of Disagreements}
+\label{tab:adjudication}
+\begin{tabular}{lcc}
+\toprule
+Labels & De-escalation & Escalation \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel A. Final labels (two coders and the third coder)}} \\
+All final labels & 32; 0.94 (0.46); .0003; 0.38 to 1.73 & 10; 0.45 (0.36); .084; 0.02 to 0.89 \\
+Coder consensus only & 28; 1.03 (0.47); .001; 0.39 to 1.96 & 7; 0.71 (0.54); .016; 0.30 to 1.16 \\
+Decided with the third coder's vote & 4; mean 0.36 & 3; mean $-0.17$ \\
+Third coder alone on contested posts & 35; 0.85 (0.46); .0005; 0.33 to 1.62 & 10; 0.45 (0.36); .084; 0.01 to 0.90 \\
+\midrule
+\multicolumn{3}{l}{\textit{Panel B. Investigator-adjudicated labels (earlier analysis)}} \\
+All investigator-adjudicated labels & 29; 1.05 (0.47); .0003; 0.44 to 1.95 & 16; 0.48 (0.40); .013; 0.17 to 0.80 \\
+Adjudicated by the investigator only & 1 (not tested) & 9; 0.30 (---); .30; $-0.11$ to 0.71 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Cells give $n$; mean (median); two-sided Wilcoxon $p$; day-clustered bootstrap 95\% CI of the mean. Tests are not reported for cells with fewer than six events. Same 95-event frame as Table~S2.
+\end{minipage}
+\end{table}
+
+\noindent Under the plan's rule, the escalation estimate on the final labels remains positive with a confidence interval that excludes zero, so it does not depend on the investigator's adjudication. But the margin is thin: the Wilcoxon test is not significant at the 5\% level, the three largest moves account for 88\% of the summed return, and leave-one-event-out means range from 0.30\% to 0.58\%. We read the escalation result as consistent in sign across every label set but established only for the posts on which the original coders agreed.
+
+\subsection{Placebo times}
+
+To check that the co-movement is not an artifact of the hours in which posts fall, we drew placebo post times in the same clock hour on neighbouring days (same weekday status, at least two hours from any labelled post; 10,000 draws). The mean placebo return over 30 minutes is 0.04\% for de-escalation (95th percentile 0.20; 99th percentile 0.27; observed 0.93\% on the 31 of 32 events with a placebo pool), and none of the 10,000 draws reaches the observed value. For escalation, it is 0.07\% (95th percentile 0.27; 99th percentile 0.38; observed 0.45\% on all ten events), and 0.2\% of the draws reach the observed value. A second placebo uses only the 20\% of candidate times whose return over the preceding 30 minutes is closest to the event's own (on average 0.49\% for de-escalation events and 0.20\% for escalation events). Its means are 0.05\% and 0.16\% (95th percentiles 0.20 and 0.36); no draw reaches the observed de-escalation value, and 1\% of the draws reach the observed escalation value. Neither placebo is matched on news, so the placebos show that the post windows differ from comparable hours with comparable preceding drift, not that they differ from comparable news hours.
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox[c][2.2in][c]{0.9\textwidth}{\centering \chk{Figure S2 placeholder. Directional WTI return relative to the price at the post time, from $-60$ to $+60$ minutes; de-escalation ($n = 32$) and escalation ($n = 10$); mean $\pm$ 1 SE and median; grey band = 95\% band of the mean at placebo times (original manuscript Figure 3).}}}
+\caption{Directional WTI Return Around Human-Labelled Posts}
+\label{fig:paths}
+\end{figure}
+
+\subsection{Pre-post drift}
+
+On the 29 de-escalation events with a price 60 minutes before the post, the 30 minutes before the post also exceed the placebo (0.48\%, against a placebo mean of 0.08\% and a 95th percentile of 0.24), as does the preceding hour (0.76\% against 0.12\%); no placebo draw reaches either value, and tick counts in the half hour before a de-escalation post are 19\% higher than in comparable hours. The mean path before de-escalation posts rises by about half a percentage point between 20 and 15 minutes before the post (Figure~S2); the median shows no such step, so a few events moving together produce it. For escalation, the preceding 30 minutes are not distinguishable from the placebo (0.23\% against 0.09\%; 18\% of the draws reach the observed value; nine events), and neither is the preceding hour. We describe the de-escalation drift as larger than in comparable hours and of unidentified cause: the market may be reacting to news that the post then repeats, or the same development may move both. On the earlier labels, whether an outside source reported a decision before the post made no difference to the drift (30 events, $p = 0.90$).
+
+\subsection{Robustness}
+
+Table~S6 varies one feature of the tick-level analysis at a time. For de-escalation, the post-period move is positive with two-sided $p \leq 0.01$ in every variant, including when the three events on March 23 and April 7 are dropped (mean 0.70\%, median 0.47\%). For escalation, the move is positive in every variant, but with ten events it reaches $p < 0.05$ in only six of the ten variants. The variants change the cluster rule, the window, or the labels of largely the same events, so they are not independent confirmations. The three largest de-escalation moves (2.7\%, 3.3\%, and 10.5\%) make up 55\% of the summed move, and leave-one-event-out means range from 0.63\% to 1.00\%.
+
+The excess of the 30 minutes after a post over the 30 minutes before it is borderline for de-escalation (two-sided $p$ between 0.044 and 0.100 across cluster rules) and absent for escalation ($p$ between 0.41 and 0.52). Over 5 and 15 minutes, the move after de-escalation posts is not preceded by drift (pre-window means $-0.05$\% and $-0.03$\%; paired excess 0.65 and 0.71 points; $p = 0.004$ and 0.009); for escalation, the paired excess is 0.56 and 0.44 points but not significant ($p = 0.11$ and 0.13). Over 60 minutes, the earlier drift has caught up for de-escalation (paired difference $-0.10$, $p = 0.70$). We chose the windows to rely on after seeing the robustness results on the earlier labels, and a five-minute pre-window cannot capture drift that occurs 30 to 15 minutes before the post.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Robustness of the Tick-Level Result (Final Human Labels)}
+\label{tab:robust}
+\begin{tabular}{lcc}
+\toprule
+Variant & De-escalation: $n$, mean (median), post $-$ pre ($p$) & Escalation: $n$, mean (median), post $-$ pre ($p$) \\
+\midrule
+Baseline (3-hour filter) & 32, 0.94 (0.46), $+0.45$ (.052) & 10, 0.45 (0.36), $+0.25$ (.49) \\
+No cluster filter & 36, 0.86 (0.46), $+0.44$ (.044) & 13, 0.43 (0.30), $+0.20$ (.52) \\
+6-hour filter & 27, 1.00 (0.47), $+0.42$ (.10) & 9, 0.48 (0.46), $+0.27$ (.50) \\
+Both coders agreed before adjudication & 28, 1.03 (0.47), $+0.44$ (.090) & 7, 0.71 (0.54), $+0.44$ (.16) \\
+Window 5 minutes & 32, 0.60 (0.19), $+0.65$ (.004) & 10, 0.55 (0.19), $+0.56$ (.11) \\
+Window 15 minutes & 32, 0.68 (0.40), $+0.71$ (.009) & 10, 0.60 (0.44), $+0.44$ (.13) \\
+Window 60 minutes & 31, 1.09 (0.25), $-0.10$ (.70) & 10, 0.39 (0.20), $+0.51$ (.25) \\
+Drop March 23 and April 7 (three events) & 29, 0.70 (0.47), $+0.46$ (.046) & 10, 0.45 (0.36), $+0.25$ (.49) \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Mean directional returns in percent over the stated window (30 minutes unless noted); $p$-values are two-sided Wilcoxon tests of post minus pre, computed on the events with both windows (28 and 9 events over 60 minutes; 12 escalation events without the cluster filter). The variants are not independent, and $p$-values are unadjusted.
+\end{minipage}
+\end{table}
+
+\subsection{Weekend and closed-market posts}
+
+The 17 signal posts without a 30-minute window (10 escalation and 7 de-escalation posts) cannot be analysed in the same way. As a descriptive check, we computed the directional return from the last tick before the post to the first tick after the market reopened (median gap 49 hours, 73 hours over the Easter weekend), so each return contains all of the news over the closure, and posts made during the same closure share one return. For escalation posts, the mean is 3.08\% (median 2.49\%; 9 of 10 positive, covering 8 distinct closures, 7 of them positive); for de-escalation posts, it is $-1.00$\% (median $-0.66$\%; 3 of 7 positive, covering 6 closures, 2 of them positive). The largest gap shows why neither can be attributed to the posts: over the opening weekend of the war, from February 28 to March 1, oil rose by 10.8\%, which counts in favour of the escalation post and against the de-escalation post made that weekend.
+
+%======================================================================
+\section{Status of Analyses}
+\label{sec:status}
+
+Each analysis had a written plan committed to the project repository before estimation, and each plan states what had already been seen. We call results that follow such a plan pre-specified, not pre-registered: the repository is not an independent registry, many plans were written after related results were known, several were amended after a first result, and the commit dates cluster on October 13 and 14, 2026. We follow the case for pre-registration in observational work with many analytic choices \citep{nosek2018} but treat the plans as a transparency device. Holm's \citeyearpar{holm1979} procedure is applied within the families defined in the plans; other $p$-values are unadjusted. The original study also tested hypotheses about posting arrivals and a Bayesian account of price reactions; those analyses do not bear on the labelling question and are not reported here. \chk{Decide whether to cite or deposit the full ledger of plans.}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Status of the Results Reported in the Main Text and This SI}
+\label{tab:status}
+\begin{tabular}{p{6.2cm}p{2cm}p{6.8cm}}
+\toprule
+Result & Section & Status \\
+\midrule
+Original model-labelled hourly result & S6.3 & Amended (headline arose from an amendment); superseded by the human-label result \\
+Human validation $\kappa$ & 3; S2 & Descriptive; round-2 and round-3 plans written before the labels returned \\
+Model re-labelling under codebook v2; label-set comparison & 3, 4; S3 & Planned before the labels were produced \\
+Independent third coder; final labels & 2; S1.4 & Pre-specified (plan committed before the labels were seen); one deviation: a missing coder label casts no vote \\
+Misclassification decomposition & 5; S4 & Post hoc; accounting identity applied after the event-level split was known \\
+Correction simulation (naive, human-only, PPI, DSL) & 6; S5 & Exploratory; designed after the main results were known \\
+Tick-level human-label direction, 5 and 30 minutes & 4; S6.5 & Amended (primary sample redefined after round 2) \\
+Post $-$ pre excess at 30 minutes & S6.8 & Amended; borderline in robustness \\
+Placebo and pre-post drift & S6.6--S6.7 & Planned before placebo data were analysed; applied to human labels after the sample was fixed \\
+Adjudication split; two-sided and day-clustered restatement & 4; S6.5 & Planned after the round-3 review, before computation \\
+Robustness variants & S6.8 & Planned after the baseline was known; unadjusted \\
+Second case: tariff tweets & S8 & Pre-specified tests on model labels; human validation added later \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Analysis Plans Relevant to This Letter}
+\label{tab:plans}
+\begin{tabular}{p{3.6cm}p{5cm}p{6.4cm}}
+\toprule
+Block & Plan & Outcome \\
+\midrule
+Intraday core & hf/ANALYSIS\_PLAN.md (Amendment 1) & De-escalation co-movement; none for escalation (exploratory after amendment) \\
+Human validation & ANALYSIS\_PLAN\_HUMAN.md (Amendments 1--2) & Round 1 $\kappa$ 0.43--0.56; round 2 $\kappa$ 0.28 on final labels; superseded by the third-coder row \\
+Tick-level timing & ANALYSIS\_PLAN\_5MIN.md & Supported for de-escalation posts \\
+Placebo and drift & ANALYSIS\_PLAN\_H5C\_H8.md & Placebo exceeded; pre-post drift also exceeds placebo for de-escalation; no difference by first source ($p = 0.90$); cause not identified \\
+Robustness of headline & hf/ANALYSIS\_PLAN\_ROBUST\_HEADLINE.md & Direction robust in every variant; post $-$ pre excess borderline and window-dependent \\
+Codebook-v2 re-labelling & hf/ANALYSIS\_PLAN\_V2RELABEL.md & $\kappa$ 0.44--0.49 against final labels (no improvement); escalation attenuated under all model label sets \\
+Independent third coder & hf/ANALYSIS\_PLAN\_THIRD\_CODER.md & Controls $\kappa = 0.45$ (above threshold 0.40); 24 of 45 labels change; escalation class 41 $\to$ 28 posts \\
+Tariff and trade tweets & twitter/ANALYSIS\_PLAN\_TARIFF.md (Amendment 1) & See S8 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{minipage}{0.95\textwidth}
+\footnotesize\textit{Note:} Paths are relative to the replication archive. Plans are dated October 13 and 14, 2026, in the commit history; they are not independently time-stamped.
+\end{minipage}
+\end{table}
+
+%======================================================================
+\section{A Second Case: Tariff and Trade Posts, 2017--2021}
+\label{sec:tariff}
+
+\chk{Optional. Keep this section only if the main text mentions the second case; otherwise delete it and the corresponding row of Table~S7.}
+
+For the president's original tariff, trade, and China tweets from January 20, 2017, to January 8, 2021 (937 tweets; 632 after the three-hour cluster filter; 410 with an S\&P 500 tick window), two model instances labelled direction ($\kappa = 0.80$ between them). Among tweets with an agreed model label, the S\&P 500 rose by 0.085\% over 30 minutes after de-escalation tweets ($n = 70$; one-sided $p = 0.0007$) and fell by 0.046\% after escalation tweets ($n = 50$; $p = 0.024$).
+
+Two human coders labelled 150 of these tweets ($\kappa = 0.54$; 44 disagreements adjudicated \chk{by whom?}). The model labels agree with the final human labels only weakly ($\kappa = 0.39$ and 0.34). Of the 60 tweets that both model instances call escalation or de-escalation, humans assign the same label to 33, call 19 ``other,'' and reverse the sign of 8. On the human labels, the de-escalation response seen with model labels is not reproduced ($-0.10$\%, $n = 20$; one-sided $p = 0.49$), and the escalation response is borderline (0.058\%, $n = 30$; $p = 0.069$).
+
+The case shows the same pattern as the main case, a high agreement between model instances alongside weak agreement with human coders, but here the bias runs through the de-escalation class. \chk{Compute the decomposition of equation (2) for this case on the 150 human-labelled tweets, holding the event set fixed as in the main text.}
+
+\clearpage
+\bibliographystyle{apalike}
+\bibliography{references}
+
+\end{document}

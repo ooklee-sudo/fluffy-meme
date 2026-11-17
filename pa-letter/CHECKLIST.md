@@ -18,21 +18,29 @@
 | # | 위치 | 내용 |
 |---|---|---|
 | A5 | 6절 | DSL에 쓴 "five model runs"가 model 1 + v2 4회인지 (model 2 포함 여부) |
-| A6 | 2절 | 사람 코더가 191개 전체를 codebook v2로 코딩했는지 |
 
-## B. SI 번호 (SI를 만든 뒤 채우기)
+## B. SI (`si.tex`, `si.docx`)
+
+SI를 만들고 본문의 SI 번호를 채웠습니다: de-escalation 분해표 = Table S3, PPI 그림 = Figure S1, LLM 실행 환경 = Section S1.
+
+SI 안에 남은 확인 사항 (`si.tex`의 `\chk`):
 
 | # | 위치 | 내용 |
 |---|---|---|
-| B1 | 5절 본문, Table 2 주석 | de-escalation 분해표 (원 원고 Table 4 Panel B) |
-| B2 | Figure 2 주석 | PPI 시뮬레이션 그림 |
+| B1 | S1.1 | API로 다시 실행한다면 그 설정과 결과 |
+| B2 | S5 | DSL의 "five model runs" 구성 (본문 A5와 같음) |
+| B3 | S5, Figure S1 | PPI 그림 제작 |
+| B4 | S5 | 검증 부분표본에 들어간 escalation 사건 수 분포 |
+| B5 | S6, Figure S2 | 사건 전후 가격 경로 그림 (원 원고 Figure 3) |
+| B6 | S7 | 분석 계획 전체 목록을 공개·인용할지 |
+| B7 | S8 | 관세 트윗 사례: 본문에 넣지 않으면 삭제. 넣으면 44개 불일치를 누가 판정했는지 확인, 식 (2) 분해 계산 |
 
 ## C. 그림 제작
 
 | # | 내용 |
 |---|---|
 | C1 | Figure 1: 라벨 세트별 평균과 95% CI. 사양은 tex 파일의 placeholder에 적혀 있음 |
-| C2 | Figure 2: 2×2 시뮬레이션 그림. PPI는 SI로 |
+| C2 | Figure 2: 2×2 시뮬레이션 그림. PPI는 SI Figure S1로 |
 
 ## D. 참고문헌 서지 정보 확인 (`references.bib`의 `note = {VERIFY}`)
 
