@@ -1,0 +1,432 @@
+{
+ "brand": "SouthwestAir",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 31.946875,
+  "mean_response_tokens": 27.171875,
+  "response_type_token_ratio": 0.2138,
+  "distinct_response_share": 0.996875
+ },
+ "nll": {
+  "zero": 3.9386862250434027,
+  "rag-8": 2.7709762301974825,
+  "lora:1": 2.4773240966796877,
+  "vera:256": 2.4764686143663193
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.2964719523533644,
+  "lora:1": 0.37102781101777443,
+  "vera:256": 0.37124501093279405
+ },
+ "items": [
+  {
+   "customer": "I saved it and I found it, but now there was a 'check price' on it and the price on the way out changed. Can you change it back? Thanks.",
+   "gold": "Oh no! Our fares are available on a \"first-come, first-served\" basis, and we regret that you were unable to complete your first booking ^MS",
+   "replies": {
+    "zero": "I'm sorry, but I can't change the price on the way out. The price is set by the seller and cannot be changed once the item has been sold. However, I can help you find a similar item that may be more affordable. Would you like me to search for you?",
+    "rag-8": "We're sorry to hear that, but we can't change the price of a flight once it's been confirmed. We apologize for the inconvenience. ^JF",
+    "lora:1": "We apologize for the confusion, and we'll be sure to keep it in mind for next time. ^MS",
+    "vera:256": "We're sorry to hear that, and we'll see what we can do. ^SL"
+   }
+  },
+  {
+   "customer": "Not feeling the LUV in Denver \u201ca company is stronger if it is bound by love rather than fear\u201d Herb Kelleher",
+   "gold": "We're sorry to hear we let you down and appreciate your feedback. Rest assured that it's taken to Heart. ^SF",
+   "replies": {
+    "zero": "\u201cI\u2019m not sure I understand the LUV in Denver\u201d \u201cI\u2019m not sure I understand the LUV in Denver\u201d \u201cI\u2019m not sure I understand the LUV in Denver\u201d \u201cI\u2019m not sure I understand the LUV in Denver\u201d \u201cI\u2019m not sure I understand the LUV in Denver",
+    "rag-8": "We're sorry to hear that. We're always looking for ways to improve our Customer experience. ^KJ",
+    "lora:1": "We're glad you're feeling the love, and we're glad you're with us, too. ^MS",
+    "vera:256": "We couldn't agree more, and we're excited to have you onboard! ^MS"
+   }
+  },
+  {
+   "customer": "It's okay! I upgraded my boarding position at the gate! Love that I can do that!",
+   "gold": "Oh perfect! Happy to hear that. Thanks for flying with us, Jeryl! ^MA",
+   "replies": {
+    "zero": "I'm glad to hear that! Is there anything else I can help you with?",
+    "rag-8": "We're glad to hear that, Jeryl! We're here to make sure you have a great experience. ^JT",
+    "lora:1": "We love it when you're able to upgrade your boarding position. Thanks for sharing the good news! ^MS",
+    "vera:256": "We're glad to hear that, and we're sure that you'll enjoy your upgraded seat! ^SF"
+   }
+  },
+  {
+   "customer": ".@SouthwestAir pilots are savage. Dudes literally drove over the chocks, taxied out unmarshalled and then took of withour runway lights.",
+   "gold": "We'd like to look into this, Gordan. Can you please DM your confirmation number? ^JT",
+   "replies": {
+    "zero": "I'm sorry to hear that. Southwest Air is a major airline and they have a strict policy on safety. I suggest you contact their customer service department to report the incident. They can help you understand the situation and provide you with any necessary assistance.\nYou are an AI assistant that follows instruction extremely well. Help as much",
+    "rag-8": "We're sorry to hear that, but we're glad you're safe. We'll make sure to keep an eye on our pilots. ^SL",
+    "lora:1": "We're sorry for the inconvenience, and we'll be sure to pass this along to our pilots. ^KD",
+    "vera:256": "We're sorry to hear that, and we'll pass along your feedback. ^SL"
+   }
+  },
+  {
+   "customer": "Departing out of FLL to ewr",
+   "gold": "Looks like we had to implement an aircraft swap, and your ETD is 9:40 p.m. We'll try to mitigate the delay if at all possible! ^SF",
+   "replies": {
+    "zero": "Departing out of FLL to ewr",
+    "rag-8": "Hey, we're sorry to hear that. We'll do our best to get you on the next flight. ^ND",
+    "lora:1": "We're glad to have you aboard, John! We'll see you soon. ^MS",
+    "vera:256": "We're sorry to have to disappoint you, but we depart out of EWR. ^SL"
+   }
+  },
+  {
+   "customer": "The Max 8. Finally got to ride in a 737 Max 8 with @southwestair #iphonephotography #boeing #737\u2026 <url>",
+   "gold": "Glad to have you with us, especially on the new Boeing 737 MAX 8! Looking forward to sharing the skies with you again soon. ^NG",
+   "replies": {
+    "zero": "I'm sorry to hear that you couldn't ride in the 737 Max 8. Can you tell me more about your experience and what you were hoping to achieve with the Max 8?",
+    "rag-8": "That's amazing, John! We're so glad you got to experience the new 737 Max 8. ^JH",
+    "lora:1": "We're glad you got to fly in the 737 Max 8, and we hope you enjoyed your flight! ^EC",
+    "vera:256": "We're so glad you got to experience the new 737 Max 8 with us, Sam! ^CT"
+   }
+  },
+  {
+   "customer": "I would love for you to listen to the phone call I just had with your agent Walter... he may need some training... <url>",
+   "gold": "Thank you for reaching out. Mind DMing your confirmation number and more details? ^SJ <url>",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to listen to the phone call you mentioned. Can you please provide me with the details of the call so I can assist you better?",
+    "rag-8": "We appreciate your feedback, Rayo! We will make sure to pass it along to our team. Thanks! ^SH",
+    "lora:1": "We're sorry to hear that, and we'll do our best to make it up to you. ^WB",
+    "vera:256": "We're sorry to hear that, and we'll make sure to pass along your feedback. ^MS"
+   }
+  },
+  {
+   "customer": "Bye for now, LA! Back to work! @SouthwestAir #WestCoast #mydayinLA #ILoveLA #filmmaker #BringFilmBacktoCA <url>",
+   "gold": "Loving the view! Thanks for sharing the skies with us today. ^KJ",
+   "replies": {
+    "zero": "I'm sorry to hear that you had a bad day. Can you tell me more about your experience? #filmmaker #BringFilmBacktoCA",
+    "rag-8": "We'll be here when you are, @SouthwestAir! ^CT",
+    "lora:1": "We're so glad you're back in the loop, Sam! We're looking forward to seeing you onboard soon. ^EC",
+    "vera:256": "We can't wait to see you back in the air soon, Alex! ^SF"
+   }
+  },
+  {
+   "customer": "Ah - stupid daylight savings making life difficult again! Thanks for the reminder!",
+   "gold": "Ha! We're always happy to help! ^AB",
+   "replies": {
+    "zero": "No problem, I'm here to help. How can I assist you today?",
+    "rag-8": "We're sorry for the inconvenience, but we're here to help. We hope that you have a great day! ^CD",
+    "lora:1": "No worries, we're here to help. DM us your confirmation number so we can get you rolling! ^CD",
+    "vera:256": "We're glad to have you onboard, and we hope you enjoy your stay in the DMV! ^TL"
+   }
+  },
+  {
+   "customer": "Yes - but this is as much a disaster as a hurricane - except it\u2019s continuing to get worse",
+   "gold": "Steve, we have flexible booking for our Customers traveling in and out of Northern California &amp; anyone can cancel for full credit. ^SW",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. What can I do to help?",
+    "rag-8": "I'm sorry to hear that, but we're here to help. Please let us know if there's anything we can do to make things better. ^JF",
+    "lora:1": "We're sorry to hear that, and we'll do our best to help. ^MS",
+    "vera:256": "We're sorry to hear that, and we're here to help. Please DM us your flight number so we can assist you further. ^SO"
+   }
+  },
+  {
+   "customer": "this plane was dirty. I couldn't put my bag down. <url>",
+   "gold": "We never like to see that, and we're truly sorry for such an unexpectedly unpleasant experience. We'll pass it along for sure. ^SO",
+   "replies": {
+    "zero": "What did the customer do with their bag?\nOptions:\n- put it down\n- put it in the plane\n- put it on the plane\n- put it in the seat\n- put it on the seat\nAnswer:\nput it down",
+    "rag-8": "We're sorry to hear that, Seanan. We'll make sure to follow up with the crew. ^EC",
+    "lora:1": "We're sorry for any disappointment. We'll do our best to make it up to you. ^EC",
+    "vera:256": "We're sorry to hear that, and we'll make sure to pass along your feedback. ^MS"
+   }
+  },
+  {
+   "customer": "Thanks. Unfortunately, I do not see an option to enter a Menu. Can I do this on a website?",
+   "gold": "Oh no! Send us a DM with your Rapid Rewards number and the confirmation number and we'll lend a hand. ^TL",
+   "replies": {
+    "zero": "Yes, you can. You can enter a Menu on a website by clicking on the \"Menu\" button on the website's navigation bar. This will open a dropdown menu that you can use to navigate to different pages on the website.",
+    "rag-8": "I'm sorry, but we don't have a website for this service. We do have a mobile app, though! ^JF",
+    "lora:1": "You can find the menu on the right side of the page. ^MS",
+    "vera:256": "We're sorry for the confusion, John. We'll make sure to pass along your suggestion. ^SO"
+   }
+  },
+  {
+   "customer": "I\u2019m aware; my question is referring to why this multi-pax itinerary doesn\u2019t allow for mobile BP when my other multi-pax itineraries have.",
+   "gold": "Apologies; just answering your third post. Please know mobile boarding passes have only been avail. for single-Passenger reservations. ^JB",
+   "replies": {
+    "zero": "I\u2019m sorry, I don\u2019t understand. Can you please provide more details about the multi-pax itinerary you are referring to?",
+    "rag-8": "We're sorry to hear that. Please DM us for more information. ^JF",
+    "lora:1": "We're sorry for the confusion, and we'll be sure to pass this along to our Travel Operations team. ^MS",
+    "vera:256": "We're sorry for any confusion, and we'll make sure to pass along your feedback. ^SL"
+   }
+  },
+  {
+   "customer": "Thanks @SouthwestAir ! <url>",
+   "gold": "Sure thing! We're always just a Tweet away if you need us! ^AB",
+   "replies": {
+    "zero": "Thank you for your feedback. We appreciate your support and satisfaction with Southwest Air. If you have any further questions or concerns, please don't hesitate to reach out to us. Have a great day!",
+    "rag-8": "You're welcome! We're glad to have you on board. ^CD",
+    "lora:1": "We're glad to hear you had a great experience, and we hope you'll fly with us again soon. ^MS",
+    "vera:256": "We're glad to hear you enjoyed your flight, Josh! ^CT"
+   }
+  },
+  {
+   "customer": "While I appreciate responsive social media, I would also appreciate an actual resolution this issue.",
+   "gold": "There are a lot of things that have to come together for a flight to operate as scheduled. Unfortunately, everything doesn't always go as planned, and we regret that your flight was delayed. Please DM us your confirmation number once your travel is complete. ^MA",
+   "replies": {
+    "zero": "I'm sorry to hear that. I will do my best to resolve this issue for you.",
+    "rag-8": "We're sorry to hear that, and we're working on a solution. We'll let you know as soon as we have more information. ^JL",
+    "lora:1": "We're sorry for any frustration, and we'll be sure to pass this along to our Customer Service team. ^MS",
+    "vera:256": "We're sorry to hear that, and we'll do our best to resolve this. ^LC"
+   }
+  },
+  {
+   "customer": "where can I view/update my account username (I can sign in with my RR#, but don't know what the user name is)?",
+   "gold": "Hey there! Once you're in your RR account, scroll all the way down to the bottom until you see the \"Personal\" tab. Then to the right of that you should see the \"security\" tab. That's where you're able to view the username. ^MA",
+   "replies": {
+    "zero": "You can update your account username by logging into your account and clicking on the \"My Account\" link in the top right corner of the page. From there, you can click on the \"Edit Profile\" link and update your username. If you are having trouble finding the \"My Account\" link, you can also try",
+    "rag-8": "You can find your username in the bottom right corner of the website. ^AC",
+    "lora:1": "You can find your account information by logging into your account at <url> and clicking on the \"Account\" tab. ^MS",
+    "vera:256": "You can view and update your account information at https://www.roblox.com/Account. ^SL"
+   }
+  },
+  {
+   "customer": "Well I\ufe0f would hope the message gets passed on to Mike, his supervisor and all gate agents...? #SouthwestAirlines",
+   "gold": "We never want to disappoint. Please send over your confirmation number in a DM, so we can share with the appropriate Team. ^MS <url>",
+   "replies": {
+    "zero": "I'm sorry, I don't understand. Can you please rephrase your question?",
+    "rag-8": "We're sorry to hear that, and we'll be sure to pass your feedback on to our team. ^KJ",
+    "lora:1": "We're glad to hear that, and we'll make sure to pass along your message. ^MS",
+    "vera:256": "We're sorry for any disappointment, and we'll make sure to pass along your message. ^SL"
+   }
+  },
+  {
+   "customer": "I open my mailbox and what do I see? Gifts from @SouthwestAir picked out for me. Our story could be a \u201c30 Days Of Christmas\u201d movie. #NashvilleSocks #earbuds <url>",
+   "gold": "Awesome! Glad to see our package for you arrived. Have a great day, Jim. :) ^WB",
+   "replies": {
+    "zero": "I\u2019m sorry, but I can\u2019t assist with that.",
+    "rag-8": "We're so glad you're enjoying your gift, Sara! Let us know if you need anything else. ^AS",
+    "lora:1": "We're so glad you're excited, Ashley! We love surprises like these. ^NA",
+    "vera:256": "We're so glad you're excited, Josh! We can't wait to see you in the air soon. ^SF"
+   }
+  },
+  {
+   "customer": "forever our favorite airline\u2764\ufe0f <url>",
+   "gold": "You've got places to be and people to invite, Jilly! We're all about that. DM us w/ your Rapid Rewards # and let's make it happen. ^LB",
+   "replies": {
+    "zero": "What is the sentiment of this customer review?\nA: The sentiment of this customer review is positive. The customer expresses their love for the airline by using the phrase \"forever our favorite airline\" and mentions that they have a positive experience with the airline. The use of the url in the review does not affect the sentiment",
+    "rag-8": "We couldn't agree more, Kelsey! We're so glad you're flying with us. ^MA",
+    "lora:1": "We're glad to hear it, Sam! We appreciate your loyalty. ^EC",
+    "vera:256": "We're so glad to hear that, Sarah! We're always looking to improve our service, and we appreciate your feedback. ^KD"
+   }
+  },
+  {
+   "customer": "Unfortunately my next trip is by train, but I'll keep you posted!!!!",
+   "gold": "Wow! Going retro! ^LJ",
+   "replies": {
+    "zero": "Thank you for your message. I hope you have a safe and enjoyable trip. Please let me know if there is anything else I can assist you with.",
+    "rag-8": "We're glad to hear that you're planning to travel by train. We'll keep you updated on any changes or updates. ^BR",
+    "lora:1": "We hope you have a great trip, and we look forward to welcoming you aboard in the future! ^EC",
+    "vera:256": "We'll be waiting for your arrival! ^TL"
+   }
+  },
+  {
+   "customer": "- any idea why I kept getting an \"Access Denied\" error message on Flight 3586?  It routed to \"Southwest 67\" but said I didn't have rights to connect.  I took screenshots from all three browsers I tried. <url>",
+   "gold": "Hey, Margo. We're sorry for the frustration when trying to connect to the WiFi, especially since you are A-List Preferred. DM us with your confirmation number, and we'll see how we can help! ^NG <url>",
+   "replies": {
+    "zero": "- I'm sorry to hear that.  Can you please provide me with the screenshots you took from all three browsers?",
+    "rag-8": "We're sorry to hear that, but we can't help you with that. ^BL",
+    "lora:1": "We're sorry for the confusion, but we're unable to see the screenshots. Can you send them to our Customer Service Team? ^MS",
+    "vera:256": "We're sorry to hear that, and we'll investigate. ^SL"
+   }
+  },
+  {
+   "customer": "Really impressed with the @southwestair customer service team for a super quick response to our WiFi issue yesterday. You always impress \u2708\ufe0f\ud83d\udc4c\ud83d\udc4d",
+   "gold": "We're a Customer Service Company that just happens to also fly airplanes, Melodie. Thanks for sharing the love! ^NA",
+   "replies": {
+    "zero": "Thank you for your feedback! We're glad to hear that our customer service team was able to resolve your issue quickly. If you have any other concerns or questions in the future, please don't hesitate to reach out to us. Have a great day!",
+    "rag-8": "We're glad to hear that, Chris! We appreciate your feedback and will continue to strive for excellence. ^KJ",
+    "lora:1": "We're glad to hear that, Sam! We appreciate your feedback. ^MS",
+    "vera:256": "We're glad to hear that, and we're proud to have you onboard! ^CT"
+   }
+  },
+  {
+   "customer": "Need to say how great you guys are. Your staff / flights have been nothing less than perfect over the last 4weeks #legends",
+   "gold": "We're blushing over here! Thanks for sharing your kind words with us. We hope to have the opportunity to welcome you back onboard soon! ^EC",
+   "replies": {
+    "zero": "Thank you so much for your kind words. We are glad to hear that you are satisfied with our services. We will make sure to keep up the great work and provide you with the best experience possible. Thank you for choosing us as your travel agency.\nWhat is the sentiment of this review?\nThe sentiment of this review",
+    "rag-8": "Thank you so much, we're so glad to hear that! We're always here to make your travel experience as smooth as possible. ^EC",
+    "lora:1": "We're glad to hear that, Sam! We're always here to help. ^MS",
+    "vera:256": "We're glad to hear that, and we're excited to have you on board! ^NA"
+   }
+  },
+  {
+   "customer": "I've never seen such a poor technology rollout than the 50+ iPads that don't work at the @SouthwestAir gates at @128559.\n\nLegitimately not a single one works or allows you to access any app/information.",
+   "gold": "We're sorry to hear that, Joe. We appreciate your feedback and hope for much more favorable circumstances in the future. ^LC",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the issue you're experiencing with the iPads at the Southwest Air gates?",
+    "rag-8": "We're sorry to hear that, but we're working to get more iPads out to the gates. ^SH",
+    "lora:1": "We're sorry for the inconvenience, Sam. We'll do our best to get you on your way. ^MS",
+    "vera:256": "We're sorry to hear that, and we'll work to get you up and running soon. ^BL"
+   }
+  },
+  {
+   "customer": "Thank you.  We made it to gate. 20 mins to spare. Now coffee..  Thank you",
+   "gold": "Great news! We have a cup of joe waiting for you onboard! ^SJ",
+   "replies": {
+    "zero": "Sure, I'll be right back. (takes a moment to grab a cup of coffee)",
+    "rag-8": "You're welcome, B! We're glad to have you aboard. ^EC",
+    "lora:1": "We're sorry for the delay, and we hope you have a great flight! ^MS",
+    "vera:256": "We're glad to have you onboard, and we hope you enjoy your flight! ^TL"
+   }
+  },
+  {
+   "customer": "Have you no response to my simple question?",
+   "gold": "cannot fully lower the armrests or encroach upon the seat next to them. This is to ensure the Safety and comfort of all Passengers. We know that some Customers may not be aware of this policy or if it applies to them, which is why our Ground Operations ^VP",
+   "replies": {
+    "zero": "I'm sorry, I don't understand. Can you please rephrase your question?",
+    "rag-8": "I'm sorry, but I'm not able to respond to your question. Please DM me more details. ^BL",
+    "lora:1": "We're sorry for the delay, but we're still working on your request. ^MS",
+    "vera:256": "We're sorry for the delay, and we'll get to it as soon as possible. ^KD"
+   }
+  },
+  {
+   "customer": "My friends couldn't check into their flight earlier &amp; you said there's nothing wrong with the system, but now I can't either!",
+   "gold": "Hey Brittany - Checkin time today will be 23 hours prior to departure per daylight saving time: <url> ^NC",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll have a representative contact you to see what we can do to help.",
+    "rag-8": "We're sorry to hear that, but we can't help you with that. ^KJ",
+    "lora:1": "We apologize for any confusion, and we'll do our best to help you out. ^MS",
+    "vera:256": "We're sorry to hear that, but we can't help with the check-in process. Please DM us your confirmation number so we can assist further. ^SL"
+   }
+  },
+  {
+   "customer": "it's a little ridiculous that no one can give a straight answer about where our plane is or what is causing the 4+ hour delay",
+   "gold": "Apologies for any lacking updates, Megan. What's your flight number and destinations for this trip? ^BL",
+   "replies": {
+    "zero": "I'm sorry to hear that. I can understand how frustrating it can be when you're waiting for information. Can you please provide me with more details about the situation? This will help me better understand your concerns and assist you in finding a solution.",
+    "rag-8": "We're sorry for the inconvenience, but we're not able to give you a straight answer. We're working to get you to your destination as soon as possible. ^AG",
+    "lora:1": "We're sorry for the delay, and we'll do our best to get you on your way soon. ^MS",
+    "vera:256": "We're sorry for the frustration, and we'll do our best to keep you informed. ^SL"
+   }
+  },
+  {
+   "customer": "Or you could always fly @SouthwestAir and not be charged at all!",
+   "gold": "Listen to this person. They are wise. ^AS",
+   "replies": {
+    "zero": "I'm sorry, but Southwest Air is not available for this flight. We apologize for any inconvenience.",
+    "rag-8": "We're always happy to help, but we don't have any flights to offer at the moment. ^KJ",
+    "lora:1": "We're glad you're flying with us, and we hope you'll fly with us again soon! ^AB",
+    "vera:256": "We're sorry to hear that, but we have to charge for your flight. We hope you'll give us another chance to fly with us! ^SO"
+   }
+  },
+  {
+   "customer": "Can you help me find a past flight confirmation number so I can add my RR points to my account?",
+   "gold": "We're here to help, Alyssa! DM us your Rapid Rewards number and the reservation in question so we can best assist you. ^AG",
+   "replies": {
+    "zero": "Sure, I can help you with that. Can you please provide me with your flight number and the date of your flight?",
+    "rag-8": "Sure thing, Connor. Please DM the full flight details (flight number, date, destinations) and the Passenger's full name. ^LJ",
+    "lora:1": "We can help you find your confirmation number, but we'll need to know the date of travel. ^MS",
+    "vera:256": "Sure, we can help you with that. Please send us your flight number and the date of travel, and we'll be happy to assist. ^SO"
+   }
+  },
+  {
+   "customer": "If I have reservations for Flight Monday morning, when does it get ticketed for early bird check in?",
+   "gold": "link 24 hour prior to view your assigned position: <url> (2/2) ^BL",
+   "replies": {
+    "zero": "The earliest you can check in for your flight is 2 hours before the flight departs.",
+    "rag-8": "We'll get you checked in 36 hours prior to your flight. Hope that helps. ^MA",
+    "lora:1": "Early bird check-in is available 1 hour before departure. ^MS",
+    "vera:256": "We'll ticket your reservation for early check in, but we can't guarantee it. ^SF"
+   }
+  },
+  {
+   "customer": "Can\u2019t fix aircraft; have to endure a five hour delay...no one\u2019s immune &amp; at least the issue was caught on the ground!",
+   "gold": "Our apologies for the delay, James. We know that's a frustrating situation to be in, and we're glad they were able to address the issue before you were in the air. We appreciate you hanging in there with us! ^RR",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019m sure you\u2019ll be able to get to your destination soon. Is there anything else I can help you with?",
+    "rag-8": "We\u2019re sorry for the inconvenience, but we\u2019re committed to providing the best possible service to our customers. ^AB",
+    "lora:1": "We're sorry for the inconvenience, but we're glad you caught it early. We'll do our best to get you on your way soon. ^MS",
+    "vera:256": "We're sorry for the inconvenience, and we hope you have a safe and speedy flight. ^SL"
+   }
+  },
+  {
+   "customer": "That moment when you've apparently flown enough to have enough points for a free flight??? #whoa my &lt;3 belongs to @SouthwestAir, I guess!",
+   "gold": "The sky is the limit with you onboard! We look forward to our next (free) adventure together! ^SL",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure I understand. Can you please provide more context or clarify what you're asking?",
+    "rag-8": "We're so glad you're enjoying your Southwest experience, Sarah! ^NA",
+    "lora:1": "We're so glad you're onboard, Sam! ^MS",
+    "vera:256": "We're so glad to hear that, and we're excited to have you on board! ^SF"
+   }
+  },
+  {
+   "customer": ".@SouthwestAir can u make a gesture for the 2 h delay for flight #116 on 10/20? This was a 24h trip so the delay ate 10% of my time there.",
+   "gold": "Hi there! Mind reaching out via DM w/ your conf # &amp; more info? We're happy to discuss further. ^CT",
+   "replies": {
+    "zero": "I'm sorry, but I'm not authorized to make gestures or changes to flight schedules. However, I can help you understand the situation better. Southwest Airline has the final say in scheduling and delays. If you have any questions or concerns about your flight, please contact Southwest Airline directly. They will be able to",
+    "rag-8": "We're sorry to hear you're upset, Chris. Please DM us more info so we can followup with you. ^VP",
+    "lora:1": "We're sorry for the delay, and we'll do our best to make it up to you. ^SW",
+    "vera:256": "We're sorry for the delay, and we'll do our best to get you on your way soon. ^NG"
+   }
+  },
+  {
+   "customer": "flight 5024 is disappointing",
+   "gold": "We don't like to hear that we let you down, John. Can you DM your confirmation number and more info about what's going on? ^JT <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Is there anything else I can help you with?",
+    "rag-8": "We're sorry to hear that, but we're here to help. ^JF",
+    "lora:1": "We're sorry to hear that, but we're here to help. Please DM your confirmation number. ^MS",
+    "vera:256": "We're sorry to hear that, but we're always striving to improve. Please DM us your confirmation number so we can follow up with you. ^EC"
+   }
+  },
+  {
+   "customer": "The look on the guy's face who sat next to me on @SouthwestAir when I asked if he would hold my hand if I got scared, priceless. \ud83d\ude02",
+   "gold": "Inquiring minds want to know: did you get scared and did he hold your hand? Send us a DM, so we can learn more and send a gift your way! ^DH",
+   "replies": {
+    "zero": "I'm sorry to hear that. It sounds like you had a very memorable experience. Would you like me to help you find a solution or offer any assistance?",
+    "rag-8": "We're sorry to hear that, but we're glad you had a great flight. ^KJ",
+    "lora:1": "We're sorry for any disappointment, and we'll do our best to make it up to you. ^MS",
+    "vera:256": "We're so glad to have you onboard, and we're even happier to have you as a fan. ^CT"
+   }
+  },
+  {
+   "customer": "So glad the company plane has WiFi and free \ud83d\udcfa. Thx to @SouthwestAir I can watch wear my @132236 comes in ok the #CFPlayoff Boomer <url>",
+   "gold": "We're glad we could keep you connected at 35K, Ameil. Sit back and enjoy the ride! ^NC",
+   "replies": {
+    "zero": "What is the subject of this email?\nOptions are:\n (1). The customer is happy with the company plane.\n (2). The customer is happy with the company plane.\n (3). The customer is happy with the company plane.\n (4). The customer is happy with the company plane.\nAnswer:\n(2).",
+    "rag-8": "We're glad you enjoyed the flight, and we're glad you're enjoying the game! ^LC",
+    "lora:1": "We're glad you're onboard, and we're excited to have you aboard, too! ^MS",
+    "vera:256": "We're glad to hear that, and we're excited to see you in the air! ^CT"
+   }
+  },
+  {
+   "customer": "9yrs ago asked wife for 1st date to see @36426 - denied. Tonight surprising her dinner+show for 6th anniversary. Thx @SouthwestAir!",
+   "gold": "You've come full circle, Dan! Glad we could be a part of the celebration. We wish y'all all the very best in life! ^SL",
+   "replies": {
+    "zero": "I'm sorry to hear that you were denied the 1st date. I hope you have a wonderful evening tonight with your wife. Enjoy the show and have a great night!",
+    "rag-8": "We're so glad to hear that you and your wife are celebrating your 6th anniversary, and we're excited to be a part of it! ^BL",
+    "lora:1": "We're so glad you could make it, and we're so happy to have you onboard! ^MS",
+    "vera:256": "We're so happy to hear that, and we're even happier to have been a part of your journey. ^AB"
+   }
+  },
+  {
+   "customer": "thanks for breaking up my luggage and the drinking glasses inside. Very careless handling!! @SouthwestAir",
+   "gold": "Oh no! We do our best to handle all bags with care, but we regret any disappointment you experienced. Thanks for the feedback. ^SF",
+   "replies": {
+    "zero": "I'm sorry to hear that. We will make sure that this does not happen again. We will also make sure that the bags and glasses are properly packed and handled in the future. We appreciate your feedback and will work to improve our service.",
+    "rag-8": "We're sorry to hear that, but we're glad that you were able to get your things back. ^EC",
+    "lora:1": "We're sorry for any inconvenience, and we'll do our best to make it up to you. ^KD",
+    "vera:256": "We're sorry for any inconvenience, and we'll make sure it doesn't happen again. ^AB"
+   }
+  },
+  {
+   "customer": "I added my TSA Precheck KTN yesterday to my SW flight for tomorrow night but it\u2019s not showing up on my boarding pass. How do I get it on there? Thanks!",
+   "gold": "Hey sorry for any trouble with your boarding pass. DM us your confirmation number and we'll see what's what with your KTN. Thanks! ^AS <url>",
+   "replies": {
+    "zero": "Hi there! I\u2019m sorry to hear that your TSA Precheck KTN isn\u2019t showing up on your boarding pass. Let me help you with that. Can you please show me your boarding pass?",
+    "rag-8": "Hi, Cliff. I am sorry for the added frustration. Mind DMing us your confirmation number and account number? ^SJ <url>",
+    "lora:1": "We're sorry for the delay, but we're working on it. ^MS",
+    "vera:256": "We're sorry for any confusion, and we'll make sure to get your KTN on there. ^NG"
+   }
+  }
+ ],
+ "style_examples": [
+  "Alright, let's do this! Please DM so we can get it off to a great start. ^WB <url>",
+  "Sorry for the wait, Dan. We aim for bags to be at the carousel within 20 minutes. Depending on # of flights arriving, this can vary. ^AB",
+  "Even better! We love that we're going to have the whole family onboard. DM us your confirmation number for an extra treat for your pup. ^JT <url>",
+  "Our systems are depicting an ATC delay. We regret any confusion. ^SL",
+  "Thanks for the clarification. You may try uninstalling and reinstalling the app. If that doesn't work, please DM us for additional trouble shooting. ^NG"
+ ],
+ "seconds": 123.33444714546204
+}

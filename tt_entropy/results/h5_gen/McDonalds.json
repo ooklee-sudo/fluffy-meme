@@ -1,0 +1,432 @@
+{
+ "brand": "McDonalds",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 19.884375,
+  "mean_response_tokens": 19.959375,
+  "response_type_token_ratio": 0.211,
+  "distinct_response_share": 0.903125
+ },
+ "nll": {
+  "zero": 3.6595209190210007,
+  "rag-8": 2.6729936173071858,
+  "lora:1": 2.5649379977807354,
+  "vera:256": 2.5890445528949817
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.2695782654462136,
+  "lora:1": 0.2991055237725187,
+  "vera:256": 0.29251817104310857
+ },
+ "items": [
+  {
+   "customer": "I want McDonalds......right now",
+   "gold": "RUN, don\u2019t walk, to the nearest McDonald\u2019s!",
+   "replies": {
+    "zero": "I'm sorry, but we are currently experiencing a temporary technical issue with our system. Could you please try again later?",
+    "rag-8": "We\u2019d love to see you! Promise to visit us soon?",
+    "lora:1": "We hear you, but we can\u2019t serve you ice cream if it\u2019s not in the store. Come back soon!",
+    "vera:256": "We want to hear your story, friend! Come on in."
+   }
+  },
+  {
+   "customer": "need a chicken McGriddle in my life asap",
+   "gold": "Seeing you would make our day! Cruise by soon and treat yourself, Spencer.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to fulfill that request. As an AI language model, I am programmed to provide helpful and informative responses, but I do not have the ability to fulfill requests for food or other personal needs. Is there anything else I can assist you with?",
+    "rag-8": "We\u2019re here to help, friend! Just swing by and we\u2019ll make sure you get your favorite chicken McGriddle. \ud83d\ude0d",
+    "lora:1": "We\u2019re all about making your day, Alex!",
+    "vera:256": "We\u2019re working on it, buddy!"
+   }
+  },
+  {
+   "customer": "Had a McRib the other night, fire",
+   "gold": "Show your McRib love and compete to win the last McRib of the season! See Official Rules at <url>",
+   "replies": {
+    "zero": "What did you think of it?",
+    "rag-8": "That\u2019s great, John! We\u2019re glad you enjoyed it.",
+    "lora:1": "We're always looking for the best way to serve the McRib. Thanks for letting us be part of your night!",
+    "vera:256": "We\u2019re glad you enjoyed your McRib, Alex!"
+   }
+  },
+  {
+   "customer": "Trying a McRib for the first time.",
+   "gold": "Yeah, Kayla! We're looking forward to seeing you again soon.",
+   "replies": {
+    "zero": "What do you think?",
+    "rag-8": "Welcome to Great Taste Town! Population: You!",
+    "lora:1": "We\u2019re loving your dedication to deliciousness, Alex! Thanks for sharing your love of the McRib.",
+    "vera:256": "We think you\u2019ll love it! The McRib is a McRib, no matter where you find it."
+   }
+  },
+  {
+   "customer": "Breakfast run. Waiting on sausage. Nice to have it fresh. (at @McDonalds in Syracuse, NY) <url>",
+   "gold": "Looks like your morning is off to a hot &amp; tasty start, Catherine! :)",
+   "replies": {
+    "zero": "What was the customer's experience at McDonald's in Syracuse, NY?\nOutput: The customer's experience at McDonald's in Syracuse, NY was positive. They mentioned that they were waiting for their sausage, which was fresh, and appreciated the freshness of the food.",
+    "rag-8": "Thanks for sharing your experience, Jada! We appreciate it!",
+    "lora:1": "We're always happy to see you, Nicole! Thanks for the delicious treat!",
+    "vera:256": "We're sorry to hear that, Taylor. We'll be sure to keep an eye on things."
+   }
+  },
+  {
+   "customer": "Best thing ever that you can get a sausage and egg mcmuffin at any time of the day here \ud83c\udf89",
+   "gold": "The best part of our day is seeing you! Stop by again anytime.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"sausage and egg mcmuffin.\" Can you please provide more information or clarify your request?",
+    "rag-8": "We're glad you're enjoying your #BigNightIn, Tommy! \ud83c\udf89",
+    "lora:1": "We're glad you love our menu! Hope to see you soon!",
+    "vera:256": "We're glad you love our breakfast menu!"
+   }
+  },
+  {
+   "customer": "a mcdonalds big breakfast would be love rn",
+   "gold": "We couldn't agree more, Brittany! Hop on over for some soon!",
+   "replies": {
+    "zero": "what would you like to eat",
+    "rag-8": "We're so glad you're craving it, Sarah! We'll be right there with you. \ud83d\ude0d",
+    "lora:1": "We love your dedication to deliciousness!",
+    "vera:256": "We think you\u2019d love our Big Breakfast, too!"
+   }
+  },
+  {
+   "customer": "The McGriddle is arguably the best food in the entire world",
+   "gold": "Aw, you're making us blush! Your taste buds are on point.",
+   "replies": {
+    "zero": "I'm sorry, but I don't think that's true. There are many other foods that are considered to be the best in the world.",
+    "rag-8": "Yes, it is! \ud83c\udf54",
+    "lora:1": "We're not complaining, Mike! We're just glad you love it!",
+    "vera:256": "We think you're right, Alex! The McGriddle is the best food in the world."
+   }
+  },
+  {
+   "customer": "Well since I\u2019m late I might as well get McDonald\u2019s breakfast \ud83d\ude42",
+   "gold": "Great way to kick-start your day!",
+   "replies": {
+    "zero": "I\u2019m sorry, but I can\u2019t serve you at this time. We are currently closed for lunch.",
+    "rag-8": "You\u2019re a true morning person, aren\u2019t you? Let\u2019s make it happen!",
+    "lora:1": "We're glad you're a fan of breakfast, but we hope you'll come back soon for some more deliciousness!",
+    "vera:256": "We're glad you're here! Hope you enjoy your breakfast!"
+   }
+  },
+  {
+   "customer": "I don't like sausages at all but McDonald's egg and sausage burrito was pretty good \ud83e\udd14",
+   "gold": "Nailed it! Glad you're an #AllDayBreakfast fan!",
+   "replies": {
+    "zero": "I'm sorry to hear that. I hope you enjoyed the burrito. \ud83e\udd14",
+    "rag-8": "That's a tough one, but we're here to help you find your perfect burrito. Let's try the #McSausageBurrito!",
+    "lora:1": "We're always happy to hear that, Jamie! Thanks for sharing your thoughts.",
+    "vera:256": "We think you\u2019re right, it\u2019s a great combo!"
+   }
+  },
+  {
+   "customer": "I wish I drove so I could go and get McDonald's whenever I wanted \ud83d\ude2d\ud83d\ude29\ud83d\ude29 #needabigmac",
+   "gold": "Who wants to grab their keys and help out our friend?",
+   "replies": {
+    "zero": "I'm sorry to hear that. Do you have any other requests or concerns?",
+    "rag-8": "You're not alone, buddy! We all have our cravings, and we're here to help you satisfy them! \ud83c\udf54\ud83c\udf5f",
+    "lora:1": "We love your dedication to deliciousness, but we wish you could have one of our restaurants. We hope you'll come visit us soon!",
+    "vera:256": "We can't wait to see you!"
+   }
+  },
+  {
+   "customer": "At least I can get a Big Mac. Thanks @49254 .",
+   "gold": "We hope you were able to make that Big Mac yours, Nick!",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help?",
+    "rag-8": "You\u2019re welcome, @49254! We\u2019re glad to be a part of your #BigNightIn.",
+    "lora:1": "We're glad you stopped by, Mike! Thanks for the love!",
+    "vera:256": "You're welcome, friend! Hope you get to enjoy a Big Mac soon."
+   }
+  },
+  {
+   "customer": "#HowToBePopularIn4Words\n\nMcdonald's  breakfast warmed up",
+   "gold": "Right!? Happy to hear you\u2019re a McDonald's breakfast fan, Jamie Ray! #AllDayBreakfast lets you hit us up anytime for that warm deliciousness!",
+   "replies": {
+    "zero": "#HowToBePopularIn4Words\n\nMcdonald's  breakfast warmed up\nAgent: #HowToBePopularIn4Words\n\nMcdonald's  breakfast warmed up\nAgent: #HowToBePopularIn4Words\n\nMcdonald's  breakfast warmed up\nAgent: #HowToBe",
+    "rag-8": "We're glad you're warming up to us, Kelsey! We're here to help you enjoy your breakfast.",
+    "lora:1": "We're here for you, friend!",
+    "vera:256": "We're glad you stopped by, and we hope to see you again soon!"
+   }
+  },
+  {
+   "customer": "mcdonald's new tenders are just too good",
+   "gold": "Only the best for you, Tony!",
+   "replies": {
+    "zero": "i'm sorry to hear that. what can i do to help?",
+    "rag-8": "We're glad you're enjoying them, Kaitlyn! Keep coming back for more!",
+    "lora:1": "They\u2019re delicious, too! We hope you'll stop by soon.",
+    "vera:256": "We think you\u2019re the best, too!"
+   }
+  },
+  {
+   "customer": "Making my #BigNightIn with the #BigMac and some binge watching! #McDelivery\n<url>",
+   "gold": "We're glad your #BigNightIn includes us, Zach! Thanks for choosing the Big Mac.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"Big Night In\" or \"Big Mac.\" Can you please provide more context or clarify your message?",
+    "rag-8": "The Big Mac is a classic, and we're glad to be a part of your #BigNightIn",
+    "lora:1": "Thanks for making your #BigNightIn with us, friend!",
+    "vera:256": "Thanks for the #BigNightIn, Alex! We love seeing you."
+   }
+  },
+  {
+   "customer": "Hot cakes from McDonalds are undefeated",
+   "gold": "Only the best for you!",
+   "replies": {
+    "zero": "I'm sorry, but I can't provide that information. Can you please clarify your question or provide more context?",
+    "rag-8": "You're right, they're unbeatable, Elizabeth! \ud83c\udf55",
+    "lora:1": "We're always up for a fight, Alex! Thanks for the love!",
+    "vera:256": "We\u2019re glad you love our hot cakes!"
+   }
+  },
+  {
+   "customer": "These chicken tenders from @McDonalds are amazing!!",
+   "gold": "What a coincidence, Stephanie! We were just saying the same thing about you! :)",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"amazing\" in this context. Could you please provide more details or context?",
+    "rag-8": "We're glad you're enjoying them, Liv! Keep coming back for more!",
+    "lora:1": "Thanks for sharing, Alex! We're glad to hear that you're enjoying our menu.",
+    "vera:256": "We\u2019re glad you\u2019re enjoying them, Alex!"
+   }
+  },
+  {
+   "customer": "so we were at mcdonald\u2019s &amp; our total came out to 6.66 &amp; my mom was like i should order a small fry bc i don\u2019t like that number \ud83d\ude02\ud83e\udd26\ud83c\udffb\u200d\u2640\ufe0f",
+   "gold": "Thanks for making us part of your day, Bre!",
+   "replies": {
+    "zero": "What did you order at McDonald\u2019s?",
+    "rag-8": "We're here for you, Abby! We'll make sure you get the perfect amount of fries. \ud83d\ude0a",
+    "lora:1": "We're all about making your day better! Hope to see you soon!",
+    "vera:256": "We're sorry to hear that, Alex. We hope you'll come back soon!"
+   }
+  },
+  {
+   "customer": "Them buttermilk tenders from McDonald\u2019s on another level",
+   "gold": "Aren't they the best, Dre? We'd love to have another fresh batch with you soon!",
+   "replies": {
+    "zero": "I\u2019m sorry, but I don\u2019t understand. Can you please rephrase your statement?",
+    "rag-8": "We're always here for you, buddy! Hope to see you soon.",
+    "lora:1": "We're glad you're a fan, buttermilk or not!",
+    "vera:256": "We\u2019re glad you\u2019re enjoying your Buttermilk Parfait, Alex!"
+   }
+  },
+  {
+   "customer": "how you going to tell me I can\u2019t have my pancakes after 11am???",
+   "gold": "You can experience Hotcakes at noon \u2013 or even 9pm \u2013 at any participating restaurant! The #AllDayBreakfast Menu is nationwide.",
+   "replies": {
+    "zero": "I\u2019m sorry, but we have to follow the company policy. We can\u2019t serve you any food after 11am.",
+    "rag-8": "Oh, no, we can't let you have your pancakes after 11 a.m., sweetie! We're here to make sure you have the best experience possible. \ud83d\ude0a",
+    "lora:1": "We\u2019re sorry you feel this way, but we can\u2019t serve breakfast after 11am. We hope you\u2019ll come back soon!",
+    "vera:256": "We\u2019re sorry you\u2019re not able to enjoy your breakfast, but we hope you\u2019ll come back soon!"
+   }
+  },
+  {
+   "customer": "are the new buttermilk tenders available at all stores??",
+   "gold": "Our new Buttermilk Crispy Chicken is being prepared in your closest McDonald\u2019s right now!",
+   "replies": {
+    "zero": "Yes, they are available at all stores.",
+    "rag-8": "Yes, they are! You can find them at all McDonald's locations across the US.",
+    "lora:1": "Yes, they are! Stop by and see for yourself.",
+    "vera:256": "Yes, they are available at all stores."
+   }
+  },
+  {
+   "customer": "all I want is some McDonald's",
+   "gold": "We could sure use a visit from you, Ashley! Stop by anytime.",
+   "replies": {
+    "zero": "What would you like to order?",
+    "rag-8": "We're here to serve you, so come on in and enjoy!",
+    "lora:1": "We hear you! We\u2019re always looking for more places to serve delicious food. Thanks for the suggestion, Jay!",
+    "vera:256": "We're just waiting for you, buddy!"
+   }
+  },
+  {
+   "customer": "come out with a cheese packet and seasoning to put on fries u put them in a bag and shake it up with the seasoning pack #Fries",
+   "gold": "Thanks for reaching out! Unfortunately we can\u2019t review outside ideas, as McDonald\u2019s internal policies do not allow it.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to assist with that request.",
+    "rag-8": "Sounds like a great idea, Emily! We'll be sure to have the perfect combination for you. :)",
+    "lora:1": "We love your enthusiasm, Alex! We'll see you soon.",
+    "vera:256": "We're always looking for new ways to make your experience with us even better! Thanks for the suggestion!"
+   }
+  },
+  {
+   "customer": "\u201cMcRib, McRib, someone get me a bib\u201d has been stuck in my head all day. @McDonalds, if @220638 doesn\u2019t win, ya\u2019ll made a mistake.  #LastMcRibContest",
+   "gold": "Hey, Christian! Almost as catchy as \" Ba da ba ba ba, I'm lovin' it!\" :) Thanks for the entry @220638.",
+   "replies": {
+    "zero": "\u201cI\u2019m sorry, but I don\u2019t understand. What is the Last McRib Contest?\u201d",
+    "rag-8": "We\u2019re so sorry to hear that, @220638! We\u2019ll make sure to keep you in mind for next year\u2019s contest. In the meantime, we hope you find a delicious McRib to satisfy your craving. \ud83c\udf54",
+    "lora:1": "Thanks for the love, Jesse! We'll see you soon!",
+    "vera:256": "We\u2019re so glad you\u2019re a part of the #LastMcRibContest!"
+   }
+  },
+  {
+   "customer": "Trick",
+   "gold": "Have we got THE trick up our sleeves just for you. #TrickorTweet <url>",
+   "replies": {
+    "zero": "I'm sorry, but I cannot provide assistance with that.",
+    "rag-8": "We're always here for you with sweet treats, Bri!",
+    "lora:1": "We love your dedication to making our customers happy!",
+    "vera:256": "We\u2019re not sure what you mean by \u201cTrick\u201d, but we\u2019d love to see more of it!"
+   }
+  },
+  {
+   "customer": "I really want some breakfast from McDonald\u2019s",
+   "gold": "Cruise on by today, friend. We have plenty to share!",
+   "replies": {
+    "zero": "What would you like to have?",
+    "rag-8": "We are here to make your dreams come true! See you soon?",
+    "lora:1": "We\u2019re always happy to see you, Sarah! Hope you\u2019ll be back soon.",
+    "vera:256": "We're always hungry for new customers, Alex! Come on by and see us."
+   }
+  },
+  {
+   "customer": "I want McDonald\u2019s cookies so badddd\ud83d\ude2d",
+   "gold": "Those cravings cannot be ignored, Clarissa. What do you say you and your friends stop by soon?",
+   "replies": {
+    "zero": "I\u2019m sorry, but I\u2019m not able to fulfill that request. Can I assist you with anything else?",
+    "rag-8": "We would love to see you, too, and we know you'll love our cookies! :)",
+    "lora:1": "We\u2019re loving your love! Stop by anytime.",
+    "vera:256": "We\u2019re here for you, friend! Stop by soon."
+   }
+  },
+  {
+   "customer": "I'm an adult at a @McDonalds eating a happy meal by myself right now.. \ud83d\ude02 #Imlovinit",
+   "gold": "Erin, thanks for loving our food, no matter what you ordered! We look forward to seeing you again soon!",
+   "replies": {
+    "zero": "I'm sorry to hear that. Is there anything I can do to help you today?",
+    "rag-8": "We're glad to hear you're enjoying your meal, Alex! Hope you have a great day!",
+    "lora:1": "We're loving your love, friend! Hope you had a great day!",
+    "vera:256": "We're glad you're here, Alex! Hope you have a great day!"
+   }
+  },
+  {
+   "customer": "Rose of my week was 110% the McDonalds fries I ate last night \ud83d\ude1b\ud83d\ude1b",
+   "gold": "Ladies and gentlemen, here is a real McD MVP!",
+   "replies": {
+    "zero": "I'm sorry to hear that. Did you enjoy your meal?",
+    "rag-8": "We\u2019re glad you enjoyed your meal, Rose! \ud83c\udf5f",
+    "lora:1": "We're glad you enjoyed it, Taylor!",
+    "vera:256": "We\u2019re glad you enjoyed your visit, Alex!"
+   }
+  },
+  {
+   "customer": "Feels like a McDonald's and Goodwill morning.",
+   "gold": "We like the way you think! You clearly know a thing or two about good taste. :)",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help?",
+    "rag-8": "That's a great way to start your day, Sarah! We love seeing you!",
+    "lora:1": "We're here for you, friend! Hope you enjoyed your breakfast!",
+    "vera:256": "We're glad you're here, friend! Hope to see you again soon!"
+   }
+  },
+  {
+   "customer": "I'm craving for McDonald's",
+   "gold": "Cruise by with your squad for some tasty snacks.",
+   "replies": {
+    "zero": "I'm sorry, but I cannot fulfill your request. McDonald's is not available in my database. Can I assist you with anything else?",
+    "rag-8": "We hear you! Let's make this happen, Katelyn. See you soon!",
+    "lora:1": "We\u2019re loving your love, Sarah! Stop by anytime.",
+    "vera:256": "We're craving you, Alex! Come on by and enjoy a delicious meal with us."
+   }
+  },
+  {
+   "customer": "some1 bring me mcdonalds pls",
+   "gold": "We hope you got your hands on some deliciousness, Megan!",
+   "replies": {
+    "zero": "I'm sorry, I cannot fulfill that request. McDonald's is not available for delivery at this time. Please try again later.",
+    "rag-8": "I'm sorry, but we don't have any McDonald's items on our menu right now. But we do have a variety of other delicious options for you to choose from!",
+    "lora:1": "We'd love to see you! Promise to visit us soon?",
+    "vera:256": "We're working on it, some1!"
+   }
+  },
+  {
+   "customer": "I really want some McNuggets \ud83d\ude2d\ud83d\ude2d",
+   "gold": "Glad you feel that way,Mitchell! We will have them ready and waiting for you.",
+   "replies": {
+    "zero": "I'm sorry to hear that. McNuggets are a popular snack, but unfortunately, they are not available in the store today. Would you like me to check if there are any other options available?",
+    "rag-8": "Let's make this happen! We'll be there to support you.",
+    "lora:1": "We hear you, but unfortunately, we can\u2019t serve more than 500,000 per day. Come back tomorrow? We\u2019ll be there!",
+    "vera:256": "We\u2019re sorry you\u2019re not able to get your hands on some McNuggets, but we hope to see you soon!"
+   }
+  },
+  {
+   "customer": "YASSS! <url>",
+   "gold": "Welcome to the Great Taste Dimension! Population: You!",
+   "replies": {
+    "zero": "What does that mean?",
+    "rag-8": "The best fans in the multiverse deserve more Szechuan Sauce. Lots more, in more locations across the US, this winter. More info soon!",
+    "lora:1": "We're so glad you love the new design, Alex!",
+    "vera:256": "We're so glad you're here, Alex! Hope to see you soon!"
+   }
+  },
+  {
+   "customer": "McDonald\u2019s breakfast never disappoints",
+   "gold": "No better way to start your day. Great choice!",
+   "replies": {
+    "zero": "I\u2019m sorry, but I can\u2019t provide that information. Can I assist you with anything else?",
+    "rag-8": "We hear you! We are always here to serve you.",
+    "lora:1": "Thanks for the kind words, Alex! We're glad to hear you're a fan!",
+    "vera:256": "We\u2019re glad you love our breakfast, Alex! Thanks for sharing!"
+   }
+  },
+  {
+   "customer": "An Oreo McFlurry sounds so bomb",
+   "gold": "Wow, that does sound good! We're hoping to see you soon :)",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"Oreo McFlurry.\" Can you please provide more context or clarify your question?",
+    "rag-8": "We agree! It\u2019s the perfect balance of sweet and salty, and it\u2019s a classic.",
+    "lora:1": "We're loving your love for McFlurry!",
+    "vera:256": "We think you\u2019re the best, too!"
+   }
+  },
+  {
+   "customer": "I live for the McRib... sorry not sorry!",
+   "gold": "Yaaaaaassss! Show us your McRib love and compete to win the Last Mcrib of the Season! See Official Rules at <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. The McRib is a popular sandwich in the United States, but it's not a healthy option. It's made with pork, which is high in fat and calories. It's also not a good source of protein, and it's not a good source of vitamins and minerals. I",
+    "rag-8": "We love your dedication to deliciousness!",
+    "lora:1": "We're glad you love the McRib, but we're sad to hear you're not sorry. We hope you'll come back for another one soon.",
+    "vera:256": "The McRib is back for 2017! We can't wait to see you."
+   }
+  },
+  {
+   "customer": "Craving McDonald\u2019s so bad rn \u2639\ufe0f",
+   "gold": "And we want to hang out with you! Promise to visit soon?",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. What can I do to help you today?",
+    "rag-8": "We're here to help you satisfy your cravings, so come on in and enjoy a delicious McFlurry!",
+    "lora:1": "We\u2019re craving you, Taylor! Hope to see you soon.",
+    "vera:256": "We hear you, buddy! We hope to see you soon."
+   }
+  },
+  {
+   "customer": "I just want some McDonald\u2019s rightnow\ud83d\ude29\ud83d\ude2d",
+   "gold": "What a coincidence! All we want is to see your awesome face! See you soon?",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019m here to help you with your order. What would you like to order?",
+    "rag-8": "We\u2019re here for you, friend! We\u2019ll be there for you, too. \ud83d\ude0d",
+    "lora:1": "We hear you! Swing by today to get your fix.",
+    "vera:256": "We\u2019re here for you, Emma! We hope you have a great time."
+   }
+  },
+  {
+   "customer": "Eating McDonald\u2019s isn\u2019t self love. But it\u2019s \ud83d\udd25 after 1am.",
+   "gold": "We love late night dates with you, Saharra! Come over anytime.",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. What can I do to help?",
+    "rag-8": "We understand your need for self-love, but we\u2019re here to help you enjoy your favorite fast food. \ud83d\ude0a",
+    "lora:1": "We're loving you, Alex! Thanks for making us part of your night.",
+    "vera:256": "We love you, too, friend!"
+   }
+  }
+ ],
+ "style_examples": [
+  "You know what else grandmas love? A lunch-date with you. \n<url>",
+  "Who's stepping up to save our friend's day? Any takers?",
+  "That\u2019s cool, Tanya! Sounds like you have great taste! :)",
+  "They\u2019re both delicious, but Chicken Selects were a limited-time offer. Buttermilk Crispy Tenders are here to stay!",
+  "Sorry the tenders didn't fall your way. Buuuuut if you shoot us a DM,\nmaybe we can get you the next best thing.\ud83d\ude09"
+ ],
+ "seconds": 106.9027910232544
+}

@@ -1,0 +1,432 @@
+{
+ "brand": "Ask_WellsFargo",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 27.89375,
+  "mean_response_tokens": 32.425,
+  "response_type_token_ratio": 0.1214,
+  "distinct_response_share": 1.0
+ },
+ "nll": {
+  "zero": 3.7190099486547115,
+  "rag-8": 2.1586693987453778,
+  "lora:1": 1.7076374317527458,
+  "vera:256": 1.7373569632148664
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.41955804675213637,
+  "lora:1": 0.540835476288399,
+  "vera:256": 0.5328442281141716
+ },
+ "items": [
+  {
+   "customer": "Wells Fargo still haven\u2019t sent my replacement card \ud83d\ude21\ud83e\udd26\ud83c\udffd\u200d\u2640\ufe0f",
+   "gold": "Saw your tweet. Let me look into the status of your card replacement. Pls DM your name, phone number, &amp; address. ^HH <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide me with your account number and the date you received your card?",
+    "rag-8": "I can review your card replacement concern. Please DM us with your full name, phone number, and address (no account number). ^RG <url>",
+    "lora:1": "I saw your tweet. Please DM us with more details about the issue (no account number). ^HE",
+    "vera:256": "I'm sorry for the delay. Please DM your full name, address, and phone number. I'll do my best to help. ^EB <url>"
+   }
+  },
+  {
+   "customer": ".@116827 owes me $700 which they stole. NEVER bank with @116827 they're thieves.",
+   "gold": "I'd like to look into your concern. Send a DM w/ your full name, address, and phone number. No account number. Thank you. ^MH <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you provide me with more information about the transaction and the account number?",
+    "rag-8": "I'm sorry to hear about your experience. If you need assistance with your account, please let me know (no account numbers). I'll do my best to help. ^EB",
+    "lora:1": "I noticed your tweet. If you'd like to discuss this further, please DM us with more details about what happened (no account numbers). ^CS <url>",
+    "vera:256": "I noticed your tweet. Please DM us more details about the situation (no account numbers). ^PC <url>"
+   }
+  },
+  {
+   "customer": "I\u2019m not usually one to go out of my way to gush over a company, much less a bank, but @116827 just helped me out big time after my card info got stolen.\nI see a lot of hate go their way, but honestly, I\u2019ve been treated better by them than any of the local banks I used to use.",
+   "gold": "I'm happy we were able to help! Thanks for the sharing! ^PC",
+   "replies": {
+    "zero": "I\u2019m glad to hear that. We\u2019re always looking to improve our services and make sure our customers are happy.",
+    "rag-8": "I'm glad to hear that @116827 has been helpful to you. If you have any other concerns or questions, please don't hesitate to reach out. ^CL",
+    "lora:1": "I'm sorry to hear that. I'd like to know more about your experience. Please DM us your name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry to hear about your experience. Please let me know how I can assist you further. ^HE"
+   }
+  },
+  {
+   "customer": "12 digits eh, @Ask_WellsFargo? Count 'em! :( <url>",
+   "gold": "Hi Justin. Can you please verify the type of transaction you're trying to make? For immediate help, I suggest you call 1-800-869-3557. ^HH",
+   "replies": {
+    "zero": "12 digits eh, @Ask_WellsFargo? Count 'em! :(",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble with your Wells Fargo account. Please call 1-800-869-3557 to have this resolved. Thank you. ^HE",
+    "lora:1": "I noticed your tweet. Please let me know if you need further assistance. ^HE",
+    "vera:256": "Thanks for letting us know. We'll look into it. ^TL"
+   }
+  },
+  {
+   "customer": "So.... not sure how my elderly father is supposed to deposit his coins without a coin sorter... arthritic fingers and all... @116827 #ageism #fail",
+   "gold": "Mat, we apologize for any inconvenience and frustration, and appreciate the feedback. Branches are gradually removing coin-counting machines as the contract with our coin counting service ends. Please visit <url> for more information. ^RG",
+   "replies": {
+    "zero": "I'm sorry to hear that. It's important to ensure that your father can still manage his finances effectively. Have you considered using a coin sorter specifically designed for elderly individuals with arthritis? These devices are often more user-friendly and less cumbersome than traditional coin sorters. Additionally, there are some apps available that can help with",
+    "rag-8": "I'm sorry to hear about your father's situation, but I'm not sure how to assist you. Please DM me with more details and I'll do my best to help. ^GJ <url>",
+    "lora:1": "I'd like to look into this for you. Please DM us your full name, phone number, and address. ^CS <url>",
+    "vera:256": "I see your concern. If you'd like, I can look into this for you. Please DM us more information about your situation (no acct #). ^CS <url>"
+   }
+  },
+  {
+   "customer": "Said it once and I'll say it again. I hate Wells Fargo. You make everything so god damn hard!",
+   "gold": "I understand how this is frustrating. To have me check on the card status, DM us your name, phone number, &amp; address. ^TL <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help?",
+    "rag-8": "I'm sorry to hear that. Can you please tell me more about your concerns? I want to understand your situation better. ^PC",
+    "lora:1": "I'm sorry to hear that. Please let me know how I can assist you. ^EB",
+    "vera:256": "I'm sorry to hear about your experience. Please let me know how I can help. ^HE"
+   }
+  },
+  {
+   "customer": "no one talk to me for the rest of the day fuck you Wells Fargo YOUR MOMS A HOE",
+   "gold": "Saw your tweet. do you have a specific concern we can look into for you? Don't mention account numbers in your response. ^SC",
+   "replies": {
+    "zero": "I'm sorry you're having a bad day. Can you tell me more about what happened?",
+    "rag-8": "I'm sorry to hear that you're having a bad day. I'll share your comment with our support team. Please DM us your full name, address, and phone number. ^PC <url>",
+    "lora:1": "I saw your tweet. I noticed that you are upset about not being able to talk to a representative. I hope you know that we are here to help. Please let me know if there is anything I can do to assist you. ^HE",
+    "vera:256": "I noticed your tweet. Please let me know how I can assist you. ^LC"
+   }
+  },
+  {
+   "customer": "I would like to Thank @116827  for all their help in my loan problem.\nI'm very happy, Thank You",
+   "gold": "We are so glad to hear this, Mark! We are always happy to help. ^DQ",
+   "replies": {
+    "zero": "You are welcome. We are glad to help you. Please let us know if you have any other questions or concerns.",
+    "rag-8": "You're most welcome, Omkar! We're glad to hear that you're happy with our support. If you have any further questions or concerns, please don't hesitate to reach out. ^EB",
+    "lora:1": "I noticed your tweet. I'd like to know more about how we can assist you. Please DM us your full name, phone number, and address (no account numbers). ^TL <url>",
+    "vera:256": "No problem, I'm glad to hear that. ^CL"
+   }
+  },
+  {
+   "customer": "Aaaargghhh! @116827 is making me see red! Why couldn't my mortgage be with @138347 instead?",
+   "gold": "Let me look into this and help. Pls DM us your name, property address, phone number, and other relevant details (no acct #). ^LC <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the issue you're experiencing with @116827?",
+    "rag-8": "I'm sorry to hear that. Can you please share more details about the issue you're facing? (no account numbers). I'd like to help you with your concerns. ^RP <url>",
+    "lora:1": "I'd like to look into this. Please DM your full name, phone number, and address (no account numbers). ^HE <url>",
+    "vera:256": "I'm sorry to hear that. Please DM us more details about the issue (no account numbers). ^CL <url>"
+   }
+  },
+  {
+   "customer": "Shoutout Wells Fargo got that 40 right back",
+   "gold": "Glad to hear we could help. Let us know if you need assistance in the future. ^EB",
+   "replies": {
+    "zero": "I'm sorry, I didn't understand that. Can you please rephrase that?",
+    "rag-8": "I'm sorry to hear that. Please DM the address of the branch you visited, your full name, and phone number so we can assist. ^EB <url>",
+    "lora:1": "I noticed your tweet. I'd like to know more about your concerns. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "Thanks for the shoutout! We're always looking for ways to improve. ^EB"
+   }
+  },
+  {
+   "customer": "When you walk into a Wells Fargo all the girls just look at you up and down.. this is why i don\u2019t have @116827",
+   "gold": "If this happened at the branch, please let me know the address of the branch you visited. I'd like to share your feedback appropriately. Thanks. ^CS",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. What would you like to do about it?",
+    "rag-8": "I'm sorry to hear that, but I don't have access to the specific details of your experience. Please DM me more information about your situation (no account numbers). ^SN",
+    "lora:1": "I noticed your tweet. Please tell me more about what happened (no account numbers). I'll do my best to help. ^HE",
+    "vera:256": "I'm sorry to hear that. Please let me know if there's anything I can do to help. ^HE"
+   }
+  },
+  {
+   "customer": "I hate Wells Fargo so much",
+   "gold": "What caused you to feel unhappy with us? ^TL",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help?",
+    "rag-8": "Please tell me why (no account numbers). If you need assistance, I'll do my best to help. ^PC",
+    "lora:1": "I'm sorry to hear that. Please let me know how I can assist you. ^HE",
+    "vera:256": "I'm sorry to hear that. Please tell me more about what's going on. I'll do my best to help. ^EB"
+   }
+  },
+  {
+   "customer": "I\u2019m on the phone with Wells Fargo I\u2019m like; yes ma\u2019m",
+   "gold": "Hi there. I came across your tweet and am checking in to see if there's some assistance I can provide you with. ^FX",
+   "replies": {
+    "zero": "Yes ma\u2019am",
+    "rag-8": "I received your DM. For your privacy, I will continue communicating with you through that channel. Thanks. ^MH",
+    "lora:1": "I noticed your tweet. I hope you found the answer to your question. If you need further assistance, please let me know. ^HE",
+    "vera:256": "I'm sorry for the inconvenience. Please let me know if you need further assistance. ^EB"
+   }
+  },
+  {
+   "customer": "Everything has been handled. Thank you for asking",
+   "gold": "That's great to hear! Please don't hesitate to reach out if you need help in the future. ^RP",
+   "replies": {
+    "zero": "Thank you for your business. We hope to see you again soon.",
+    "rag-8": "I'm glad to hear that. If you have any more questions or concerns, please don't hesitate to reach out. ^JL",
+    "lora:1": "I noticed your tweet. I hope you found the answer to your question. If you need further assistance, please let us know. ^HE",
+    "vera:256": "I'm glad to hear that. If you have any other questions, please don't hesitate to ask. ^EB"
+   }
+  },
+  {
+   "customer": "yea I do actually got some questions about some transactions",
+   "gold": "Send us a DM about it so that we can further help (no account number). ^HE <url>",
+   "replies": {
+    "zero": "What kind of questions?",
+    "rag-8": "Hi, I'm here to help. Please tell me more about your transactions (no account number). ^NC <url>",
+    "lora:1": "I noticed your tweet. Please DM us with more details about your questions (no account numbers). ^CS <url>",
+    "vera:256": "I'm here to help. Please tell me more about the transaction and I'll do my best to assist. ^EB"
+   }
+  },
+  {
+   "customer": "Call from @116827 talked with Ryan, from the social media team &amp; helped me with all my needs &amp; help set me up with txt alerts thx man\ud83d\ude4c\ud83c\udffd",
+   "gold": "I'm so happy to see that Ryan was able to help you! I'll be sure to pass on your positive feedback. Thanks for sharing. ^CS",
+   "replies": {
+    "zero": "Thank you for your positive feedback! We're glad to hear that we were able to assist you with your needs. If you have any further questions or concerns, please don't hesitate to reach out. Have a great day!",
+    "rag-8": "I'm glad I could help, @116827. If you have any more questions or concerns, feel free to DM me. ^JL",
+    "lora:1": "I'm sorry for the trouble. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm glad to hear that, John. Let us know if you need further assistance. ^TL"
+   }
+  },
+  {
+   "customer": "Yeah, I honestly should have quit banking with them back when I realized they were taking money out of my account every month",
+   "gold": "I want to assist you with this, but need more info. Please tell me more about the funds you're expecting (no account numbers). ^TL",
+   "replies": {
+    "zero": "I'm sorry to hear that. What is the name of the bank?",
+    "rag-8": "I can review your concern. Please send a DM with more details, your full name, phone number, and address. Thanks. ^PC <url>",
+    "lora:1": "I'd like to review your concern. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry to hear about this. Please DM your full name, phone number, and address (no acct numbers). I'll do my best to help. ^LC <url>"
+   }
+  },
+  {
+   "customer": "Why Wells Fargo keep declining my card like a hoe",
+   "gold": "You can always give us a call at the phone number provided on the back of your card for immediate help. DM us your full name, phone number, and address to have us research what's going on with your card (no account numbers). ^TL <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're facing with your Wells Fargo card?",
+    "rag-8": "I'm sorry to hear that, John. If you need immediate assistance, please call 1-800-869-3557. Thank you. ^CL",
+    "lora:1": "I noticed your tweet. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'd like to take a look at your situation. Please DM us with your full name, phone number, and address. Thanks. ^EB <url>"
+   }
+  },
+  {
+   "customer": "Thank you!",
+   "gold": "You're very welcome, Pamela. ^TL",
+   "replies": {
+    "zero": "You're welcome. How can I assist you today?",
+    "rag-8": "You're most welcome, Emma! We're glad to hear that you're satisfied with the service. If you have any other questions or concerns, please don't hesitate to reach out. ^IM",
+    "lora:1": "I noticed your tweet. I hope you found the information you were looking for. If you need further assistance, please let us know. ^HE",
+    "vera:256": "I noticed your tweet. If you'd like to discuss this further, please DM us. ^HE"
+   }
+  },
+  {
+   "customer": "Hey, when are you looking to support 2FA via secure app? 2FA via text isn't terribly strong or secure.",
+   "gold": "I'll take this as feedback to be shared with the appropriate team. Thank you for reaching out to us. ^UL",
+   "replies": {
+    "zero": "We're looking to support 2FA via secure app. We're looking to support 2FA via secure app. We're looking to support 2FA via secure app. We're looking to support 2FA via secure app. We're looking to support 2FA via secure app. We're looking to",
+    "rag-8": "I'm sorry to hear that, but we don't have a specific timeline for implementing 2FA via secure app. We're working on it, and we'll let you know as soon as we have an update. ^MH",
+    "lora:1": "I'd like to look into this further. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'd like to look into this for you, Maria. Please DM us your full name, address, and phone number. ^PC <url>"
+   }
+  },
+  {
+   "customer": "Hey @116827 .... seriously your people are the worst -- especially at business banking.  Let's talk so you can fix my issue.",
+   "gold": "Hi, Drew. I'd like to know what happened and do my best to help. Please send us a DM (no account number). ^HE <url>",
+   "replies": {
+    "zero": "Hi @116827, I'm sorry to hear that you're having trouble with your business banking. Can you please provide more details about the issue you're facing so we can better understand and assist you?",
+    "rag-8": "Hi, please call 1-800-869-3557. If you still want to discuss this further, I can escalate this to a specialist. Thanks. ^RP",
+    "lora:1": "I'm sorry to hear that. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry to hear about your experience. Please DM us your full name, phone number, and address (no account numbers). ^EB"
+   }
+  },
+  {
+   "customer": "Overdraft fees. Happens too often so it\u2019s partial my fault, it\u2019s just annoying waking up and your account is in the negative",
+   "gold": "I'd like to try to help by reviewing the fees. DM us your full name, phone #, &amp; address (no account numbers). Thanks. ^CS <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We understand that overdraft fees can be inconvenient. Can you tell me more about the specific overdraft situation you\u2019re experiencing?",
+    "rag-8": "I'm sorry to hear that. We'd like to review this matter in more detail and do our best to help. Please DM us your full name, phone number, and address. For your security and privacy, please do not include any account numbers in your DM. Thanks. ^AS <url>",
+    "lora:1": "I'd like to look into this. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I understand your frustration. If you need assistance, please let me know. ^EB"
+   }
+  },
+  {
+   "customer": "Wells Fargo is fucking trash why did I ever open an account there smh bout to go somewhere else. Fuck these guys",
+   "gold": "What happened? Please share more details about your situation and I'll do my best to help (no account numbers). ^LC",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're here to help you with any issues you may have. Can you please provide more details about the specific problem you're facing with Wells Fargo?",
+    "rag-8": "I'm sorry to hear that. Please share more details about your situation so we can help. Thank you. ^IM <url>",
+    "lora:1": "I noticed your tweet. Let me know if you'd like to discuss this further (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry for the poor experience. Please let me know how I can help you. ^MH"
+   }
+  },
+  {
+   "customer": "wellsfargo is the worst fucking bank of all time i hate them so fucking much",
+   "gold": "Why do you feel this way? I want to understand your concerns (no account numbers) and do my best to address them. ^EB",
+   "replies": {
+    "zero": "i understand how you feel. have you tried any other banks?",
+    "rag-8": "I'm sorry to hear that, Taylor. Is there anything specific you'd like to discuss or share more about your experience with Wells Fargo? ^IM",
+    "lora:1": "I'm sorry to hear that. Let me know if you need further assistance. ^HE",
+    "vera:256": "I'm sorry to hear that. Please let me know how I can help. ^HE"
+   }
+  },
+  {
+   "customer": "Yes, they said I\ufe0f should have word back in the next ten days about my approval after they verify both accounts.",
+   "gold": "Thank you for keeping us in the loop. Let us know how things go. ^MH",
+   "replies": {
+    "zero": "I understand. Can you please provide me with the names of the two accounts that need to be verified?",
+    "rag-8": "I noticed your tweet. Let me know if you'd like to speak with someone about this further. I'll be glad to look into your concerns. Thank you. ^MH",
+    "lora:1": "I noticed your tweet. If you'd like to discuss this further, please DM us with more details about what happened (no account numbers). ^CS <url>",
+    "vera:256": "I noticed your message. Please DM us more details about the issue (no account numbers). ^EB"
+   }
+  },
+  {
+   "customer": "Why the hell do tellers at @116827 try to guess what I'm gonna do with my money when I withdraw a large sum. Thinking of changing banks",
+   "gold": "I'm sorry for the experience, Andrew. Please tell me the branch address, your full name, and phone # so we can connect. ^EB <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I understand that you are frustrated with the tellers at @116827. It's important to have a positive experience when dealing with financial institutions. If you have any concerns or issues, please feel free to contact the bank directly or report them to the appropriate authorities.",
+    "rag-8": "I understand your frustration, but I'm sorry to hear that you're considering changing banks. If you have any questions or concerns, please DM us your full name, phone number, and address. We'll do our best to assist you. ^TL <url>",
+    "lora:1": "I'd like to know more about your concerns. Please DM us your full name, phone number, and address (no account numbers). ^TL <url>",
+    "vera:256": "I'm sorry for the frustration. Please let me know how I can help you (no account numbers). ^HE"
+   }
+  },
+  {
+   "customer": "Y\u2019all good, y\u2019all just the only ones I get messages from \ud83d\ude02\ud83d\udc80 thanks for checking tho.",
+   "gold": "You're welcome, Kalynn. If you need assistance in the future, let us know. ^IM",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019m here to help. How can I assist you today?",
+    "rag-8": "Thanks for reaching out, Dant\u00e9. If you have any more questions or need assistance, please don't hesitate to DM us. ^HE",
+    "lora:1": "I noticed your tweet. If you need further assistance, please let us know. ^HE",
+    "vera:256": "I'm sorry for the frustration, John. I'll do my best to address your concerns. Please DM us with more details about what's going on. ^TL <url>"
+   }
+  },
+  {
+   "customer": "1. It takes up to 3 pay periods to get my direct deposit set completely up. \n2. I have Wells Fargo as my bank and I'm just now hearing about the fact that you can scan your check and put it in your bank. \n3. I'm a young banker, so i don't know all the tricks yet",
+   "gold": "If you make your deposit before the displayed banking location, ATM, or Wells Fargo Mobile\u00ae cut-off time on a business day, we will generally credit the deposit to your account the same business day. You can visit <url> for more info. ^TL",
+   "replies": {
+    "zero": "1. I'm sorry to hear that. We do have a process in place to ensure that your direct deposit is set up as quickly as possible. We will be in touch with you shortly to confirm that your direct deposit is set up.\n2. We do offer a service called \"Check21\" which allows",
+    "rag-8": "Hi there. We're sorry to hear that you're experiencing delays with your direct deposit. We'd like to review this matter in more detail and do our best to help. Please DM us with your name, phone number, and address (no account numbers). Thanks. ^AS <url>",
+    "lora:1": "I'd like to help you with this. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'd like to help you with this. Please DM us your full name, address, and phone number. ^TL <url>"
+   }
+  },
+  {
+   "customer": "Wells Fargo tryna finesse me smh",
+   "gold": "We would appreciate more details about your situation. Let me know more about what's going on (no account numbers). ^TL",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the situation?",
+    "rag-8": "Please send a DM w/ more info, including which branch you were asking about, and I'll try to help (no acct #). Thanks. ^CL <url>",
+    "lora:1": "I noticed your tweet. Please DM us with more details about what's going on (no account numbers). ^HE <url>",
+    "vera:256": "I noticed your tweet. Please let me know how I can assist you. ^LC"
+   }
+  },
+  {
+   "customer": "One thing I'll forever peep is my money. I know where every dime goes and when something not looking right. @116827 I'm talking to you.",
+   "gold": "I saw your tweet. If there's a specific concern I can address, please let me know (no account numbers). ^EB",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"peeping\" or \"looking right\" in this context. Could you please provide more information or clarify your statement?",
+    "rag-8": "I'm sorry to hear that, but I'm not able to assist you with this. Please DM me with your full name, address, and best phone number (no account numbers). Thanks. ^TL <url>",
+    "lora:1": "I'd like to help you with your concern. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry to hear that. Please let me know more about the situation (no account numbers). I'll do my best to help. ^LC"
+   }
+  },
+  {
+   "customer": "And apparently @116827 waited over two weeks to initiate the appraisal, after they had a go ahead and fees in hand. Trying not to yell.",
+   "gold": "I responded to you privately.  Thanks, Julia. ^NR",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll make sure to follow up with @116827 and see if there's anything we can do to expedite the process.",
+    "rag-8": "I'm sorry to hear that. Please DM your full name, phone number, and address so we can address this. Thank you. ^PC <url>",
+    "lora:1": "I'm sorry for the delay. I'd like to look into this further. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I see your concern. Please DM us more details about the situation (no account numbers). ^CS"
+   }
+  },
+  {
+   "customer": "I called Wells Fargo last month about paying off my Jeep early and it confused the poor guy",
+   "gold": "Hello Chase, were you able to get this taken care of? Let me know if I can be of further assistance to you. Thanks. ^TL",
+   "replies": {
+    "zero": "I'm sorry to hear that. What was the issue?",
+    "rag-8": "I'd like to review your concern in more detail. Please share more details about what's going on and I'll do my best to assist you. ^HE",
+    "lora:1": "I saw your tweet. I noticed you mentioned your name in the tweet. I'd like to know more about your concern. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'd like to look into this for you. Please DM us more details about the situation (no account numbers). ^EB"
+   }
+  },
+  {
+   "customer": "Hey @125965 , @116827 won't let me have this design... What gives? <url>",
+   "gold": "Hi Morgan. To learn more about the Card Design Studio Service image guidelines, visit <url> or call 1-800-869-3557 to discuss further. ^HH",
+   "replies": {
+    "zero": "I'm sorry to hear that @125965. It sounds like there might be some issues with the design or the process. Can you please provide more details about the problem you're facing? This will help me understand the situation better and assist you in resolving the issue.",
+    "rag-8": "I'm sorry to hear that, @116827. I'd like to review the situation. Please DM me more details about the issue (no account numbers). ^PC <url>",
+    "lora:1": "I'd like to look into this further. Please DM your full name, phone number, and address (no account numbers). ^HE <url>",
+    "vera:256": "I'd like to help you with this issue. Please DM us more details about the problem (no account #). ^CS <url>"
+   }
+  },
+  {
+   "customer": "So mad it\u2019s only ONE fucking Wells Fargo in the hood fam",
+   "gold": "I noticed your tweet, and understand the frustration. Please tell us the city and state where you would like to see another Wells Fargo Branch. We are happy to send feedback to the appropriate areas for you. ^KJ",
+   "replies": {
+    "zero": "I\u2019m sorry, but I\u2019m not sure I understand. Could you please rephrase your statement?",
+    "rag-8": "I'm sorry to hear you're upset, Taylor. I'll look into this for you. ^IM",
+    "lora:1": "I noticed your tweet. Please DM us your full name, address, and phone number (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry to hear about this. Please DM us your full name, address, and phone number. ^EB <url>"
+   }
+  },
+  {
+   "customer": "Does @116827 get enjoyment for charging people fees for the littlest thing? They will prob attach a fee to my act just for this tweet.... \ud83d\ude20",
+   "gold": "Sorry for the experience, Jessica. I'd like to better understand your situation and do my best to help. Please DM me more details about your concern, your full name, complete address, phone number, and the type of account involved (no account numbers). ^LC <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We take all of our customers' feedback seriously and are working to improve our services. Can you please provide more details about the specific issue you are facing with @116827? This will help us better understand the situation and address it promptly.",
+    "rag-8": "I'm sorry to hear that. I'd like to see if we can help. Please DM your full name, address, and phone number. ^TL <url>",
+    "lora:1": "I'd like to look into this. Please DM us your full name, phone number, and address (no account numbers). ^HE <url>",
+    "vera:256": "I'd like to take a look at your concern. Please DM us more details about the situation (no account numbers). ^CS <url>"
+   }
+  },
+  {
+   "customer": "I start spending it, next thing I know my account is in the negative and @116827 is raking in fees.",
+   "gold": "We'd like a chance to review the fees in your account. Please tell us more about it (without account numbers) via DM. ^UL <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the situation?",
+    "rag-8": "I'm sorry to hear that, but I'm not able to assist with your account balance or fees. Please DM me your full name, phone number, and address for further assistance. Thank you. ^EB <url>",
+    "lora:1": "I'd like to review your concerns. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'd like to help you with this. Please DM us more details about the situation (no account numbers). ^PC"
+   }
+  },
+  {
+   "customer": "I sent you a DM",
+   "gold": "We have received your DM and we\u2019ll continue to communicate through that channel. ^SN",
+   "replies": {
+    "zero": "I received your message",
+    "rag-8": "I received your DM and have responded to it. We'll continue to communicate with your through those means. Thanks. ^JL",
+    "lora:1": "I saw your message. I'll do my best to help. ^EB",
+    "vera:256": "I'll look into this. Please DM us with more details about the issue (no account numbers). ^EB"
+   }
+  },
+  {
+   "customer": "There's no locations around me open on Sunday's or I wouldn't be asking you that question, that temp card expired on me and my real card never came in so now I gotta wait to get my money \ud83d\ude12 I'm annoyed",
+   "gold": "Sorry for the inconvenience. Please DM us your full name, address, and phone number. I'll do my best to assist once you have sent the requested information. ^HE <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm here to help. Can you tell me a little more about what happened?",
+    "rag-8": "I'm sorry to hear that. Please DM your name, phone number, and address. ^GJ <url>",
+    "lora:1": "I'm sorry for the inconvenience. Please DM us your full name, phone number, and address (no account number). ^CS <url>",
+    "vera:256": "I'm sorry for the inconvenience. Please call 1-800-869-3333 to request a new temp card. Thank you. ^EB"
+   }
+  },
+  {
+   "customer": "I\u2019m pretty sure those are business days as well but then again I guess I have no control of the money I earned and worked for thank you",
+   "gold": "Please send a DM with more specific details regarding what happened (no account numbers). I'd like to do my best to help. ^CS <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I understand that you are looking for a way to make more money. Can you tell me more about your current job and what you are hoping to achieve?",
+    "rag-8": "I'm sorry to hear about your experience. I would be happy to see if we can help. Please DM more information including your full name, address, and phone number (no account numbers). Thank you. ^KJ <url>",
+    "lora:1": "I'd like to look into this further. Please DM us your full name, phone number, and address (no account numbers). ^CS <url>",
+    "vera:256": "I'm sorry for the inconvenience. Please DM us your full name, address, and phone number. We'll do our best to help. ^TL <url>"
+   }
+  },
+  {
+   "customer": "wells fargo emails me every month saying \u201caccount transfer cancelled due to insufficient funds\u201d Thank U for reminding me how Broke I Am",
+   "gold": "Try going to <url> to get more info on your alerts and how to update them. If you still have any questions, you can contact us at 1-800-956-4442. ^CL",
+   "replies": {
+    "zero": "I am sorry to hear that. Can you please provide me with more details about the account transfer and the reason for the cancellation?",
+    "rag-8": "I see you're unhappy with the emails. To ensure we have the correct team help you, please DM us with more details about the emails you're receiving. ^NC <url>",
+    "lora:1": "I noticed your tweet. I'd like to know more about this situation. Please DM us your full name, phone number, and address (no account numbers). ^TL <url>",
+    "vera:256": "I'm sorry to hear that. If you'd like to discuss this further, please DM us with more details about the situation (no account numbers). ^HE"
+   }
+  }
+ ],
+ "style_examples": [
+  "Pls DM us more info about what happened along with your full name, address, and phone number (no account number). ^HE <url>",
+  "Please tell me why. If you need assistance I'll do my best to help. Don't share any account numbers. ^PC <url>",
+  "I would be happy to see if we can help. DM more info including your name, address, and phone number (no acct numbers). Thx. ^KJ <url>",
+  "We're here to try to help turn the situation around. If you'd like us to look into the matter, please send us a DM with the previously requested info, and we'll do our best to assist. Thanks. ^CS <url>",
+  "Don't hesitate to reach out if you have questions or require further support. ^GJ <url>"
+ ],
+ "seconds": 130.673823595047
+}

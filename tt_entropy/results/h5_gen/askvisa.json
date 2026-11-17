@@ -1,0 +1,432 @@
+{
+ "brand": "askvisa",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 34.425,
+  "mean_response_tokens": 33.215625,
+  "response_type_token_ratio": 0.2012,
+  "distinct_response_share": 0.984375
+ },
+ "nll": {
+  "zero": 3.511072524870285,
+  "rag-8": 2.1915640590166805,
+  "lora:1": 1.9524604334975735,
+  "vera:256": 2.0023474324030506
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.3758135032834029,
+  "lora:1": 0.44391338553460774,
+  "vera:256": 0.4297049069138706
+ },
+ "items": [
+  {
+   "customer": "Se pueden pagar todos los servicios con esa tarjeta?",
+   "gold": "Las tarjetas Visa son aceptadas en cualquier parte del mundo donde veas el logotipo de Visa (1/2)",
+   "replies": {
+    "zero": "S\u00ed, la tarjeta de cr\u00e9dito es aceptada en todos los servicios de la empresa.",
+    "rag-8": "Si tienes alguna duda antes de usarla, puedes comunicarte con el banco emisor (2/2) JC",
+    "lora:1": "Hola. Para m\u00e1s informaci\u00f3n sobre la tarjeta Visa, por favor consulta con tu banco emisor. AS",
+    "vera:256": "Hola. Las tarjetas Visa no son emitidas ni gestionadas por Banco Interacciones. Para m\u00e1s informaci\u00f3n sobre las tarjetas Visa, puedes visitar el sitio web de Visa (1/2)"
+   }
+  },
+  {
+   "customer": "$10 surcharge for a simple phone payment? are you kidding me?! #ripoff",
+   "gold": "a surcharge on consumers when they use a credit card. Retailers can\u2019t impose surcharges for purchases made on a debit (2/3)",
+   "replies": {
+    "zero": "I'm sorry to hear that. We apologize for any inconvenience caused by the surcharge. We will investigate the matter and take appropriate action to ensure that this does not happen again. Thank you for bringing this to our attention.",
+    "rag-8": "Hi there. We apologize for the inconvenience. We will look into this. AS",
+    "lora:1": "I\u2019m sorry to hear about this. Visa does not perform any transactions. Please contact your card issuer for more info. AS",
+    "vera:256": "Sorry to hear about this. Visa is monitoring the situation and will contact you directly to address this matter. AS"
+   }
+  },
+  {
+   "customer": "Is it against Visa's policies for a hotel to force the customer to pay in their own currency, when the machine gives local option?",
+   "gold": "Hello Neil. To report any merchant practices you feel are inappropriate, please contact your Visa card (1/2)",
+   "replies": {
+    "zero": "Yes, it is against Visa's policies. The machine should give the customer the option to pay in their own currency.",
+    "rag-8": "Hi there. The Visa policy is to allow the customer to choose the currency they want to pay in. If the hotel is forcing the customer to pay in their own currency, then it is against the Visa policy. Please DM me with more details in order to further assist. CM",
+    "lora:1": "Hi. Visa does not have a policy on this. However, it is important to note that all Visa cards are issued &amp; managed by the financial institutions. If you have concerns, please contact your card issuer for more info. AS",
+    "vera:256": "Hi. Visa does not have any involvement in the exchange of currencies. For more information, please contact your local bank or the hotel directly. AS"
+   }
+  },
+  {
+   "customer": "Please support my project to change the world, let many people know it, baptize it.\n<url>",
+   "gold": "Visa Inc., Sponsorships, PO Box 8999, Mailstop M1-11J San Francisco, CA 94128-8999. I hope we can be of assistance (2/2) JC",
+   "replies": {
+    "zero": "I will do my best to help you. However, I am not sure if I can support your project to change the world. Can you provide more details about your project and what you hope to achieve?",
+    "rag-8": "I\u2019m sorry to hear about this, Denise. I suggest contacting the card issuer to report the issue. JG",
+    "lora:1": "I\u2019m sorry to hear about this. Please contact your Visa card issuer for assistance. AS",
+    "vera:256": "I\u2019m sorry to hear about this. For assistance, please contact your Visa card issuer. AS"
+   }
+  },
+  {
+   "customer": "Buenas noches, si lo supuse, nadie te regala por regalar ni mucho menos te llama para premiarte. Gracias por la retro, llam\u00e9 a mi banco pero me dijeron no sabemos nada. Reforzar\u00e9 el tema con amigos y familiares. Salidos",
+   "gold": "De nada. Te invito a conocer unos cuantos consejos para mantener segura tu informaci\u00f3n aqu\u00ed: <url> AS",
+   "replies": {
+    "zero": "Buenas noches, gracias por tu llamada, te agradecemos por tu confianza. Si te sirve de ayuda, te invitamos a que nos visites en nuestra oficina, te esperamos. Saludos",
+    "rag-8": "Hola. Estamos aqu\u00ed para cualquier otra consulta. JC",
+    "lora:1": "Hola. Para asistencia con tu banco emisor, puedes llamar a (800) 345-1466 y te atender\u00e1n. AS",
+    "vera:256": "Hola. Si tienes alguna duda o necesitas m\u00e1s informaci\u00f3n, no dudes en preguntar. Saludos. AS"
+   }
+  },
+  {
+   "customer": "Creo que para mandar mensaje directo me deben seguir, se trata de un proyecto que les puede interesar!saludos",
+   "gold": "Puedes enviar un MD a trav\u00e9s de nuestra cuenta @askvisa. AS",
+   "replies": {
+    "zero": "Hola, \u00bfpodr\u00edas proporcionarme m\u00e1s detalles sobre el proyecto que me interesa? \u00bfCu\u00e1l es el objetivo principal del proyecto y cu\u00e1les son los requisitos espec\u00edficos que requiere? Tambi\u00e9n, \u00bfcu\u00e1l es el nivel de compromiso que necesitas para que me env\u00edes el mensaje",
+    "rag-8": "Hola, por favor env\u00edame tu consulta a trav\u00e9s de mensaje privado para entender c\u00f3mo podemos ayudarte. Saludos. JG",
+    "lora:1": "Hola. Para asistencia con este asunto, te sugiero contactar a tu proveedor de servicios de Internet. AS",
+    "vera:256": "Hola. Para enviar un mensaje directo a un asesor de Visa, por favor env\u00edanlo a nuestro \u00e1rea de asistencia al cliente a trav\u00e9s de nuestro chat en l\u00ednea o al 1-800-822-3000. Gracias. AS"
+   }
+  },
+  {
+   "customer": "can i apply for one ?",
+   "gold": "Hi Hassan. Are you referring to a Visa payment card or to a travel visa? AS",
+   "replies": {
+    "zero": "yes, you can apply for one.",
+    "rag-8": "Hi. You can apply for a visa to Australia through the Australian embassy or consulate in your country. (2/2) JC",
+    "lora:1": "Hi. To apply for a Visa card, please contact your nearest bank or financial institution. They will be able to assist you. JG",
+    "vera:256": "Yes, you can. Please contact your Visa card issuer to apply for a new card. JG"
+   }
+  },
+  {
+   "customer": "holaaaa! Me ayudan por favor con el enlace web para verificar las vacantes disponibles?",
+   "gold": "Hola Cristina. A trav\u00e9s de este enlace puedes ver las vacantes disponibles y enviar tu hoja de vida: <url> AS",
+   "replies": {
+    "zero": "Claro, \u00bfen qu\u00e9 idioma deseas que te ayude?",
+    "rag-8": "Hola. Te sugiero que realices una b\u00fasqueda en Google para encontrar las vacantes disponibles en la empresa. AS",
+    "lora:1": "Hola. Para obtener informaci\u00f3n sobre las vacantes disponibles, te recomiendo contactar a la entidad financiera que te interesa (1/2)",
+    "vera:256": "Hola. Para obtener m\u00e1s informaci\u00f3n sobre c\u00f3mo inscribirte en las vacantes, por favor consulta la p\u00e1gina web de la empresa. AS"
+   }
+  },
+  {
+   "customer": "Estaba comprando las entradas y otra vez no pude por que \"no impacto el pago\" @131742  quieren que los prenda fuego?",
+   "gold": "Lo siento Maira. Env\u00edanos m\u00e1s detalles de la situaci\u00f3n a trav\u00e9s de mensaje privado para entender c\u00f3mo podemos ayudarte. Por lo pronto debes contactar al servicio de soporte del comercio en el que est\u00e1s comprando las entradas, saludos. AS",
+   "replies": {
+    "zero": "No, no es as\u00ed. Si no paga, no se le puede vender. Si no paga, no se le puede vender. Si no paga, no se le puede vender. Si no paga, no se le puede vender. Si no paga, no se le puede v",
+    "rag-8": "Hola Marango. Estas llamadas no son realizadas por Visa. Te sugiero que no brCustomer: Hola, me llaman y me dicen que no pude pagar porque no me impacto el pago, me dicen que no pude pagar porque no me impacto el pago, me",
+    "lora:1": "Lamento lo sucedido. Por favor intenta nuevamente con el n\u00famero de tel\u00e9fono 1-800-847-2911. Saludos. JG",
+    "vera:256": "Lo siento. Para asistencia con el pago de tus billetes, puedes llamar al 01-800-694-2000 y te atender\u00e1n. AS"
+   }
+  },
+  {
+   "customer": "O @40158 n\u00e3o existe! Cancelaram meu cart\u00e3o @169129. N\u00e3o me mandaram outro e continuam me mandando fatura e \"renegocie\" sua divida?!?!",
+   "gold": "com seu banco Santander atravez do 08007023535 ou 4140043535, j\u00e1 que eles s\u00e3o respons\u00e1veis por essa informa\u00e7\u00e3o (2/3)",
+   "replies": {
+    "zero": "Oi, @40158, voc\u00ea est\u00e1 tentando cancelar o cart\u00e3o @169129, mas n\u00e3o foi poss\u00edvel. O cart\u00e3o @169129 est\u00e1 sendo usado por outro cliente. Por favor, aguarde um pouco mais e tente novamente.",
+    "rag-8": "e relacionamento com os portadores dos cart\u00f5es (3/3) TB",
+    "lora:1": "Sinto muito pelo ocorrido. Por favor, envie seu pedido para o cart\u00e3o de cr\u00e9dito para o Banco emissor do seu cart\u00e3o (2/2)",
+    "vera:256": "Desculpe. O cart\u00e3o 40158 \u00e9 da Visa, e n\u00e3o da Mastercard. Para mais informa\u00e7\u00f5es sobre o cart\u00e3o, basta entrar em nosso site e acessar o link abaixo: <url> AS"
+   }
+  },
+  {
+   "customer": "Apparently @12229 can't do anything about unauthorised charges on my card because I signed up for a free for shipping offer, unaware I 1/",
+   "gold": "Sorry for your experience. I recommend contacting the financial institution that issued your Visa card to report the (1/2)",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your card details so I can assist you further?",
+    "rag-8": "Hi, I\u2019m sorry to hear that you\u2019re having trouble with your account. I suggest contacting your financial institution for assistance. (1/2)",
+    "lora:1": "Sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks). To address your concerns, I suggest (1/2)",
+    "vera:256": "Sorry to hear about this. The offer is made by the merchant (in this case, Visa) and not by us. To learn more about the offer, please contact the merchant directly. AS"
+   }
+  },
+  {
+   "customer": "Lo de @131742 es incre\u00edble: te dan una tarjeta Gold internacional pero para hacer una compra online ten\u00e9s que pedir autorizaci\u00f3n tel\u00e9fonica \ud83d\ude44",
+   "gold": "Lo siento. Esta activaci\u00f3n debe ser un tr\u00e1mite \u00fanico. Contacta con tu banco emisor para m\u00e1s informaci\u00f3n, saludos. AS",
+   "replies": {
+    "zero": "\u00bfQu\u00e9 te parece si te pido que me dejes un mensaje en el que te explicas c\u00f3mo te gustar\u00eda que te ayudara?",
+    "rag-8": "Hola @131742. Lamento lo sucedido. Para asistencia con los beneficios, puedes llamarnos (1/2)",
+    "lora:1": "Hola. Para realizar una compra online, te sugiero contactar al banco emisor de tu tarjeta Visa para obtener m\u00e1s informaci\u00f3n (1/2)",
+    "vera:256": "Lo siento. Por favor, env\u00edanos tu consulta a trav\u00e9s de email a [email protected] para que podamos ayudarte. AS"
+   }
+  },
+  {
+   "customer": "I tried to report a merchant for refusing my non-chip card. Can merchants do that? @askvisa",
+   "gold": "Sorry for the delay in responding Matthew. Thank you for bringing this to our attention. We have escalated this to (1/2)",
+   "replies": {
+    "zero": "No, merchants cannot refuse your card. @askvisa",
+    "rag-8": "Hi. Merchants are not allowed to refuse a card for any reason. For more info, please contact your Visa card issuer (1/2) JC",
+    "lora:1": "Sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks). If you have any concerns, please feel free to contact your card issuer. AS",
+    "vera:256": "Sorry to hear. Visa does not have access to this information. For assistance, please contact your card issuer. AS"
+   }
+  },
+  {
+   "customer": "Creo que hay problemas con @131742, pues mis dos TDC fueron rechazadas al comprar por internet. La @118818 a la primera pas\u00f3.",
+   "gold": "Lo siento N\u00e9stor. Por favor comun\u00edcate con tu banco, ya que ellos son quienes manejan todos los aspectos de tu cuenta. AS",
+   "replies": {
+    "zero": "\u00bfQu\u00e9 sucedi\u00f3 con la @131742?",
+    "rag-8": "Hola Luis. Por favor, env\u00edame tu consulta a trav\u00e9s de mensaje privado para entender c\u00f3mo podemos ayudarte. Saludos. AS",
+    "lora:1": "Lo siento por lo sucedido. Por favor, intenta contactar a ellos directamente ya que son los encargados de atender a sus clientes. AS",
+    "vera:256": "Lo siento. Por favor, env\u00edanos tu consulta a trav\u00e9s de los siguientes enlaces: <url> AS"
+   }
+  },
+  {
+   "customer": "Hola \u00bfExiste todav\u00eda el beneficio de estacionamiento en la T1 aeropuerto CDMX con visa infinite? Gracias.",
+   "gold": "Hola Arturo. Nuestros beneficios de viajes han cambiado. Puedes consultarlos aqu\u00ed: <url> AS",
+   "replies": {
+    "zero": "S\u00ed, el beneficio de estacionamiento en la Terminal 1 del Aeropuerto Internacional de la Ciudad de M\u00e9xico (T1) con Visa Infinite est\u00e1 disponible. Puedes solicitarlo a trav\u00e9s de la p\u00e1gina web del Aeropuerto o en la recepci\u00f3n del aeropuerto.",
+    "rag-8": "Hola, la respuesta es s\u00ed, puedes consultar la informaci\u00f3n en <url> (1/2) AS",
+    "lora:1": "Hola Ana. Para obtener m\u00e1s informaci\u00f3n sobre la estacionamiento en el Aeropuerto Internacional de CDMX, te recomiendo contactar a la empresa que maneja la estacionamiento (2/2) JC",
+    "vera:256": "Hola. Las tarjetas Visa Infinite son un servicio de la entidad bancaria. Para m\u00e1s informaci\u00f3n sobre las tarjetas Visa Infinite, puedes comunicarte con tu banco emisor. AS"
+   }
+  },
+  {
+   "customer": "Withdrawal failed but the money was deducted.",
+   "gold": "I\u2019m sorry to hear about this Kaydee. For further assistance w/ this, I recommend contacting your Visa card issuer directly. JG",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the details of the transaction that failed?",
+    "rag-8": "I'm sorry to hear that. All Visa cards are issued and managed by the financial institutions. For assistance, please contact your card issuer to verify the reason why you cannot withdraw money. AS",
+    "lora:1": "Sorry to hear this happened. All Visa cards are issued &amp; managed by the financial institutions (the banks). To resolve this issue, please contact your Visa card issuer for assistance. AS",
+    "vera:256": "I\u2019m sorry to hear this happened. For assistance, please contact your bank/credit union. AS"
+   }
+  },
+  {
+   "customer": "boa noite @131742 ja pode virar a fatura do meu cart\u00e3o preciso gastar",
+   "gold": "Lamento ouvir isso Rob. Sobre a fatura, sugiro que ligue para o banco emissor do seu cart\u00e3o Visa para assist\u00eancia. TB",
+   "replies": {
+    "zero": "boa noite, como posso ajudar?",
+    "rag-8": "Sinto muito pelo ocorrido Matheus. Sobre a fatura, sugiro que ligue diretamente ao banco emissor do seu cart\u00e3o Visa para melhorar a situa\u00e7\u00e3o. TB",
+    "lora:1": "Sinto muito pelo ocorrido. Por favor, envia seu pedido em pt-",
+    "vera:256": "Bom dia. Para obter mais informa\u00e7\u00f5es sobre o assunto, sugiro que voc\u00ea entre em contato com o seu banco emissor (2/2) AS"
+   }
+  },
+  {
+   "customer": "has always the power of blocking your credit card while traveling. Second time in a week. Also with corporate cards... Unbelievable.",
+   "gold": "I\u2019m sorry Leonardo. Visa constantly scans for suspicious activity &amp; will alert your bank about questionable transactions (1/3)",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing issues with your credit card while traveling. Can you please provide me with more details about the problem you're facing? This will help me better understand the situation and assist you in resolving the issue.",
+    "rag-8": "They will notify you to verify the legitimacy of questionable charges. For assistance, please contact your bank (2/3)",
+    "lora:1": "I\u2019m sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks). To address this matter, I suggest reaching out to them directly. JG",
+    "vera:256": "I\u2019m sorry to hear about this. Visa is monitoring the situation and will contact you directly if they find any suspicious activity on your card. AS"
+   }
+  },
+  {
+   "customer": "can I use a vanilla card to order things online",
+   "gold": "Hi Niko. To confirm the utility/acceptance of your card, please ctc the card issuer using the number on the back of the card. JG",
+   "replies": {
+    "zero": "Sure, you can use a vanilla card to order things online. Just make sure to follow the instructions on the website carefully and provide accurate information about your order.",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble with your card. To better assist you, could you please provide more details about the issue you're experiencing? AS",
+    "lora:1": "Hi. You can use a Visa card to make online purchases. Please let me know how I can assist you further. JG",
+    "vera:256": "Hi. For more information on Visa cards, please visit our website at <url> (2/2) JG"
+   }
+  },
+  {
+   "customer": "So @131742 has to have implemented to absolute worst webform for when you want to complain about a merchant violating TOS.",
+   "gold": "issuer as they have access to the appropriate Visa rules &amp; regulations to document &amp; file complaints (2/2) AS",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you are facing with the webform?",
+    "rag-8": "Sorry for the inconvenience. To report any merchant practices you feel are inappropriate, please contact your Visa card (1/2)",
+    "lora:1": "I\u2019m sorry to hear about this. Please DM me more info regarding your concerns and I\u2019ll be happy to assist you. AS",
+    "vera:256": "I\u2019m sorry to hear about this. To report a merchant for violating their terms of service, please contact them directly. JG"
+   }
+  },
+  {
+   "customer": "Why can\u2019t I pay online at Macy\u2019s with my VISA card Issued by a bank in Panama? Only U.S. based cards? Isn\u2019t VISA international?",
+   "gold": "utility/acceptance offered by your bank. I recommend reaching out to your bank for more information (2/2) AS",
+   "replies": {
+    "zero": "Yes, that is correct. VISA is a U.S. based card. However, you can still use your VISA card to pay online at Macy\u2019s. You just need to make sure that the website you are using is a legitimate Macy\u2019s website and that the website is using a secure connection (https://).",
+    "rag-8": "Sorry to hear this happened. All Visa cards are accepted anywhere the Visa logo is displayed. However, it depends on the (1/2)",
+    "lora:1": "I\u2019m sorry to hear this happened. All Visa cards are issued and managed by the financial institutions (the banks). For assistance, please contact your Visa card issuer. AS",
+    "vera:256": "Sorry to hear this. All Visa cards are issued and managed by the financial institutions (banks) in each country. For more info, please contact your card issuer. AS"
+   }
+  },
+  {
+   "customer": "Obrigado Visa pelo r\u00e1pido retorno. J\u00e1 encaminhei minha solicita\u00e7\u00e3o a equipe do @18347",
+   "gold": "De nada. Espero que encontre uma solu\u00e7\u00e3o. TB",
+   "replies": {
+    "zero": "Obrigado por ter escolhido o @18347. Agradecemos a sua confian\u00e7a e a sua prefer\u00eancia. Obrigado por ter escolhido o @18347. Agradecemos a sua confian\u00e7a e a sua prefer\u00eancia. Obrig",
+    "rag-8": "De nada. Espero que encontre uma solu\u00e7\u00e3o. Boa sorte! TB",
+    "lora:1": "De nada. Estamos aqui para ajudar. Por favor, enviem seu questionamento para o nosso time de atendimento via email em __email__ ou ligue para 1.800-867-2701. AS",
+    "vera:256": "De nada. Espero que tudo esteja bem. Se precisar de ajuda, sinto muito. TB"
+   }
+  },
+  {
+   "customer": "Is it against Visa's policies for a hotel to force the customer to pay in their own currency, when the machine gives local option?",
+   "gold": "issuer as they have access to the Visa rules &amp; regulations to document and file complaints (2/2) AS",
+   "replies": {
+    "zero": "Yes, it is against Visa's policies. The machine should give the customer the option to pay in their own currency.",
+    "rag-8": "Hi there. The Visa policy is to allow the customer to choose the currency they want to pay in. If the hotel is forcing the customer to pay in their own currency, then it is against the Visa policy. Please DM me with more details in order to further assist. CM",
+    "lora:1": "Sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions. For assistance, please contact your card issuer. JG",
+    "vera:256": "Hi. Visa does not have any involvement in the exchange of currencies. For more information, please contact your local bank or the hotel directly. AS"
+   }
+  },
+  {
+   "customer": "A thought. If you provided a mechanism to associate an email address with a credit card then we could almost completely eliminate paper receipts. If you'd like more details of this vision feel free to reach out.",
+   "gold": "Hi Amos. All Visa cards are issued &amp; managed by the financial institutions. I recommend contacting them directly for further assistance with your inquiry regarding email receipts. AS",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure I understand. Could you please provide more details about your vision for eliminating paper receipts through the use of an email address and credit card association?",
+    "rag-8": "Hi there. I'm sorry to hear that you're having trouble with your credit card. I'm not sure if I understand your question correctly, but I'll do my best to help. (1/2)",
+    "lora:1": "I\u2019m sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks) (1/2)",
+    "vera:256": "I\u2019m sorry to hear about this. Visa does not provide any services to merchants or consumers. For assistance with your Visa card, please contact your card issuer. AS"
+   }
+  },
+  {
+   "customer": "How? Can We Forge Collaboration Between Visa Corporation &amp; My BaGeMo Women Business Investment Corporation \"MWBIC\" mainly focusing on Women projects",
+   "gold": "Hello Geoffrey. Please send your business proposal in writing to our Visa CEMEA office for consideration at: 13th Floor, Arjaan Business Tower, Dubai Media City, Dubai, UAE United Arab Emirates. We hope we can be of assistance. AS",
+   "replies": {
+    "zero": "I can help you with that. To forge collaboration between Visa Corporation and My BaGeMo Women Business Investment Corporation (MWBIC) and focus on women projects, we can follow these steps:\n\n1. Identify common interests: First, we need to identify the common interests between Visa Corporation and My BaGeMo Women Business",
+    "rag-8": "Hi there. I\u2019m sorry, but I\u2019m not sure what you mean by \u201cforging collaboration\u201d between Visa Corporation and your organization. (1/2)",
+    "lora:1": "Hi. To inquire about the collaboration between Visa and Women Business Investment Corporations (WBICs), please contact them directly at 1-800-922-2222. AS",
+    "vera:256": "Hi. For assistance with this matter, please contact the Visa Corporation at 1-800-847-2536. JG"
+   }
+  },
+  {
+   "customer": "la semana pasada recib\u00ed 5 llamadas supuestamente de la franquicia diciendo q me otorgan beneficios con una tarjeta q me van en enviar y para obtenerlos piden todos los 16 d\u00edgitos de mi tarjeta,saben todos mis datos y hasta donde vivo,q esta pasando con la seguridad",
+   "gold": "Hola Alejandra. Estas llamadas no son realizadas por Visa. Te sugiero q no brindes ning\u00fan tipo de informaci\u00f3n. Si deseas puedes realizar una denuncia por intento de fraude ante tu banco emisor y/o a las autoridades. AS",
+   "replies": {
+    "zero": "si, es muy probable que se trate de un fraude. Si recibiste llamadas de la franquicia, es posible que se trate de un fraude. Si recibiste llamadas de la franquicia, es posible que se trate de un fraude. Si recibiste llamadas de",
+    "rag-8": "Lamento lo sucedido Jime. Estas llamadas no son organizadas por Visa. Te sugiero que no brCustomer: Hola, me llamo de la franquicia de la tarjeta de cr\u00e9dito que me envi\u00f3, me dicen q me otorgan beneficios con una tarjeta q",
+    "lora:1": "Hola. Para mayor informaci\u00f3n sobre tu caso, sugiero que lo hagas a trav\u00e9s de tu banco emisor, ya que es ellos quienes manejan tu cuenta. AS",
+    "vera:256": "Lo siento. Las llamadas realizadas por parte de los proveedores de servicios financieros no son responsabilidad de Visa. Si deseas m\u00e1s informaci\u00f3n sobre este asunto, te sugiero comunicarte con el banco o tu proveedor de servicios financieros. AS"
+   }
+  },
+  {
+   "customer": "What's going on with your card? Keeps declining.",
+   "gold": "I\u2019m sorry to hear about this Kathleen. To further investigate what occurred, I suggest contacting your Visa card issuer directly. JG",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the card number and the transaction details?",
+    "rag-8": "Hi John. I'm sorry to hear about this. Please re-contact your bank and speak with a supervisor. AS",
+    "lora:1": "I\u2019m sorry to hear about this, Jhony. All Visa cards are issued &amp; managed by the financial institutions (the banks). To address this concern, I suggest reaching out to them directly. They are the ones who manage &amp; monitor your card. JG",
+    "vera:256": "I\u2019m sorry to hear about this. For assistance, please contact your card issuer directly. JG"
+   }
+  },
+  {
+   "customer": "Hay una campa\u00f1a buen\u00edsima de @131742 en mi instagram sobre viajes y no hay manera de encontrar los v\u00eddeos para ense\u00f1\u00e1roslos. Mal.",
+   "gold": "Lo siento Lupe. Por favor env\u00eda tu gesti\u00f3n a Visa Europa por correo electr\u00f3nico a __email__ para asistencia AS",
+   "replies": {
+    "zero": "No te preocupes, te ayudamos a encontrarlos. \u00bfPodr\u00edas decirme el nombre del v\u00eddeo que quieres ver?",
+    "rag-8": "Lamento lo sucedido. Estas llamadas no son organizadas por Visa, sugiero no acudir ni compartir datos personales con estas personas. Si deseas puedes realizar una denuncia por intento de fraude anteCustomer: Hola, me llamo @131742 y",
+    "lora:1": "Lo siento. Por favor env\u00edanos un mensaje a (email) y te ayudaremos. AS",
+    "vera:256": "Lo siento. Para obtener m\u00e1s informaci\u00f3n sobre las campa\u00f1as de @131742, puedes hacerlo a trav\u00e9s de su cuenta de Twitter. AS"
+   }
+  },
+  {
+   "customer": "I am out $400 because your gift cards are a fraud. You trained your employees well to lie to your customers that they don't have info.",
+   "gold": "For further assistance, I recommend re-contacting them and ask to speak with a supervisor (2/2) AS",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the details of your purchase and the gift card information so I can investigate further?",
+    "rag-8": "I'm sorry to hear about this. All Visa Gift cards are issued &amp; managed by the financial institutions (the banks) (1/2)",
+    "lora:1": "I\u2019m sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks). If you have any concerns, please feel free to contact your card issuer directly. AS",
+    "vera:256": "I\u2019m sorry to hear about this. Please contact your Visa card issuer for assistance. AS"
+   }
+  },
+  {
+   "customer": "amigos me robaron mi celular el cual compre con mi tarjeta de cr\u00e9dito Visa; tengo entendido que visa tiene un seguro para esto",
+   "gold": "Lo siento Leonardo. Ll\u00e1manos 24/7 desde Colombia al 01-800-912-5713 y te conectaremos con un especialista de beneficios. AS",
+   "replies": {
+    "zero": "si, pero no es suficiente para el valor del celular, por lo que te recomiendo que hagas un reclamo con la compa\u00f1\u00eda de seguro de tu celular, te recomiendo que hagas un reclamo con la compa\u00f1\u00eda de seguro de tu celular, te recomiendo que hagas un reclamo con la compa\u00f1\u00eda",
+    "rag-8": "Hola Juan. Por favor ll\u00e1manos 24/7 desde Colombia al 01-800-912-5713 y te atender\u00e1n con tus consultas. AS",
+    "lora:1": "Lamento lo sucedido. Por favor comunicate con Visa M\u00e9xico en M\u00e9xico al 1230-020-2020 o llamando a M\u00e9xico (2/2) AS",
+    "vera:256": "Lo siento. Si deseas puedes contactar a tu banco de origen para m\u00e1s informaci\u00f3n sobre el seguro Visa. AS"
+   }
+  },
+  {
+   "customer": "O @40158 n\u00e3o existe! Cancelaram meu cart\u00e3o @169129. N\u00e3o me mandaram outro e continuam me mandando fatura e \"renegocie\" sua divida?!?!",
+   "gold": "Sinto muito em isso Gustavo. Em rela\u00e7\u00e3o ao andamento do seu novo cart\u00e3o, fatura, e d\u00edvidas, recomendo entrar em contato (1/3)",
+   "replies": {
+    "zero": "Oi, @40158, voc\u00ea est\u00e1 tentando cancelar o cart\u00e3o @169129, mas n\u00e3o foi poss\u00edvel. O cart\u00e3o @169129 n\u00e3o existe. Obrigado por nos informar. Se voc\u00ea tiver alguma d\u00favida ou necessitar de",
+    "rag-8": "e relacionamento com os portadores dos cart\u00f5es (3/3) TB",
+    "lora:1": "Sinto muito pelo ocorrido. Por favor, liga para o cart\u00e3o do Banco emissor. AS",
+    "vera:256": "Desculpe. O cart\u00e3o 40158 \u00e9 da Visa, e n\u00e3o da Mastercard. Para mais informa\u00e7\u00f5es sobre o cart\u00e3o, basta entrar em nosso site e acessar o link abaixo: <url> AS"
+   }
+  },
+  {
+   "customer": "how do we. check? <url>",
+   "gold": "I\u2019m sorry about this broken link. Please visit this one for more info regarding mVisa: <url> JG",
+   "replies": {
+    "zero": "What is the purpose of this question?\nOptions:\n- to check\n- to ask\n- to answer\n- to check\n- to ask\nAnswer: to check",
+    "rag-8": "Hi there. To check your Visa card balance, you can visit our website at <url> (1/2) JC",
+    "lora:1": "Hi. To check the status of your Visa card, please contact your card issuer. JG",
+    "vera:256": "Hello. Please note that Visa does not provide any assistance to cardholders regarding their account(s) or transactions. For assistance, please contact your card issuer. AS"
+   }
+  },
+  {
+   "customer": "Ol\u00e1! Vou mudar de resid\u00eancia e gostaria de saber se pra mudar o endere\u00e7o s\u00f3 com minha m\u00e3e que \u00e9 a titular???",
+   "gold": "seu banco emissor, j\u00e1 que eles s\u00e3o respons\u00e1veis por todo o relacionamento com os portadores (2/2) TB",
+   "replies": {
+    "zero": "Sim, voc\u00ea pode fazer a mudan\u00e7a de endere\u00e7o com a sua m\u00e3e, mas \u00e9 importante que ela tenha a autoriza\u00e7\u00e3o escrita do seu nome para que a mudan\u00e7a seja feita. Caso contr\u00e1rio, a mudan\u00e7a n\u00e3o ser\u00e1 efetuada.",
+    "rag-8": "Oi Jasmine. Para mudar o endere\u00e7o de resid\u00eancia, recomendo entrar em contato diretamente com (1/2)",
+    "lora:1": "Para mudar o endere\u00e7o, voc\u00ea precisa solicitar a mudan\u00e7a ao banco emissor da sua conta. AS",
+    "vera:256": "Bom dia. Para alterar o endere\u00e7o de resid\u00eancia, \u00e9 necess\u00e1rio a presen\u00e7a de ambos os titulares. Sendo assim, sugiro que voc\u00ea entre em contato com o seu banco ou ag\u00eancia para mais informa\u00e7\u00f5es. AB"
+   }
+  },
+  {
+   "customer": "I tried to report a merchant for refusing my non-chip card. Can merchants do that? @askvisa",
+   "gold": "the appropriate team who will take the necessary measures to have this corrected (2/2) AS",
+   "replies": {
+    "zero": "No, merchants cannot refuse your card. @askvisa",
+    "rag-8": "Hi. Merchants are not allowed to refuse a card for any reason. For more info, please contact your Visa card issuer (1/2) JC",
+    "lora:1": "Sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions (the banks). If you have any concerns, please feel free to contact your card issuer. AS",
+    "vera:256": "Sorry to hear. Visa does not have access to this information. For assistance, please contact the merchant directly. AS"
+   }
+  },
+  {
+   "customer": "O cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe? @169129",
+   "gold": "Oi Naati. O cart\u00e3o Brazilian Business Card \u00e9 ver\u00eddico. TB",
+   "replies": {
+    "zero": "O cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe?\nO cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe?\nO cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe? O cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe? O cart\u00e3o visa BB \u00e9 de verdade ou \u00e9 golpe",
+    "rag-8": "Oi @169129. O cart\u00e3o Visa BB \u00e9 um cart\u00e3o de cr\u00e9dito que voc\u00ea pode usar para pagar compras em lojas f\u00edsicas e online. Ele \u00e9 um cart\u00e3o de cr\u00e9dito que voc\u00ea pode usar para pagar compras em lojas f\u00edsicas e online. TB",
+    "lora:1": "Sinto muito pela situa\u00e7\u00e3o. O cart\u00e3o Visa Mastercard \u00e9 emitido e gerido pela institui\u00e7\u00e3o financeira (1/2)",
+    "vera:256": "O cart\u00e3o Visa \u00e9 uma institui\u00e7\u00e3o financeira, portanto, voc\u00ea deve procurar ajuda financeira (1/2)"
+   }
+  },
+  {
+   "customer": "Thank you very much for your response.",
+   "gold": "You're very welcome. AS",
+   "replies": {
+    "zero": "I'm glad to hear that. I'm sorry to hear that you're not satisfied with the service. Can you tell me what specifically you're not happy with?",
+    "rag-8": "You're welcome. AS",
+    "lora:1": "You're welcome. AS",
+    "vera:256": "You're welcome. AS"
+   }
+  },
+  {
+   "customer": "when you try to buy a plane ticket home for the holidays and verified by @131742 locks you out of your account and the icing on the cake is dealing with rude customer service agents who tell you they can't do anything for you",
+   "gold": "interacting directly with your card issuer. For assistance, please reach out to your them to address your concerns (2/2) AS",
+   "replies": {
+    "zero": "I'm sorry to hear that. We apologize for the inconvenience you've experienced. Can you please provide us with your account information so we can assist you further?",
+    "rag-8": "I\u2019m sorry Kate. The Verified by Visa (VbV) service is offered &amp; managed by your card issuer. When using VbV you\u2019re (2/2) AS",
+    "lora:1": "I\u2019m sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions. To resolve this issue, please contact your card issuer directly. AS",
+    "vera:256": "I\u2019m sorry to hear about this. For assistance, please contact Visa directly at 1-800-874-2222 or visit their website at <url> (2/2) AS"
+   }
+  },
+  {
+   "customer": "hola soy Natali!! necesito saber si puedo sacar dinero con mi tarjeta de debito en Nueva Zelanda, nuca la utilice en Argentina, eso trae inconveniente?",
+   "gold": "Hola Natali. Por favor comun\u00edcate con nuestros asesores en Argentina llamando al 0810-666-3400. AS",
+   "replies": {
+    "zero": "hola Natali, gracias por contactarnos. Para sacar dinero con tu tarjeta de debito en Nueva Zelanda, debes seguir estos pasos:\n1. Verifica tu tarjeta de debito: Comprueba que tu tarjeta de debito est\u00e1 activa y que no haya",
+    "rag-8": "Hola Natali. Para mayor asistencia, por favor ll\u00e1manos 24/7 desde Nueva Zelanda al 01-800-912-5713. AS",
+    "lora:1": "Hola Natali. Para m\u00e1s informaci\u00f3n sobre c\u00f3mo realizar una transferencia de fondos, te sugiero preguntar a tu banco emisor o a tu proveedor de servicios de pago. AS",
+    "vera:256": "Hola Natali. Para realizar una transacci\u00f3n bancaria en Nueva Zelanda, es necesario contactar tu banco emisor para obtener m\u00e1s informaci\u00f3n. AS"
+   }
+  },
+  {
+   "customer": "Please is the mVisa different from the 'normal' Visa card issued by banks?",
+   "gold": "Hi Chukwuma. mVisa is the new way to pay with your mobile phone. For more info, please visit: <url> AS",
+   "replies": {
+    "zero": "Yes, the mVisa is a debit card, which means that you can use it to withdraw cash from ATMs and to make purchases in stores. The mVisa is also linked to your bank account, so you can use it to transfer money between your bank accounts and pay bills.",
+    "rag-8": "Hi there. mVisa is the new transformative way to pay with your mobile phone (2/2) (1/2)",
+    "lora:1": "Hi. The mVisa is a debit card. It is managed by the card issuer (the bank) and the cardholder. For more info, please visit: <url> AS",
+    "vera:256": "Hi. The mVisa card is a debit card. It is issued by your bank, and you can use it at ATMs and merchants. It is not a credit card. For more info, visit our website at <url> AS"
+   }
+  },
+  {
+   "customer": "Yes I did call the number listed. The agent I spoke sounded anything but delighted &amp; she was actually very rude and wouldn't even let me talk! I would like to submit a complaint regarding this but your website provides no information about that",
+   "gold": "Could you please provide us more details of the call via DM. AS",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not sure what you mean by \"submit a complaint.\" Can you please provide more details about the issue you encountered?",
+    "rag-8": "I'm sorry you had a negative experience. We strive to provide the best customer service possible. If you have any complaints, please contact us at 1-800-955-2299. We will do our best to resolve your issue. Thank you for bringing this to our attention.",
+    "lora:1": "I\u2019m sorry to hear about this. All Visa cards are issued &amp; managed by the financial institutions. For assistance, please contact your card issuer. AS",
+    "vera:256": "I\u2019m sorry to hear about this. To submit a complaint, please contact your local Visa card issuer. AS"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hello. To confirm if this transfer can be done, I suggest contacting your Visa card issuer directly. JG",
+  "If you are still having issues contacting us please call us collect at 1-303-967-1096 (2/2) JC",
+  "For assistance with this matter, I suggest addressing you concerns to them as they manage the gift cards (2/2) AS",
+  "I\u2019m sorry to hear about this. The Verified by Visa (VbV) service is offered &amp; managed by your Visa card issuer (1/2)",
+  "Oh no! I\u2019m sorry to hear that Catriona. All Visa cards are issued &amp; managed by our client financial institutions (1/2)"
+ ],
+ "seconds": 137.70193433761597
+}

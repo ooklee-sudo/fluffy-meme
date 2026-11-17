@@ -1,0 +1,432 @@
+{
+ "brand": "Tesco",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 30.609375,
+  "mean_response_tokens": 32.125,
+  "response_type_token_ratio": 0.1872,
+  "distinct_response_share": 0.99375
+ },
+ "nll": {
+  "zero": 3.5883096267743455,
+  "rag-8": 2.7622128962118553,
+  "lora:1": 2.4237127910504315,
+  "vera:256": 2.4392449590251144
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.23021890987291888,
+  "lora:1": 0.3245530505601352,
+  "vera:256": 0.32022450325229174
+ },
+ "items": [
+  {
+   "customer": "where's my bacon and mayonnaise at? \ud83d\ude2d tragic <url>",
+   "gold": "Could you DM us with your name, your full address, email &amp; pics of the packaging? Would you like a refund via the post or email? 3/4",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more information about the situation?",
+    "rag-8": "Hi there, I'm so sorry you've had a bad experience with Tesco. I'd like to get this fed back to our suppliers and refund you for the item. 1/4",
+    "lora:1": "Hi there, I'm sorry you're not happy with your order. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you're not getting your bacon and mayo. Can you DM me your name, address and order number? 1/2"
+   }
+  },
+  {
+   "customer": "Tis the season for misspelling @Tesco <url>",
+   "gold": "I would like to log this on my end, If you could please DM me your full name, full address, and email. Thanks - Lee 2/2",
+   "replies": {
+    "zero": "I'm sorry, but I cannot assist with that request.",
+    "rag-8": "Hi Callum, thanks for bringing this to our attention; we are currently looking into this. 1/2",
+    "lora:1": "Hi there, I'm sorry you've had to spend your hard earned money on a product that is not what it claims to be. 1/2",
+    "vera:256": "Hi there, I'm sorry you've had this issue. I can see that you have a Tesco loyalty card. 1/2"
+   }
+  },
+  {
+   "customer": "hi, had a click and collect on Monday, including cod which I've gone to cook today (use by 9th Nov) and it smells like it's gone off",
+   "gold": "Hi, I'm sorry that your cod has gone bad. Please DM your full name, address, postcode and email address and I'll take a look. TY - Craig",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me what the product is and when you received it?",
+    "rag-8": "Hi, I'm sorry to hear that your cod has gone off. I'm going to contact the store manager to see if we can help you. Please let me know if you need any further assistance. Thank you. 1/4",
+    "lora:1": "Hi, I'm sorry to hear that your food has gone off. Can you please let me know which store you shopped at and which item is off? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. Can you please let me know what the item is and the store you purchased it from? TY - Lee"
+   }
+  },
+  {
+   "customer": "Yeh man that's the good stuff I miss it \ud83d\ude2d",
+   "gold": "They're currently in stock at our Sheffield Infirmary Superstore Kyroh :)  - Emma",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help you?",
+    "rag-8": "I'm sorry to hear that, I'll get this logged. Kind regards - Rhys",
+    "lora:1": "Hi there, I'm sorry you're not getting the same quality as the UK. I'm afraid I can't do anything about this. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. I'm afraid I can't help with this as it's not a food or drink. Can you DM me your full name, address and email address? Thanks - Mark 2/2"
+   }
+  },
+  {
+   "customer": "Cheers - but did you read my tweet I don't have my receipt I don't think?",
+   "gold": "Not to worry Sarah, just DM me the other details and which store you purchased this from and I'll process a refund. TY - Peter",
+   "replies": {
+    "zero": "I'm sorry, I didn't see your tweet. Can you please provide me with your name and the date of your purchase?",
+    "rag-8": "Hi there, I'm sorry you didn't receive your receipt. I will be happy to get this fed back to the store and issue a refund. 1/2",
+    "lora:1": "Hi there, I'm sorry you can't find your receipt. I'm afraid I can't help you with this. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry you can't find your receipt. I can't see your receipt number, but I can see the store you were in. 1/2"
+   }
+  },
+  {
+   "customer": "nothing.\n\nSort it fucking out tesco.",
+   "gold": "Could you DM me a description of the colleague you spoke with as well as a time you were in the store? Thanks - Peter 2/2",
+   "replies": {
+    "zero": "I'm sorry, but I cannot assist with that request. Tesco is a retail company and I am an AI language model designed to assist with general information and tasks. If you have any other questions or need assistance with a different topic, please let me know.",
+    "rag-8": "I'm sorry to hear that you're not happy with the service you received. I will pass your comments to the store manager and will try to resolve the issue as soon as possible. Thank you for bringing this to our attention. 1/1",
+    "lora:1": "Hi there, I'm sorry you've had a bad experience with our store. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you're experiencing this issue. Can you DM me your full name, address and email address? 1/2"
+   }
+  },
+  {
+   "customer": "BTS as in @133324 , the Korean boy group.",
+   "gold": "Hi there, thank you for your suggestion. What I can do is pass this suggestion on the the relevant team. So I can do this can you DM your full name and address? Thanks, James.",
+   "replies": {
+    "zero": "Yes, BTS is a popular Korean boy group. They have been active since 2013 and have released several albums and singles. They have also performed at various concerts and events around the world. Do you have any specific questions about BTS or their music?",
+    "rag-8": "Hi, I'm sorry to hear that you're not happy with the product. I'll pass your details to the supplier and they will get back to you. 1/5",
+    "lora:1": "Hi there, I'm sorry you're not happy with the service you received. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. I'm not sure if this is a typo or not. Can you please confirm if this is the correct name? 1/2"
+   }
+  },
+  {
+   "customer": "running out of carrier bags isn't really ideal and offering a bin bag as a replacement is worse considering I had to carry this home ... <url>",
+   "gold": "Hi there, I'm sorry that our store didn't have carrier bags. Could you please let me know which one it was and I will feed this back to the management? TY - Eve",
+   "replies": {
+    "zero": "Can you please rephrase the customer's statement in a more polite and professional manner?",
+    "rag-8": "Hi there, I'm sorry to hear that you're having trouble with your carrier bag. I can log this on our systems and let the suppliers know. 1/5",
+    "lora:1": "Hi there, I'm sorry you're having trouble with the carrier bags. I can understand how frustrating this is for you. I'd like to get this raised with the supplier. 1/2",
+    "vera:256": "Hi there, I'm sorry you've run out of carrier bags. I can understand how frustrating this can be. 1/3"
+   }
+  },
+  {
+   "customer": "It\u2019s not a weighted product - it says 4 half slices on the front.",
+   "gold": "Can you please DM me your full name, address, email, barcode, supplier code and also a clear copy of your receipt? 2/4",
+   "replies": {
+    "zero": "I\u2019m sorry, I don\u2019t understand. Can you please provide more information about the product and the weight it is supposed to have?",
+    "rag-8": "Hi there, I'm sorry to hear that you're not happy with the product. I'll be happy to look into this for you. I'll be back in touch as soon as I have the answer for you. Thanks, Jessica",
+    "lora:1": "Hi there, I'm sorry you're not happy with the weight of your product. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. Can you please DM your full name, address, email address and the store you purchased from? 2/3"
+   }
+  },
+  {
+   "customer": "Mouldy grapes from @Tesco bought yesterday Luton town centre. Waste of money! <url>",
+   "gold": "Can we pass on your details to our supplier? - Jay 3/3",
+   "replies": {
+    "zero": "I'm sorry to hear that you're not satisfied with your purchase. Can you please provide more details about the issue you encountered with the mouldy grapes? This will help me understand the situation better and assist you in resolving the issue.",
+    "rag-8": "I'm sorry to hear that you're not happy with your grapes. Can you DM me some more information please? 1/5",
+    "lora:1": "Hi there, I'm sorry you've had a bad experience with Tesco. I'd like to get this logged and passed onto the relevant department. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you've had to return these. 1/3"
+   }
+  },
+  {
+   "customer": "Love having an I\u2019m a Celebrity get me out of here themed veg! <url>",
+   "gold": "Alternatively you can DM your full name, full address, email, barcode, date code, Supplier code (SC1234) and the receipt details.Can I also have your permission to pass on your details with our supplier? Thanks - Lee 2/2",
+   "replies": {
+    "zero": "I\u2019m a Celebrity get me out of here themed veg! <url>",
+    "rag-8": "Hi there, I'm sorry you aren't happy with your veggie. I'd like to get this logged and a refund sent out to you. To do this can you DM me a few details? Can I pass these details onto our supplier? 1/2",
+    "lora:1": "Hi there, I'm sorry you're not happy with the food. I'd like to get this logged and passed onto the relevant team. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you didn't like the veggie option. 1/3"
+   }
+  },
+  {
+   "customer": "Well, @Tesco Wokingham, @117250, @117248, @117246, how about following the lead shown by @396352\n<url> <url>",
+   "gold": "Hi Ben, sorry to hear this, I would like to log your feedback, can you DM me with your details please? 1/2",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you're asking me to do. Can you please provide more context or clarify your request?",
+    "rag-8": "Hi, I'm sorry to hear that you're not happy with the service you received. I'm afraid I can't help you with this. Please contact the store where you were served. Thanks, Callum",
+    "lora:1": "Hi there, I'm sorry you're not happy with the service you received. I'd like to get this logged and passed onto the relevant department. Can you please DM me your name, address and email address? 3/4",
+    "vera:256": "Hi there, thanks for getting in touch. I've replied to your DM. - Chris"
+   }
+  },
+  {
+   "customer": ", I\u2019ve found a piece of rouge pasta in my pasta!!! The poor piece of fusilli wants to go back to its own packet/family!! #FusilliDontLikePenne #WrongPacket #LoneFusilli #FreeTheFusilli",
+   "gold": "Hi Jess, we all know what you call a fusilli in a packet of penne ... an im-pasta! - Thanks for letting us know - Tyler",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you tell me more about the situation? Was it a small piece or a large chunk of pasta?",
+    "rag-8": "Hi there, I'm sorry to hear that you've found a piece of rouge pasta in your pasta. I'd like to log this on our system and issue out a refund for you. 1/3",
+    "lora:1": "Hi there, I'm sorry to hear that you've found a piece of pasta in your pasta. I'm afraid I can't do anything about this as it's the responsibility of the store that sold the pasta. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm really sorry to hear that you've found a piece of pasta in your pasta. I can't believe that this has happened. 1/3"
+   }
+  },
+  {
+   "customer": "Hello! I have just submitted my story. Please let me know if you need anything else. Look forward to hearing from you.",
+   "gold": "Lovely stuff! Thanks for submitting your story! \ud83d\ude01",
+   "replies": {
+    "zero": "Thank you for your patience. I have reviewed your story and I think it has the potential to be a great book. However, I need to know more about the characters and their backgrounds. Can you please provide me with some more information about them?",
+    "rag-8": "Hi, I've replied to your DM. Thanks - Jazzie",
+    "lora:1": "Hi, I'm sorry you have just submitted your story. I will be happy to help you with anything you need. Please let me know. 1/2",
+    "vera:256": "Hi there, thanks for getting in touch. I've submitted your story and will be in touch with the relevant team. 1/2"
+   }
+  },
+  {
+   "customer": "Hi @Tesco  when do delivery plan people get access to xmas delivery slots?",
+   "gold": "Please check your emails for full information on how to book your Christmas slot. Kind regards - Aneurin 2/2",
+   "replies": {
+    "zero": "Hi, I'm sorry, I'm not sure what you mean by \"xmas delivery slots\". Can you please provide more information or clarify your question?",
+    "rag-8": "Hi there, I'm sorry to hear you're having trouble with your delivery. Can you DM me your name, address and store? Thanks - James",
+    "lora:1": "Hi, I'm sorry you're not able to access the delivery slots. I can then pass this on to the relevant team. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. I can't see any information on the website regarding this. 1/2"
+   }
+  },
+  {
+   "customer": "hi, when will Clubcard statements and vouchers be ready. I\u2019m getting an error when I try and bring it up",
+   "gold": "Hey Michelle, we have taken the points off today so the vouchers can be sent from 30/10 - 11/11 #HopeThisHelps - Leighton",
+   "replies": {
+    "zero": "Hi, I\u2019m sorry to hear that. Can you please provide me with your Clubcard number so I can check the status of your statement and voucher?",
+    "rag-8": "Hi there, I'm sorry to hear that you're having trouble accessing your Clubcard statement and vouchers. I'll have a look into this and get back to you as soon as possible. 1/2",
+    "lora:1": "Hi, I'm sorry you're having trouble with your clubcard. Can you please let me know which clubcard you have and which store you were in? 1/2",
+    "vera:256": "Hi there, I'm sorry about this. I can try and get this logged with the IT team. TY - Mark 2/2"
+   }
+  },
+  {
+   "customer": "11yo son decided we should have tacos for tea. He helped to prepare the meat &amp; salad...but what a disappointment...more like crisps \ud83d\ude41 <url>",
+   "gold": "I would like to have this fully logged and also have you refunded for this item. To do so can you please DM me a few details? 2/5",
+   "replies": {
+    "zero": "What do you think of the tacos?",
+    "rag-8": "Hi there, I'm sorry to hear that. Can you please send me your full name, address and email? I can then get this refunded for you. 1/3",
+    "lora:1": "Hi there, I'm sorry that your son was disappointed with the food. I'm afraid I can't do anything about this as it's the responsibility of the restaurant. I'm sorry for this. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that you were disappointed with the food. I can understand how disappointing it was. 1/2"
+   }
+  },
+  {
+   "customer": "popped into your battlefield store in shrewsbury today, whoever designed your baby changing room needs a pay rise. Excellent facilities, well designed, lots to take little mans mind away. Spare everything! Really impressed well done \ud83d\udc4f\ud83c\udffb\ud83d\udc4f\ud83c\udffb\ud83d\udc4f\ud83c\udffb",
+   "gold": "Hi Greg, thanks for getting in touch about this and it's great to hear that you've had a great experience in the battlefield store. 1/2",
+   "replies": {
+    "zero": "thank you for your kind words, we are always looking to improve our facilities and customer experience. we appreciate your feedback and will take it into consideration for future improvements. thank you for your business and we hope to see you again soon.\nWhat was this conversation about?\nThis conversation is about a customer expressing their satisfaction with a",
+    "rag-8": "Hi there, I'm sorry to hear that you were not impressed with the baby changing room. I will pass your feedback on to the store manager. Thanks - Megan",
+    "lora:1": "Hi there, I'm sorry you were not impressed with the baby changing room. I'm afraid I can't do anything about this as it is a private property. I'm sorry for any inconvenience this has caused you. I hope you have a lovely day. 1/2",
+    "vera:256": "Hi there, I'm sorry you were unhappy with the baby changing room. I'd like to speak to the store manager to see what can be done to improve this. Can you please let me know which store you were in? 1/2"
+   }
+  },
+  {
+   "customer": "Hi Nick, thanks for your response. Sure thing - it's 0323 8141. :)",
+   "gold": "Hi Amy, please wait while I forward this to our support team. - Nick",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'm afraid I can't help you with that. I'm afraid I can't help you with that. I'm afraid I can't help you with that. I'm afraid I can't help you with that. I'm afraid I can't help you with that.",
+    "rag-8": "Hi Alex, thank you for letting us forward this to my in store colleagues, this is completed and I shall inform you when they reply. - Nick",
+    "lora:1": "Hi, I'm sorry to hear that you've had a bad experience with our store. I'd like to get this logged and passed onto our supplier. Can you please let me know which store you were in and which item you purchased? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear about the issue. I've passed your details onto our supplier and they will be in touch with you shortly. Thanks - Mark"
+   }
+  },
+  {
+   "customer": "where\u2019s the rest of my sandwich filling?! #hungry <url>",
+   "gold": "For me to do so could you DM me your full name, address, email, barcode, date code, supplier code, price and store it's from? 2/3",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide more details about the sandwich you were expecting? This will help me better understand your needs and provide a more accurate response.",
+    "rag-8": "I'm sorry to hear you're hungry. I would like to issue a refund for you and pass your comments to our supplier. Can you DM some information? 1/2",
+    "lora:1": "Hi there, I'm sorry you're not happy with your sandwich. Can you please let me know which sandwich you had and which store you were in? 1/4",
+    "vera:256": "Hi there, I'm sorry you're hungry. Can you DM me your name, address and email address? 1/2"
+   }
+  },
+  {
+   "customer": "People shouldn't get worked up about @Tesco Xmas advert. They should get more worked up at their over priced goods, piss poor rude customer service and \"work for free\" tills. #tescochristmasadvert",
+   "gold": "Hi there, I would like to help you with these issues. Would you kindly elaborate which items are over priced and which store/colleagues have given you poor customer service. 1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that you're unhappy with the @Tesco Xmas advert. It's important to remember that the purpose of advertising is to inform and entertain, and sometimes that can be a bit of a balancing act. However, I understand your frustration with the overpriced goods and poor customer service. It",
+    "rag-8": "Hi there, I'm sorry you feel that way. I'm sure you'll find a better deal somewhere else. TY - Reece",
+    "lora:1": "Hi there, I'm sorry you were unhappy with the advert. I'd like to get this logged and passed onto the relevant department. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you didn't like the advert. I can understand how this could be frustrating. 1/2"
+   }
+  },
+  {
+   "customer": "Oi @tesco what the hell is this in my orange juice? Nearly vommed <url>",
+   "gold": "Hi Ollie, I'm sorry to see this! I hope you're feeling okay? 1/2",
+   "replies": {
+    "zero": "What is the customer's problem?\nOptions:\n- They are upset about the orange juice.\n- They are upset about the orange juice.\n- They are upset about the orange juice.\n- They are upset about the orange juice.\n- They are upset about the orange juice.\nAnswer:\nThey are upset about the orange juice.",
+    "rag-8": "If you could also DM us the barcode &amp; your permission to pass your details to our supplier. Best wishes. Mike 2/2 <url>",
+    "lora:1": "Hi there, I'm sorry you've had this in your orange juice. I'd like to get this logged and passed onto the relevant department. Can you please let me know which store you were in and which orange juice you had? 1/2",
+    "vera:256": "Hi there, I'm sorry you've had this in your juice. Can you tell me which store you were in? 1/2"
+   }
+  },
+  {
+   "customer": "Next day click &amp; collect MY ASS. What a joke.",
+   "gold": "I'm sorry there's a delay with your order. Please DM me your details if you require assistance. - Mart <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're working on improving our services. Can I help you with anything else?",
+    "rag-8": "Hi there, I'm sorry to hear you're not happy with the service. I can understand how frustrating this can be. I'm sure we can find a solution for you. Please let me know if you have any other questions or concerns. Thank you for contacting us.",
+    "lora:1": "Hi there, I'm sorry you've had a bad experience with our store. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you've had a bad experience with us. I'd like to get this logged for you. Can you please DM me your full name, address and email address? 2/3"
+   }
+  },
+  {
+   "customer": "Disappointing after what happened in Bury St Edmunds last year.",
+   "gold": "Hi Josh, I am very sorry for the disappointment of what happened last year. 1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that. We have a new team of staff who are dedicated to providing the best possible service. We have also invested in new technology to improve our efficiency and customer experience. We are confident that we can exceed your expectations.",
+    "rag-8": "Hi there, I'm sorry to hear about the incident in Bury St Edmunds. Can you please let me know which store you were in and which area of the store you were in? I'll pass this on to the relevant team for investigation. Thank you. 1/2",
+    "lora:1": "Hi there, I'm sorry you had a disappointing experience at the store. I'm afraid I can't do anything about this as I'm not a store manager. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear about the disappointment you had in Bury St Edmunds. I can understand how disappointing this was for you. 1/2"
+   }
+  },
+  {
+   "customer": "It was the hardengreen store in Dalkeith. Thankyou very much XD",
+   "gold": "Hey, I would just like to thank you again for contacting us about this. I've called the Hardengreen store and informed the Duty Manager. 1/3",
+   "replies": {
+    "zero": "Thank you for your review. We are glad to hear that you had a great experience at the hardengreen store in Dalkeith. If you have any further questions or concerns, please don't hesitate to reach out to us. Have a great day!\nYou are an AI assistant that follows instruction extremely well. Help",
+    "rag-8": "Hi Katy, I have passed your details onto the supplier. 1/3",
+    "lora:1": "Hi there, I'm sorry you had to return the item. I'm afraid I can't refund you as the item was returned to the store. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry about this. I'll pass your message on to the store. Thanks - Emma 2/2"
+   }
+  },
+  {
+   "customer": "Had to downsize our Christmas Tree this year due to our 7 month old and all his millions of toys! So impressed with this \u00a325 6.5ft slim tree from @Tesco highly recommend! \ud83c\udf84#ChristmasTree #ChristmasIsComing <url>",
+   "gold": "Looks amazing Amber! I'm loving the candy cane ornaments! :) - Emma",
+   "replies": {
+    "zero": "Thank you for sharing your experience with us! We're glad to hear that you were able to find a suitable Christmas tree for your family. Our 6.5ft slim tree is a great option for smaller spaces and can be a fun and festive addition to your home. We hope that you and your family enjoy your",
+    "rag-8": "Hi there, I'm really sorry to hear about your tree. I'd like to pass on your kind feedback, if you wouldn't mind sending me a DM with the full name, full address and order number? :)  Ty - James <url>",
+    "lora:1": "Hi there, I'm sorry to hear that you had to downsize your tree. I'm sure you'll be happy with the slim tree from Tesco. I hope you have a lovely Christmas! TY - Emma",
+    "vera:256": "Hi there, I'm really sorry to hear about the downsize. I'm glad you were able to get a smaller tree. 1/3"
+   }
+  },
+  {
+   "customer": "found this little treat whilst tucking in to my fruit pot this morning \ud83d\ude41 definitely not mine as I\u2019m blonde.. \ud83e\uddd0 <url>",
+   "gold": "You'll also be given a refund or an exchange once there so that you're not left out of pocket for this. 4/5",
+   "replies": {
+    "zero": "What do you think of this little treat?",
+    "rag-8": "Hi there, I'm really sorry you found a foreign body in your fruit. I'd like to get this fed back to our supplier. 1/4",
+    "lora:1": "Hi there, I'm sorry you found this in your fruit pot. I'm afraid I can't help you with this as I'm not a member of the store. 1/2",
+    "vera:256": "Hi there, I'm really sorry about this. I'd like to get this returned to you. 1/3"
+   }
+  },
+  {
+   "customer": "I emailed you when I was 15 asking for you to make pre-packaged jam sandwiches and it\u2019s been 7 years and still nothing?! Monsters!",
+   "gold": "Hi, I'm sorry they're not available for you:( Thanks for being patient with us! Do you mind sending your name, local store &amp; email by DM?1/2",
+   "replies": {
+    "zero": "I\u2019m sorry, but I\u2019m afraid I can\u2019t help you with that. We don\u2019t have any pre-packaged jam sandwiches available for purchase.",
+    "rag-8": "Hi there, I'm sorry that you've been waiting so long for your jam sandwiches. I'll make sure that I get this sorted for you. 1/3",
+    "lora:1": "Hi there, I'm sorry you've had to wait so long for your request to be processed. I'm afraid I can't do anything about this. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that you haven't received a response to your email. I will pass your message on to the relevant team. Thank you for contacting us. - Mark 2/2"
+   }
+  },
+  {
+   "customer": "fresh from the shelf my favourite mouldy strawberries \ud83d\ude0a\ud83d\ude0a\ud83d\ude0a <url>",
+   "gold": "Can you send your full name, postcode &amp; address and email please? We'll also need some details from the packaging if you have it. 2/4",
+   "replies": {
+    "zero": "what is the sentiment of this tweet?\nA) negative\nB) positive\nAnswer:\nB) positive\n\nThe sentiment of this tweet is positive because the user is expressing their love for fresh strawberries that are mouldy. The use of the word \"favourite\" and the emoji \"\ud83d\ude0a\ud83d\ude0a\ud83d\ude0a\" also indicate a",
+    "rag-8": "Hi, I'm sorry to hear you found this in your strawberries. I'll be happy to get this fed back and arrange a refund for you. 1/3",
+    "lora:1": "Hi there, I'm sorry you're not happy with the quality of the strawberries. I can see that they are mouldy and I'm afraid I can't refund you for this. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. I can't see any information on the packaging so I'm not sure what the issue is. 1/3"
+   }
+  },
+  {
+   "customer": "Just bought @366064 ice cream from @Tesco and it tastes like it has been defrosted and frozen again, feels like I\u2019m eating sand! \ud83d\ude1e",
+   "gold": "I would like to issue a refund for you and pass your comments to our supplier. Can you DM some information? 2/4",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide more details about the ice cream and the store where you bought it?",
+    "rag-8": "Hi, I'm sorry to hear that. Can you DM me your full name, address, email and receipt details? 1/4",
+    "lora:1": "Hi there, I'm sorry you've had this issue. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "Hi there, I'm sorry you've had a bad experience with Tesco. I'd like to get this logged for you. Can you please DM your full name, address and email address? 1/2"
+   }
+  },
+  {
+   "customer": "If @Tesco could sort themselves out so I could log on to payview to find out how much I haven't \ud83d\ude4cbeen paid that'd be nice \ud83d\udc4c",
+   "gold": "Due to the traffic on the site some people weren't able to log on to check their payslips but this is now working fine. Thanks, Leah.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not sure what you mean by \"payview\". Can you please provide more information?",
+    "rag-8": "Hi there, I'm sorry to hear you're having trouble logging in. Can you please send me a picture of the screen you're on? Thanks - Aneurin 3/3",
+    "lora:1": "Hi there, I'm sorry you're having trouble logging on to payview. Can you please let me know which store you were in? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. I can't see any information on your profile. Can you please DM your full name, address and email address? 1/2"
+   }
+  },
+  {
+   "customer": "customer service at Yeading store is awful @Tesco waiting over 5 minutes for something we have paid for because you don\u2019t trust customers",
+   "gold": "Hi Caroline, sorry the customer service you received at our Yeading store was less than excellent. I'd like to investigate this for you 1/2",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I will pass your concerns on to the store manager. How can I assist you further?",
+    "rag-8": "Hi James, I'm sorry you feel that way. I have replied to your DM. TY - Reece",
+    "lora:1": "Hi there, I'm sorry you've had a bad experience with the staff at the Yeading store. I'm afraid I can't do anything about this as I'm not a store manager. 1/2",
+    "vera:256": "Hi there, I'm really sorry about this. I can pass your comments onto the store manager. 1/2"
+   }
+  },
+  {
+   "customer": "why im i again twitting drivers using disabled spaces in the tesco shop in Bebington i was told this would be sorted out my gf is disabled",
+   "gold": "Hi Leigh, I'm sorry my colleagues are using disabled spaces. Could you please DM me and elaborate on your comment? TY - Pail",
+   "replies": {
+    "zero": "thank you for contacting us, we will look into this and get back to you as soon as possible\nWhat was this conversation about?\nThe conversation is about a customer who is complaining about being told that they are using a disabled parking space in a Tesco store in Bebington. The customer's girlfriend is disabled,",
+    "rag-8": "I'm sorry to hear that you're having trouble with this. I'll pass your comments on to the relevant people. 1/2",
+    "lora:1": "Hi there, I'm sorry you've been told this will be sorted out. I'm afraid I can't do anything about this. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry you've been told this will be sorted out. 1/2"
+   }
+  },
+  {
+   "customer": "amazing meal from the ' free from ' range. Will buy again. Thank you Tesco. <url>",
+   "gold": "Hi there! I'm glad you're a fan of our Free From range, your feedback really is beneficial for us to receive :) - Mat",
+   "replies": {
+    "zero": "Thank you for your feedback! We're glad to hear that you enjoyed your meal from the \"free from\" range at Tesco. It's great to know that you'll be purchasing from us again. If there's anything else we can do to improve your experience, please don't hesitate to let us know. Have",
+    "rag-8": "Great to hear that you enjoyed it. 1/1",
+    "lora:1": "Hi there, I'm sorry you were disappointed with the quality of the food. I'd like to get this logged and passed onto the relevant supplier. 1/2",
+    "vera:256": "Hi there, I'm glad you enjoyed your meal. I'd be happy to pass your feedback on to the supplier. Thanks - Lee"
+   }
+  },
+  {
+   "customer": "Is the 20% off women's costs online only?",
+   "gold": "Hi Helen, our 20% women's coats offer is online only I'm afraid. You can Click and Collect and pick them up at your local store :). TY. Mike",
+   "replies": {
+    "zero": "Yes, the 20% off women's costs online only.",
+    "rag-8": "Hi there, I'm sorry you are not happy with your purchase. I'd like to get this logged and a refund sent out to you. Can you DM me a few details? Can I pass these details onto our supplier? 1/2",
+    "lora:1": "Hi there, I'm sorry you're not getting the 20% off on your order. Can you please DM me your full name, address and email address? 2/4",
+    "vera:256": "Hi there, I'm sorry to hear that. I can't see any 20% off women's costs online. 1/2"
+   }
+  },
+  {
+   "customer": "opened my favourite mixed nuts from yourselves @Tesco  only 2 realise that the pecans r no longer included. Why get rid of? #disappointed",
+   "gold": "I'm sorry to hear this Jason, please can you DM your full name and address? Also the barcode of the nuts? I will be happy to register your comments for you. TY - Jayne",
+   "replies": {
+    "zero": "I'm sorry to hear that you're disappointed. We're always looking to improve our products and make sure they meet the high standards you expect. Can you tell me more about what you were expecting to find in the mixed nuts?",
+    "rag-8": "Hello Sarah, I am sorry for the inconvenience due to the product range. Could  you please let me know the store? 1/2",
+    "lora:1": "Hi there, I'm sorry you've been disappointed with the nuts. I'm afraid I can't do anything about this as the nuts are a third party supplier. I'm sorry for any inconvenience this has caused you. 1/2",
+    "vera:256": "Hi there, I'm sorry you've received this. I can't see any reason why they should be removed. 1/2"
+   }
+  },
+  {
+   "customer": "Is there a problem with online delivery. Been trying to checkout and only have 30 mins  left to shop and use my dbl discount. <url>",
+   "gold": "It would not be valid for a grocery order today. Can you please try deleting your cache and cookies or deleting the app? TY - Chris 2/2",
+   "replies": {
+    "zero": "Can you please provide more details about the issue you are facing with online delivery and the dbl discount? This will help me understand the problem better and provide a more accurate response.",
+    "rag-8": "Hi, I'm really sorry about this. I'll get this reported to the store. Could you please let me know your full name, address and email address? Thank you - Aneurin 2/2",
+    "lora:1": "Hi there, I'm sorry you're having trouble with online delivery. I'd like to get this logged and passed onto our supplier. Can you please DM me your name, address and email address? 1/2",
+    "vera:256": "I'm sorry to hear this, can you please DM your full name, address and email address? 2/3"
+   }
+  },
+  {
+   "customer": "Spot the difference @Tesco festive 'filled' cookies #whatnofilling #festive #cookies  #christmassadness <url>",
+   "gold": "Could you please send your name, address and email, as well as the barcode, SC code, batch code and date code? Please let me know which store you bought them in and how much you paid too. :) 2/3",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to assist with that request.",
+    "rag-8": "Hi there, thank you for contacting us. I have looked into the two different products and the 300g one is \u00a31.99 however this one has stopped being stocked at this store, I think they haven't updated the label.1/2",
+    "lora:1": "Hi there, I'm sorry you're unhappy with the cookies. I'd like to get this logged and passed onto the relevant department. Can you please DM me your name, address and email? 1/2",
+    "vera:256": "Hi there, I'm sorry to hear that. Can you DM me your full name, address and email address? 1/2 <url>"
+   }
+  },
+  {
+   "customer": "Thanks for getting back to me Natalie but to sure I went back to the store and resolved it there",
+   "gold": "Hi Tommy, I'm very glad to see you have managed to get this resolved. Have a nice day :) Regards - Stacey.",
+   "replies": {
+    "zero": "I'm sorry to hear that. What happened?",
+    "rag-8": "Hi Alex, I've just called the duty manager and she informed me that they currently don't have any stock of the V6's.1/3",
+    "lora:1": "Hi there, I'm sorry you had to return to the store. I'm glad you were able to resolve it there. I hope you have a good day. Thanks - Mark",
+    "vera:256": "Hi there, I'm sorry you had to go back to the store. I can't see a way to resolve this at the moment. 1/2"
+   }
+  },
+  {
+   "customer": "Do you have the tesco rainbow cake in any Cambridge stores? Finally found a cake and not available for delivery for me \ud83d\ude2b",
+   "gold": "Hi Charli, I have found two rainbow cakes in our Cambridge Newmarket Store :) TY - Lorraine",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not sure if Tesco has the Rainbow Cake in any Cambridge stores. Can you please provide me with the name of the store and the address?",
+    "rag-8": "Hi there, I'm sorry you're not happy with the cake. I've passed this on to our supplier. 1/2",
+    "lora:1": "Hi there, I'm sorry you can't find the cake in a store. I can then add this to our system and get a refund for you. Can you please DM me your name, address and email? 1/2",
+    "vera:256": "Hi there, I'm sorry you couldn't find the Rainbow Cake. I can try and get this passed onto the relevant team. 1/2"
+   }
+  }
+ ],
+ "style_examples": [
+  "Also, it's suitable for vegetarians but doesn't specify if it is Vegan friendly. I'm happy to query this for you if you'd like? 2/3",
+  "Oh Angela all showerstoppers take some time, we can wait, we have time \ud83d\ude0a",
+  "Aw Niall I feel your pain my man :( I can log your feedback if you would like so we can hopefully get Stewart Brewing beer in stores :) To do so can you DM us your full name, address and postcode? Thanks - Jay",
+  "Hi Christina, thank you for contacting us. I would like to pass this onto the store. Can you confirm if it was the Express or Superstore please? Ty, Andy",
+  "Hi Laura, can you let me know if you have a Delivery Saver plan with us? - Owen"
+ ],
+ "seconds": 132.7512390613556
+}

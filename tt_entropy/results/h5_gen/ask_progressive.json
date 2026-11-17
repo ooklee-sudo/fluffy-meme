@@ -1,0 +1,432 @@
+{
+ "brand": "ask_progressive",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 33.9,
+  "mean_response_tokens": 32.1625,
+  "response_type_token_ratio": 0.1092,
+  "distinct_response_share": 0.975
+ },
+ "nll": {
+  "zero": 3.5532114702529625,
+  "rag-8": 1.7793692266187704,
+  "lora:1": 1.2942672218975082,
+  "vera:256": 1.332762579935634
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.4992222552709219,
+  "lora:1": 0.6357472014449604,
+  "vera:256": 0.6249132394473692
+ },
+ "items": [
+  {
+   "customer": "Another awful @131610 insurance experience 15yrs or so w/ them im out. Anyone have a co. They recommend for auto?",
+   "gold": "Can we look into anything for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>",
+   "replies": {
+    "zero": "Yes, we have a co. that we recommend for auto. It's called \"The Insurance Company\" and they have a great reputation.",
+    "rag-8": "Let\u2019s make sure you\u2019re saving all you can. When you get a chance, please call us anytime at 855-266-8485 for a policy review.^SS",
+    "lora:1": "We're sorry for any frustration, and we'd like to help. Can you DM your policy number and phone number? ^AA <url>",
+    "vera:256": "We're sorry for your experience, and we'd like to help. Can you DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  },
+  {
+   "customer": "Having such a bad experience right now with @131610 me so pissed. \ud83d\ude20",
+   "gold": "Can we look into anything for you? If so, please use the link to DM your policy or claim number along with any other details you'd like to share. ^SS <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're facing with @131610?",
+    "rag-8": "I'm sorry for your experience. Our team is working on resolving the issue. Please call us at 855-266-8485 for assistance. ^JJ",
+    "lora:1": "Can we look into anything for you? If so, please DM your policy or claim number along with any details you'd like to share. ^JK <url>",
+    "vera:256": "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>"
+   }
+  },
+  {
+   "customer": "I need to check it to see if I can save some money on my insurance.",
+   "gold": "Let's find out! When you have a chance, please call us anytime at 855-266-8485. ^RL",
+   "replies": {
+    "zero": "What type of insurance are you looking to save on?",
+    "rag-8": "We're sorry for any confusion. An agent may recommend different coverages than you chose online. If you'd like more info on this or anything else, please call 855-266-8485 anytime. ^JK",
+    "lora:1": "We're here to help! If you need any assistance, please call us anytime at 855-266-8485. ^JK",
+    "vera:256": "We're here to help, so please call us anytime at 855-266-8485. ^SS"
+   }
+  },
+  {
+   "customer": "- In 10 yrs w/Progressive, never have I had such crappy service from Roadside Assistance as I've had over the past 5 days. Get a new contractor to handle Roadside Assistance, please.",
+   "gold": "Sorry our Roadside team dropped the ball, and I'd like to share your feedback. Can you DM your policy and phone number? ^AA <url>",
+   "replies": {
+    "zero": "- I'm sorry to hear that. We appreciate your feedback and will investigate the issue. Can you please provide more details about the problems you experienced with Roadside Assistance?",
+    "rag-8": "I'm sorry to hear that, and I'd like to share your feedback. Can you DM your policy/phone # and additional details? ^AA <url>",
+    "lora:1": "We're sorry for your experience, and we'd like to look into it. Can you please DM your policy number and phone number? ^AA <url>",
+    "vera:256": "I'm sorry for your experience, and I'd like to share your feedback. Can you DM your policy number and phone number? ^AA <url>"
+   }
+  },
+  {
+   "customer": "my daughter cancels her car ins. Moves to Spain, gets a bill 2 day for 3 months of ins ??? What the What?",
+   "gold": "Let's see what happened and how we can help. Have your daughter give us a call anytime at 440-461-5000. ^BB",
+   "replies": {
+    "zero": "Hi, I see that you have a question about your daughter's car insurance. Can you tell me more about the situation?",
+    "rag-8": "I'm sorry to hear that. Can you please DM your policy number and any additional details? ^AA <url>",
+    "lora:1": "We're sorry for any confusion, and I'd like to help. Can you please DM your policy number and phone number? ^AA <url>",
+    "vera:256": "We'd like to look into this for you. Can you please DM your policy number and any details you'd like to share? ^JK"
+   }
+  },
+  {
+   "customer": "I used to want progressive, now I resent it. <url>",
+   "gold": "Is there something we can look into? If so, please DM your policy or claim number and any details you can share. ^JH <url>",
+   "replies": {
+    "zero": "What do you mean by that?",
+    "rag-8": "I\u2019m sorry to hear that. Can you please DM your policy number and any details you\u2019d like to share? ^JH",
+    "lora:1": "We're sorry for any frustration, and we're happy to help. Can you DM your policy number and any details you'd like to share? ^JK <url>",
+    "vera:256": "We're sorry for any confusion. If you have any questions, please let us know. ^AA"
+   }
+  },
+  {
+   "customer": "Thank you, Progressive. Daughter locked keys in car. Used the app, 5 minutes later got text saying help arriving in 35 minutes. Done! #Awesome #SatisfiedCustomer",
+   "gold": "That's great news, Rob, and we're glad she's back on the road! We'd like to pass along the compliments to our Roadside team as well. Could you send a DM with your policy number? ^TF <url>",
+   "replies": {
+    "zero": "Thank you for choosing Progressive. We are glad to hear that your daughter was able to get her keys back in a timely manner. We appreciate your feedback and are committed to providing the best possible service to our customers. If you have any further questions or concerns, please do not hesitate to contact us. Have a great day",
+    "rag-8": "You're welcome, and I'm glad to hear that you had a positive experience. If you have any more questions or need assistance, please don't hesitate to reach out. ^JK",
+    "lora:1": "Thanks for the shout-out, and I'd like to share this with our Claims team. Can you please DM your claim number? ^AA <url>",
+    "vera:256": "Thanks for the shout-out, and we're glad to hear you had a quick and easy experience!"
+   }
+  },
+  {
+   "customer": "I\u2019m about ready to leave progressive insurance and quit jumping through hoops to get my insurance to return back to normal. I have a driver I don\u2019t want on my policy and and a vehicle that is totaled still on my policy. Yet I cannot get these items off my policy.",
+   "gold": "We'd like to see what options may be available; so we can, could you DM your policy number? ^JK <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I can understand your frustration. Can you please provide me with more details about the situation?",
+    "rag-8": "I'm sorry to hear that. I'd like to check on this for you. Can you please DM your policy number? ^AA",
+    "lora:1": "We're sorry for your frustrations and want to help. Can you DM your policy number and any details you'd like to share? ^AA <url>",
+    "vera:256": "I'm sorry for your experience, and I'd like to help. Can you DM your policy number and any additional details? ^AA <url>"
+   }
+  },
+  {
+   "customer": "Hi\u2014using Snapshot, it seems to show \u201cphone use\u201d when I have to run google maps to listen to directions or when I stream music - that doesn\u2019t seem accurate - it makes it look like I\u2019m actively using the phone while driving when I am definitely not?",
+   "gold": "Hi - We'd like to look into this; when you have a moment, please call our Snapshot specialists at 877-329-7283, Monday-Saturday 8AM-midnight EST. ^JH",
+   "replies": {
+    "zero": "Hi, thank you for reaching out. I understand your concern. To clarify, when you use Google Maps or stream music, these activities are not considered as phone use. They are just background activities that are not directly related to phone use. However, if you are using your phone for any other activities that are directly related",
+    "rag-8": "We understand your concern. We are working to improve the accuracy of the Snapshot app. In the meantime, you can use the Snapshot app to monitor your driving habits and receive alerts if you are using your phone while driving.",
+    "lora:1": "I'm sorry for any confusion, and I'd like to help. Can you please DM your phone number and the time you saw this? ^JT",
+    "vera:256": "I'm sorry for any confusion, and I'd like to help. Can you DM your policy number and any details you'd like to share? ^JT"
+   }
+  },
+  {
+   "customer": "I stg if you hit me and you have @131610 I probably will be even more mad bc I have dealt with so much bullshit from this company",
+   "gold": "Is there a claim we can help with? If so, please DM your claim # using the link below, and we'll share your concerns. ^TF",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the situation?",
+    "rag-8": "We're sorry to hear that. If you'd like to discuss this further, please call our customer service team at 855-266-8485. ^JH <url>",
+    "lora:1": "I'm sorry for your experience, and I'd like to help. Can you DM your policy number and any details you'd like to share? ^AA <url>",
+    "vera:256": "I'm sorry for your experience, and I'd like to help. Could you DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  },
+  {
+   "customer": "EXCUSE ME @131610 WHY DID MY BILL GO UP BY $10 TF",
+   "gold": "We'd like to explain the change. So we can get started, please DM us your policy number. ~Brian <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the changes on your bill?",
+    "rag-8": "We're sorry to hear that. We'd like to look into this and see if we can help you save. Please call us at 855-266-8485. ^SS",
+    "lora:1": "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>",
+    "vera:256": "We're sorry for any confusion. Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^BY <url>"
+   }
+  },
+  {
+   "customer": "I get that I\u2019m not covered for roadside assistance but a wait of 5 hours for a paid towed truck? Come on....",
+   "gold": "I'm sorry for your experience, and I'd like to share your feedback. Please DM your policy # and phone # you called from. ^JT",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We can offer you a 10% discount on your next purchase to help cover the cost of the tow.",
+    "rag-8": "I'm sorry for the wait, and I'd like to share your feedback. Can you DM your policy number and phone number? ^AA <url>",
+    "lora:1": "We're sorry for the wait and appreciate your patience. If you need to file a claim, please call 855-266-8485. ^JK",
+    "vera:256": "We're sorry for your experience. We've reviewed your claim and will contact you shortly. ^JT"
+   }
+  },
+  {
+   "customer": "IS THE WORST INSURANCE EVER. WORST CUSTOMER SERVICE AS WELL",
+   "gold": "We're sorry we've let you down and would like to look into this. Please use the link to DM your policy number and additional details. ^JJ <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We strive to provide excellent customer service and strive to make our customers happy. Can you tell me more about your experience with our company?",
+    "rag-8": "Is there anything we can look into for you? If so, please use the link to DM your policy or claim number and any other details. ^SS <url>",
+    "lora:1": "We're sorry for your experience, and we'd like to look into it. Can you DM your policy number and any details you'd like to share? ^JK <url>",
+    "vera:256": "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>"
+   }
+  },
+  {
+   "customer": "it\u2019s annoying that every time i need to login to my account u make me change my password... i mean legit Every time i take screenshots of pw when i change them and enter them exactly as shown and u still make me change them!!",
+   "gold": "Sorry for any trouble. So we can look into this, please use the link to DM your policy number. ^JJ <url>",
+   "replies": {
+    "zero": "I understand your frustration. It's important to ensure the security of your account. Can you please provide me with the specific details of the password you are changing? This will help me assist you more effectively.",
+    "rag-8": "We're sorry for any inconvenience. Our consultants would be happy to reset it for you; please call 855-266-8485. ^SS",
+    "lora:1": "We're sorry for any frustration. If you still need help, please DM your policy number and any details you'd like to share. ^JH <url>",
+    "vera:256": "I'm sorry for your experience, and I'd like to help. Could you DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  },
+  {
+   "customer": "I'm trying to get my policy info, but your service are offline. I'm trying to get a state inspection rn \ud83d\ude21",
+   "gold": "Sorry for the trouble. If there\u2019s a general question we can answer, please send it in a DM along with your policy number using the link. ^RL <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your policy number so I can assist you further?",
+    "rag-8": "We're sorry for the inconvenience, but we're currently experiencing technical difficulties. Please try again later or call 800-776-4737 for assistance. ^TF",
+    "lora:1": "Sorry for the delay; so we can look into this, could you please DM your policy number? ^JT <url>",
+    "vera:256": "I'm sorry for the delay; please give me a call anytime at 855-266-8485. ^JK"
+   }
+  },
+  {
+   "customer": "Why is @138347 affiliated with @131610 to provide military with motorcycle insurance when the coverage is smoke and mirrors when you actually have a claim?",
+   "gold": "I\u2019m sorry about the trouble and I\u2019d like to share your feedback with our Claims team. Can you please DM your claim number? ^JT <url>",
+   "replies": {
+    "zero": "@138347 is a motorcycle insurance company that provides coverage for military personnel. The coverage is smoke and mirrors because the company does not actually provide coverage for military personnel. The coverage is only for the motorcycle and not for the military personnel themselves. The company is affiliated with @131610",
+    "rag-8": "I'm sorry for the confusion, and I'd like to help. I'll have someone from our Claims team follow up by the end of tomorrow. ^AA",
+    "lora:1": "We're sorry for any confusion. The coverage is for motorcycle insurance only, and is only available to veterans and active-duty military.",
+    "vera:256": "I'm sorry for your experience, and I'd like to share your feedback with our Claims team. Can you please DM your policy number? ^AA <url>"
+   }
+  },
+  {
+   "customer": "Gotta say, the @131610 agent who's been handling my claim has been pretty great. Considerate and not robotic and I'm pleased.",
+   "gold": "Thanks for your feedback, and I'd love to share this with our Claims team. Can you please DM your claim number? ^AA <url>",
+   "replies": {
+    "zero": "Thank you for your feedback. We appreciate your positive experience with our team.",
+    "rag-8": "I'm glad to hear that! We're always here to help. Please let us know if there's anything else we can do for you. ^JT",
+    "lora:1": "Thanks for the shout-out! We're happy to hear you've had a great experience. If you have any other questions, please let us know. ^AA",
+    "vera:256": "We're glad to hear that! If you have any other questions, please let us know. ^JT"
+   }
+  },
+  {
+   "customer": "Hey @131610 You just lost a 10 year customer.",
+   "gold": "We\u2019d hate to see you go. If there\u2019s something we can review for you, please DM your policy or claim number along with any details. ~Corrie <url>",
+   "replies": {
+    "zero": "Hi, how can I help you?",
+    "rag-8": "We're sorry to hear that. Please DM your claim number and phone number. ^KR <url>",
+    "lora:1": "Sorry for the loss. If you need help, please call 855-266-8485. ^JK",
+    "vera:256": "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>"
+   }
+  },
+  {
+   "customer": "Votes for worst customer service 2017:\n\n1. @115725 \n2. @131610 \n\nMaybe the companies care about their clients, but the CSR sure don't.",
+   "gold": "Is there anything we can look into for you? If so, please DM us your policy, quote or claim number and any other info. ^BB <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that you had a negative experience with our company. We take customer service very seriously and strive to provide the best possible experience for all of our customers. If you have any further questions or concerns, please don't hesitate to reach out to us. We appreciate your feedback and will do our best to",
+    "rag-8": "We'd like to look into this. Can you please DM your policy number and any details you'd like to share? ^JH <url>",
+    "lora:1": "I'm sorry for your experience, and I'd like to help. Can you DM your policy number and any details you'd like to share? ^AA <url>",
+    "vera:256": "We're sorry for your experience. If you have any concerns, please let us know by calling 855-266-8485. ^AA"
+   }
+  },
+  {
+   "customer": "BYEE @131610, I've NEVER been able to log in with my pin and every email you send me takes me to a page that doesn't recognize me. IAD",
+   "gold": "We understand your frustration and we'd like to help reset your log in details. So we can, please call 855-266-8485 anytime. ^CF",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your email address and the specific error message you are receiving?",
+    "rag-8": "We're sorry to hear that. Can you please send us your policy number and phone number? We'd like to look into this for you. ^JH <url>",
+    "lora:1": "I'm sorry for the trouble, and I'd like to help. Can you please DM your policy number and phone number? ^AA <url>",
+    "vera:256": "Can we look into this for you? If so, please DM your policy number and any details you can share. ^JK <url>"
+   }
+  },
+  {
+   "customer": "I see that you have \"minor accident\" forgiveness.  Can you provide me details on how this works for Texas.",
+   "gold": "Thanks for asking. Small Accident Forgiveness can apply to a Progressive claim with a payout of under $500.",
+   "replies": {
+    "zero": "Yes, we have \"minor accident\" forgiveness in Texas.  This means that if you have a minor accident and you are at fault, you can still be eligible for insurance coverage.  However, there are some limitations to this policy.  For example, if you have a major accident or if you have a history",
+    "rag-8": "If you'd like more info on this or anything else, please call 855-266-8485 anytime. ^JK",
+    "lora:1": "We're happy to help! Let us know if you have any questions. ^JT",
+    "vera:256": "We're happy to help! If you'd like to review the terms, please call us anytime at 855-266-8485. ^BB"
+   }
+  },
+  {
+   "customer": "why is my insurance with you guys so high ?",
+   "gold": "Let\u2019s find out and check for ways you may be able to save. Please call us anytime at 855-266-8485. ^RL",
+   "replies": {
+    "zero": "we have to make sure that you are a good risk",
+    "rag-8": "So we can review this together and make sure you have the best price we can offer, please call 855-266-8485 anytime. ^JK",
+    "lora:1": "We'd like to look into this for you. Can you please DM your policy number? ^KF <url>",
+    "vera:256": "We're sorry for any confusion. We'd like to review your policy. Please call us anytime at 855-266-8485. ^JK"
+   }
+  },
+  {
+   "customer": "help please still waiting in hot car. no tow truck in route yet. Been a customer for 10 years...what's the benefit?",
+   "gold": "I'm sorry our Roadside team has kept you waiting. Can you DM your policy number and the phone number you called from? ^AA <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that you're still waiting in your hot car. We understand how frustrating it can be to wait for assistance, especially when you're a long-time customer. Our team is working diligently to resolve your issue as quickly as possible. In the meantime, please stay inside the vehicle and keep your windows open",
+    "rag-8": "I'm sorry you're still waiting for a tow truck. I'd like to help you with your situation. Could you send your policy number and phone number used for service in a DM, and I'll have our Roadside team review? ^AA <url>",
+    "lora:1": "We're sorry for the inconvenience, and we're glad you're still with us. We're working to get you to a tow truck as soon as possible. ^CF",
+    "vera:256": "We're sorry for the wait, and we'd like to help. Can you please DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  },
+  {
+   "customer": "I used the wrong debit card to pay for my rental + deductible. Can you all at corporate help with me with fixing that?",
+   "gold": "I can have someone from our Claims team assist you. Can you DM your claim number? ^AA <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I can help you with that. Please provide me with your name and the details of the rental and the amount you need to pay.",
+    "rag-8": "We'd like to look into this for you. Can you please DM your policy or claim number along with any additional details you're able to share? ^JH <url>",
+    "lora:1": "Sorry for the delay. So we can help, please DM your policy number and any details you'd like to share. ^CF <url>",
+    "vera:256": "We're sorry for any confusion. If you'd like to talk about this, please call us anytime at 855-266-8485. ^SS"
+   }
+  },
+  {
+   "customer": "please contact me for a #HORRIBLE #CUSTOMER #SERVICE experience. Talked down to, disrespected, and tried to make me feel like an idiot about my own truck.\n#UnSatisfied\n#Combat \n#Veteran\n#Progressive\n#insurance\n#WWP\n#IAVA\n#Tennessee\nShould\u2019ve stayed with @3976",
+   "gold": "We're sorry to hear about your experience and would like to look into it. Could you please DM your policy number? ^JK <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that you had a negative experience with our customer service. We take customer satisfaction very seriously and strive to provide excellent service to all our customers. We appreciate your feedback and will work to improve our processes and procedures to ensure that you have a positive experience in the future. Thank you for bringing this to",
+    "rag-8": "I'm sorry to hear that. We'd like to check on this. Can you DM your policy number and any details you'd like to share? <url>",
+    "lora:1": "We're sorry for your experience and want to help. Can you DM your policy number and phone number? ^AA <url>",
+    "vera:256": "We\u2019re sorry for your experience and want to help. Can you please DM your policy number and any details you\u2019d like to share? ^AA <url>"
+   }
+  },
+  {
+   "customer": "would you drop someone for renting a car",
+   "gold": "Typically, renting a car isn\u2019t a reason we\u2019d cancel a policy. However, there may be other factors involved that could make a policy unacceptable. So we can better understand your situation, please give us a call anytime at 855-266-8485. ^RL",
+   "replies": {
+    "zero": "I'm sorry, but I cannot assist with that request. As an AI language model, I am not authorized to provide personal information or make recommendations about individuals. If you have any other questions or need assistance with something else, feel free to ask!",
+    "rag-8": "We're sorry to hear that. We can look into this for you, please DM your policy number and any additional details you're able to share. ^JK",
+    "lora:1": "We'd like to look into this for you. Can you please DM your policy number and phone number? ^KF <url>",
+    "vera:256": "We're sorry for any inconvenience. If you'd like to look into this further, please call our Claims team at 855-266-8485. ^RL"
+   }
+  },
+  {
+   "customer": "From Canada:  I want to buy insurance for rental cars in Fla. I know I need a U.S. address.  Would a P. O. Box in NYS suffice?",
+   "gold": "To find one in the area where you\u2019ll need coverage, please visit <url> ^JK",
+   "replies": {
+    "zero": "Yes, a P.O. Box in New York State will suffice.  You can also use a P.O. Box in Florida.  The only difference is that you will need to provide a copy of your Florida license to the insurance company.  The insurance company will then verify that you are a resident of Florida.",
+    "rag-8": "I'm sorry to hear that. So we can look into this, please call a licensed consultant anytime at 855-266-8485. ^JH",
+    "lora:1": "We can help with that! Let us know if you need any assistance. ^JT",
+    "vera:256": "We're sorry for any confusion. If you're in New York, you can use a P.O. Box."
+   }
+  },
+  {
+   "customer": "your customer service to switch cars on my policy was A1",
+   "gold": "That's what we like to hear! Can you please DM us your policy number and any details so we can pass on your compliment? ^BY <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We are working on it. We will get back to you as soon as possible.",
+    "rag-8": "We're glad to hear that. Can you please send us a DM with your policy number? ^AA",
+    "lora:1": "We're always here to help. If you have any other questions, please give us a call at 855-266-8485. ^BY",
+    "vera:256": "We're glad you're happy! If you have any other questions, please let us know. ^BB"
+   }
+  },
+  {
+   "customer": "When it comes to insurance @131610   Is not what they portray. Had an accident not at fault and now I\u2019m being underpaid for the car\ud83d\ude21\ud83d\ude21\ud83d\ude21\ud83d\ude21",
+   "gold": "I'm sorry for your experience, and I'd like to make sure you're heard. Can you please DM your claim number? ^AA <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide more details about the accident and the insurance claim process?",
+    "rag-8": "I'm sorry to hear that. Can you please DM your claim number? We'll check on this for you. ^JT <url>",
+    "lora:1": "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>",
+    "vera:256": "We're sorry for your experience. Can you please DM your claim number? ^AA <url>"
+   }
+  },
+  {
+   "customer": "ok @131610, you need to get more lines! I've been trying to call for 1o minutes.",
+   "gold": "We're sorry for the wait. If you still need help, log in to your policy and look for \"Chat\" link, M-F 5AM-midnight EDT. ^JH",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your phone number so I can assist you further?",
+    "rag-8": "We're sorry for the wait. If you still need help, please DM your policy number and any details you'd like to share. ^JH <url>",
+    "lora:1": "I'm sorry for the delay, and I'd like to help. Can you please DM your policy number and phone number? ^AA <url>",
+    "vera:256": "I'm sorry for the delay, and I'd like to help. Can you please DM your policy number and phone number? ^AA <url>"
+   }
+  },
+  {
+   "customer": "your automated phone system is down for how long?",
+   "gold": "If you're having trouble getting through, you can log in to your policy and choose the \"Chat\" option (M-F, 5AM-midnight EDT). ^BB",
+   "replies": {
+    "zero": "I'm sorry, the system is currently down for maintenance. We will be back up and running shortly.",
+    "rag-8": "We're sorry for the frustration. We're working on getting the system back up and running as soon as possible. ^JF",
+    "lora:1": "We're sorry for the inconvenience. We're working to get it back up as soon as possible. ^RL",
+    "vera:256": "We're sorry for the inconvenience. We're working to get it back up and running as soon as possible. ^AA"
+   }
+  },
+  {
+   "customer": "Your online system doesn't allow a cc that expires in 2023 to buy a policy online.  This millennial doesn't want to call-in. <url>",
+   "gold": "We're sorry for any issues and would like to help; could you DM your quote number and the type of device you're using? ^JK <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your name and the policy number you are trying to purchase?",
+    "rag-8": "We're sorry for any inconvenience. To get to the bottom of this, please call a licensed consultant at 855-266-8485. ^JH",
+    "lora:1": "We're sorry for any inconvenience. So we can look into this, please DM your policy number and phone number. ^JK <url>",
+    "vera:256": "I'm sorry for the inconvenience. I'll share your feedback with our Claims team. ^AA"
+   }
+  },
+  {
+   "customer": "5.5hrs on the side of the road 5 calls to @131610 &amp; the towtruck finally arrives. Looking for road side assistance pick another company",
+   "gold": "I'm terribly sorry for your experience, and I'd like to share your feedback. Can you DM your policy # and phone #? ^AA <url>",
+   "replies": {
+    "zero": "Thank you for reaching out to us. We understand that you had a challenging experience with your vehicle on the side of the road. Our team is here to help you with any assistance you may need. Please provide us with your contact information, and we will be in touch to assist you further.",
+    "rag-8": "I'm sorry for your experience. Can you please DM your policy # and phone #? ^JT",
+    "lora:1": "I'm sorry for your experience, and I'd like to share your feedback. Can you DM your policy number and phone number? ^AA <url>",
+    "vera:256": "We're sorry for your experience. If you'd like to share your feedback, please DM your policy number and any additional details. ^JK <url>"
+   }
+  },
+  {
+   "customer": "you GA claims office is going to be the reason why I leave your company. Never have I felt valued less as customer",
+   "gold": "I'm sorry about the experience you've had, and we appreciate you being a longtime customer. I'll send this feedback to our Claims team for review. ^TF",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm here to help you with your concerns. Can you please tell me more about your experience with the GA claims office?",
+    "rag-8": "I'm sorry to hear that. Can we look into this for you? If so, please DM your policy or claim number along with any additional details you're able to share. ^JH <url>",
+    "lora:1": "We're sorry for your experience, and we'd like to look into it. Can you DM your claim number and additional details? ^AA <url>",
+    "vera:256": "We're sorry for your experience, and we'd like to help. Can you DM your claim number and any details you'd like to share? ^AA <url>"
+   }
+  },
+  {
+   "customer": "866 840 4246 is scam city FYI let thy people know!",
+   "gold": "Sorry for any confusion; the number is one of ours. So we can look into why we called, please DM your policy number. ^SS <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more information about the scam you encountered?",
+    "rag-8": "We're sorry to hear that, and we'd like to help. Please DM your policy/phone #, and additional details. ^AA <url>",
+    "lora:1": "We're sorry for any confusion. If you still need help, please DM your policy or claim number and any questions you have. ^JH <url>",
+    "vera:256": "We're sorry for any confusion. If you'd like to share your experience, please DM your policy number and any additional details you'd like to share. ^JK <url>"
+   }
+  },
+  {
+   "customer": "hey @131610 I should have a discount for Rockledge Securities Anti-Theft. Why don't I ?  Do I really have to mail this card in?",
+   "gold": "We're sorry for the delay; generally, proof is not required for this discount. So we can look into this, please DM your policy number. ^BY <url>",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'm not sure why you're not receiving the discount. Can you please provide me with your name and address so I can check if there are any issues with your account?",
+    "rag-8": "We're sorry to hear that. Could you please DM your policy number? We'll be happy to help you with your request. ^JH <url>",
+    "lora:1": "We're sorry for any confusion. We've reviewed your claim and found that you're eligible for a discount. We'll send you a claim confirmation with the details. ^BB",
+    "vera:256": "We're sorry for any confusion. We've updated our policy to make it easier for you to get discounts. ^AA"
+   }
+  },
+  {
+   "customer": "hey my Snapshot won\u2019t stop turning on and off while I\u2019m driving! Weird...",
+   "gold": "So our Snapshot team can look into this, please give them a call at 877-329-7283. They\u2019re here today until midnight EDT. ^RL",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you tell me more about what you\u2019re seeing?",
+    "rag-8": "We're sorry to hear that. Can you please provide us with the plate number, location, and time of the incident? ^AA <url>",
+    "lora:1": "We'd like to look into this for you. Can you please send us a DM with your policy number? ^KF <url>",
+    "vera:256": "We're sorry for any inconvenience. If you're still experiencing issues, please call us at 855-266-8485. ^BB"
+   }
+  },
+  {
+   "customer": "Car insurance only try to fuck you over lol fuck @131610",
+   "gold": "Is there anything we can look into for you? If so, please use the link to DM your policy/claim number and any other details you'd like to share. ^SS",
+   "replies": {
+    "zero": "I'm sorry to hear that. We take your concerns seriously and strive to provide fair and transparent pricing. If you have any specific questions or need further assistance, please don't hesitate to ask.",
+    "rag-8": "I'm sorry to hear that. We'd like to look into this and see what we can do to help. Please DM your policy number and any details. ^JH <url>",
+    "lora:1": "We're sorry for any frustration, and wanted to let you know we've reviewed your claim and will follow up with you soon. ^AA",
+    "vera:256": "I'm sorry for your experience, and I'd like to help. Can you DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  },
+  {
+   "customer": ".@131610 Please train your agents that when a caller says they are married, not to assume spouse is opposite gender.",
+   "gold": "We're sorry for any frustration and would like to look into this. Can you please DM your policy number and any other details. ^BB <url>",
+   "replies": {
+    "zero": ".@131610 Thank you for the feedback. We will make sure to train our agents accordingly.",
+    "rag-8": "Thank you for your feedback. We'll make sure to train our agents on this. ^AA <url>",
+    "lora:1": "Thanks for the feedback, and I'd like to share this with our Claims team. Can you please DM your policy number and phone number? ^AA <url>",
+    "vera:256": "We're sorry for any confusion. If you'd like to share your feedback, please DM your policy number and any details you'd like to share. ^BB"
+   }
+  },
+  {
+   "customer": "nothing works. it won't accept any password and i understand the guidelines for the password. <url>",
+   "gold": "Sorry for any frustration. So we can help set up your new password, please call us anytime at 855-266-8485. ^SS",
+   "replies": {
+    "zero": "What is the password for the account?",
+    "rag-8": "We're sorry for any inconvenience. Our consultants would be happy to reset it for you; please call 855-266-8485. ^BB",
+    "lora:1": "We're sorry for any frustration. Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>",
+    "vera:256": "I'm sorry for your experience, and I'd like to help. Could you please DM your policy number and any details you'd like to share? ^JK <url>"
+   }
+  }
+ ],
+ "style_examples": [
+  "Now that's what I can saving; we're so happy you're back!",
+  "Thanks for letting us know about this. Could you please send us a DM with the time, location, and license or vehicle number as well as an email or phone number if a manager would like to follow up with you directly? ^JT <url>",
+  "We're sorry for any inconvenience; so we can take care of this for you, could you please DM the email address where you're receiving the ads? ^JK <url>",
+  "Can we look into this for you? If so, please DM your policy number and any details you'd like to share. ^JK <url>",
+  "I'm sorry for your frustrations, and wanted to let you know I've shared your feedback with our Claims team for review. ^AA"
+ ],
+ "seconds": 131.37050008773804
+}

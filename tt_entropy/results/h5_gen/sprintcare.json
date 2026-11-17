@@ -1,0 +1,432 @@
+{
+ "brand": "sprintcare",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 28.1375,
+  "mean_response_tokens": 26.415625,
+  "response_type_token_ratio": 0.1694,
+  "distinct_response_share": 0.99375
+ },
+ "nll": {
+  "zero": 3.475979637778104,
+  "rag-8": 2.541101576964979,
+  "lora:1": 2.2327717466850503,
+  "vera:256": 2.1626838287177113
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.26895383697089553,
+  "lora:1": 0.3576568394076468,
+  "vera:256": 0.3778203401386638
+ },
+ "items": [
+  {
+   "customer": "I leased a phone from Sprint last August.  Wasn't told about \"Sprint Flex\" or Galaxy Forever.  I assume I was cheated....",
+   "gold": "We regret to hear of your ongoing concern. Please feel free to DM us if we can assist with this matter.",
+   "replies": {
+    "zero": "I'm sorry to hear that.  What is the issue you are having with your phone?",
+    "rag-8": "Hey there! We're sorry to hear that. We'd like to help you. Please DM us so we can further assist you. -  EH",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "We are sorry for the inconvenience. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Hours with my 2 year old only to be told they couldn\u2019t take one of them back and that we would have to call CS back and get a box.",
+   "gold": "Hey James! This is very concerning, I'd like to look further into this. Send us a DM, so we can get started. -KM",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We will look into this and get back to you as soon as possible.",
+    "rag-8": "Hey! This is not the type of customer service that we strive for. What's going on? We'd love to help you. Please DM us so we can further assist you. - JF",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "We are sorry for the inconvenience. Please send us a DM so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I do, I really do!",
+   "gold": "We LOVE you too! :D -CS",
+   "replies": {
+    "zero": "I'm sorry, but I can't help you with that.",
+    "rag-8": "We're here to help you, please send us a DM with your concerns. -AS",
+    "lora:1": "We're sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "Hey there! What's going on? Are you having any issues with your account? -J"
+   }
+  },
+  {
+   "customer": "I'm a Voiceover user on iPhone. MySprint app has tabs that aren't Voiceover accessible. Meaning not labeled for blind users",
+   "gold": "Thank you for the information. I will forward this information to the relevant department. -CW",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the specific tabs that are not Voiceover accessible?",
+    "rag-8": "We are here to help. Please send us a Direct Message, so that we can further assist you. - KJ",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "We would like to assist you. Please send us a DM with the details of the issue. -JG"
+   }
+  },
+  {
+   "customer": "Are there any cases yet for it yet . I don't want a cracked screen or any scratches on it. I was looking at it in store I like how it doesn't come with added apps I hate those.",
+   "gold": "Hello! To get to know about the accessories for your Essential phone visiting <url> -L.D.",
+   "replies": {
+    "zero": "I'm sorry to hear that. We do have a few cases available that are designed to protect your phone from scratches and cracks. Would you like me to show you some options?",
+    "rag-8": "We'd be happy to help you with that. Please DM us to further assist. -EG <url>",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "Hi there! This is a great device, but it is not the best fit for everyone. Please let us know if you would like to try another device. -JG"
+   }
+  },
+  {
+   "customer": "Not true.  Ppl, don't believe the galaxy forever claim by Sprint.",
+   "gold": "Hi there! could you tell us why you are saying this? --OL",
+   "replies": {
+    "zero": "I'm sorry, but I don't have the ability to verify or deny claims made by Sprint. Can you please provide more context or information about the claim you mentioned?",
+    "rag-8": "Hey there, what seems to be the issue you're having today? -AS",
+    "lora:1": "We are sorry for the confusion. Please send us a DM with the information we need to further assist you. -JL",
+    "vera:256": "We would like to have a further discussion with you regarding this matter. Please send us a Direct Message, so that we can further assist you. -AG"
+   }
+  },
+  {
+   "customer": "has failed me many times before but this failure is the worst yet. I can\u2019t even get on the page to buy @29980 tickets on the bampproject website gmfu",
+   "gold": "H there! This is not the way we want you to feel, and we want to help. Let's check on that service for you. Please follow us @sprintcare and send us a Direct Message in order to further assist you. -Y.F.",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide me with more details about the issue you are facing?",
+    "rag-8": "I'm sorry to hear that. Please send us a DM so we can assist you further. -JG",
+    "lora:1": "We're sorry to hear that. Please try again. -JL",
+    "vera:256": "Hey there! We would like to help you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I have already spent multiple hours DM-ing ur staff. @115911 &amp; @115913 lied to us and it's time to move on! <url>",
+   "gold": "Is there anything that we can assist you with today? I'd be more than happy to assist with any queries or concerns you may have. -AH",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing issues with your customer support. Can you please provide more details about the problem you're facing? What specific concerns or complaints are you having with the staff members @115911 and @115913? This will help me better understand the situation",
+    "rag-8": "I'm sorry to hear that. We're here to help you with any issues you may be facing. Please let us know how we can assist you further. -NA",
+    "lora:1": "We're sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "Hey there! We would love to help you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I am supposed to be on autopay. It\u2019s still not working. I am getting past due notices. I tried calling and can only get automated directory at 844-382-3312. Would like to resolve this. Thanks",
+   "gold": "Let's see what's going on. Please send us a DM, so that we can further assist you. Thank you! - WR",
+   "replies": {
+    "zero": "I am sorry to hear that. Can you please provide me with your account number and the date you signed up for autopay?",
+    "rag-8": "I am sorry to hear that. Please send me a Direct Message, so that we can further assist you. - FM",
+    "lora:1": "Hi there! We are sorry to hear that you are having trouble with your bill. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "We would like to assist you. Please send us a Direct Message, so that we can further assist you. -JL"
+   }
+  },
+  {
+   "customer": "still doesn't answer my question. that's just more stuff you're trying to push @AsurionCares @116297 @115714 who can answer my question?",
+   "gold": "We would like to assist you with this please send us a direct  message to further assist you. - AP",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to assist with that. Can I help you with anything else?",
+    "rag-8": "I'm sorry you're having trouble with this. Can you please send us a DM with additional information to give you a hand? -JF",
+    "lora:1": "Hi there! We're here to help. Please send us a DM with the details of your issue. -JL",
+    "vera:256": "Hi there! We're here to help. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Is the 50% off the Samsung Galaxy S8 promotion that @116447 mentioned also for current customers wanting to upgrade? @sprintcare",
+   "gold": "This offer is for new and existing customers adding a new line of service. Team @116447",
+   "replies": {
+    "zero": "Yes, the 50% off promotion is available for current customers who want to upgrade to the Samsung Galaxy S8. The promotion is valid for a limited time, so be sure to take advantage of it while it lasts.",
+    "rag-8": "Hi! This is concerning. Please send us a Direct Message, so that we can further assist you. -IC",
+    "lora:1": "We are sorry to hear that. Please send us a DM with the information we need to assist you. -JL",
+    "vera:256": "Hi there! This is not a Sprint issue. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "when will the note8 receive a price update?",
+   "gold": "Hey, our Note 8 prices are $40.00/mo with our Sprint Flex lease, or you can purchase full price for $960.00 today!1/2 - SP",
+   "replies": {
+    "zero": "The price of the Note 8 is expected to be released in the next few days. You can check the official website or the latest news for the latest updates.",
+    "rag-8": "Hi there! We are currently working on a price update for the Note 8. We will update you as soon as it is available. -JH",
+    "lora:1": "We are currently working on a price update for the Note 8. Please check back in a few days. -JL",
+    "vera:256": "We are currently working on a price update for the Note 8. Please follow us on Twitter for further updates. -JG"
+   }
+  },
+  {
+   "customer": "Looks like putting a Sprint SIM in my factory unlocked @134202 phone...locked it? Mind pushing a UICC unlock since I own the phone outright? DMs open.",
+   "gold": "Hey there! please send us a DM with details so we can assist you. - LP",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll do my best to help you unlock your phone. Can you please provide me with your phone's IMEI number and the model number of your phone?",
+    "rag-8": "Hi there! We are sorry to hear that. Please follow us @sprintcare and DM us for us to assist you. -DM",
+    "lora:1": "We would be happy to help with that. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "Hello! We would like to help you with this issue. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "This is the exact same response that I got on 9/21 when I reported this issue.",
+   "gold": "The towers are being worked on, we will have them operational as soon as possible. We appreciate your patience.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I will make sure to follow up with the appropriate department to investigate further and provide you with an update. Thank you for bringing this to our attention.",
+    "rag-8": "I'm sorry to hear that. We are working on it. -KJ",
+    "lora:1": "We are sorry for the inconvenience. Please send us a DM with the details of the issue you are experiencing. -JL",
+    "vera:256": "We are sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JF"
+   }
+  },
+  {
+   "customer": "Entry",
+   "gold": "- What can I assist you with? -LG",
+   "replies": {
+    "zero": "What is the entry fee for the museum?",
+    "rag-8": "We're sorry to hear that. Please DM us to further assist you. -JG",
+    "lora:1": "Hi there! We would be happy to help you with any questions you may have. Please feel free to send us a DM with your questions. -JL",
+    "vera:256": "Hey there! We would like to assist you. Please send us a DM with the details of your issue. -JG"
+   }
+  },
+  {
+   "customer": "I love that you got a response from them and you're not even a customer. And it took me 72 calls to finally get someone to realize the error",
+   "gold": "Hey Erin! Allow us to help you by sending us a DM. -Resolution Sup JJ",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm here to help you with your issue. Can you please provide me with more details about the error you encountered?",
+    "rag-8": "We're glad to hear that you were able to get a response from them. We strive to provide the best customer service to all. Please send us a Direct Message, so that we can further assist you. -KJ",
+    "lora:1": "We're sorry for the inconvenience. Please send us a DM with the details of the issue. -JL",
+    "vera:256": "We're sorry to hear that. Please send us a DM so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I'm about to call sprint and tell them to delete your service",
+   "gold": "Hey Laurie! What makes you feel this way? Follow us and send us a DM with more details on what's happening. We'll be waiting for you. - CE",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're facing with Sprint's service?",
+    "rag-8": "I'm sorry to hear that. Please send us a DM with your concerns so we can further assist you. -SJ",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "Hey there! We would like to help you. Please send us a DM. -JG"
+   }
+  },
+  {
+   "customer": "Thanks for the reminder #tmobile but i\u2019m switching from #sprint to #verizonwireless #HR4HR #bettercoverage #sfbayarea",
+   "gold": "Hey there. I see you're mentioned you're currently a Sprint customer? Are you experiencing service issues at this time? Let me know. - DW",
+   "replies": {
+    "zero": "I\u2019m glad to hear that you\u2019re considering switching carriers. Can you tell me more about your current service and why you\u2019re interested in switching to Verizon Wireless?",
+    "rag-8": "Hi there! We are glad to hear that you are looking for better coverage. We would love to help you with that. Please send us a direct message, so that we can further assist you. -JM",
+    "lora:1": "We're sorry to hear that you're considering switching to another carrier. Please let us know if we can assist you. -JL",
+    "vera:256": "Hey there! We're glad to have you on board. Please send us a DM with your contact information, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Wow... I feel like a friend sent me this tweet. You get me already. @115714 almost 10 years, and we still not on this level... \ud83d\ude44\ud83c\udf1a <url>",
+   "gold": "How may we be of assistance to you? Are you still encountering network issues?-DD",
+   "replies": {
+    "zero": "I'm sorry to hear that. It sounds like you're feeling a bit disappointed. What can I do to help you feel better?",
+    "rag-8": "We are here to help. Please send us a DM, so that we can further assist you. -CA",
+    "lora:1": "We're sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "Hey there! We're sorry to hear that. Please send us a DM, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "iPhone 6",
+   "gold": "Are you still experiencing service issues? -R.A",
+   "replies": {
+    "zero": "What is the difference between iPhone 6 and iPhone 6 Plus?",
+    "rag-8": "We would like to review the coverage in your area. Please provide us with the make and model of your device. - CE",
+    "lora:1": "Hi there! We would love to help you with your issue. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "We are sorry to hear that. Please send us a Direct Message, so that we can further assist you. -J"
+   }
+  },
+  {
+   "customer": "Finally made it &amp; got my order to go through - thanks for checking!",
+   "gold": "That's great new! Thank you for your continue patience as well. Do enjoy the remainder of your day. -SA",
+   "replies": {
+    "zero": "I'm glad you got your order. We're here to help.",
+    "rag-8": "Thank you for your feedback. We're glad to hear that your order went through. -Resolution Sup KS",
+    "lora:1": "We're glad you're back! Please send us a DM with the details of your order so that we can assist you further. -JL",
+    "vera:256": "That's great to hear! We're here to help. -J"
+   }
+  },
+  {
+   "customer": "Ok but is @115714 down? You can\u2019t make calls and it\u2019s a busy signal when they call you",
+   "gold": "We will like to look into this for you. Please send us Direct Message so that we can further assist you. -JJ",
+   "replies": {
+    "zero": "Yes, @115714 is down. We are working on a solution to get it back up and running. We will let you know when it is back up and running.",
+    "rag-8": "Hi there! This is concerning. How long have you been experiencing this? Is it happening to one number or any number that calls you? -OL",
+    "lora:1": "Hi there! We're sorry to hear that. What's going on? -JL",
+    "vera:256": "Hey there! This is not the behavior we want to see. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Dealing with @115714 has been the worst.",
+   "gold": "This is concerning us. Please send us a DM so we can assist you. -SMG",
+   "replies": {
+    "zero": "I'm sorry to hear that. How can I assist you with your issue?",
+    "rag-8": "We're sorry to hear that. Please send us a DM and follow us so we can assist you. -JG",
+    "lora:1": "We're sorry to hear that. What is the issue you are experiencing? -JG",
+    "vera:256": "We are sorry to hear that. Please send us a DM with your location, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "so your manager hung up on me after a 50min discussion after I asked should I be talking to tech support to solve this issue smh! #Worst",
+   "gold": "Oh my goodness, we are very sorry about that. We would like to assist you here. How may we help you?",
+   "replies": {
+    "zero": "I'm sorry to hear that. It's important to have a clear and effective communication channel with your manager. If you have any concerns or need further assistance, please let me know, and I'll do my best to help.",
+    "rag-8": "Hello I am sorry to hear this. Please send us a Direct Message, so that we can further assist you. -JA",
+    "lora:1": "We are sorry for the inconvenience. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "Hey there! We would like to help you with this. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I needs a new android phone. Hook me up #Sprint",
+   "gold": "Now is a great time to join our family and we would be more than glad to have you on-board with us. To review all the amazing offers we have for our customers, please visit <url> . - JF",
+   "replies": {
+    "zero": "Sure, I can help you with that. What kind of phone are you looking for?",
+    "rag-8": "We'd love to help you with that. Please DM us to get started. - JF",
+    "lora:1": "We are sorry to hear that. Please send us a DM with the model of the phone you are looking for. -JL",
+    "vera:256": "We would love to help you. Please send us a DM with your contact information. -JG"
+   }
+  },
+  {
+   "customer": "I moved to Santa Clarita 8 weeks ago and my friend who lives in the house is also having the same issue (he's on sprint)",
+   "gold": "Goodness! Send us a Direct Message with the nearest cross streets and ZIP code so we can check on the coverage in that area. -HS",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the issue you're experiencing?",
+    "rag-8": "Hello! We apologize for the delayed response, what is the error that appear on your screen. -JG.",
+    "lora:1": "We are sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "We would like to assist you with this. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "why are you guys over charging me for my phone bill? It literally just reached $309!!! Can you guys do something or I\u2019m gonna sue!!",
+   "gold": "Hey, we can look at your account. Please send us a DM with your contact information.",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I can understand your frustration. We have been working hard to reduce our costs and improve our efficiency. However, we are unable to lower our prices due to our fixed costs. We apologize for any inconvenience this may cause you.",
+    "rag-8": "Hi there! We understand how frustrating it can be when you're paying for services that you don't receive. We'll be happy to assist you in resolving this issue. -BC",
+    "lora:1": "We're sorry to hear that. Please send us a DM so that we can further assist you. -JL",
+    "vera:256": "We would like to help you with this. Please send us a Direct Message, so that we can further assist you. -AG"
+   }
+  },
+  {
+   "customer": "RUN ME MY MONEY @sprintcare",
+   "gold": "Your concerns are understood. However, in order to further assist you we will need to get you over to a private forum. -AH",
+   "replies": {
+    "zero": "Hello, how can I assist you today?",
+    "rag-8": "I'm sorry, but I can't assist with that request. Please send us a DM to continue the conversation. -EG",
+    "lora:1": "We are sorry to hear that. Please send us a DM with the details of the issue. -JL",
+    "vera:256": "Hey there! We would like to assist you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Para variar..sin internet,llamadas cuando el celular quiera,mensajes  a veces s\u00ed y otras no.\ud83e\udd37\ud83c\udffb\u200d\u2640\ufe0f.Para spot de @115714 en Plaza del Caribe,\ud83d\ude09",
+   "gold": "Nos gustar\u00eda verificar su servicio. Por favor, env\u00edenos un mensaje directo para poder asistirle. Estaremos esperando su mensaje. - EG <url>",
+   "replies": {
+    "zero": "@115714, gracias por tu mensaje. Estamos trabajando en solucionar los problemas de internet y llamadas. Por favor, espera a que nos comuniquemos con tu n\u00famero de tel\u00e9fono para que podamos resolverlo. Gracias por tu paciencia y comprensi\u00f3n.",
+    "rag-8": "Entendemos su preocupaci\u00f3n. Trabajamos para resolver el problema. -JG",
+    "lora:1": "Hola! Estamos a tu disposici\u00f3n para atender cualquier problema que tengas. Por favor, env\u00edanos un DM con la informaci\u00f3n necesaria para poder ayudarte. -JL",
+    "vera:256": "Gracias por contactarnos, por favor, envianos un DM con el n\u00famero de tu celular, as\u00ed podremos revisar el problema. -AG"
+   }
+  },
+  {
+   "customer": "I have been with sprint for 17 years",
+   "gold": "Team @116447 will behappy to discuss your billing concerns.  I will be contacting you today 10/27/17 after 10 am CST. <url>",
+   "replies": {
+    "zero": "What is your favorite thing about working for Sprint?",
+    "rag-8": "We'd love to see you as part of our family. Please check our great offers in this link: <url> . -EG",
+    "lora:1": "We are sorry to hear that. Please let us know if we can assist you. -JL",
+    "vera:256": "That's great! We are here to help. Please send us a DM with your phone number and we will call you. -JL"
+   }
+  },
+  {
+   "customer": "Dear @115714 I wish your customer support/ service  was good as you advertise.",
+   "gold": "This is not the type of feedback we like to hear from our customers. Can you let us know your issues and concerns? We are here to help. -K.B",
+   "replies": {
+    "zero": "Thank you for your feedback. We are sorry to hear that you are not satisfied with our service. We will look into the matter and take appropriate action to improve our service. Please let us know if you have any further concerns or questions.",
+    "rag-8": "We're sorry to hear that. Please, feel free to send us a Direct Message, so that we can further assist you. - DM",
+    "lora:1": "We are sorry to hear that. Please let us know what we can do to help. -JL",
+    "vera:256": "We are sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "hey @115714, why is literally everything about you so horrible",
+   "gold": "Thus is not something we want to hear from you. Please send us a Direct Message with your situation, so that we can further assist you. -AP",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about what you mean by \"literally everything about you being horrible\"? I would like to understand your perspective better so that I can address your concerns and provide a more satisfactory response.",
+    "rag-8": "Hello there! We apologize for the issues you have experienced. Please send us a DM to assist you. -JA",
+    "lora:1": "Hey there! We're sorry to hear that. What's going on? -JL",
+    "vera:256": "We're sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Primarily on my way to and at work. Richardson, TX area. Thank you for replying",
+   "gold": "- Np. There are no issues within this location.. Hmm. Mind DMing me a more specific address just so that I can verify? :) -LG",
+   "replies": {
+    "zero": "Thank you for contacting us. We are glad to hear that you are satisfied with our service. We are happy to help you with any questions or concerns you may have. Is there anything else we can assist you with?",
+    "rag-8": "Thank you for your patience. We're glad to hear that you're satisfied with our service. -CB",
+    "lora:1": "Thank you for reaching out to us. We would be happy to assist you. Please send us a Direct Message, so that we can further assist you. -JL",
+    "vera:256": "We would like to assist you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Why does my phone say \"LTE\" but my internet is like a 14.4 modem running windows 3.1?!\ud83d\ude21 #slowinternetisslow",
+   "gold": "We will be happy to look into any service concerns you may have. Please follow and DM us with more info!",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing slow internet speeds. Can you please provide more details about your device and the specific issue you're facing?",
+    "rag-8": "We apologize for the inconvenience. Please send us a Direct Message, so that we can further assist you. -JH",
+    "lora:1": "We are sorry for the inconvenience. Please try to connect to the Sprint network. -JL",
+    "vera:256": "We would like to help you with this issue. Please send us a Direct Message, so that we can further assist you. -JG <url>"
+   }
+  },
+  {
+   "customer": "I've been dealing with the same sugar coated lies",
+   "gold": "We definitely want to help! A member of the Executive Team will contact your shortly. Team @116447 &amp; Team @260054",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the situation?",
+    "rag-8": ". We are sorry to hear that. Please DM us with your location if you would like Team @116447 to review the coverage in your area. <url>",
+    "lora:1": "We are sorry to hear that. Please send us a DM with the details of the issue. -JL",
+    "vera:256": "We're sorry to hear that. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I must be on @115714 \"prohibition plan\" because I rarely see any bars #Sprint #shittysignal #sprintsucks",
+   "gold": "Thanks for reaching out to us. Please send us a Direct Message, so that we can further assist you. -MJ",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about your experience with Sprint's signal strength?",
+    "rag-8": "We understand how frustrating service issues can be especially when you need it the most. -BC",
+    "lora:1": "We're sorry to hear that. Please send us a DM with your phone number so that we can further assist you. -JL",
+    "vera:256": "Hey there! We would like to help you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "I've waited sense I last \"complained\" to see if there was going to be any improvement, guess what. \" NOT\" no surprise. The 3 gigs are used up trying to load if it even loads, drops calls, messages may or may not go thru and when they do. It may be the next day. Get go aggravated",
+   "gold": "Sounds like something we need to look into. Please send us a Direct Message, so that we can further assist you. - MJ",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the specific issues you're experiencing with your phone service?",
+    "rag-8": "I am sorry to hear that. Please send us a DM so that we can further assist. - AM",
+    "lora:1": "We're sorry to hear that. What's the issue? -JL",
+    "vera:256": "Hi there! We would like to help you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Yep, signed on 30 min early and was added to the queue. Started a few minutes early too!",
+   "gold": "Hey there! Were you able to preorder the iPhoneX? -SA",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm sure you'll be able to get through in a few minutes.",
+    "rag-8": "We are sorry for the inconvenience. Please send us a DM so that we can assist you. -DD",
+    "lora:1": "We're sorry for the inconvenience. Please try again. -JL",
+    "vera:256": "Hey there! We would like to help you. Please send us a Direct Message, so that we can further assist you. -JL"
+   }
+  },
+  {
+   "customer": "please shut my phone off because I always make a fool out of myself",
+   "gold": "Hey there! What seems to be the issue? What's wrong with your phone? -JC",
+   "replies": {
+    "zero": "I'm sorry to hear that. I understand that you want to avoid making a fool of yourself. Is there anything else I can help you with?",
+    "rag-8": "Hello there! We understand that you may be frustrated with your phone, but we would like to remind you that it is not our responsibility to fix your phone. Please send us a DM with your contact information so we can further assist you. - Team @116447",
+    "lora:1": "Hey there! What's going on? We'd love to help. -JL",
+    "vera:256": "Hey there! This is not the kind of message we want to receive. Please send us a DM so that we can further assist you. -JG"
+   }
+  },
+  {
+   "customer": "Smh do better #CanYouHearMeNow?",
+   "gold": "Hey, is there anything we can assist you with? - NA",
+   "replies": {
+    "zero": "Yes, I can hear you. What can I do for you today?",
+    "rag-8": "We are sorry to hear that. Please, DM us to review this concern. - GS <url>",
+    "lora:1": "Hey there! We're here to help. Please send us a DM with the details of your issue. -JL",
+    "vera:256": "Hey there! We'd love to help you. Please send us a Direct Message, so that we can further assist you. -JG"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hello! Follow us and send us a DM to address your concern ASAP! We'll be waiting for you. - CE",
+  "Excuse me, but have you been helped? Its almost as if you are not being responded to. 1/2 - Resolution SUP NN",
+  "Did the delete option return upon re installing the App? -JJ",
+  "Hey there. Were you able to order the IPhone X? Let us know. -  CF",
+  "Hello I am sorry you were disconnected anything I can do to help. I am here and ready to assist you. -FR"
+ ],
+ "seconds": 121.30877876281738
+}

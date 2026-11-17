@@ -1,0 +1,432 @@
+{
+ "brand": "GWRHelp",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 30.540625,
+  "mean_response_tokens": 24.309375,
+  "response_type_token_ratio": 0.2078,
+  "distinct_response_share": 1.0
+ },
+ "nll": {
+  "zero": 3.9787317791635908,
+  "rag-8": 3.0454292197239994,
+  "lora:1": 2.6529410775252216,
+  "vera:256": 2.6562102550596705
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.23457287679638217,
+  "lora:1": 0.333219421470295,
+  "vera:256": 0.3323977582580198
+ },
+ "items": [
+  {
+   "customer": "Why how many stationary trains with no driver do you have? BTM-PAD 08.00",
+   "gold": "Thank you for confirming, we're looking into the delay this morning. - Jordan",
+   "replies": {
+    "zero": "We have 1000000000000000000000000000000000000000000000000000000000000",
+    "rag-8": "Hi. The train is running as normal. The driver is on board and will be at the next station. Phil.",
+    "lora:1": "Hi there. This is a temporary service due to a fault. I'm sorry for the disruption this has caused. Lewis",
+    "vera:256": "Hi. This is a temporary service due to a fault on the train. Sorry for the inconvenience. - Jordan"
+   }
+  },
+  {
+   "customer": "big gold star for the wonderful train announcements on the 17.46 exeter Central to St David's.",
+   "gold": "Hi Gillian. Really glad to hear this. I will make sure your feedback is passed on - Josh",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"wonderful train announcements\". Could you please provide more information or clarify your request?",
+    "rag-8": "Hi there. I'm sorry to hear this - I'm not sure what the issue is. -Andy",
+    "lora:1": "Hi there. Glad you enjoyed the announcement. - Jordan",
+    "vera:256": "Hi Phil. Glad you enjoyed the announcements. They are designed to help passengers to get to their destination on time. - Jordan"
+   }
+  },
+  {
+   "customer": "your app seems to be dreadful these days. Why can\u2019t I find train times anymore?  Putting in journey details takes you to ticket purchase screen which then does nothing at all.",
+   "gold": "Hi David. Sorry you are having this issue. Have you tried uninstalling and reinstalling? - Josh",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019ll look into it and get back to you.",
+    "rag-8": "Hi, I\u2019m sorry to hear that. I\u2019ll pass this on to our IT team. - Jordan",
+    "lora:1": "Hi. Sorry for the issues this morning. The app is currently being updated. - Jordan",
+    "vera:256": "Hi. Sorry for the issues. This is a new feature and we are working on it. It will be added to the app soon. - Jordan"
+   }
+  },
+  {
+   "customer": "Because of the utter crapshow that is @GWRHelp engineering works I cannot get to @381537 easily (2h each way) \ud83d\ude13\ud83d\ude21\ud83d\ude24 #ChocolateShow",
+   "gold": "Hello. I'm very sorry for the extended journey times due to the emergency works this weekend. Let us know if you need any journey info. Nat",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the issues you're facing with @GWRHelp engineering works?",
+    "rag-8": "Hi, I'm sorry to hear that. I'm not sure what you mean by 'Chocolate Show' - Josh",
+    "lora:1": "Hi there. Sorry for the problems this has caused. I'll pass this on. Lewis",
+    "vera:256": "Hi. Sorry for the delays. We are working on a solution to improve this. Lewis"
+   }
+  },
+  {
+   "customer": "day two of my attempts to use the train. The 708 is delayed till 758.\nWhat's the reason today please?",
+   "gold": "Hello. There are delays on this line this morning due to signalling problems. Sorry about this. Natalie",
+   "replies": {
+    "zero": "I'm sorry, but I don't have access to real-time information about train delays. It's best to check the train schedule or contact the train operator directly for the latest updates.",
+    "rag-8": "The 0708 is delayed due to a fault on this train. Sorry for the delay today. Phil.",
+    "lora:1": "Hi there. Sorry for the delay this morning. The 708 was delayed by 15 minutes due to a fault on the 708. - Jordan",
+    "vera:256": "Hi there. Sorry for the delay. What service are you travelling on? - Jordan"
+   }
+  },
+  {
+   "customer": "It will be on the same train just not departing from Llanelli departing from Swansea instead which I think is at 08:30 or along those lines",
+   "gold": "That will be fine. It's the 08:29 from Swansea. Lewis",
+   "replies": {
+    "zero": "Thank you for getting back to me. I will check with the train company to see if they can arrange a seat for you on the same train. Can you please provide me with your name and the date of your travel?",
+    "rag-8": "Hi, the train is departing at 08:30 from Swansea. Rach",
+    "lora:1": "The service is running on time. The train will depart from Swansea at 08:30. Sorry for the confusion. Lewis",
+    "vera:256": "Sorry for the delay. I've raised a fault with the driver. Lewis"
+   }
+  },
+  {
+   "customer": "Is the 6.09 NWP to SWI running? Showing delayed but not left SWA.",
+   "gold": "Hello Emma. The service has departed Swansea following a train fault and is now expected at 0640. - Jordan",
+   "replies": {
+    "zero": "Yes, it is running. The delay is due to the fact that the SWI is not yet fully operational. The SWA is currently being updated and will be available soon.",
+    "rag-8": "Hi there. Sorry for the delay. The 1830 is delayed due to a fault on this train. Lewis",
+    "lora:1": "Hi. Sorry for the delay. The 609 is delayed due to a fault on the 609. - Jordan",
+    "vera:256": "Hi. The 6.09 is delayed by 15 minutes. -Andy"
+   }
+  },
+  {
+   "customer": "Phil I'm always in second carriage from front of train. Going to be even colder tomorrow am so pleeeese get the heating on!!",
+   "gold": "We will report this to our maintenance team right away. Rachel",
+   "replies": {
+    "zero": "Phil, I'm sorry, but I can't do that. The heating is controlled by the train company, not me.",
+    "rag-8": "Hi Chris. Sorry about the delay. We're working on it. Lewis",
+    "lora:1": "Hi. Sorry for the cold. The heating is on. Lewis",
+    "vera:256": "Hi Phil. Sorry for the cold. The heating is on. - Jordan"
+   }
+  },
+  {
+   "customer": "what\u2019s happening with trains to Sandhurst again? Why is a local service so unreliable ?@320354",
+   "gold": "Hi John. Where are you travelling from please? Rach",
+   "replies": {
+    "zero": "Hi, I\u2019m sorry to hear that. We are currently experiencing some delays with the train service to Sandhurst. We are working to resolve the issue as soon as possible. In the meantime, we recommend that you check the train timetables and schedules on our website or by calling our customer service line. We apologize",
+    "rag-8": "Hi. Sorry for the disruption to your journey. The train is delayed due to a fault with the signalling system. Rach",
+    "lora:1": "Hi. Sorry for the disruption. This service is running on a different route to the one it was scheduled to run on. - Jordan",
+    "vera:256": "Hi. Sorry for the disruption. This is due to a broken down train. Lewis"
+   }
+  },
+  {
+   "customer": "Crap journey but our train manger David was awesome and dealt with it really well \ud83d\udc4d\ud83c\udffb @GWRHelp <url>",
+   "gold": "Hi Camilla, sorry for the delay. What ticket do you have? Glad to hear David could help, will share your comments with his manager. -Andy",
+   "replies": {
+    "zero": "What was the issue with the train journey?",
+    "rag-8": "Hi Chris. I am sorry for the shorter train this morning. More trains than usual require repair work at the moment. - Jordan",
+    "lora:1": "Hi there. I'm glad you were able to speak to him. I'll pass this on. Lewis",
+    "vera:256": "Hi there. I'm sorry to hear this. I'm not sure which service you are referring to but if you can provide more details I'll be happy to help. Lewis"
+   }
+  },
+  {
+   "customer": "They said they can but no idea if st pancreas to Sittingbourne will let me. This train isn\u2019t the issue. It\u2019s the one to get me home!!!!",
+   "gold": "If you have a through ticket to Sittingbourne it will be fine on the later train because of the cancellation. -Andy",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019ll check with the train company and get back to you as soon as possible.",
+    "rag-8": "Hi, I\u2019m sorry to hear that you are having trouble finding your bag. I will pass this on to the relevant team. - Jordan",
+    "lora:1": "Hi. Sorry for the delay. The st. panther service is delayed due to a fault. I'm afraid we can't guarantee a seat on this service. Lewis",
+    "vera:256": "Hi. Sorry for the delay. I'm afraid the service cannot be changed. I'll pass this on to the driver. Lewis"
+   }
+  },
+  {
+   "customer": "I want a refund this is ridiculous",
+   "gold": "If delayed by an hour you can claim compensation here: <url> Rach",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you are facing?",
+    "rag-8": "Hi there. I'm sorry to hear that you're unhappy with the service you received. I can understand why you would want a refund, but I'm afraid that's not possible at this time. -Andy",
+    "lora:1": "We can only issue a refund if the booking is cancelled before the departure time. Sorry for the trouble this has caused. - Jordan",
+    "vera:256": "Hi. Apologies for the issue. We will look into this. - Jordan"
+   }
+  },
+  {
+   "customer": "Talk about keeping me in suspense @GWRHelp! I'm getting twitchy #GWRNewTrains <url>",
+   "gold": "There was an issue on departure but running fine now - Hope you enjoy the journey Craig! #GWRNewTrains Phil.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about what you're waiting for?",
+    "rag-8": "Hi there. I'm sorry to hear that. I'll pass this on to the team. - Jordan",
+    "lora:1": "Hi there. Sorry for the delay. I'm not sure what you mean by this. - Jordan",
+    "vera:256": "Hi there. Sorry for the delay in the service. We are currently working on a new service to replace this. Lewis"
+   }
+  },
+  {
+   "customer": "what is this???? Got on train from Reading to Newbury but went straight through Theale and Thatcham? Didn\u2019t here any announcement",
+   "gold": "Hi there. What was the scheduled departure time of this service please? Rach",
+   "replies": {
+    "zero": "yes, you were on the Reading to Newbury service, but you were not on the Reading to Newbury service, you were on the Reading to Newbury service",
+    "rag-8": "Hello, I\u2019m sorry to hear this. I\u2019ll make sure this is reported. Phil.",
+    "lora:1": "Hi. Sorry for the delay. This was due to a fault on the line. - Jordan",
+    "vera:256": "Hi there. The train was delayed by 20 minutes due to a fault with the signalling system. - Jordan"
+   }
+  },
+  {
+   "customer": "\u201cBest wishes to Dave our train driver getting off at Exeter St David\u2019s, retiring after 43 years service.\u201d Well done Dave! @GWRHelp",
+   "gold": "Hi Jo. Thanks for sharing. Well done Dave! :) -Rachel",
+   "replies": {
+    "zero": "\u201cI\u2019m sure you\u2019ll be pleased to hear that Dave has retired after 43 years of service. He\u2019s been a great asset to the company and we wish him all the best in his retirement.\u201d",
+    "rag-8": "Hi Georgia. I am sorry to hear about your journey. I will make sure this is passed on - Josh",
+    "lora:1": "Hi Dave. I'm glad to hear you're retiring. I'm sure many of us will miss you. - Jordan",
+    "vera:256": "Hi there. Thanks for the kind wishes. - Jordan"
+   }
+  },
+  {
+   "customer": "I have spoken to them and it has not been handed in. Do you have a contact number for Cardiff train station?",
+   "gold": "There are no public numbers for stations but it's an @120244 station they may be able to contact station staff. -Andy",
+   "replies": {
+    "zero": "I am sorry, I do not have a contact number for Cardiff train station. Can I help you with anything else?",
+    "rag-8": "Hi. I'm afraid I don't have a contact number for Cardiff. Rach",
+    "lora:1": "Hi. I'm afraid I don't have a contact number for the station. You can try calling 0345 600 0000. - Jordan",
+    "vera:256": "Hi. Sorry for the delay. I'm afraid I don't have a contact number for Cardiff. Lewis"
+   }
+  },
+  {
+   "customer": "Okay. Could you explain why my train to Taunton was delayed by 15 mins and my train to Plymouth has been cancelled? Will the others run? <url>",
+   "gold": "Which was cancelled due to a train crew shortage at Bristol Temple Meads. - Jordan (2/2)",
+   "replies": {
+    "zero": "I'm sorry to hear that. I will need to check the train schedules for Taunton and Plymouth. Could you please provide me with the dates of your trips?",
+    "rag-8": "Hi. Sorry for the delay today. This is due to a fault on the line. Lewis",
+    "lora:1": "Hi. Sorry for the delays this morning. The train was delayed due to a broken down train ahead of us. - Jordan",
+    "vera:256": "Hi. Sorry for the delays this morning. There was a fault with the train. - Jordan"
+   }
+  },
+  {
+   "customer": "Ok - will there be any more engineering works anytime soon??",
+   "gold": "Engineering works do take place overnight and at weekends, details of how works will affect train service are at <url> Phil.",
+   "replies": {
+    "zero": "Yes, we are currently working on a new project that will involve the construction of a new office building. We are planning to start construction in the next few months.",
+    "rag-8": "Hi. We are currently working on a number of projects and will be updating this page as soon as we have more information. Rach",
+    "lora:1": "Hi. There are a number of engineering works scheduled for the coming months. - Jordan",
+    "vera:256": "Hi. The next scheduled work is on 12th June. - Jordan"
+   }
+  },
+  {
+   "customer": "early afternoon. Soonish",
+   "gold": "The 12:34 RDG-PAD is an IET. This is the 10:55 from Cardiff. -Andy",
+   "replies": {
+    "zero": "I'm sorry, I can't help you with that. Can you please provide more information or context about what you need help with?",
+    "rag-8": "Hi. Sorry for the delay. The 16.04 from Plymouth to Reading is delayed due to a train fault. - Jordan",
+    "lora:1": "The train is delayed by 15 minutes due to a fault on the line. Sorry for the delay. Lewis",
+    "vera:256": "Hi. Sorry for the delay. We are currently running late due to a driver being late for work. Lewis"
+   }
+  },
+  {
+   "customer": "And to clarify my original question,was there actual public, recorded consultation?",
+   "gold": "The decision was made during the design stage a number of years ago and was based on research carried out with groups of customers. - Jordan",
+   "replies": {
+    "zero": "Yes, there was a public, recorded consultation. The consultation was held on 12th May 2012.",
+    "rag-8": "Hi. Yes, there was a public consultation on the new services. The consultation took place between 12th and 26th March 2016. The consultation was open to the public and was held in a number of locations across the country. The consultation was also available online. The consultation was",
+    "lora:1": "Hi. Sorry for the confusion. The public consultation was held on 14th March. - Jordan",
+    "vera:256": "Hi. Sorry for the confusion. The public consultation was held in the summer of 2015. - Jordan"
+   }
+  },
+  {
+   "customer": "I understand trains are getting more and more crowded and it will inevitably get worse, but save yourself the hassle and cap the number of tickets sold per train. Happier customers and fewer complaints. But of course that will never happen because money. Good job @GWRHelp",
+   "gold": "Hi. Sorry for the inconvenience of this. Many customers purchase open tickets meaning it is impossible to predict the specific amount of customer expected on a train. To claim compensation for tonight please email __email__- Josh",
+   "replies": {
+    "zero": "I understand your concerns about overcrowding on trains and the potential for increased complaints. However, I must emphasize that our primary focus is on providing a safe and enjoyable travel experience for our passengers. While we do appreciate your feedback, we are committed to maintaining the current ticketing system to ensure that we can meet the needs of",
+    "rag-8": "Hi. We are currently working on a new ticketing system which will be rolled out in the next few months. - Jordan",
+    "lora:1": "Hi. Sorry for the overcrowding. We are working on a solution. Lewis",
+    "vera:256": "Hi. Sorry for the overcrowding. We are working on a solution to this. Lewis"
+   }
+  },
+  {
+   "customer": "Langley station = no staff or working ticket machines. Why isn't there someone at Paddington to help give us tickets when we arrive?",
+   "gold": "Sorry for this and for the delay in purchasing at Paddington Johnny. We'll deploy additional staff to sell tickets in response to this where we can but unfortunately we can't always do so. Phil.",
+   "replies": {
+    "zero": "I'm sorry, but I'm afraid I can't assist you with that. Langley station is currently closed for maintenance, and there are no staff or working ticket machines available at the time of your arrival. We apologize for any inconvenience this may cause.",
+    "rag-8": "Hello James. We have a number of ticket machines in the Booking Hall and next to the side entrance. If you need help, please ask a member of staff. - Jordan",
+    "lora:1": "Hi. Sorry for the problems this caused. The ticket machines are working. - Jordan",
+    "vera:256": "Hi. Sorry for the wait. We have a ticket machine in the staff room. - Jordan"
+   }
+  },
+  {
+   "customer": "who stole carriage E on the 1645 LN-SWA? It\u2019s sardine time.",
+   "gold": "Hello. I am sorry this carriage is not in service today, this is due to repair work. - Jordan",
+   "replies": {
+    "zero": "I\u2019m sorry, but I don\u2019t have that information. Can you please provide more context or details about the carriage and the time period you are referring to?",
+    "rag-8": "Hi Rachel. I am sorry for the inconvenience this has caused. -Rachel",
+    "lora:1": "Hi. Sorry for the delay. This was due to a fault on the train. - Jordan",
+    "vera:256": "Hi there. Sorry for the disruption. This carriage was not stolen. It was delayed due to a fault. Lewis"
+   }
+  },
+  {
+   "customer": "The 10am from bristol to Paddington, all so cold!",
+   "gold": "Which carriage are you in please Kat? Have you spoken to the train manager? -Andy",
+   "replies": {
+    "zero": "Yes, it is a very cold day. But it is also a very good day for travel. The weather is perfect for a long journey. And the train is very comfortable. It is a very good day for travel.",
+    "rag-8": "Hello there. I'm sorry to hear this. I will pass this on to the Train Manager. - Jordan",
+    "lora:1": "Hi. Sorry for the cold weather. I can't see the temperature but it should be around 15C. - Jordan",
+    "vera:256": "Hello. Sorry for the cold weather. We will try to keep the trains as warm as possible. - Jordan"
+   }
+  },
+  {
+   "customer": "#GWRNewTrains first ride on the new train..... Feels more spacious. But no leather seats. Good job @GWRHelp",
+   "gold": "Hi Sarah. I hope you enjoyed your journey and the added capacity :) - Josh",
+   "replies": {
+    "zero": "Thank you for sharing your experience with us. We are always looking for ways to improve our services and make them more comfortable for our customers. We appreciate your feedback and will consider your suggestion for future improvements. Thank you for flying with us!\nWhat was this conversation about?\nThis conversation is about a customer sharing their experience with",
+    "rag-8": "Hi Steve. Thanks for sharing. :) Rach",
+    "lora:1": "Hi. Leather seats are being introduced on the new trains. - Jordan",
+    "vera:256": "Hi. Sorry for the leather seats. We are working on this. Lewis"
+   }
+  },
+  {
+   "customer": "So why is it that two empty trains went back to the depot from PAD yet the 08.30 PAD to BRI left late with no seat reservations as it was late arriving. Why not use one of the 2 that were there for at least 20 mins?",
+   "gold": "Hi Andy. We will use an alternative train sometimes but it isn't always possible I'm afraid. Do you have a seat? Lewis",
+   "replies": {
+    "zero": "The 08.30 PAD to BRI train was delayed by 15 minutes due to a technical issue with the train's air conditioning system. This delay caused the train to arrive at BRI 15 minutes later than scheduled, resulting in the train being late for its departure. The train was not",
+    "rag-8": "Hi James. The 08:30 was delayed by a fault on a train in front of you. Sorry for any inconvenience caused. -Andy",
+    "lora:1": "Hi. Sorry for the late departure. The 08.30 service was delayed by 15 minutes due to a fault on the train. - Jordan",
+    "vera:256": "Hi. Sorry for the late service. The 08.30 service was delayed by 10 minutes due to a fault on the train. - Jordan"
+   }
+  },
+  {
+   "customer": "Thanks for the help.",
+   "gold": "No problem Stuart. :) Rach",
+   "replies": {
+    "zero": "You're welcome. How can I assist you today?",
+    "rag-8": "No problem, I'm glad I could help. Rach",
+    "lora:1": "No problem, Phil. I'll make sure this is passed on. Lewis",
+    "vera:256": "No problem. I'm glad I could help. - Jordan"
+   }
+  },
+  {
+   "customer": "Like to congratulate u again on the 2 carriage train to Pompey. Last time I saw scenes like this David Attenborough was narrating.",
+   "gold": "Hi there. Really sorry for any busy conditions on board this evening  - Josh",
+   "replies": {
+    "zero": "Thank you. I'm glad you enjoyed it. We have a new carriage train that we're planning to launch soon. It will be even more exciting than the last one.",
+    "rag-8": "Hi David. Thank you for your kind words. We are always looking to improve our services and we are glad to hear that you enjoyed your journey. -Josh",
+    "lora:1": "Hi there. I'm glad you enjoyed the train. I'll pass this on to the crew. - Jordan",
+    "vera:256": "Hi. I'm glad you enjoyed the train journey. - Jordan"
+   }
+  },
+  {
+   "customer": "I don\u2019t know which carriage - in the middle I think. Still crawling along somewhere between slough and Paddington. Any ideas?",
+   "gold": "There is congestion in the area due to an earlier points failure. Apologies for this. I will get the inaudible PA system reported to our maintenance team  - Josh",
+   "replies": {
+    "zero": "I think you\u2019re in the right place. I\u2019m sure you\u2019ll find your way to the right carriage. I\u2019ll be here to help you if you need it.",
+    "rag-8": "I\u2019m sorry to hear that. I will check with the driver and get back to you. - Josh",
+    "lora:1": "Hi there. Sorry for the delay. I can't see where you are on the journey but you can check your seat number on the back of the seat. - Jordan",
+    "vera:256": "Hi. Sorry for the delay. I'm not sure which carriage you are referring to but it should be a 3 carriage train. Lewis"
+   }
+  },
+  {
+   "customer": "Got to love a packed @GWRHelp train <url>",
+   "gold": "Hi. Sorry it is so busy. If you reserved a seat you can claim compensation for standing by emailing __email__. Lewis",
+   "replies": {
+    "zero": "What is the GWRHelp train?",
+    "rag-8": "Hi there. I'm sorry to hear that you're stuck on a packed train. I can't see the details of your journey in the lower left. Rach",
+    "lora:1": "Hi there. Sorry for the delay this evening. The train was delayed by 20 minutes due to a broken down train ahead of us. - Jordan",
+    "vera:256": "Hi. Sorry for the delays. I'm not sure which train you are referring to. Rach"
+   }
+  },
+  {
+   "customer": "No seat reservation. We're missing a carriage and have a large buffet car. Why? Missing over 100 seats!",
+   "gold": "We do advise reserving a seat so we can guarantee a seat. This is due to more carriages than usual undergoing repairs. Sorry for the busy conditions. Rach",
+   "replies": {
+    "zero": "I'm sorry, but we're unable to make any changes to your reservation. We apologize for any inconvenience this may cause.",
+    "rag-8": "Hi Chris. Sorry for the inconvenience. I can understand this is frustrating. If you booked a seat and have to stand compensation available. Phil.",
+    "lora:1": "Hi there. Sorry for the missing seat. This is due to a previous booking being cancelled. - Jordan",
+    "vera:256": "Hi. Sorry for the disruption. We're working to get more seats available. Lewis"
+   }
+  },
+  {
+   "customer": "Haha, that needs changing doesn't it. @GWRHelp could you take a look into this? Thanks. ^HA",
+   "gold": "Hi Rach. What platform was this on please? Rach",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. Can you please provide more details about the issue you are facing?",
+    "rag-8": "Hi Alicia. I've passed this on to the relevant team. Rach",
+    "lora:1": "Hi. I'll take a look at this now. -Andy",
+    "vera:256": "Hi. I'm afraid I don't have any information on this. What is this? - Jordan"
+   }
+  },
+  {
+   "customer": "15.22 Bristol to Salisbury. Has thinned out a  little now but people had difficulty getting off at Trowbridge as so many standing.",
+   "gold": "Glad conditions have got a little better. Sorry for the problems earlier. Lewis",
+   "replies": {
+    "zero": "Yes, I know. I have been trying to get the train to run on time. I have been trying to get the train to run on time. I have been trying to get the train to run on time. I have been trying to get the train to run on time. I have been trying to get the",
+    "rag-8": "Hi there. I will make sure the issue is reported to our maintenance team. - Josh",
+    "lora:1": "Hi there. Sorry for the issues this evening. I can see there is a queue of people at the exit doors. I'll try and get you a seat please. - Jordan",
+    "vera:256": "Hi. Sorry for the difficulties. The doors close at 15:25. - Jordan"
+   }
+  },
+  {
+   "customer": "So what do I do? I'm on a train without a ticket? Buy at destination?",
+   "gold": "Yes you will be able to buy at your destination. Rach",
+   "replies": {
+    "zero": "No, you don't have to buy a ticket at the destination. You can buy a ticket at any station along the way. You can also buy a ticket at the train station where you are currently traveling.",
+    "rag-8": "Hi, you can buy a ticket at the station or at the ticket office. You can also buy a ticket on the train. -Andy",
+    "lora:1": "Hi. You can buy a ticket at the station. - Jordan",
+    "vera:256": "Hi. You can buy a ticket at the destination. - Jordan"
+   }
+  },
+  {
+   "customer": "06.32 Didcot to Paddington seems to also be missing some carriages today?",
+   "gold": "Hello. I am sorry for the shorter train this morning, more trains than usual require repair work. - Jordan",
+   "replies": {
+    "zero": "06.32 Didcot to Paddington is a 10-carriage train. The missing carriages are 06.32 Didcot to Paddington 1 and 06.32 Didcot to Paddington 2.",
+    "rag-8": "Hi there. This is a fault with the signalling system. Sorry for the late running. - Jordan",
+    "lora:1": "Hi. Sorry for the disruption this morning. The 0632 service was delayed by 15 minutes due to a fault on the train. - Jordan",
+    "vera:256": "Hi. Sorry for the disruption. This is due to a broken down train. Lewis"
+   }
+  },
+  {
+   "customer": "when the departure boards at Paddington say \"please enquire\" it would be useful if you had some staff. <url>",
+   "gold": "Hi Andy. Sorry to see this. Have you checked the other info point? There should be staff around. Can we help with any journey info? Natalie",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to assist with that request.",
+    "rag-8": "Hi there. We are currently working on a new system for the departure boards. This will be rolled out in the next few weeks. Rach",
+    "lora:1": "Hi there. I'll make sure this is passed on. - Jordan",
+    "vera:256": "Hi. Sorry for the wait. We have a lot of passengers to deal with and the queues can get long. - Jordan"
+   }
+  },
+  {
+   "customer": "Young lady left her bag on @GWRHelp  service arriving Stroud 21:24 from London Paddington. Train manager leaving it at Gloucester. #findit",
+   "gold": "Thanks Chris, I have retweeted. Phil.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the train number and the name of the train that was running at the time?",
+    "rag-8": "Hi, I'm sorry to hear that. I'm afraid I can't assist with this. - Jordan",
+    "lora:1": "Hi. Sorry for this. We'll be looking into this. Lewis",
+    "vera:256": "Hi there. Sorry for this. I'll pass this on to the relevant team. Lewis"
+   }
+  },
+  {
+   "customer": "Hi Josh - I was on the delayed 23.33 from Paddington to Newport. Hit. Y crew shortages. Line closures and various other delays. Arrived Newport over an hour late.",
+   "gold": "2/2 No compensation is available for delays outside of the control of the rail industry I'm afraid, but Customer Relations may consider a discretionary gesture of goodwill - Please email tickets and address to __email__. Phil.",
+   "replies": {
+    "zero": "I'm sorry to hear that, sir. We're working to minimize disruptions and ensure that our services are as efficient as possible. If you have any further questions or concerns, please don't hesitate to ask.",
+    "rag-8": "Hi there. I'm sorry to hear about the delay. I can see this is now on the move. Please send all journey/ticket information to __email__ for compensation - Josh",
+    "lora:1": "Hi. Sorry for the delay. I understand this was a difficult journey. I can't help with this one though. - Jordan",
+    "vera:256": "Hi Josh. Sorry for the delay. I understand the crew shortage is a problem. I hope you had a good journey. Lewis"
+   }
+  },
+  {
+   "customer": "Sure 09.11 from OLF, returning on 16.48 from BRI",
+   "gold": "Thanks for confirming. Reservations won't be required for these services. Rachel",
+   "replies": {
+    "zero": "What is the purpose of this message?\nA. To inform the customer of the flight details\nB. To confirm the flight details\nC. To request the customer's flight details\nD. To request the customer's flight details\nAnswer:\nB\n\nThe main function of the ____ is to provide a path for the",
+    "rag-8": "Hi there. I am sorry to hear this. I will pass this on to the relevant team. - Josh",
+    "lora:1": "The 16:48 is a new service. It is not currently running. Sorry for the confusion. Lewis",
+    "vera:256": "Sorry for the delay. This is due to a fault on the line. - Jordan"
+   }
+  },
+  {
+   "customer": "Yeah I have now, a lot of people got off at Hayes",
+   "gold": "Hi Richard - Glad you found a seat and sorry to hear it was so busy. Ian.",
+   "replies": {
+    "zero": "What happened to them?",
+    "rag-8": "I'm sorry to hear that. Rach",
+    "lora:1": "I'm glad to hear this. I'll make sure this is passed on. - Jordan",
+    "vera:256": "Hi. Sorry for the disruption. We are currently working to clear the line. Lewis"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hi Chris. Sorry about this. Hopefully it will quiet down soon and you can enjoy the rest of the journey. Lewis",
+  "Where are you travelling to please? Rach",
+  "Hello. Sorry for the delay this morning. Due to a signalling problem between Slough and London Paddington services are being delayed/cancelled. Network Rail are currently on site to fix this signalling issue. Rach",
+  "Hi there. Apologies for this. This is due to a earlier broken down train - Josh",
+  "Hi Jane. What service are you referring to please? Rachel"
+ ],
+ "seconds": 122.28156852722168
+}

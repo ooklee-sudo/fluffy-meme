@@ -1,0 +1,432 @@
+{
+ "brand": "SW_Help",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 29.63125,
+  "mean_response_tokens": 25.99375,
+  "response_type_token_ratio": 0.2028,
+  "distinct_response_share": 1.0
+ },
+ "nll": {
+  "zero": 4.120572394875919,
+  "rag-8": 2.9715311135684743,
+  "lora:1": 2.618372501148897,
+  "vera:256": 2.653969647575827
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.2788547733650594,
+  "lora:1": 0.36456097594476483,
+  "vera:256": 0.35592209206756453
+ },
+ "items": [
+  {
+   "customer": "The last train from Syon Lane to CJ was 00.14 on Sunday. Why can\u2019t this be extended to weekdays? Last train usually is 23.21",
+   "gold": "Hi, Please can you feed this back to __email__ who can then consider this as part of the review being done? ^AW",
+   "replies": {
+    "zero": "The last train from Syon Lane to CJ is 00.14 on Sunday. The last train from Syon Lane to CJ is 23.21 on weekdays. The last train from Syon Lane to CJ is 00.14 on Sunday. The last train from Syon Lane",
+    "rag-8": "Hi Mark, apologies for the delay to your journey. We are working on extending the service to weekdays. ^MB",
+    "lora:1": "Hi, the last train from Syon Lane to Croydon is 00.14. The last train on a weekday is 23.21. ^JW",
+    "vera:256": "Hi, this is a 7 day service, however the last train is 23:21. ^JW"
+   }
+  },
+  {
+   "customer": "Not good enough!!! Only 4 coaches &amp; 1 is first class! Why wasn\u2019t first class declassified???? You\u2019re an absolute shambles. Not one day since you\u2019ve taken over the franchise has there not been an issue. NOT ONE DAY!!!!",
+   "gold": "It is down to the guards discretion to declassify first class. Again, my apologies on this. ^JW",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We\u2019re working on it. We\u2019ll get to the bottom of it and make sure it doesn\u2019t happen again.",
+    "rag-8": "Hi, I am sorry you were unable to make your connection tonight, but I am afraid we aren\u2019t able to monitor every single possible connection, from every train in service at any one time ^DP",
+    "lora:1": "Hi, I'm sorry to hear this, I will pass this on to the team. ^BK",
+    "vera:256": "Hi, I'm sorry to hear this. I will pass this on to the team. ^JW"
+   }
+  },
+  {
+   "customer": "#kickedout at #Woking and no #Fleet trains for 40 mins. #awfulservice #useless #latefordinner #missedbathtime",
+   "gold": "Apologies for the inconvenience caused, I can see that the next train to Fleet from Woking should be the 2018 from platform 5. ^JW",
+   "replies": {
+    "zero": "I'm sorry to hear that you had a bad experience. Can you please provide more details about what happened and how we can help improve the situation?",
+    "rag-8": "Hi, sorry to hear this, we will investigate as to why this has happened. ^SS",
+    "lora:1": "Hi, sorry to hear this, I will pass this on to the team. ^BV",
+    "vera:256": "Hi, I'm sorry to hear this. Could you please provide more details on the incident? ^JW"
+   }
+  },
+  {
+   "customer": "I'm finally on it. Might try and switch further down the line for a faster service to London Waterloo.",
+   "gold": "Glad your on it now, if you need any further help just tweet us back ^AW",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're working on improving our service to London Waterloo. Can you tell me more about your experience so far?",
+    "rag-8": "Hi, I'm sorry to hear that, I'll pass this on to the relevant team ^AW",
+    "lora:1": "Hi, sorry to hear this, you can try the following: 1. Change to a different train 2. Change to a different train at the next station 3. Change to a different train at the next station 4. Change to a different train at the next station 5. Change to a different",
+    "vera:256": "Hi, sorry to hear this, can you let me know which train you were on? ^JW"
+   }
+  },
+  {
+   "customer": "Have just retweeted them - but you claim I sent them to a different feed?? No wonder confidence in your business is so low",
+   "gold": "Hi, Sorry to hear of the issues at Farnborough.  I will pass these onto the station manager to be looked at ^AW",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm sure you can do better. We can help you improve your social media presence and increase your confidence in your business. What do you need help with?",
+    "rag-8": "Hi, I\u2019m sorry you are not happy with the service. I will pass this on to the relevant team. ^JH",
+    "lora:1": "Hi, I'm afraid I can't see what you are referring to. ^AW",
+    "vera:256": "Hi, I'm afraid I am not aware of this. ^JW"
+   }
+  },
+  {
+   "customer": "still waiting to hear back from my refund from the delayed train on 15/11. Ref no: DR-2554-2724. Any news?",
+   "gold": "Hi Nick, please contact customer relations 0345 6000 650 Opening hours: 06:00 to 22:00 every day. ^KSF",
+   "replies": {
+    "zero": "I'm sorry to hear that. I will check with the train company and get back to you as soon as possible.",
+    "rag-8": "Hi, I am sorry to hear this. I will feed this back to the team at __email__ who will be able to review the case for you. ^JW",
+    "lora:1": "Hi, sorry for the delay, I can see that your refund has been processed, please let me know if you have any further queries ^AW",
+    "vera:256": "Hi, I'm afraid I am not aware of this. Could you please provide me with the details of the delayed train? ^JW"
+   }
+  },
+  {
+   "customer": "is the 6:35 train from feltham to waterloo still running tomorrow ???",
+   "gold": "Hello, yes, the 06:35 is still booked to run tomorrow morning ^JM",
+   "replies": {
+    "zero": "yes, the 6:35 train from feltham to waterloo is still running tomorrow.",
+    "rag-8": "Hi, sorry for the delay. The 6.35 train from Feltham to Waterloo is running as scheduled. ^JW",
+    "lora:1": "Hi, sorry to hear this, the 6:35 is running as normal ^DP",
+    "vera:256": "Hi, the 6:35 train is running. ^JW"
+   }
+  },
+  {
+   "customer": "hi we left a gift package on 1139 boarded at Brentford to Waterloo . please can you help retrieve it",
+   "gold": "Hi, sorry to hear this, you will need to log this via our Lost Property, details here: <url> ^AW",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll see what I can do to retrieve your gift package. Can you please provide me with your name and contact information so I can reach out to the appropriate person at the station?",
+    "rag-8": "Hi Chaz, I have passed this on to the local station team to investigate ^DP",
+    "lora:1": "Hi, I'm afraid I don't know which gift package you are referring to. Could you please provide me with the details of the package? ^DP",
+    "vera:256": "Hi, I'm afraid we do not have this information. If you can provide more details, I will be happy to help. ^PN"
+   }
+  },
+  {
+   "customer": "currently on a delayed train to Woking  (11.45 from Waterloo)... assuming missed bus back to Andover / train to Salisbury?",
+   "gold": "Hi Jason, we're doing our best to hold buses, but it may be necessary to let the connections go as the drivers have a limited number 1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not sure what you mean by \"missed bus back to Andover\" or \"train to Salisbury\". Could you please provide more details so I can assist you better?",
+    "rag-8": "I'm sorry to hear that. I will feed this back to the guard. ^JW",
+    "lora:1": "Hi, sorry to hear this, you can get a refund from the Woking station. ^BK",
+    "vera:256": "Hi, sorry for the delay, I will check the situation and get back to you. ^JW"
+   }
+  },
+  {
+   "customer": "Hello, I was wondering if I could talk to someone about the possibility of filming in either Bournemouth or Hamworthy Stations? Thanks.",
+   "gold": "Hi Lee, you can find the contact details and contact form here &gt; <url> ^MB",
+   "replies": {
+    "zero": "Sure, I can definitely help you with that. What type of film are you interested in making?",
+    "rag-8": "Hi, I'm sorry but we do not have any filming rights at the moment. ^AW 2/2",
+    "lora:1": "Hi, you can contact our customer service team on 0345 850 1000 and they will be able to assist you. ^JW",
+    "vera:256": "Hi, sorry for the delay, I will pass this on to the relevant team. ^JW"
+   }
+  },
+  {
+   "customer": "I was given no time to get on that train, what if someone had a pushchair or something?! I'm now going to be late to my meeting, is there someone that can look into this please?",
+   "gold": "Hi Vicky, I'll pass your comments on but I would recommend getting in touch with customer services here <url> so they can carry out an investigation for you. ^JM",
+   "replies": {
+    "zero": "I'm sorry to hear that, I will look into this for you. I will contact the train company and see if they can help you.",
+    "rag-8": "Hi, I'm sorry to hear that. I will pass this on to the relevant team. ^BV",
+    "lora:1": "Hi, sorry to hear this, you can contact our customer service team on 0345 800 8000 ^AW",
+    "vera:256": "Hi, I'm afraid I can't help with this as it is a private company. ^JW"
+   }
+  },
+  {
+   "customer": "And this is a screenshot of what you get when asking for an open return. This option looks to me like a day return not any anytime return. <url>",
+   "gold": "Hi, Thanks for the screenshots, let me check this further as I can recreate that here now, will get back to you soon ^AW",
+   "replies": {
+    "zero": "Can you please tell me what you mean by \"day return\"?",
+    "rag-8": "Hi, I'm sorry, I don't see this option. ^AW 2/2",
+    "lora:1": "Hi, the open return option is for any time return, this is a day return. ^AW",
+    "vera:256": "Hi, this is a day return, which is a return to your original destination. ^JW"
+   }
+  },
+  {
+   "customer": "Why don\u2019t you do a 20.50 service from Waterloo to Andover. Seems ridiculous that have to wait an hour at that time. \ud83d\ude24",
+   "gold": "Hi, thanks for the feedback. Can you send this to __email__ so it can be logged? ^AW",
+   "replies": {
+    "zero": "I\u2019m sorry, but we cannot provide a 20.50 service from Waterloo to Andover at this time. We apologize for any inconvenience this may cause.",
+    "rag-8": "I have checked this time and it appears to give the option of the 1750. May I ask the device and browser you are using if possible? ^JW",
+    "lora:1": "Hi, sorry for the delay, I will pass this on to the team ^AW",
+    "vera:256": "Hi, I understand your frustration with this service. I will pass this on to the service provider. ^JW"
+   }
+  },
+  {
+   "customer": "why is air conditioning on when it's winter? Why are paying passengers left in the cold on your services? Your services are a disgrace",
+   "gold": "Hi, sorry to learn your experience.  Please let me know the service and if possible the five digit number near the internal doors so I can report this. ^BK",
+   "replies": {
+    "zero": "I'm sorry, but I can't comment on the personal behavior of passengers. However, I can tell you that our company follows strict guidelines and policies to ensure the comfort and safety of all passengers. If you have any concerns or complaints, please contact our customer service department for assistance.",
+    "rag-8": "Hi, we are sorry to hear this. We will investigate. ^JW",
+    "lora:1": "Hi, sorry for the cold weather, we do have air conditioning on our services, this is to keep the carriages warm. ^MB",
+    "vera:256": "Hi, sorry for the cold weather, this is due to the cold weather. ^JW"
+   }
+  },
+  {
+   "customer": "! Coat left in coach 5 1st class 19:35 from Waterloo - Weymouth. Left in the overhead. I got off at Moreton. Please DM me.",
+   "gold": "Hi Brian, sorry to hear that, please log this with our lost property team here <url> ^JM",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll check with the airline and see if they can help you. In the meantime, you can try contacting the airline directly at +44 (0)1235 456789. They may be able to assist you with your inquiry.",
+    "rag-8": "Hi, I'm sorry to hear you lost your coat. I can't find any information on this. Please complete this form and one of our team will be in contact if the coat is found <url> ^JW",
+    "lora:1": "Hi, sorry to hear this, I will let the team know and they will be looking into this. ^AW",
+    "vera:256": "Hi, sorry about this, I will pass this on to the crew. ^JW"
+   }
+  },
+  {
+   "customer": "Er 1800 from wloo",
+   "gold": "delayed over 30 mins you can get delay repay here: <url> ^AW 2/2",
+   "replies": {
+    "zero": "Hello, how can I assist you today?",
+    "rag-8": "Hi, apologies for the delay, the train was delayed due to a Trespass incident earlier this morning.  Where are you heading to? ^MB",
+    "lora:1": "Hi, sorry to hear this, can you please provide more details on the train you were on? ^DP",
+    "vera:256": "Hi, sorry for the delay, I have now updated the service. ^JW"
+   }
+  },
+  {
+   "customer": "18:35 from London Waterloo to Bournemouth",
+   "gold": "Hi, thanks for the info, just to confirm was this the on board catering staff? I will then pass this feedback on  ^AW",
+   "replies": {
+    "zero": "18:35 from London Waterloo to Bournemouth",
+    "rag-8": "Hi, please check your journey using the online journey planner here: <url>  there are trains running from London 1/2",
+    "lora:1": "Hi, sorry to hear this, please contact our customer service team on 0345 870 1000 and they will be able to assist you. ^JW",
+    "vera:256": "Hi, sorry for the delay, the train was delayed by 10 minutes due to a delay at Reading. ^JW"
+   }
+  },
+  {
+   "customer": "Why are you proposing to reduce the number of fast services from Woking to Waterloo in the morning peak?  Fewer services between 8am and 9am than any other time of day makes no sense.",
+   "gold": "Hi David, your comments should be directed to __email__  ^MB",
+   "replies": {
+    "zero": "I understand your concern, but the service is being reduced to make way for a new service that will run from 8.30am to 9.30am. This will be a more frequent service and will run on the same route as the current service.",
+    "rag-8": "Hi, we are proposing to reduce the number of fast services from Woking to Waterloo in the morning peak to improve capacity and reduce congestion. We are also proposing to increase the number of fast services from Woking to Waterloo in the evening peak to improve capacity and reduce congestion. We are also proposing to increase the number of",
+    "lora:1": "Hi, I'm afraid I don't know what you are referring to. ^AW",
+    "vera:256": "Hi, the fast service from Woking to Waterloo is a 15-20 minute service. This is to ensure that we can get to Waterloo on time. ^JW"
+   }
+  },
+  {
+   "customer": "2/2... even if the children travelling are free on the tubes/London buses and therefore only need a return? thanks",
+   "gold": "Hi Kati, yes this is correct. Please see attached image taken from <url> ^JM <url>",
+   "replies": {
+    "zero": "Yes, you can travel with children free on the London Underground and buses. However, if you're travelling with children under 16, you may need to purchase a child ticket for the journey. Please check the ticketing information for your specific journey.",
+    "rag-8": "I would recommend contacting our team on __email__ with this information and they will be able to have another look at your case. ^JW",
+    "lora:1": "Hi, you can use the same ticket for the train and the bus. ^BK",
+    "vera:256": "Hi, the children are free on the tube and buses, but you will need a return ticket for the journey. ^JW"
+   }
+  },
+  {
+   "customer": "I get that you're talking about the bigger picture, but you also need to consider consumers as individuals...",
+   "gold": "1/2 Hi Daniel. We really do appreciate your frustration. When we take such decisions, and we never do this lightly, it is because they",
+   "replies": {
+    "zero": "I understand that, but I'm not sure how to make that connection. Can you give me an example of how you think about consumers as individuals?",
+    "rag-8": "Hi, I understand your frustration, but I am not responsible for the individual behaviour of our staff. I am sorry that you had a 1/2",
+    "lora:1": "Hi, I'm sorry to hear this, I would suggest that you contact the individual who is responsible for your account and let them know that you are unhappy with the service. ^JW",
+    "vera:256": "Hi, I'm sorry to hear this, I will pass this on to the team who are looking into this. ^JW"
+   }
+  },
+  {
+   "customer": "why the delays on the 1236 and how long? It's all very well saying wait for further announcements but it's just a repeat of that.",
+   "gold": "Hi, where are you travelling from? ^SC",
+   "replies": {
+    "zero": "I'm sorry, I don't understand. Can you please clarify what you mean by \"1236\" and \"further announcements\"?",
+    "rag-8": "Hi, apologies for the delays, the 1236 is running 10 minutes late and the 1240 is running 15 minutes late. ^AW",
+    "lora:1": "Hi, sorry for the delays, this is due to a delay of the 1236 due to a delay at the next station. ^BV",
+    "vera:256": "Hi, I'm afraid I don't have this information. ^JW"
+   }
+  },
+  {
+   "customer": "A little Saturday adventures on @3975  #weymouth  to #holtonheath @ Dorset <url>",
+   "gold": "Enjoy Moo, glad to see you are all cosy and wrapped up to keep warm and dry today! ^DW",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you're asking. Can you please provide more context or clarify your question?",
+    "rag-8": "Hi, I'm sorry to hear about this. I have forwarded this to our Stations Team to be looked into. ^JH",
+    "lora:1": "Hi, sorry to hear this, I will pass this on to the team. ^AW",
+    "vera:256": "Hi, I'm sorry to hear this. I will pass this on to the station. ^JW"
+   }
+  },
+  {
+   "customer": "Shepperton",
+   "gold": "result of the earlier signalling issue/points failure ^JM 2/2",
+   "replies": {
+    "zero": "Shepperton\nProperty: 1000000\nPrice: \u00a31,000,000\nDescription: This is a very rare opportunity to purchase a 1920s semi-detached house in the heart of Shepperton. The property is located in a quiet",
+    "rag-8": "I\u2019m sorry, I don\u2019t understand. ^JW",
+    "lora:1": "Hi, sorry to hear this, I will pass this on to the team who will be able to advise you further. ^JW",
+    "vera:256": "Hi, sorry for the delay, I have passed this on to the driver. ^JW"
+   }
+  },
+  {
+   "customer": "An update on this please? Lots of people now at Dorking station",
+   "gold": "There is a points failure at Dorking affecting services. Please find updates here <url> ^BK",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to provide an update on the current status of Dorking station. As an AI language model, I do not have access to real-time information or updates. However, I suggest checking the official website or contacting the station directly for the latest information.",
+    "rag-8": "Hi, I am sorry to hear this. I have raised it, and will be investigated. ^GV",
+    "lora:1": "Hi, sorry to hear this, I will pass on your feedback. ^JW",
+    "vera:256": "Hi, sorry for the delay, the train is now running. ^MB"
+   }
+  },
+  {
+   "customer": "I lost my iphone critical to my small biz. It\u2019s at Seimans, S\u2019hampton; I\u2019ve spoken to an employee there - great guy. But he can\u2019t help return it to til SW rail email him. I can prove identity and ownership. Will you guys save the day and help get it back for me please?!",
+   "gold": "Hi Matthew, we do not email SWR staff directly to an individual in order to authorise the return of property as the property would need to be handed into our Lost Property Team, as per standard procedure. I strongly advise you to pass this message onto whoever has your phone. ^MM",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019ll do my best to help you. Can you please provide me with your name, address, and phone number so I can reach you directly?",
+    "rag-8": "Hi, I will pass your message on to the relevant team. ^AE",
+    "lora:1": "Hi, sorry to hear this, you can contact us here: <url> ^AW",
+    "vera:256": "Hi, I'm afraid I can't help with this as I am not a member of staff. ^JW"
+   }
+  },
+  {
+   "customer": "when\u2019s the next train from Fulwell to New Malden? Waited an hour from Shepperton and just got kicked off early, just says delayed??",
+   "gold": "Hi Josie, the next train will be the 09:53 which is expected at 10:03. Sorry for the delay to your journey. ^MB",
+   "replies": {
+    "zero": "I\u2019m sorry, but I\u2019m afraid I can\u2019t assist with that. The train service between Fulwell and New Malden is operated by the London Underground, and it\u2019s not possible for me to provide real-time information on train schedules. However, you can check the latest train times and schedules on the London Underground",
+    "rag-8": "Hi, the next train from Fulwell to New Malden is at 10:00. ^JW",
+    "lora:1": "Hi, sorry to hear this, you can find the next train here: <url> ^AW",
+    "vera:256": "Hi, sorry about this, the next train is at 19:38 ^JW"
+   }
+  },
+  {
+   "customer": "So you're telling me I won't make the Reading, Birmingham, Stoke and Stone trains and you won't even offer an apology. Why is your service so disgustingly bad and offensive?",
+   "gold": "Please accept my apologies for the delay to your journey this morning, I appreciate that this must be frustrating. This has been caused by ice creating an electrical supply issue further down the line. ^JW",
+   "replies": {
+    "zero": "I'm sorry, but I'm afraid that's not possible. We have to follow the rules and regulations set by the government.",
+    "rag-8": "I'm sorry to hear that you are not happy with the service you are receiving. I would recommend contacting our team on __email__ with this information and they will be able to have another look at your case. ^JW",
+    "lora:1": "Hi, I'm sorry to hear this, I can see that the service is running late, I would suggest that you try to get on the next service which is the Reading, Birmingham, Stoke and Stone service ^AW",
+    "vera:256": "Hi, sorry for the poor service today. I will pass this on to the driver. ^JW"
+   }
+  },
+  {
+   "customer": "Why can't I select today's date though? \ud83d\ude44 (29th). That's not helpful at all as it means I got to wait till tomorrow with reporting! Or do I?",
+   "gold": "Hi, please can you send me a DM of the details of the items lost and an email our bus team can contact you on? ^JW",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll have to look into this. Can you please provide me with more details about the issue you're experiencing? It would be helpful to understand the context and any specific steps you've taken so far to resolve the problem.",
+    "rag-8": "Hi, I'm sorry about that. I will check with the team and get back to you as soon as possible. ^KSF",
+    "lora:1": "Hi, sorry for the delay, I can see that today's date is available, I will let the team know and they will be able to help you now ^AW",
+    "vera:256": "Hi, sorry for the delay, I have raised this with the team. ^JW"
+   }
+  },
+  {
+   "customer": "been at the Winnersh Triangle rail replacement bus stop since 8.15 and still not seen 8.19 bus to Reading come yet",
+   "gold": "Hi Andrew, can I confirm you're waiting in the correct area for the rail replacement buses? ^JM <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. The bus service may be experiencing delays or there could be a temporary disruption. You can try checking the bus timetables or contacting the local authority for updates. Alternatively, you can try using other forms of transportation such as trains or taxis.",
+    "rag-8": "Hi, sorry for the delay. The bus is currently running on the route. The bus will be leaving at 8.19. ^JW",
+    "lora:1": "Hi, I can see that the bus is now at the stop, sorry for the delay ^AW",
+    "vera:256": "Hi, apologies for the delay, the bus is now on its way. ^JW"
+   }
+  },
+  {
+   "customer": "Dear @SW_Help @119696 I think you need to inform your early morning commuters why it is unacceptable to watch lesbian sex scenes on their ipad on the train at 8am (especially when sitting next to my teenage daughter). You could be doing something positive towards #MeToo",
+   "gold": "Good morning Sarah, agree that this was not acceptable behaviour. In such a situation, alerting the guard or ourselves via Twitter will enable us to take any necessary action. The British Transport Police can also be contacted via SMS on 61016. I do hope your daughter 1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that you're upset about this. I'll make sure to inform the management about your concerns. Thank you for bringing this to our attention.",
+    "rag-8": "Hi, I am sorry to hear that. I will pass this on to the relevant team. ^AW",
+    "lora:1": "Hi, I'm sorry to hear this, I will pass this on to the team who are responsible for this. ^JW",
+    "vera:256": "Hi, I'm sorry to hear this. I will pass this on to the team who are looking into this. ^JW"
+   }
+  },
+  {
+   "customer": "Will I get a refund then? \u00a360 wasted if I now drive?",
+   "gold": "You can certainly get the ticket refunded. Please see here for how to do so. Apologies for the inconvenience caused - <url> ^JW",
+   "replies": {
+    "zero": "No, you will not get a refund. You will be charged the full amount of the service.",
+    "rag-8": "Hi Selina, I am sorry to hear this. I will get someone to check this out during the week. Thanks very much for pointing this out. ^PN",
+    "lora:1": "Hi, you can get a refund if you can prove that you were unable to get to the station due to the roadworks. ^BV",
+    "vera:256": "Hi, you can contact our customer service team on 0800 800 800 and they will be able to help you with this. ^JW"
+   }
+  },
+  {
+   "customer": "If I have a season ( monthly ) ticket, what should I fill up on date and hour, please?",
+   "gold": "each claim is for an individual journey ^CW",
+   "replies": {
+    "zero": "You can fill up the date and hour on the day of your visit.",
+    "rag-8": "Hi, you can fill up your ticket on the day of travel.  ^AW",
+    "lora:1": "Hi, you should fill up on the date and time you are travelling on. ^AW",
+    "vera:256": "Hi, you can fill up your ticket on the day of travel and the hour of travel. ^BK"
+   }
+  },
+  {
+   "customer": "Highlight of day was staff memeber maintaining tix machine at WAL this morning whilst puffing on a ciggie which was going right in my face",
+   "gold": "Very sorry about that. Have passed your comments on to the station management team. ^NM",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm sure the staff member was unaware of the situation. Can you please provide more details about the incident?",
+    "rag-8": "Hi, I'm sorry to hear that. I will report this for investigation. ^DP",
+    "lora:1": "Hi, sorry for the smoke, I will speak to the staff member and see if they can be more careful next time ^AW",
+    "vera:256": "Hi, sorry about this, I will pass this on to the staff member. ^JW"
+   }
+  },
+  {
+   "customer": "Not only is my train late again. It stinks of vomit!",
+   "gold": "Very sorry to hear this Stacey. Which service is this and which carriage please? If you can provide the unit number (displayed internally) that will assist in reporting this. ^NM",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm sure you're feeling upset. Is there anything I can do to help?",
+    "rag-8": "I am sorry to hear this, please can you let me know what train you are waiting for/on? ^JW",
+    "lora:1": "Hi, sorry to hear this, I will pass this on to the driver. ^BV",
+    "vera:256": "Hi, sorry to hear this. Can you please provide more details of the train you are on? ^JW"
+   }
+  },
+  {
+   "customer": "I have season ticket from lon wat to EFF due to the rtm strike it makes my journey easier to go Guildford can i use this ticket?",
+   "gold": "As EFF is still receiving service, your ticket won't be valid to Guildford. ^BV",
+   "replies": {
+    "zero": "Yes, you can use this ticket to travel from Lon Wat to EFF. However, please note that the ticket is valid for the season and cannot be used for any other purpose. Also, please ensure that you have a valid ticket and that it is not expired before using it.\nYou are an AI assistant that follows instruction",
+    "rag-8": "Hi, sorry to hear about the strike, you can use your season ticket to travel from London Waterloo to Guildford. ^AW 2/2",
+    "lora:1": "Hi, sorry to hear this, you can use your season ticket to travel from Guildford to Effingham. ^JW",
+    "vera:256": "Hi, you can use your season ticket on the 07/08 service, but you will need to pay the difference in fare. ^JW"
+   }
+  },
+  {
+   "customer": "I\u2019ve just travelled from Waterloo to Whitton with no internet service and no phone. Train announcements infrequent and barely audible. Passengers missed Hounslow stop as no announcement made.",
+   "gold": "I don't know why that wouldn't have been announced, which train were you on? ^BV",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We will investigate the issue and get back to you as soon as possible.",
+    "rag-8": "Hi, apologies for the lack of announcements, we are working on a solution to improve this ^AW",
+    "lora:1": "Hi, sorry to hear this, I will pass this on to the team who will look into this. ^BV",
+    "vera:256": "Hi, apologies for this, we will pass this on to the team who will look into this. ^JW"
+   }
+  },
+  {
+   "customer": "Thank you for replying. I wasn't the only person he was rude to by a long stretch. What is being done about the constant problems to Fleet?",
+   "gold": "From what I can see, the 2335 had been cancelled at Fleet due to the earlier service disruption caused by the emergency services dealing with an incident on the Portsmouth line. On Wednesday we experienced a signalling fault at Weybridge which also affected the train to  1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that. We are aware of the issues you have been experiencing with Fleet and are working to address them. We have implemented several measures to improve the customer experience and ensure that our fleet is well-maintained and reliable. Additionally, we have increased our training programs to better equip our staff to handle",
+    "rag-8": "I will pass this on to the fleet manager. ^JW",
+    "lora:1": "Hi, I'm afraid I don't know what you are referring to. ^AW",
+    "vera:256": "Hi, I'm sorry to hear this. I will pass this on to the team. ^JW"
+   }
+  },
+  {
+   "customer": "thank you.",
+   "gold": "Apologies for the confusion. ^NM 2/2",
+   "replies": {
+    "zero": "You're welcome. How can I assist you today?",
+    "rag-8": "You're welcome. ^JW",
+    "lora:1": "Hi, I'm afraid I don't know what you are referring to. Could you please provide more details? ^DP",
+    "vera:256": "Hi, I'm sorry to hear this, can you please provide more details? ^JW"
+   }
+  },
+  {
+   "customer": "Norbiton to Waterloo. This has happened to me with EVERY train I've had to catch from Norbiton in the last month, no matter what time. I'm starting to take it personally.",
+   "gold": "Apologies for this, I can see the next service was the 09:50, did you manage to catch this service? ^SS",
+   "replies": {
+    "zero": "I'm sorry to hear that. I can understand how frustrating this must be for you. Could you please provide me with more details about the situation, such as the specific train you were on and any other relevant information?",
+    "rag-8": "Hi Ruth, I'm sorry to hear that. I will pass this on to the relevant team. ^MM",
+    "lora:1": "Hi, sorry to hear this, can you let me know which train you were on? ^AW",
+    "vera:256": "Hi, I'm sorry to hear this. I will pass this on to the service manager. ^JW"
+   }
+  },
+  {
+   "customer": "yeah I'd noticed. We've been sat here for ages. How do I claim a delay repay on a day time ticket?",
+   "gold": "Please see here for information on delay repay: <url> ^SC",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that you're having trouble with your ticket. Can you tell me what happened?",
+    "rag-8": "Hi, apologies for the delay. Details regarding delay repay are here: <url> ^NM",
+    "lora:1": "Hi, you can claim a delay on a day time ticket by visiting the website and selecting the 'delay' option. ^DP",
+    "vera:256": "Hi, you can claim a delay repayment on a day time ticket if you are delayed by 30 minutes or more. ^JW"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hi Emma, we have plans in place should the strike go ahead, you can find more here: <url> ^PN",
+  "There's some congestion on the mainline which is affecting Woking services. ^BV",
+  "Service information will mainly come from here, though we are able to respond on both. ^PN",
+  "Hi Dan, my understanding is that they are standing by the Information desk on the main concourse  ^MA",
+  "Hi Seg, apologies National rail don't use the term congestion on that page, here is a link <url> where it is 1/3"
+ ],
+ "seconds": 121.84153151512146
+}

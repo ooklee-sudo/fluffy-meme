@@ -1,0 +1,432 @@
+{
+ "brand": "GoDaddyHelp",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 31.953125,
+  "mean_response_tokens": 29.709375,
+  "response_type_token_ratio": 0.1788,
+  "distinct_response_share": 0.96875
+ },
+ "nll": {
+  "zero": 3.530985453627654,
+  "rag-8": 2.504884499828305,
+  "lora:1": 2.2302092413344643,
+  "vera:256": 2.19731001144567
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.29059903170803386,
+  "lora:1": 0.36838900340322894,
+  "vera:256": 0.3777062974903497
+ },
+ "items": [
+  {
+   "customer": "The process works. It just does not recognise the new password. Done it 3 times with 3 new passwords. Your system just doesn't work.",
+   "gold": "Are you using common words or numbers such as abc, xyx. Also, please be sure you aren't going over 15 total characters in length, and don't include your username.  I know too, curse words won't work nor will adding 'GoDaddy' in the password.",
+   "replies": {
+    "zero": "Thank you for contacting us. I am sorry to hear that you are having trouble with the new password. Can you please provide me with the details of the issue you are experiencing?",
+    "rag-8": "I'm sorry to hear that. If you're still having trouble, please DM me your customer number and more details. ^G <url>",
+    "lora:1": "I'm sorry to hear that. I'll pass this along to our development team. ^Lisi <url>",
+    "vera:256": "Hi, I'm sorry to hear that. Could you DM me the customer number and the email you used to create the account? ^CG <url>"
+   }
+  },
+  {
+   "customer": "When you use #GoDaddy.com to register a domain name, be prepared for 250 spam phone calls &amp; emails to arrive. They should fix it",
+   "gold": "When that happens, it's typically due to choosing to register a domain publicly vs adding the private registration option.1/2",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the issue you're experiencing?",
+    "rag-8": "I'd recommend contacting our 24/7 live support teams They will be able to add the domain name for you. ^DJ",
+    "lora:1": "Hi, I'm sorry to hear that. I'd like to take a look at your account. Please send me an DM with your customer number and more details. ^G <url>",
+    "vera:256": "Hi, I'm not sure what you're referring to. Please send us a DM with more details. ^KayJay"
+   }
+  },
+  {
+   "customer": "what does \"I/O usage: DB usage is not acccounted as part of LVE\" mean in cpanel statistics? Does it mean DB usage is not 1/2",
+   "gold": "Hi. It means that the input from database queries and output from the database do not count against that metric.^W",
+   "replies": {
+    "zero": "I/O usage: DB usage is not accounted as part of LVE\nAgent: It means that the database usage is not included in the LVE (Linux Virtual Environments) statistics. LVE is a feature in cPanel that allows you to manage multiple virtual servers on a single physical server. It separates the virtual",
+    "rag-8": "I/O usage: DB usage is not accounted as part of LVE means that the database is not being used as part of the LVE. ^Lisi",
+    "lora:1": "Hi, I'm not sure what you are referring to. Could you please DM us more details? ^Lisi <url>",
+    "vera:256": "Hi, I/O usage refers to the amount of I/O activity on your server. It's not related to DB usage. ^G"
+   }
+  },
+  {
+   "customer": "I think I found wire fraud on a godaddy site. Who do I contact?",
+   "gold": "Hi, you will want to contact our abuse team: <url> ^KayJay",
+   "replies": {
+    "zero": "You can contact the FBI at 1-800-225-5322.",
+    "rag-8": "To report that type of activity, please review <url> ^G",
+    "lora:1": "If you have a customer number, you can contact our 24/7 support line at 1-888-321-5000. ^CG",
+    "vera:256": "Hi, please DM us the URL of the site. ^KayJay"
+   }
+  },
+  {
+   "customer": "I can\u2019t renew my domains cuz your website can\u2019t seem to pull down on country or state in payment system. Pls fix. @116068",
+   "gold": "Hi. We're not currently having issues with our checkout page. Please try clearing your browser's cache/cookies. That may help. <url> <url>",
+   "replies": {
+    "zero": "Thank you for reaching out. I apologize for the inconvenience. I will investigate the issue and provide you with a solution as soon as possible. In the meantime, please try to renew your domains using a different payment method or contact our customer support team for assistance. We appreciate your patience and understanding.",
+    "rag-8": "Hi, I apologize for the issue you're experiencing. I'll take a look at it and get back to you. ^KayJay",
+    "lora:1": "I'm sorry to hear that. I'll pass this along to our development team. ^Lisi",
+    "vera:256": "Hi, I'm sorry to hear you're having trouble. Please DM your domain names and we'll take a look at it. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Qu\u00e9 tal, necesito resolver una duda sobre una transferencia de dominio. Podr\u00eda ser por este medio?",
+   "gold": "Hola! Si todav\u00eda est\u00e1 necesitando ayuda, por favor env\u00ede un DM con el dominio y m\u00e1s detalles. Si necesita asistencia inmediata, p\u00f3ngase en contacto con nuestro soporte en vivo: <url> ^Lisi <url>",
+   "replies": {
+    "zero": "Claro, \u00bfen qu\u00e9 puedo ayudarte?",
+    "rag-8": "Hola, Gracias por contactarnos. Podemos ayudarlo a trav\u00e9s de Twitter. \u00bfPodr\u00eda DM m\u00e1s informaci\u00f3n y su n\u00famero de cliente? ^Lisi <url>",
+    "lora:1": "No puedo ayudar con dudas sobre transferencias de dominio. Env\u00edame a __email__ for more information. ^T",
+    "vera:256": "Hola, \u00bfPodr\u00edas enviar un mensaje privado con m\u00e1s detalles? ^Lisi"
+   }
+  },
+  {
+   "customer": "Would love to move away from GoDaddy; 4 websites, 18 domains, 9 email accounts plus misc SSL's etc, anyone have any suggestions on an alternative that can handle all that?",
+   "gold": "Sorry to hear you say that, Mark. Is there anything specific we can try to address for you? ^W <url>",
+   "replies": {
+    "zero": "Sure, I can help you with that. Have you considered switching to a managed hosting service?",
+    "rag-8": "Hi, I'm not sure what you mean, do you mean a Website Builder plan? Please DM us more details and your customer number. ^L <url>",
+    "lora:1": "I'm not sure what you mean by \"GoDaddy\" but I'm happy to help if I can. ^CG",
+    "vera:256": "I'm not sure what you mean by \"GoDaddy.\" If you're referring to the domain registrar, you can use a free one like Namecheap. ^KayJay"
+   }
+  },
+  {
+   "customer": "IT is unable to figure out how to get my outlook to sync with godaddy so now on my new work comp i may have lost all my sub-folders FML so hard right now \ud83d\ude29",
+   "gold": "Hello, We may be able to provide you with instructions on setting up your GoDaddy email on Outlook. Feel free to DM us your email address and customer number. ^Lisi <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're facing with Outlook syncing with GoDaddy?",
+    "rag-8": "Apologies for the inconvenience. If you can DM in the link below, we can take a look at what options are available to you. Thanks. ^J",
+    "lora:1": "I'm sorry to hear that. I'm not sure what you mean by \"sync with godaddy\" but you can try clearing your cache and cookies in your browser. ^Lisi <url>",
+    "vera:256": "I'm sorry to hear that.  If you're still having trouble, please DM me more details.  ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Need abit of help the link from website dont work",
+   "gold": "Hey there! What link are you referring to? Feel free to DM us more information and your customer number, we'd be happy to take a look. ^Lisi <url>",
+   "replies": {
+    "zero": "Sure, I can help you with that. Can you please provide me with the link that you are having trouble with?",
+    "rag-8": "Hi, I'm sorry you're having trouble with the link. I can try to help you troubleshoot the issue. Please provide me with the link and I'll do my best to assist you. ^M",
+    "lora:1": "Hi, I'm not sure what you mean. Could you DM us more details? ^G <url>",
+    "vera:256": "Hi, I'm not seeing any issues with the link. Could you DM me the link so I can take a look? ^KayJay"
+   }
+  },
+  {
+   "customer": "I have to say, @116068 and @GoDaddyHelp are the absolute worst with handling phishing site complaints. 3 different ways to report phishing sites hosted by them and no action after a week of waiting",
+   "gold": "Hi, our abuse team reviews every inquiry and makes the final decision whether to take action or not. Also, only if more info is needed will they reach back out. ^KayJay",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the phishing sites you are referring to?",
+    "rag-8": "We are working on this. Please DM us more details. ^G <url>",
+    "lora:1": "Hi, I'm sorry to hear that. I'll pass your feedback along to our support team. ^Lisi <url>",
+    "vera:256": "Hi, I'm sorry you're having trouble with the reporting process.  If you'd like to DM us more details, we'd be happy to take a look.  ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Hi! I\u2019m interested in purchasing an EV SSL for my companies website. We are a registered LLC in Michigan. Would someone be able to walk me through the process of ordering and what documents I would need to provide.",
+   "gold": "Hi, yes one of our phone agents can walk you through ordering the SSL. Also, we have a help article with detailed steps for SSL setup: <url> Here is how our sales and support team can be reached: <url> ^KayJay",
+   "replies": {
+    "zero": "Sure, I can help you with that. To order an EV SSL for your website, you will need to provide the following documents:\n1. A valid business license or registration certificate for your company.\n2. A copy of your company\u2019s articles of incorporation or other relevant documents.\n3. A copy of your company\u2019s",
+    "rag-8": "Hi, I'm sorry to hear you're having trouble with your email. I'll be happy to help you with your request. Please provide me with your email address and any additional information you may have. I'll do my best to assist you. ^L",
+    "lora:1": "Hi. I'm not sure what you mean by \"EV SSL\". If you're referring to a certificate, you can order one from a certificate authority. If you're referring to a domain name, you'll need to register it first. If you're referring to a website, you'll need to contact your hosting provider",
+    "vera:256": "Hi, we can't provide you with a quote for this service. Please contact our sales team for more information. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "purchased a domain and official email for 3 years at Rs 3277.36 and was not mentioned to purchase website builder plan   @116068",
+   "gold": "I'm sorry to hear that. If you'd like, DM me your customer number and I'll have a look. ^Heather <url>",
+   "replies": {
+    "zero": "I am sorry to hear that you are not satisfied with the service. Can you please provide me with more details about your experience with the website builder plan? What specific features or functionalities did you expect to be included in the plan, and how did they differ from what you received? Additionally, can you please provide me with",
+    "rag-8": "Hi, I'm sorry to hear that. We do not offer website builder plans. If you purchased a domain and email, you can contact the domain registrar for more information. ^CG",
+    "lora:1": "Hi, I'm sorry to hear you had a bad experience. If you'd like to DM us your customer number and more details, we'd be happy to look into it for you. ^Lisi <url>",
+    "vera:256": "Hi, I'm not sure what you're referring to. Could you send us a DM with more details? ^KayJay"
+   }
+  },
+  {
+   "customer": "I need help, please, why does it give me that fault when I try to configure my template from a Content Management System,?@116068 <url>",
+   "gold": "Hello, We just replied to your message on Facebook, please continue the conversation through there to avoid any confusion. ^T",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the error message you are receiving?",
+    "rag-8": "Hi, I'm sorry to hear that you're experiencing this issue. I'm not able to replicate this action. Please try clearing your browser cache and retrying. If the issue persists, please contact our support team for assistance. ^DJ",
+    "lora:1": "Hi, I'm not sure what you are trying to do. If you are trying to upload a template, please see the instructions here: <url> If you are trying to create a new template, please see the instructions here: <url> ^Lisi",
+    "vera:256": "Hi, I'm not sure what you mean. Could you DM me more details? ^G <url>"
+   }
+  },
+  {
+   "customer": "Look at this answer from your team? @116068 \nUNBELIVABLE <url>",
+   "gold": "Hi, thanks for reaching out. Feel free to DM us your customer number so we can look into your issue. ^KayJay",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more context or details about the situation?",
+    "rag-8": "Hi. We apologize for the confusion. We have responded to a previous tweet. Please review and DM with more details so we can take a look for you. ^DJ",
+    "lora:1": "Hi, I apologize for the confusion. I was able to resolve the issue. ^DJ",
+    "vera:256": "I'm not sure what you're referring to. If you could DM me the link, I'd be happy to take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "why the fuck was my IP blocked? I\u2019ve been a customer for years and have +10 domains registered with you...",
+   "gold": "Blocks of this nature are generally caused by malicious activity being detected from an IP address. If you are using a shared network, such as public wifi, it might not be related to something you've done. This can also be the case if you are using a VPN or a proxy.",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019m not sure what you mean by \u201cmy IP was blocked.\u201d Could you please provide more details about the issue you\u2019re experiencing?",
+    "rag-8": "Hi, I'm sorry to hear that. Can you send us a private message with your customer number so we can take a look? <url>",
+    "lora:1": "Hi, we're not able to see the IP address you were trying to access. If you could DM us the IP address, we'd be happy to take a look. ^Lisi <url>",
+    "vera:256": "Hi, we're not able to see your IP address. If you'd like to DM us the domain name, we'd be happy to take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "I don't know where it fits anymore in the spectrum of Pro vs. Non-Pro plans.",
+   "gold": "Your current plan is comparable to our Ultimate plan except your plan gives you the ability to host 5 sites. The major 1/3",
+   "replies": {
+    "zero": "I'm sorry to hear that. What is the name of the product you are referring to?",
+    "rag-8": "Hi there. I'm not sure what you're referring to. Could you please provide more details? ^Lisi",
+    "lora:1": "Hi, I'm not sure what you're referring to. If you could send us a DM with more details, we'd be happy to take a look. ^Lisi <url>",
+    "vera:256": "Hi, I'm not sure what you're referring to. Could you send us a DM with more details? ^KayJay"
+   }
+  },
+  {
+   "customer": "yeah, would love to chat with your agents\u2026 <url>",
+   "gold": "Our chat teams are not available 24/7. They can be reached 5am-6pm PST(GMT-7), Mon-Fri. ^G",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to provide a direct link to your agents. However, I can assist you in finding the contact information for your preferred customer service representatives. Please provide me with your name, the specific agent you're looking for, or any other details that will help me locate them.",
+    "rag-8": "I'm sorry, but I'm unable to chat with you at this time. Our team is working on resolving the issue with your account. Please check back later or contact us via chat or any of our regional numbers: <url> <url>",
+    "lora:1": "I'd be happy to help. What kind of issue are you experiencing? ^Lisi <url>",
+    "vera:256": "Hi, we're not able to assist with that. Please DM us your question. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "is your system down? I\u2019m not able to access my email nor the system status page on your home page. @116068 #helpplease",
+   "gold": "Sorry. The issue should be resolved now. If you see otherwise, please let us know and we can take another look.^W <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I will check on the system status page. #I\u2019mworkingonit",
+    "rag-8": "Hi, I'm not currently having any issues with my system. I suggest trying another browser or device. ^Lisi <url>",
+    "lora:1": "Hi, I'm not able to access our system at the moment. I'm sorry for the inconvenience. ^KayJay",
+    "vera:256": "Hi, I'm not able to access the system status page either. I'm sorry. ^KayJay"
+   }
+  },
+  {
+   "customer": "Thanks Heather",
+   "gold": "You're most welcome. :) ^Heather",
+   "replies": {
+    "zero": "You're welcome. How can I help you today?",
+    "rag-8": "You're welcome!  Have a great day!  ^M",
+    "lora:1": "You're welcome.  Have a great day!  ^M",
+    "vera:256": "You're welcome.  If you have any other questions, please don't hesitate to reach out.  ^M"
+   }
+  },
+  {
+   "customer": "Well why don't you make it private automatically? I've now had spam x3 and pw breach on email! You're really great aren't you!!!",
+   "gold": "You can add privacy at anytime. What's the domain name? We're trying to actively stop these spammers. ^KayJay",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm glad you're satisfied with the service. We take security very seriously and have implemented several measures to protect your email account. However, if you ever experience any issues or concerns, please don't hesitate to contact us. We're here to help.",
+    "rag-8": "Hi there. If you wish to report that domain, that can be done here: <url> ^Heather",
+    "lora:1": "We're sorry to hear that. We'll look into it. ^G",
+    "vera:256": "Hi, we don't have the ability to make it private automatically. If you'd like to DM us more details, we'd be happy to take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Do you support python applications? @116068",
+   "gold": "Hi Learnura. You should be able to run Python on any of our Linux hosting plans. ^W <url>",
+   "replies": {
+    "zero": "Yes, we support Python applications. What would you like to know about it?",
+    "rag-8": "We do not support python applications. ^G <url>",
+    "lora:1": "Hi, Python is supported in our hosting plans. Please let us know if you need any further assistance. ^Heather",
+    "vera:256": "Hi, Python is supported. Please let us know if you have any issues. ^Lisi"
+   }
+  },
+  {
+   "customer": "Switched from 25 in the UK to 465 at it worked in some SE hotspots. Then flaked out completely this afternoon.",
+   "gold": "The outgoing port of 465 is for SSL use. If 25 had been working before, you may wish to try 80 or 3535 for your outgoing ports instead. ^T",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the issue you're experiencing?",
+    "rag-8": "I'm sorry to hear that. I'm not seeing any issues with our cPanel. ^G",
+    "lora:1": "Hi, I'm sorry to hear you're having trouble. I'd like to take a look at your account. Could you DM me your customer number and your email address? ^G <url>",
+    "vera:256": "Sorry to hear that. I'm not sure what to tell you. It's possible that your account was affected by a recent outage. If you're still having trouble, please DM me your customer number and we'll take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "hi there! My online account won\u2019t let me cancel my auto renewal. I tried to email you, but it bounced back. How do I cancel?",
+   "gold": "You should be able to cancel services w/ <url> ^CG",
+   "replies": {
+    "zero": "Hi there! I\u2019m sorry to hear that. Can you please provide me with your email address so I can assist you further?",
+    "rag-8": "You can cancel your auto-renewal by going to your account dashboard and clicking on the \u201cManage\u201d tab. From there, you can select the domain you want to cancel and click \u201cCancel.\u201d Please note that this will not refund any fees that have already been charged. ^DJ",
+    "lora:1": "Hi, I'm not sure what you mean. Could you please DM us more details? ^G <url>",
+    "vera:256": "Hi, if you're still having trouble canceling your subscription, you can try reaching out to our support via chat or email. ^Lisi"
+   }
+  },
+  {
+   "customer": "Hi, I've just submitted it today again, hopefully should solve the problem, thanks.",
+   "gold": "You're most welcome. :)",
+   "replies": {
+    "zero": "Thank you for your patience. I will review your case and get back to you as soon as possible.",
+    "rag-8": "Hi, I'm sorry to hear that. I'll make sure to check it out. ^Lisi",
+    "lora:1": "Hi, I'm sorry to hear that. I'll pass this to our support team to take a look. ^Lisi <url>",
+    "vera:256": "Glad to hear it was resolved.  If you have any other questions, feel free to DM.  ^M"
+   }
+  },
+  {
+   "customer": "Yes, I know :) Maybe you can ask for my #. I\u2019ll try live chat, then.",
+   "gold": "That would probably be your best course of action. If you'd like to share the details of your issue via DM, we may be able to help you here as well. ^W <url>",
+   "replies": {
+    "zero": "Sure, I\u2019ll ask for your #. I\u2019ll try live chat, then.",
+    "rag-8": "Sure, I\u2019ll ask for your #. ^Lisi",
+    "lora:1": "I'm not sure what you mean by that. If you'd like to DM me your customer number, I'd be happy to look into it for you. ^Lisi <url>",
+    "vera:256": "Hi, I'm not able to see your profile. If you'd like to DM me your customer number, I'd be happy to help. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Actively working since last 80 hours. May I know the completion time of migration? @10895",
+   "gold": "Should be completed within 24 hours. I have nothing specific to offer. They'll reach out when complete. ^Heather",
+   "replies": {
+    "zero": "Hi, I am sorry to inform you that the migration is not completed yet. We are working on it and we will let you know as soon as it is completed. Please be patient. Thank you for your understanding.",
+    "rag-8": "I'm sorry, I don't have that information. ^Lisi",
+    "lora:1": "Hi, I'm not sure what you mean by \"migration\". If you're referring to the migration of your website, it should be complete by the end of this week. ^CG",
+    "vera:256": "Hi, we're currently working on the migration. We will let you know once it's complete. ^KayJay"
+   }
+  },
+  {
+   "customer": "I tried installing Wordpress but the info part was missing where you add a user name and password. Do I need php 7 or 7.1?",
+   "gold": "Hi Aaron, Are you still having trouble installing WordPress? Feel free to DM us more details. ^Lisi <url>",
+   "replies": {
+    "zero": "Yes, you need to have PHP 7.1 installed on your server to install WordPress. PHP 7.1 is the latest version of PHP and is compatible with WordPress.",
+    "rag-8": "Hi, I just replied to your DM. ^Lisi",
+    "lora:1": "Hi, I'm not sure what you mean. If you're still having trouble, please DM us your customer number and more details. ^Lisi <url>",
+    "vera:256": "Hi, the info is in the first section of the page. ^KayJay"
+   }
+  },
+  {
+   "customer": "Your pasword reset system does not work. What can I do?",
+   "gold": "Hi! Thanks for reaching out. Are you receiving an error or just not getting the email? Please DM with more details so we can take a look. ^DJ <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your email address and the date you received the email with the password reset link?",
+    "rag-8": "I'm sorry to hear that. If you're still having trouble with your password reset, please reach out to our support team. ^L <url>",
+    "lora:1": "If you are still having trouble, please send us a DM with your customer number and your email address. ^G",
+    "vera:256": "Hi, I'm sorry to hear that. Please send us a DM with your email address and the username you were trying to reset. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Hello? <url> has been down for a while now. I called and it was not helpful.",
+   "gold": "I tested the site from multiple locations and they showed no issue. Could you DM me more details? ^G <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the issue you are experiencing?",
+    "rag-8": "Hi, I'm sorry to hear that. I'll pass your feedback along to our team. ^Lisi <url>",
+    "lora:1": "Hi, I'm sorry to hear that. I'll pass this to our support team to take a look. ^Lisi <url>",
+    "vera:256": "Hi, I'm sorry to hear that. I'm not seeing any issues with the site at the moment. Could you DM me the URL so I can take a look? ^G <url>"
+   }
+  },
+  {
+   "customer": "Shoutout to @116068 for still trying to charge me for a domain I closed 2 years ago. Hustle is real \ud83d\ude02",
+   "gold": "We would only charge you if the domain is active &amp; on auto renew, you can turn it off at any point within your account. ^L",
+   "replies": {
+    "zero": "I'm sorry to hear that you're still trying to collect from a domain that you closed 2 years ago. It's important to respect the closure of a domain and not attempt to collect fees from it. If you have any further questions or concerns, please don't hesitate to reach out.",
+    "rag-8": "Hi there, I just replied to your DM. ^KayJay",
+    "lora:1": "Sorry to hear that. We'll pass this over to our support team to look into. ^Lisi <url>",
+    "vera:256": "Sorry to hear that. 2 years is a long time to wait for a domain to be removed.  We'll look into this.  ^M"
+   }
+  },
+  {
+   "customer": "Hi, kindly reply to my DM. Thanks",
+   "gold": "Hi Akolade, It doesn't look like we received a DM from you, can you please try sending us another one? ^Lisi <url>",
+   "replies": {
+    "zero": "Sure, I'll get back to you as soon as possible.",
+    "rag-8": "Just replied to your earlier DM. ^CG",
+    "lora:1": "Hi, I've replied to your DM. ^DJ",
+    "vera:256": "I've replied to your DM. Please let me know if you have any further questions. ^Lisi"
+   }
+  },
+  {
+   "customer": "Why is it after an hour on the phone your people can\u2019t successfully help me set up an ftp client?",
+   "gold": "Sorry to hear about the trouble. If there's anything I can assist with, please DM me. ^G <url>",
+   "replies": {
+    "zero": "I\u2019m sorry, I don\u2019t understand. Can you please provide more details about the issue you are facing?",
+    "rag-8": "I'm sorry to hear that. I'll pass along your feedback to our team. ^CG",
+    "lora:1": "Hi, I'm not sure what you mean. Could you please DM us more details? ^G <url>",
+    "vera:256": "Hi, I'm not sure what you mean. If you could DM me more details, I'd be happy to take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "I've been charged almost \u00a330 for domain renewal. I haven't signed up for this. This would be my second year with godaddy. I always",
+   "gold": "Hi, what's the domain name? If it's still in the refundable time frame, you would just need to cancel it. ^KayJay",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me what you did to renew your domain name?",
+    "rag-8": "I'm sorry to hear that, please DM us your customer number so we can look into your refund options. ^L <url>",
+    "lora:1": "Hi, please contact our support via live chat or by sending a message to our online help <url> . ^DJ",
+    "vera:256": "Hi, I'm sorry to hear you're having trouble. Please DM us more details and we'll take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "Hi I just realized I was billed twice for the same product. How can I contact someone by email so I can share supporting evidence?",
+   "gold": "No email but we do offer chat it's M-F from 5am-6pm AZ time, USA - On the English Help page (<url> ^Lisi",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that you were billed twice for the same product. To help you resolve this issue, I would like to request that you provide me with the following information:\n1. The name of the product you purchased.\n2. The date of purchase.\n3. The amount you were billed for the",
+    "rag-8": "You can email your support team with a copy of the invoice and screenshots of the billing. ^G",
+    "lora:1": "Hi, I'm not sure what you mean. If you'd like to DM us more details, we'd be happy to take a look. ^Lisi <url>",
+    "vera:256": "Hi, you can DM us your customer number and we'll take a look. ^DJ <url>"
+   }
+  },
+  {
+   "customer": "my friend made my theme. Do you know where can I check? Thanks I will check the plugins.",
+   "gold": "You'll need to check with your friend if the theme supports PHP 7. I'd also suggest  backing up your site before changing 1/2",
+   "replies": {
+    "zero": "I am sorry, I do not have access to your friend's theme. However, you can try checking the following places to find the theme files:\n1. The theme directory: If your friend uploaded the theme files to a specific directory on your server, you can check that directory to see if the theme files are present",
+    "rag-8": "You can check the plugins by going to the Plugins page in your cPanel. ^Lisi",
+    "lora:1": "I'm not sure. If you can DM me the website and the plugin you are using, I'll take a look. ^Lisi <url>",
+    "vera:256": "Hi, you can check the plugins listed in the theme's documentation. ^KayJay"
+   }
+  },
+  {
+   "customer": "no but will try, thats the best way to get something fixed? i canceled one of my renewals and it still charged my card",
+   "gold": "Reaching out to our support team is best. <url> ^Heather",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with your card number and the name on the card so I can look into this further? Thank you for your understanding.",
+    "rag-8": "I'm sorry to hear that. If you're still having trouble, please DM me your customer number and more details. ^G <url>",
+    "lora:1": "Hi, we'd be happy to look into this for you. Please DM us your customer number and more details. ^DJ",
+    "vera:256": "I'm sorry to hear that. If you're still having trouble, please DM me your customer number and we'll take a look. ^Lisi <url>"
+   }
+  },
+  {
+   "customer": "why is it that on shared cpanel there is an i/o fault (database fault) once every day? Is it a scheduled backup of the database, is that why the database goes away once a day for a short while?",
+   "gold": "A review of our system shows no daily errors on our cPanel accounts. If you are having problems on your specific database, you will want to reach out to our customer support team to look into it for you. ^T",
+   "replies": {
+    "zero": "yes, it is a scheduled backup of the database, and it is not a scheduled backup of the database, it is a scheduled backup of the database, and it is not a scheduled backup of the database, and it is not a scheduled backup of the database, and it is not a scheduled backup of the database,",
+    "rag-8": "I'm sorry to hear that's happening. I'm not seeing any current issues with our cPanel. ^G",
+    "lora:1": "Hi, I'm not sure what you are referring to. Could you please DM us more details? ^Lisi <url>",
+    "vera:256": "Hi, I'm not sure what you mean by \"i/o fault\" or \"database fault\". If you're still having issues, please DM us more details. ^KayJay"
+   }
+  },
+  {
+   "customer": "Shit wrong one <url>",
+   "gold": "Ok I do see you registered without privacy. That means your information is public in the whois database. 1/2",
+   "replies": {
+    "zero": "What do you mean?",
+    "rag-8": "I'm sorry to hear that you're experiencing issues. If you could provide more details, we can assist you further. ^Lisi",
+    "lora:1": "I apologize for the confusion. The link you provided is to the 2017 version of the app. The 2018 version is available at <url> ^G",
+    "vera:256": "Hi, I'm sorry to hear that. I'm not able to see the URL you're referring to. If you could DM me the URL, I'd be happy to take a look. ^KayJay"
+   }
+  },
+  {
+   "customer": "bought domain with you, hosting at wix. My site still goes to green page, been more than 2 days plz help",
+   "gold": "What is the domain name you're pointing to Wix? ^CG",
+   "replies": {
+    "zero": "I'm sorry to hear that your website is not loading correctly. Can you please provide me with more details about the issue you are experiencing? This will help me better understand the problem and provide you with the most appropriate assistance.",
+    "rag-8": "Hi, I'm not sure what you mean by \"my site still goes to the green page\". Can you please provide more details? ^Lisi <url>",
+    "lora:1": "Hi, I'm not sure what you are referring to. Could you please DM me a screenshot? ^G <url>",
+    "vera:256": "Hi, I'm not familiar with your domain. Could you send us a DM with the domain name and the URL you're trying to access? ^KayJay"
+   }
+  },
+  {
+   "customer": "My website is down and don't know why.  Do you have any reported issues?",
+   "gold": "Nothing that would affect <url> Try checking your error_log file to see the error cause.^W <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not able to see your website, but I can help you troubleshoot the issue. Can you tell me what kind of website it is and what kind of problems you're experiencing?",
+    "rag-8": "Hi, I'm not able to duplicate the issue on your site. If it is an intermittent issue, take a look at this article if it occurs again: <url> ^KayJay",
+    "lora:1": "Hi, I'm not seeing any issues.  If you're still having trouble, please DM us your website and more details. ^G <url>",
+    "vera:256": "Hi, I'm sorry to hear your site is down.  I'm not able to see any reported issues.  If you could DM me the URL, I'd be happy to take a look. ^T <url>"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hi Kurtis. I'm not seeing any widespread issues that would cause this to happen at the moment. Could you DM us with the email address in question so we can take a closer look?^W <url>",
+  "We do offer chat it's available M-F from 5am-6pm AZ time, USA - On the English Help page (<url> ^Lisi",
+  "Hi Ajith, We are unable to replicate this action. Clicking on the link in your post takes us directly to <url> You may wish to clear your browser's cache and retry. If the issue continues, contact customer support here: <url> ^T",
+  "APC should already be enabled. Here's how to enable OpCache: <url> ^KayJay",
+  "Your website is loading for me without any issues, are you still having trouble accessing your site? ^L <url>"
+ ],
+ "seconds": 136.12168407440186
+}

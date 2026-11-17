@@ -1,0 +1,432 @@
+{
+ "brand": "YahooCare",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 27.65625,
+  "mean_response_tokens": 24.31875,
+  "response_type_token_ratio": 0.151,
+  "distinct_response_share": 0.9625
+ },
+ "nll": {
+  "zero": 3.1295203474576105,
+  "rag-8": 2.3246160977350208,
+  "lora:1": 2.0690639778702913,
+  "vera:256": 2.0231183344472146
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.2571973211091232,
+  "lora:1": 0.3388558794477316,
+  "vera:256": 0.35353724857843644
+ },
+ "items": [
+  {
+   "customer": "I don\u2019t use that app I\u2019m afraid (didn\u2019t like it).",
+   "gold": "Are you still having trouble with your Yahoo Mail? If yes, please DM us your Yahoo ID &amp; alternate email so we can reach out to assist.",
+   "replies": {
+    "zero": "I understand. What do you think about the app?",
+    "rag-8": "Ok, I understand. Let me know if you have any other questions.",
+    "lora:1": "Sorry to hear you're not using our app. We're always looking for ways to improve our products and we'd love to hear your feedback. Please DM us with your Yahoo ID and a brief description of what you're not liking about the app.",
+    "vera:256": "Sorry to hear.  Is there anything else we can help you with?"
+   }
+  },
+  {
+   "customer": "Just re-downloaded the app. Hopefully the problem won't persist. \nMany thanks :)",
+   "gold": "Sure thing! Keep us posted if you run into any other issues.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're experiencing with the app? This will help me better understand the problem and assist you in resolving it.",
+    "rag-8": "Ok, I will check this out. Thanks for letting us know.",
+    "lora:1": "Glad you're able to get it working again.",
+    "vera:256": "Glad to hear that it worked. If you have any further issues, please don't hesitate to reach out."
+   }
+  },
+  {
+   "customer": "My account only receives, but does not send mail this morning",
+   "gold": "We are aware of the issues with sending mail today. Our engineers are investigating at this time. We apologize for the inconvenience.",
+   "replies": {
+    "zero": "Thank you for contacting us. We are sorry to hear that you are experiencing this issue. Can you please provide us with your email address and the date and time of the email you received?",
+    "rag-8": "Hi, could you please DM your Yahoo email address? We would like to investigate further.",
+    "lora:1": "Hi there, can you please DM your Yahoo email address so we can take a further look?",
+    "vera:256": "Hi, can you please DM your Yahoo email address? We would like to investigate further."
+   }
+  },
+  {
+   "customer": "our warrants are incorrect too! $abeow  and $abeo <url>",
+   "gold": "I passed this along to our engineers for investigation. Sorry for any confusion.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more information about the issue with your warrants? It would be helpful to understand the specific details so we can assist you better.",
+    "rag-8": "We're sorry to hear that. Please let us know if you have any other questions or concerns.",
+    "lora:1": "Hi there, if you're still having trouble with your orders, please DM us your Yahoo ID and best contact info.",
+    "vera:256": "Sorry to hear you're having trouble with your Yahoo account. Please DM/Follow us with your Yahoo ID and best contact email to reach you."
+   }
+  },
+  {
+   "customer": "Hi @YahooCare neither of my yahoo email addresses are working on my iPhone. They will not send. I have tried removing &amp; re-adding. Please fix. Thank you.",
+   "gold": "Hi. Can you DM us your Yahoo ID so we can look into this further? Have you removed and re-added the account, etc?",
+   "replies": {
+    "zero": "Hello, I'm sorry to hear that you're experiencing issues with your Yahoo email addresses on your iPhone. Can you please provide me with your email addresses so I can assist you further? Additionally, could you let me know if you have tried any troubleshooting steps or if there are any specific error messages you're seeing? This",
+    "rag-8": "Hi there, I'm sorry to hear you're having trouble with your Yahoo Mail on your iPhone. Please DM/Follow us with your Yahoo ID and contact email address. We'll look into this further.",
+    "lora:1": "Hi there, can you please DM your Yahoo email address so we can take a further look?",
+    "vera:256": "Hi, if you're having trouble with your Yahoo Mail on your iPhone, please DM us and we'll be happy to take a look."
+   }
+  },
+  {
+   "customer": "Nope! I unlinked the mailbox and can't get back into it at all, even thru chrome",
+   "gold": "If you DM us your Yahoo ID, we can check into this more for you.",
+   "replies": {
+    "zero": "I see. Can you tell me what you were doing when you unlinked the mailbox?",
+    "rag-8": "Ok, thanks for the info. Keep in mind that regular Yahoo accounts aren't intended for business use.",
+    "lora:1": "Hi there, if you're still having trouble with your Yahoo Mail, please Follow/DM us with your Yahoo ID and best email address to reach you at.",
+    "vera:256": "Sorry to hear you're still having trouble. Please DM/Follow us with your Yahoo ID and best email address to reach you and we'll be happy to help."
+   }
+  },
+  {
+   "customer": "Yes, Google Chrome is the standard but I've tried internet explorer and FireFox. I have also tried on both a Mac &amp; PC.",
+   "gold": "I'm seeing no reports of latency. is your current browser up to date?",
+   "replies": {
+    "zero": "Thank you for letting me know. I will do some research and get back to you with some information.",
+    "rag-8": "Hi there! If you're still having trouble, please DM us the username of the affected account and contact email address so we can assist.",
+    "lora:1": "Hi there, what browser are you using on the PC?",
+    "vera:256": "Are you still having trouble with the Yahoo Mail app?"
+   }
+  },
+  {
+   "customer": "Hi @YahooCare, I too am being affected by the Mailer Daemon bug. Can send and receive mails on laptop, but anything sent via phone bounces back. Please help! Thanks.",
+   "gold": "When you get mail from a \"MAILER-DAEMON\" or a \"Mail Delivery Subsystem\" with a subject similar to \"Failed Delivery,\" this means that a message you sent was undeliverable and has been bounced back to you. These messages are produced automatically and usu... <url>",
+   "replies": {
+    "zero": "Hi @YahooCare, I see that you are experiencing issues with your mail delivery on your phone. I understand that this is a frustrating experience. Can you please provide me with more details about the issue? For example, can you tell me if the emails are being delivered to your inbox or if they are bouncing back?",
+    "rag-8": "Hi there, I'm sorry to hear you're experiencing this issue. Please DM/Follow us with your Yahoo ID &amp; alternate email and we'll reach out.",
+    "lora:1": "Hi there, this is a known issue with the Yahoo Mail app on iOS. We are aware of the issue and working to resolve it.",
+    "vera:256": "Hi, this is a known issue that we are working to resolve."
+   }
+  },
+  {
+   "customer": "I cannot send emails to multiple recipients. I get a bounceback  and there r commas bw the recipients instead of ;",
+   "gold": "Hi there, what would be the exact bounce back message you're receiving?",
+   "replies": {
+    "zero": "Can you please send me the email that you are getting a bounceback on?",
+    "rag-8": "Hi there, could you please DM your Yahoo email address with the exact error you're currently seeing?",
+    "lora:1": "Hi there, what kind of error message are you seeing?",
+    "vera:256": "Hi there, can you please DM your Yahoo email address? We would like to investigate further."
+   }
+  },
+  {
+   "customer": "I can buy groceries with a dollar, pay the rent, ride a bus, put gas in the car...",
+   "gold": "We have more info on the Yahoo Finance API service here: <url>",
+   "replies": {
+    "zero": "You can buy groceries with a dollar, pay the rent, ride a bus, put gas in the car, and you can also buy a new car with a dollar.",
+    "rag-8": "I'm sorry, I don't understand. Can you please rephrase your question?",
+    "lora:1": "But what about the other 1000000000000000000000000000000000000000000000000000000000",
+    "vera:256": "Hi there, if you have any Yahoo Finance questions, please feel free to ask."
+   }
+  },
+  {
+   "customer": "My question is why can't the company take more responsibility for removing false advertising?",
+   "gold": "For more information on how to provide feedback on our ads, please click here: <url>",
+   "replies": {
+    "zero": "I'm sorry, but I don't have enough information to answer that question. Can you please provide more context or details about the situation?",
+    "rag-8": "We are sorry to hear that. Please DM/Follow us with your Yahoo ID and contact email.",
+    "lora:1": "Hi there, this is a great question. We are always looking to improve our product and are constantly working to make it better for our users.",
+    "vera:256": "We take all false advertising very seriously. If you have any other questions, please don't hesitate to email us at <url>"
+   }
+  },
+  {
+   "customer": "Hi guys! I really need your help. My mum\u2019s manage to delete all of her emails from before September, including everything from my dad, who passed away last year. :-( She\u2019s v v upset. Could I DM you to see if you can help?",
+   "gold": "Sorry to hear that. Here's how she can request a restore from our system: <url>",
+   "replies": {
+    "zero": "Hi there! I\u2019m sorry to hear about your mum\u2019s situation. Can you please provide me with more details about the issue and what you would like to achieve? I\u2019m here to help in any way I can.",
+    "rag-8": "Hi Esteban, I'm sorry to hear about your mother's situation. Please DM/Follow us with your Yahoo ID and best contact info to get started.",
+    "lora:1": "Hi there, sorry to hear about your mum. Please DM/Follow us and share her Yahoo email address, we'd be happy to help.",
+    "vera:256": "Hi, if you have a Yahoo ID and the email address of the account that was deleted, please DM us."
+   }
+  },
+  {
+   "customer": "If you're having trouble signing into your account, \nWell, here we are for your password recovery support! Contact us at 1-866-877-9859 and get instant customer support! \n#ContactUs #PasswordRecoverySupport #PasswordRecovery #HotmailPassword #Password #GiveACallNow",
+   "gold": "WARNING!!  DO NOT CALL - THEY HAVE NO AFFILIATION WITH YAHOO AND CANNOT HELP WITH YOUR PASSWORDS - FRAUD!! @14736 @twittersupport",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure how to proceed with that. Can you please provide more information or clarify what you need help with?",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble with your account. Please DM us with your Yahoo ID and contact email, and we'll get back to you as soon as possible.",
+    "lora:1": "Hi there, if you're having trouble signing into your account, please provide us with your Yahoo ID and best email address to reach out to you.",
+    "vera:256": "Hi, if you're still having trouble with your account, please DM us your Yahoo ID and we'll be happy to help."
+   }
+  },
+  {
+   "customer": "<url>",
+   "gold": "Could you please DM your Yahoo email address? I would like to take a further look.",
+   "replies": {
+    "zero": "<url>",
+    "rag-8": "We're sorry to hear that you're experiencing this issue. We're working on a fix and will update you as soon as we have more information.",
+    "lora:1": "Hi there, what would you like to know about your Yahoo Mail account?",
+    "vera:256": "Hi, to see if we can help with that, please DM/Follow us and let us know your Yahoo ID and best email to reach you."
+   }
+  },
+  {
+   "customer": "Is anyone else having trouble with Yahoo! Mail? Not loading for me. @YahooCare",
+   "gold": "If you're still having trouble with your Yahoo Mail, we're working as fast as possible to restore it!",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me what you were doing when you started to have trouble?",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble with Yahoo Mail. Can you please DM us with the details of the issue? Thank you.",
+    "lora:1": "Hi there, can you please DM your Yahoo ID and email address?",
+    "vera:256": "Hi, I'm sorry you're having trouble with Yahoo Mail. Please DM us and provide us with your Yahoo ID and alternate email address."
+   }
+  },
+  {
+   "customer": "<url>",
+   "gold": "Hi Raed. For any account-related issues, please go to our help pages at <url> to review all available support options.",
+   "replies": {
+    "zero": "<url>",
+    "rag-8": "We're sorry to hear that you're experiencing this issue. We're working on a fix and will update you as soon as we have more information.",
+    "lora:1": "Hi there, what would you like to know about your Yahoo Mail account?",
+    "vera:256": "Hi, to see if we can help with that, please DM/Follow us and let us know your Yahoo ID and best email to reach you."
+   }
+  },
+  {
+   "customer": "why is it that the website of yahoo in englisg secured as russian log in on mail lcon",
+   "gold": "Hi Stuart. Could you DM us a screenshot of this issue as well as your Yahoo ID? Does this issue occur across all devices/browsers?",
+   "replies": {
+    "zero": "the website of yahoo in english is secured as russian log in on mail lcon because the website is not in english and the language of the website is russian.",
+    "rag-8": "Hi Ian, I would be happy to take a further look. Could you please DM your Yahoo email address?",
+    "lora:1": "Hi there, we're not aware of any issues with the Russian language. Could you please DM your Yahoo ID and a contact email?",
+    "vera:256": "Hi, the website is secured as Russian because the country of the IP address is Russian."
+   }
+  },
+  {
+   "customer": "I've messaged you in several formats without resolution to my email problem!",
+   "gold": "Hi - please see the following post for an update on the mail reactivation issue you are experiencing:  <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the issue you're facing with your email?",
+    "rag-8": "I'm sorry to hear that. Could you please provide more details about the issue you're experiencing with Yahoo Mail?",
+    "lora:1": "Hi there, please DM your Yahoo account and email address and we'll be happy to help.",
+    "vera:256": "Hi, can you please DM us with your Yahoo ID and best contact email to reach you?"
+   }
+  },
+  {
+   "customer": "No, STILL NOT WORKING",
+   "gold": "Ok, DM us your Yahoo ID and we can check into this more for you.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you're experiencing with the product?",
+    "rag-8": "I'm sorry to hear that. We are currently investigating the issue. Please DM your Yahoo email address so we can get in touch with you.",
+    "lora:1": "Hi there, could you please provide us with your Yahoo ID and a working email address we could reach out to you?",
+    "vera:256": "Are you still having trouble with Yahoo Mail? If so, please DM/Follow us with your Yahoo ID and best email address to reach you."
+   }
+  },
+  {
+   "customer": "Without me changing any settings it has now resolved itself.",
+   "gold": "Glad to hear that! Have a good rest of your day!",
+   "replies": {
+    "zero": "Thank you for letting us know. We will look into this and get back to you.",
+    "rag-8": "Great! We're glad to hear that. Please let us know if you need anything else.",
+    "lora:1": "Glad to hear!",
+    "vera:256": "Glad to hear.  If you have any further issues, please DM/Follow us with your Yahoo ID and best contact email address."
+   }
+  },
+  {
+   "customer": "Yes. Our whole league.",
+   "gold": "If you do, please DM/Follow us and provide us with your Yahoo ID, &amp; league number so that we can investigate further.",
+   "replies": {
+    "zero": "What league?",
+    "rag-8": "Hi there, are you and your managers able to set your lineups now? Please let us know if you are still having issues by DM'ing us!",
+    "lora:1": "I'm sorry to hear that you're having trouble with your Yahoo account. Please Follow/DM us with your Yahoo ID and best email address to reach out to you.",
+    "vera:256": "I'm sorry to hear that you're having trouble. Please DM us your Yahoo ID and best contact email and we'll be happy to assist."
+   }
+  },
+  {
+   "customer": "It is in fact a question for @YahooCare. Not something the writers are involved with in any way.",
+   "gold": "Hey there, are you having issues with a Yahoo product? Please DM &amp; provide us with the best email to reach you &amp; brief description.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll pass on your message to @YahooCare. They will get back to you as soon as possible.",
+    "rag-8": "Hi, we're happy to investigate this, can you please Follow/DM us with the accounts you closed and your contact information? Thank you.",
+    "lora:1": "Hi there, if you're still having trouble with your Yahoo account, please Follow/DM us with your Yahoo ID and best email address to reach out to.",
+    "vera:256": "Sorry to hear. Please DM us with your Yahoo ID and best contact email to reach out to you further."
+   }
+  },
+  {
+   "customer": "<url> ? So what's the point of this site if your system relies on the prompt and not manual opt-in?",
+   "gold": "I'd wait till you actually see the option to update, within your Yahoo Mail account. I'm not sure how else you ar... <url>",
+   "replies": {
+    "zero": "<url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <url> <",
+    "rag-8": "Hi - we are aware of this issue and working to correct it.  We apologize for the inconvenience and hope to have it resolved soon.  Thank you for your patience.",
+    "lora:1": "Hi there, this site is designed to be a quick and easy way to get your account back up and running.",
+    "vera:256": "Sorry to hear you're having trouble with Yahoo Mail. Please DM/Follow us and let us know your Yahoo ID and best email address to reach you at."
+   }
+  },
+  {
+   "customer": "Yes. Our whole league.",
+   "gold": "Please also DM us with the best alternate email address to reach you at and we'll be more than happy to look in to this further.",
+   "replies": {
+    "zero": "What league?",
+    "rag-8": "Hi there, are you and your managers able to set your lineups now? Please let us know if you are still having issues by DM'ing us!",
+    "lora:1": "I'm sorry to hear that you're having trouble with your Yahoo account. Please Follow/DM us with your Yahoo ID and best email address to reach out to you.",
+    "vera:256": "I'm sorry to hear that you're having trouble. Please DM us your Yahoo ID and best contact email and we'll be happy to assist."
+   }
+  },
+  {
+   "customer": "my email address is __email__ every incoming email i am receiving late for several hours. pls help mr.",
+   "gold": "Hi Abdul. If you check the headers, can you see where the delays are? <url>",
+   "replies": {
+    "zero": "i am sorry to hear that. can you please provide me with more details about the issue you are experiencing?",
+    "rag-8": "Hi, I'm sorry to hear that you're experiencing issues with your email. Can you please provide more details about the problem you're facing, such as the type of email you're receiving and when it's being delayed?",
+    "lora:1": "Hi there, if you're still experiencing this issue, please Follow/DM us with your Yahoo account and best contact email.",
+    "vera:256": "Hi __email__, if you have received an email that was late, please DM us and provide us with the email address and the subject line of the email."
+   }
+  },
+  {
+   "customer": "Several errors. e.g. \"421 4.7.0  - does that help?",
+   "gold": "If you're receiving any of the error messages listed below when sending email to Yahoo from a non-Yahoo Mail addr... <url>",
+   "replies": {
+    "zero": "Yes, that's correct. Thank you for bringing that to our attention. We will investigate further and take appropriate action to address the issue. Is there anything else I can assist you with today?",
+    "rag-8": "We are not able to replicate the issue. Can you please try to move those emails to spam within another browser.",
+    "lora:1": "Hi there, what error are you seeing?",
+    "vera:256": "Hi, what specific errors are you seeing?"
+   }
+  },
+  {
+   "customer": "Need some email help stat please!",
+   "gold": "Are you still having trouble with Yahoo Mail? Please DM &amp; provide us with your Yahoo ID &amp; best email address to reach you at for support.",
+   "replies": {
+    "zero": "Sure, I'm here to help. What's your question?",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble accessing your email. Can you please provide me with your email address so I can assist you further?",
+    "lora:1": "Hi there, please DM your Yahoo email address and we'll be happy to help.",
+    "vera:256": "Hi, what would you like to know?"
+   }
+  },
+  {
+   "customer": "yahoo i need help..ive been waiting at least 2 weeks!",
+   "gold": "Do you still require assistance with your Yahoo Account? Please DM us your Yahoo ID &amp; alternate email address so we can reach out.",
+   "replies": {
+    "zero": "Sure, I'm here to help. What can I assist you with today?",
+    "rag-8": "Hi, I'm sorry to hear that you're having trouble with your account. Please DM your Yahoo email address and I'll be happy to assist you further.",
+    "lora:1": "Hi there, what would you like to know?",
+    "vera:256": "Hi, if you could please DM your Yahoo email address we can take a look."
+   }
+  },
+  {
+   "customer": "I just checked the mobile app again and there are only 2 unread that I can't see. Thanks so much for your help!",
+   "gold": "How about going through the web at <url> on your mobile device? Do you see the same thing there?",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the app name and version number so I can assist you better?",
+    "rag-8": "You're welcome. If you have any other questions, feel free to DM us.",
+    "lora:1": "Glad to hear. If you're still having trouble, please DM us your Yahoo ID and best contact info.",
+    "vera:256": "Hi, if you're still having trouble, please DM us and we'll be happy to investigate further."
+   }
+  },
+  {
+   "customer": "Hey @YahooCare when are you gonna fix issue on iOS when all emails have to be redownloaded at random? Been happening for months! <url>",
+   "gold": "We are still working to address the Native app issues. In the meantime, we recommend using the Yahoo Mail app or accessing your account via <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing this issue. Can you please provide more details about the specific emails that are affected and any steps you've taken to troubleshoot the problem?",
+    "rag-8": "Hi there, I'm sorry you're having trouble with the app. We're working on a fix and will update you as soon as it's available.",
+    "lora:1": "Hi there, this is a known issue with the iOS app. We are aware of the issue and working to resolve it.",
+    "vera:256": "Hi, this is a known issue that we are working to resolve."
+   }
+  },
+  {
+   "customer": "That\u2019s a good question. I have the same problem \ud83e\udd14",
+   "gold": "Hi. Depending on what you're blocking, you can try blocking the whole domain by adding (domainname).com to the Blocked Address list.",
+   "replies": {
+    "zero": "I understand. Can you tell me more about the issue you are facing?",
+    "rag-8": "I\u2019m sorry to hear that. Could you please DM/Follow us with your Yahoo email address?",
+    "lora:1": "Hi there, I would be happy to take a further look. Could you please DM your Yahoo email address?",
+    "vera:256": "I'm sorry you're having trouble. You can DM us and we'll follow up with you."
+   }
+  },
+  {
+   "customer": "Download has stalled at 11/16/16. I\u2019ve already lost all my appts stored in Yahoo calendar. I really hope I haven\u2019t lost a year of emails! <url>",
+   "gold": "Sorry to hear you're having trouble with your small business account. You can reach out to our small business team here: <url>",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. Can you please provide me with your email address so I can assist you further?",
+    "rag-8": "Hi. We cannot review an account based on a third party request. Please have your uncle reach out to our mail team here: <url> using 'contact us' at the bottom left.",
+    "lora:1": "Sorry to hear you're having trouble with Yahoo Mail. Please DM/Follow us and provide your Yahoo ID and best email address to reach out to you.",
+    "vera:256": "Sorry to hear you're having trouble with your Yahoo Mail. Please DM/Follow us and let us know the best way to reach you."
+   }
+  },
+  {
+   "customer": "Apparently it has been happening this morning to a lot of people. Intermittently between devices, too. <url>",
+   "gold": "Sorry you're having trouble, we're aware of the issue and are working as fast as possible to resolve it.",
+   "replies": {
+    "zero": "What is the problem?",
+    "rag-8": "I'm sorry to hear that. Can you please provide more details about the issue? What device are you using, and what kind of email are you receiving?",
+    "lora:1": "Hi there, can you please DM your Yahoo email address so we can reach out to you further?",
+    "vera:256": "Sorry to hear you're having trouble. Please DM us and include your Yahoo ID and best contact email to reach out."
+   }
+  },
+  {
+   "customer": "No response to the tweet asking about not getting emails? Guess the problem is bigger than you're saying anything about.",
+   "gold": "Hi Steve, sorry for the delay. This issue should now be resolved. Please test your account once more.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm not sure what you mean by \"not getting emails.\" Can you please provide more context or clarify your question?",
+    "rag-8": "Hi Tom, I'm sorry to hear you're having trouble with your Yahoo account. I'll take a look at it for you. <url>",
+    "lora:1": "Hi there, if you're still having trouble with Yahoo Mail, please Follow/DM us with your Yahoo ID and best email address to reach you.",
+    "vera:256": "Sorry to hear you're having trouble with Yahoo Mail. Please DM/Follow us and let us know your Yahoo ID and best email address to reach you at."
+   }
+  },
+  {
+   "customer": "Well you've been more helpful than @YahooCare for sure",
+   "gold": "Hi Lauren. If you DM us the Yahoo ID you're seeing this issue with, we can look into this more for you.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm here to help you with any questions or concerns you may have. How can I assist you today?",
+    "rag-8": "I'm sorry to hear that. I will pass this on to our engineering team to investigate. <url>",
+    "lora:1": "Glad to hear! If you have any other questions, please let us know.",
+    "vera:256": "Glad to hear!"
+   }
+  },
+  {
+   "customer": "Not able to open my yahoo mailbox it shows the attached pic. It's been 2 hours now. Changed browsers, changed devices. Help ASAP! <url>",
+   "gold": "Hi Angad. If you DM us your Yahoo ID we can look into this more for you.",
+   "replies": {
+    "zero": "I'm sorry to hear that you're having trouble accessing your Yahoo mailbox. Can you please provide me with more details about the issue? For example, what kind of error message or prompt are you seeing? Also, have you tried using a different browser or device to access your mailbox? Thank you for your patience.\nCustomer",
+    "rag-8": "Hi there, I'm sorry to hear that you're having trouble with your Yahoo account. I'll take a look at your account and see if I can help you out.",
+    "lora:1": "Hi there, if you're still having trouble with Yahoo Mail, please Follow/DM us with your Yahoo ID and best email address to reach you at.",
+    "vera:256": "Sorry you're having trouble with Yahoo Mail. Please DM/Follow us and let us know the best way for us to assist you."
+   }
+  },
+  {
+   "customer": ".@119033  @139938 are your servers down? hacked? I get 'network connection timed out' whenever I try to log in today..",
+   "gold": "Hi! We would recommend using a different internet browser. Refer to the link for more information. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll look into it right away. Can you please provide me with your username and password so I can check if there are any issues with your account?",
+    "rag-8": "Hi, if you're still experiencing this issue, please DM/Follow us with your Yahoo ID &amp; alternate email for us to follow up once we've investigated.",
+    "lora:1": "Hi there, if you're still having trouble with Yahoo Mail, please Follow/DM us with your Yahoo ID and a good contact email.",
+    "vera:256": "Hi, if you are still having issues please DM us and we can take a further look."
+   }
+  },
+  {
+   "customer": ".. Email has been complete garbage for the last few days. Execution is so slow, I can't get any work done. .. Please Help",
+   "gold": "Hi Jimmy, Are you seeing these latency issues while using another web browser? <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the issue you're experiencing with email?",
+    "rag-8": "Hi! I'm sorry to hear that you're having trouble with your email. I would recommend checking your spam folder and marking any emails as not spam. You can also try resetting your password and see if that resolves the issue. If you continue to experience problems, please let me know and I'll do my best to",
+    "lora:1": "Hi there, what kind of mail are you seeing?",
+    "vera:256": "Hi there, I would be happy to take a further look. Could you please DM your Yahoo email address?"
+   }
+  },
+  {
+   "customer": "my <url> mail account isn't sending emails. They appear in my sent items but don't arrive with recipient",
+   "gold": "Hi there, are you still seeing this issue when sending mail?",
+   "replies": {
+    "zero": "I see. Can you please provide me with the recipient's email address and the subject line of the email that is not being sent?",
+    "rag-8": "Hi, can you please DM/Follow us with your Yahoo ID and best contact email? Thank you.",
+    "lora:1": "Hi there, if you're still having trouble with your Yahoo Mail account, please Follow/DM us with your Yahoo ID and best email address to reach you at.",
+    "vera:256": "Hi there, if you're still having trouble with your Yahoo Mail account, please follow the steps here: <url>"
+   }
+  },
+  {
+   "customer": "I am using the app I downloaded from the play store!",
+   "gold": "And when you are reading an email from the app, they are still showing as unread in your desktop browser view?",
+   "replies": {
+    "zero": "Thank you for letting me know. Can you please provide me with more details about the issue you are facing with the app?",
+    "rag-8": "Ok, try the Yahoo Mail app to see if they show there. You can also try removing and re-adding the account to the default Mail app.",
+    "lora:1": "Hi there, can you please DM your Yahoo account and email address?",
+    "vera:256": "Are you still having trouble?"
+   }
+  }
+ ],
+ "style_examples": [
+  "Are you able to access it through your mobile browser?",
+  "Sorry to hear you're having trouble. Please DM/Follow us and provide your Yahoo ID, and alternate email to reach you at.",
+  "Hi Peter, do these drafts disappear once the message is sent?",
+  "Hi Joshua. You can go to <url> to review all available support options.",
+  "Thank you.  A member of our support staff will reach out within 24 hours. Have you cleared your browsers cache?"
+ ],
+ "seconds": 119.13247179985046
+}

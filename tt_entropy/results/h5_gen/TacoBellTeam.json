@@ -1,0 +1,432 @@
+{
+ "brand": "TacoBellTeam",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 29.85,
+  "mean_response_tokens": 13.34375,
+  "response_type_token_ratio": 0.08337236533957845,
+  "distinct_response_share": 0.665625
+ },
+ "nll": {
+  "zero": 3.4943926138088286,
+  "rag-8": 1.638820457634939,
+  "lora:1": 1.0875626192613401,
+  "vera:256": 1.1310813085113158
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.531014216559755,
+  "lora:1": 0.6887691969804403,
+  "vera:256": 0.6763153333023858
+ },
+ "items": [
+  {
+   "customer": "man what is this? <url>",
+   "gold": "DM us. Let's talk. <url>",
+   "replies": {
+    "zero": "What is the purpose of this object?",
+    "rag-8": "That's not cool. Where did you get this?",
+    "lora:1": "That's not okay. Where did you get this?",
+    "vera:256": "That's not okay. Which location did you go to?"
+   }
+  },
+  {
+   "customer": "man your location on 148th &amp; NE 20th in Bellevue, WA is terrible and has bad customer service. When an employee calls you an a**hole for walking into the lobby at 9:50 is ridiculous... #getnewemployees",
+   "gold": "This is unacceptable. DM us. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We take customer service very seriously and we are working to improve our location. We appreciate your feedback and will make sure to address the concerns you have raised. Thank you for your time and understanding.",
+    "rag-8": "That's not okay. We'll look into this.",
+    "lora:1": "That's not okay. Which location is this?",
+    "vera:256": "We can do better. DM us."
+   }
+  },
+  {
+   "customer": "C\u2019mon @118625 ik ur better than this <url>",
+   "gold": "That's not okay. Where did you get this?",
+   "replies": {
+    "zero": "I\u2019m sorry, but I cannot engage in personal attacks or make derogatory comments about individuals. It is important to maintain a respectful and professional tone in all interactions. If you have any other questions or concerns, please feel free to ask.",
+    "rag-8": "That's not cool. Which location was this from?",
+    "lora:1": "We can do better. DM us. <url>",
+    "vera:256": "We can do better. DM us. <url>"
+   }
+  },
+  {
+   "customer": "if i had a refund for every time @118625 forgot my sides of chipotle sauce then i would have so much more money",
+   "gold": "That's not okay. Which location is this happening at?",
+   "replies": {
+    "zero": "That's a great idea! It's always good to have extra money around. Do you have any other ideas on how you could save money?",
+    "rag-8": "That's not okay. Which location did this happen at?",
+    "lora:1": "Oh no. Which location forgot your sauce?",
+    "vera:256": "That's a lot of money. Which location did you go to?"
+   }
+  },
+  {
+   "customer": "Yo @118625 I asked for no cheese. What is this? <url>",
+   "gold": "That's not cool. Where did you get this?",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the product you received?",
+    "rag-8": "That's not okay. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us. <url>"
+   }
+  },
+  {
+   "customer": "why u gotta play me dirty on #NationalTacoDay <url>",
+   "gold": "That's not cool. DM us. <url>",
+   "replies": {
+    "zero": "I apologize for any inconvenience caused. I will ensure that my actions do not affect your experience. Please let me know if there is anything else I can assist you with.",
+    "rag-8": "Let's talk. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "That's not okay. DM us. <url>"
+   }
+  },
+  {
+   "customer": "I went to Taco @118625 on Charlestown Rd in New Albany, IN last night to get food. This is what I saw. I went ahead and took my food as they were obviously preoccupied, but went home and threw it away. This place is utterly disgusting. <url>",
+   "gold": "That's not okay. DM us. We want to know more. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. What was the reason for throwing away the food?",
+    "rag-8": "We need to make up. DM us.",
+    "lora:1": "We take this very seriously. DM us. We want to talk. <url>",
+    "vera:256": "We take this very seriously. DM us."
+   }
+  },
+  {
+   "customer": "Wait I mean the one at secor and central!",
+   "gold": "Got it, thanks.",
+   "replies": {
+    "zero": "I'm sorry, I don't understand. Can you please repeat that?",
+    "rag-8": "That's not okay. DM us. Let's talk. <url>",
+    "lora:1": "That's not okay. Which location is this?",
+    "vera:256": "We want to make sure you're getting the right deal. Which location are you talking about?"
+   }
+  },
+  {
+   "customer": "When Taco Bell gets your order wrong <url>",
+   "gold": "Let's talk. DM us.",
+   "replies": {
+    "zero": "I'm sorry to hear that. We take customer service very seriously and will do everything we can to make it right. Can you please provide me with the details of your order so I can investigate the issue and take appropriate action?",
+    "rag-8": "We need to make up. DM us.",
+    "lora:1": "We take this very seriously. DM us. <url>",
+    "vera:256": "We take this very seriously. DM us. <url>"
+   }
+  },
+  {
+   "customer": "Dinner= ruined.  It tastes like someone chemical washed the countertops before they made these.  Bitter aftertaste from crust @118625 <url>",
+   "gold": "We take this seriously. DM us. We want to talk. <url>",
+   "replies": {
+    "zero": "Is there anything else I can help you with today?",
+    "rag-8": "We want to know more. Let's talk.",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "That's not okay. Which location did you go to?"
+   }
+  },
+  {
+   "customer": "5359 Lebanon Rd, Frisco, TX 75034",
+   "gold": "Thanks for the heads up. We're on it.",
+   "replies": {
+    "zero": "5359 Lebanon Rd, Frisco, TX 75034\nProperty Type: Single Family Home\nProperty Status: Sold\nProperty Type: Single Family Home\nProperty Status: Sold\nProperty Type: Single Family Home\nProperty Status: Sold\nProperty Type: Single Family Home\nProperty Status",
+    "rag-8": "Thanks for letting us know. We'll look into this.",
+    "lora:1": "Thanks for letting us know. We'll follow up with the team.",
+    "vera:256": "Thanks for letting us know. We'll follow up with the team."
+   }
+  },
+  {
+   "customer": "I told them twice no guacamole He repeated the order back wrong told him again he read it back rite. Get home and they still put it on my nachos @TacoBellTeam <url>",
+   "gold": "Oh no. DM us. Let's talk. <url>",
+   "replies": {
+    "zero": "What happened next?\nOptions are:\n (1). I told them to get out of my house. I told them to get out of my house. I told them to get out of my house.\n (2). I told them to get out of my house. I told them to get out of my house. I",
+    "rag-8": "That's not cool. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us."
+   }
+  },
+  {
+   "customer": "Simpsonville. And my order was slightly wrong and all of the tacos were wet and fell apart\ud83d\ude11",
+   "gold": "That shouldn't happen. DM us. Let's talk more. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you encountered with your order?",
+    "rag-8": "That's not okay. Thanks for letting us know, Emily. We'll follow up with the team.",
+    "lora:1": "Oh no. Tell us more. DM us. <url>",
+    "vera:256": "Oh no. Where did this happen?"
+   }
+  },
+  {
+   "customer": "Store 000071. What's up with the no pop?!?",
+   "gold": "We'll speak to them about that.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"no pop.\" Could you please provide more context or clarify your question?",
+    "rag-8": "Hey there. That's not cool. Which location is this?",
+    "lora:1": "That's not cool. Which location is this?",
+    "vera:256": "Oh no. DM us. <url>"
+   }
+  },
+  {
+   "customer": "used ur online app for large order, I got to the drive thru and they told me they didn\u2019t have my order and there was nothing they could do",
+   "gold": "DM us. We want to know more. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the order number or any other information that might help us locate your order?",
+    "rag-8": "That's not cool. DM us. <url>",
+    "lora:1": "Oh no. DM us. Let's talk. <url>",
+    "vera:256": "Oh no. DM us. Let's talk. <url>"
+   }
+  },
+  {
+   "customer": "ordered w/my app when hubby went to pick up order was told that location doesn\u2019t sell what I order so they just gave him diff meal",
+   "gold": "That's not cool. DM us. We want to know more. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the details of the order and the location where it was placed? This will help me understand the situation better and assist you in resolving the issue.",
+    "rag-8": "That's not cool. DM us. Let's talk. <url>",
+    "lora:1": "Oh no. Thanks for letting us know. We're on it.",
+    "vera:256": "That's not okay. Which location did this happen at?"
+   }
+  },
+  {
+   "customer": "Please start delivering",
+   "gold": "We do deliver. Check if we deliver to your area: <url>",
+   "replies": {
+    "zero": "I'm sorry, but I'm unable to start delivering at this time. I'm currently busy with other tasks. Can I assist you with anything else?",
+    "rag-8": "We can do better. DM us. <url>",
+    "lora:1": "We need to get this right. DM us. <url>",
+    "vera:256": "We're on it."
+   }
+  },
+  {
+   "customer": "you should deliver",
+   "gold": "We do deliver. Check if we deliver to your area: <url>",
+   "replies": {
+    "zero": "I will deliver the package to the customer.",
+    "rag-8": "<url>",
+    "lora:1": "Oh no. Which location is this from?",
+    "vera:256": "We'll take a look."
+   }
+  },
+  {
+   "customer": ".@118625 what the fuck <url>",
+   "gold": "That's not cool. Where did you get this?",
+   "replies": {
+    "zero": ".@118625 what the fuck <url>",
+    "rag-8": "That's not okay. Where did you get this?",
+    "lora:1": "That's not cool. Where did you get this?",
+    "vera:256": "We take this very seriously. DM us. <url>"
+   }
+  },
+  {
+   "customer": "I got it last night 10 mins be4 I tweeted you 2300 Deer Creek Commerce Ln\nDavenport, FL  33837\nUnited States",
+   "gold": "We see it. We'll follow up with the team there about this.",
+   "replies": {
+    "zero": "I got it last night 10 mins be4 I tweeted you 2300 Deer Creek Commerce Ln\nDavenport, FL  33837\nUnited States",
+    "rag-8": "Thanks, Brittany. We're on it.",
+    "lora:1": "Thanks for letting us know. We'll follow up with the team.",
+    "vera:256": "Thanks for the heads up. We'll follow up with the team."
+   }
+  },
+  {
+   "customer": "when you ask for a crunchwrap supreme but only get meat, cheese, hard and soft tortilla. No veggies or sour cream. #disappointed <url>",
+   "gold": "That's not right. Which location was this from?",
+   "replies": {
+    "zero": "Can you please provide more details about the product you received and how it compares to the one you ordered?",
+    "rag-8": "Oh no. DM us. We want to know more. <url>",
+    "lora:1": "We take this very seriously. DM us. We want to talk. <url>",
+    "vera:256": "We take this very seriously. DM us. <url>"
+   }
+  },
+  {
+   "customer": "they didn't give me an Xbox sweepstakes box when they have signs everywhere for it. #bummed #neverevenhadachance",
+   "gold": "The XBox promo boxes are available while supplies last. We can help. DM us.  <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the situation?",
+    "rag-8": "We can help. DM us. <url>",
+    "lora:1": "Oh no. DM us. Let's talk. <url>",
+    "vera:256": "That's not cool. Which location did you go to?"
+   }
+  },
+  {
+   "customer": "Shout out to @118625 thought they was doing me right smh <url>",
+   "gold": "Oh no. Which location was this from?",
+   "replies": {
+    "zero": "What was the customer's issue with the service?\nOptions:\n- they were not happy\n- they were not happy\n- they were not happy\n- they were not happy\n- they were not happy\nAnswer:\nthey were not happy",
+    "rag-8": "We want to know more. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us. <url>"
+   }
+  },
+  {
+   "customer": "just got outta this taco Bell and it was terrible :/ <url>",
+   "gold": "Let's talk. DM us. <url>",
+   "replies": {
+    "zero": "What can I do for you?",
+    "rag-8": "This is not okay. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We take this very seriously. DM us. We want to talk. <url>"
+   }
+  },
+  {
+   "customer": "Why do I continually try my local @118625 ? I should know by now to drive to Pasadena. #DPTacoBellSucks <url>",
+   "gold": "Thanks for letting us know. We're on it.",
+   "replies": {
+    "zero": "I'm sorry to hear that you're not satisfied with the service at @118625. It's important to have a positive experience when dining out. Have you tried any other restaurants in the area that you find more enjoyable?",
+    "rag-8": "That's not okay. DM us. We want to talk. <url>",
+    "lora:1": "We can do better. DM us.",
+    "vera:256": "We can do better. DM us."
+   }
+  },
+  {
+   "customer": "So @118625 do we get to steal a taco for every WS stolen base or just one taco for all the stolen bases?",
+   "gold": "If bases are stolen during game 2, you can get a free taco on 11/1. If bases are stolen during games 3-7, you can get a free taco on 11/7.",
+   "replies": {
+    "zero": "You can steal a taco for every WS stolen base you get. You can also steal a taco for every WS caught stealing base. You can also steal a taco for every WS caught stealing base. You can also steal a taco for every WS caught stealing base. You can also steal a taco for every WS caught stealing base",
+    "rag-8": "We can help. DM us.",
+    "lora:1": "We can do better. DM us.",
+    "vera:256": "That's not cool. Which location did this happen at?"
+   }
+  },
+  {
+   "customer": "Does this look like the Cool Ranch Taco I paid for? <url>",
+   "gold": "Oh no. DM us. Let's talk. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the product and the packaging? This will help me better understand the issue and assist you in resolving it.",
+    "rag-8": "That's not okay. Where did this happen?",
+    "lora:1": "That's not cool. Where did you get this?",
+    "vera:256": "That's not cool. Which location did you go to?"
+   }
+  },
+  {
+   "customer": "Ocean City, MD.",
+   "gold": "Thanks for letting us know. We'll follow up with the team there.",
+   "replies": {
+    "zero": "John and Mary, Ocean City, MD.\nThe Ocean City, MD, home is a 2,000 square foot, 3 bedroom, 2 bath home. The home has 2,000 square feet of living space. The home has 2 bedrooms, 2 baths, 1",
+    "rag-8": "Thanks for letting us know. We're on it.",
+    "lora:1": "Thanks for letting us know. We'll follow up with the team.",
+    "vera:256": "Thanks for letting us know. We'll follow up with the team."
+   }
+  },
+  {
+   "customer": "Cookeville, on W. Jackson st",
+   "gold": "Thanks, Alex. We'll talk to them.",
+   "replies": {
+    "zero": "Cookeville, on W. Jackson st",
+    "rag-8": "Thanks for letting us know, Liz. We'll follow up with the team.",
+    "lora:1": "Thanks for letting us know. We're on it.",
+    "vera:256": "Thanks for letting us know. We'll follow up with the team."
+   }
+  },
+  {
+   "customer": "so much for the beefy in the name beefy Frito burrito \ud83d\ude02\ud83d\ude2d you have a very sad pregnant lady here <url>",
+   "gold": "Oh no. Which location gave you this?",
+   "replies": {
+    "zero": "I'm sorry to hear that. It sounds like you're feeling a bit down today. Is there anything specific you'd like to talk about or share with me?",
+    "rag-8": "That's not right. Where did you get this?",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We take this very seriously. DM us. We want to talk. <url>"
+   }
+  },
+  {
+   "customer": "Renee at store 18835 is doing an awesome job.  Make sure she knows.",
+   "gold": "We love this. Thanks for the heads up, Robert. We'll pass on the positive feedback. <url>",
+   "replies": {
+    "zero": "I will.  I will make sure she knows.",
+    "rag-8": "Sure thing. Have a great week.",
+    "lora:1": "We want to talk. DM us. <url>",
+    "vera:256": "We love this. Thanks for sharing."
+   }
+  },
+  {
+   "customer": "are you guys going to restock the Taco Bell Anorak Jacket? As life long TacoBell fan I was heartbroken when It sold out",
+   "gold": "It's still too early to know if it'll be restocked online, but don\u2019t forget the collection is also available in select Forever 21 stores.",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're working on restocking the jacket, but it may take a few weeks. In the meantime, we have a few other options for you to consider. Would you like to see our selection of other jackets or would you like to browse our collection of T-shirts?",
+    "rag-8": "We're working on it. Thanks for the feedback. <url>",
+    "lora:1": "Oh no. We'll get more.",
+    "vera:256": "We'll keep an eye on this."
+   }
+  },
+  {
+   "customer": "Went to @118625 and they forgot my quesadillas in my quesadilla box. I guess it's the ones you love most that really hurt you",
+   "gold": "Let's make up. DM us.",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're sorry to hear that you had a bad experience. We will make sure that this does not happen again. Can I assist you with anything else?",
+    "rag-8": "Oh no. DM us. Let's talk. <url>",
+    "lora:1": "Oh no. Which location forgot your quesadillas?",
+    "vera:256": "Oh no. DM us. Let's talk. <url>"
+   }
+  },
+  {
+   "customer": "Metairie must have run out of ingredients \ud83d\ude06 #Waited30Minutes #forTheShell #wtf #noTaco #tacobell #hangry <url>",
+   "gold": "We need to make up. DM us.",
+   "replies": {
+    "zero": "What is the sentiment of this tweet?\nThe sentiment of this tweet is negative. The user is expressing frustration and disappointment with Metairie, as they mention that the taco shell ran out and they had to wait for 30 minutes. They also mention that they are \"hangry\" and that they are not happy with",
+    "rag-8": "We can do better. DM us. <url>",
+    "lora:1": "We can do better. DM us.",
+    "vera:256": "That's not cool. DM us."
+   }
+  },
+  {
+   "customer": "Covington Louisiana \ud83d\ude29",
+   "gold": "Thanks, Hayden. We'll talk to this team.",
+   "replies": {
+    "zero": "Covington Louisiana \ud83d\ude29",
+    "rag-8": "Thanks for letting us know. We'll follow up with the team.",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can help. DM us. <url>"
+   }
+  },
+  {
+   "customer": "I haven't been to @118625 in ten years. Here are their \"3 layer nachos.\"  \ud83d\ude06 see ya in a decade @118625 <url>",
+   "gold": "That's not right. DM us. We want to know more. <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. What can I do to help?",
+    "rag-8": "That's too long. Which location did you go to?",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "Oh no. Where did you go?"
+   }
+  },
+  {
+   "customer": "Umm @118625 is there a reason my friends beef came on the outside? @33393 <url>",
+   "gold": "That's not okay. Which location was this from?",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"my friends beef came on the outside.\" Can you please provide more context or clarify your question?",
+    "rag-8": "We can do better. DM us.",
+    "lora:1": "We take this very seriously. DM us. We want to talk. <url>",
+    "vera:256": "That's not cool. DM us. <url>"
+   }
+  },
+  {
+   "customer": "does the cheesy gordita crunch still come with the spicy ranch? It's my favorite part. 3rd consecutive one without any sauce! \u2639\u2639 <url>",
+   "gold": "Oh no. Where did you get this?",
+   "replies": {
+    "zero": "I'm sorry to hear that you're not enjoying your cheesy gordita crunch. Can you please provide more details about your experience? What was the size of the gordita? Was it fresh or stale? Did you have any other toppings or sauces?",
+    "rag-8": "That's not cool. DM us. Let's talk. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us."
+   }
+  },
+  {
+   "customer": "I love y'all.. what I do to deserve this <url>",
+   "gold": "That's not cool. DM us. <url>",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"what I do to deserve this <url>\". Could you please provide more context or clarify your message?",
+    "rag-8": "We need to make up. DM us.",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us. <url>"
+   }
+  },
+  {
+   "customer": "Thanks for the disappointment @118625 I don't think it should be called a Doritos gordita crunch. It's mush with 1/2 it's ingredients! \ud83d\ude11 <url>",
+   "gold": "That's not cool. Which location did you go to?",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the product and the ingredients used in it? This will help me understand the issue better and provide a more accurate response.",
+    "rag-8": "We can do better. DM us. <url>",
+    "lora:1": "Oh no. Where did you get this?",
+    "vera:256": "We can do better. DM us."
+   }
+  }
+ ],
+ "style_examples": [
+  "We do deliver. To check if we deliver to your area, go here: <url> <url>",
+  "Let's talk. DM us. <url>",
+  "We take food safety seriously. DM us. <url>",
+  "We can do better. DM us. <url>",
+  "Oh no. Thanks for letting us know. We're on it."
+ ],
+ "seconds": 106.36160564422607
+}

@@ -1,0 +1,432 @@
+{
+ "brand": "AWSSupport",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 30.65625,
+  "mean_response_tokens": 28.7875,
+  "response_type_token_ratio": 0.1736,
+  "distinct_response_share": 1.0
+ },
+ "nll": {
+  "zero": 4.0043894676732545,
+  "rag-8": 2.3629953961197976,
+  "lora:1": 1.9377768496973615,
+  "vera:256": 1.9480949558390772
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.4098987086056809,
+  "lora:1": 0.5160868178930397,
+  "vera:256": 0.5135101189417982
+ },
+ "items": [
+  {
+   "customer": "Is there any limit on number of phone numbers that can be subscribed to topic for sending sms to multiple numbers?",
+   "gold": "This would be the same as the number of subscriptions which has a delivery rate limit. See more here: <url> ^ES",
+   "replies": {
+    "zero": "Yes, there is a limit of 1000 phone numbers that can be subscribed to a topic for sending SMS to multiple numbers.",
+    "rag-8": "Hi, this is a great question. We have a limit of 1000 SMS per month per topic. If you need more, please contact our Support Center: <url> ^ET",
+    "lora:1": "Hi, you can subscribe to multiple topics for SMS. For more info, please contact our support team: <url> ^RH",
+    "vera:256": "Hi, you can subscribe up to 1000 phone numbers to a topic. For more info, please refer to this doc: <url> ^ET"
+   }
+  },
+  {
+   "customer": "why i'm not able to verify my mobile number\nwhile creating new account",
+   "gold": "Sorry for the trouble, Himanshu! Here's how to get help: <url> \ud83d\ude0a ^TI",
+   "replies": {
+    "zero": "please provide your mobile number",
+    "rag-8": "Hi, I'm sorry to hear that you're experiencing this issue, John. I'll pass your feedback to our team to investigate further. Please check back here for updates. ^ET",
+    "lora:1": "Hi, you can verify your mobile number by following the steps here: <url> ^RH",
+    "vera:256": "Hi, Saurabh. Please check the following: <url> ^KK"
+   }
+  },
+  {
+   "customer": "hello, i am stuck, i got the ssl working up to i need to modify this through putty <url> Modify the /opt/bitnami/apps/APPNAME/conf/httpd-prefix.conf",
+   "gold": "Hi, could you post additional details on our forums so our engineers can take a look? <url> ^KM",
+   "replies": {
+    "zero": "Hello, I understand that you are having trouble modifying the /opt/bitnami/apps/APPNAME/conf/httpd-prefix.conf file through Putty. Can you please provide more details about the issue you are facing?",
+    "rag-8": "Hi there, you may find the following doc helpful: <url> Please feel free to post on our RDS Forum should you require any further assistance: <url> ^CM",
+    "lora:1": "Hi, you can find more info here: <url> For help, please post to our forums: <url> ^RH",
+    "vera:256": "Hi, please provide more details about the issue you're facing, so we can help you better. You can find more information here: <url> ^JK"
+   }
+  },
+  {
+   "customer": "Why do I get this every time I try to login w/ Chrome? Deleted cache multiple times. Works fine on Safari or Chrome Incognito. <url>",
+   "gold": "No issues with the latest version of Chrome for both Windows &amp; Mac OS. Provide more details here: <url> ^ES",
+   "replies": {
+    "zero": "I see that you're experiencing issues with Chrome's login functionality. Have you tried clearing your browser's cookies and cache again?",
+    "rag-8": "Hi, I'm sorry to hear that. Please try clearing your cache and cookies, and then try logging in again. If the issue persists, please post in our forums ^JK",
+    "lora:1": "Hi, you can try clearing your cache and cookies in Chrome. If that doesn't work, try using a different browser. ^KM",
+    "vera:256": "Hi, please try the following steps to clear the cache: <url> ^KK"
+   }
+  },
+  {
+   "customer": "Will this be HIPPA compliant?",
+   "gold": "That is a great question for our Compliance team, Josh. You can contact them here: <url> ^KM",
+   "replies": {
+    "zero": "Yes, it will be HIPPA compliant. We will be using a HIPPA compliant cloud service provider.",
+    "rag-8": "Hi, I've +1'ed your feature request to our AWS Lambda team so they can look into it! ^ES",
+    "lora:1": "Hi, you can find more information about our HIPAA compliance here: <url> For more information, please contact us here: <url> ^ET",
+    "vera:256": "Hi, there are a few ways to ensure compliance: <url> You can also reach out to our HIPAA team for more info: <url> ^CM"
+   }
+  },
+  {
+   "customer": "Will a recording of the talk be available after the conference?",
+   "gold": "Hi, Matthew! Sessions will be recorded and added to our YouTube \ud83d\udcfa channel: <url> ^ET",
+   "replies": {
+    "zero": "Yes, we will make a recording of the talk available after the conference.",
+    "rag-8": "Hi, Jo! We're working on a recording of the talk, and we'll make sure to share it with you as soon as it's ready. \ud83c\udf89 ^ES",
+    "lora:1": "Hi, Chris. The recording of your talk will be available on our YouTube channel: <url> ^RH",
+    "vera:256": "Hi, you can find the recording of the talk here: <url> ^CM"
+   }
+  },
+  {
+   "customer": "Looks like you guys are having s3 issues in us-east. We are getting a lot of connection time outs",
+   "gold": "No issues found on our end, Premal. Feel free to post on our S3 Forum for further assistance: <url> ^CM",
+   "replies": {
+    "zero": "I am sorry to hear that. Can you please provide more details about the issue you are facing?",
+    "rag-8": "We're working on it, but it's not an issue with us. You can check the status of our services here: <url> ^TI",
+    "lora:1": "Hi, I've passed your feedback along to our S3 team for review. Thanks for the feedback! ^RH",
+    "vera:256": "Hi, please provide more details on this issue so we can help: <url> ^JK"
+   }
+  },
+  {
+   "customer": "Unable to sign into any root account. Clicking \u201cSign-in using root account credentials\u201d prompts for account ID followed by asking for `IAM` user name. Nowhere to enter root email. Seeing across multiple browsers.",
+   "gold": "Sorry for the trouble, Erik! Have you tried clearing your cache/cookies? \ud83c\udf6a This blog post may also be useful: <url> If the issue persists, fill out this form and we'll be in touch: <url> ^RH",
+   "replies": {
+    "zero": "Thank you for contacting us. I am sorry to hear that you are having trouble signing in to your root account. Can you please provide me with your email address so I can assist you further?",
+    "rag-8": "Hi, I have created a case for you via the Support Center. Check here for more info: <url> ^KK",
+    "lora:1": "Hi, please provide more details on the issue here: <url> ^CM",
+    "vera:256": "Sorry for the trouble! Please try the following steps to resolve the issue: <url> ^KK"
+   }
+  },
+  {
+   "customer": "TIL @123644 DynamoDB auto-scaling doesn't scale down if your table usage drops to zero.  Apparently not documented.",
+   "gold": "It doesn't scale down your provisioned capacity if your table\u2019s consumed capacity becomes 0, but you can send requests to the table until it scales to the minimum capacity, or change the policy to reduce the maximum provisioned capacity to be the same as the minimum ^JK",
+   "replies": {
+    "zero": "DynamoDB auto-scaling does scale down if your table usage drops to zero. This is documented in the AWS documentation.",
+    "rag-8": "Hi, @123644. Thanks for sharing this. We'll add this to our documentation. ^JK",
+    "lora:1": "Thanks for the heads up, we've passed your feedback along to our DynamoDB team for consideration. ^ET",
+    "vera:256": "Thanks for the feedback, I've shared your request with our DynamoDB team for review. ^JK"
+   }
+  },
+  {
+   "customer": "Hello, there seems to be an error on the documentation (<url>\nabout Canonical Hosted Zone for A/NLB (correct name is \u00ab\u00a0canonicalhostedzoneid\u00a0\u00bb) <url>",
+   "gold": "Our Documentation team was able to make a quick edit with the help of your keen eye! \ud83c\udfa3 Great catch &amp; thanks again! ^TI",
+   "replies": {
+    "zero": "I see, the documentation is outdated. The correct name for the A/NLB hosted zone is \u00ab\u00a0canonicalhostedzoneid\u00a0\u00bb.",
+    "rag-8": "Hi there, I've shared your +1 for this requested feature with our Route 53 service team for review. \ud83d\udc4d ^KK",
+    "lora:1": "Hi, the issue has been logged internally for review. You can track the progress here: <url> ^RH",
+    "vera:256": "Hi, please provide more details about the issue you're seeing here so we can investigate: <url> ^JK"
+   }
+  },
+  {
+   "customer": "I posted an issue <url> on the AWS forum but no idea how long before anything happens...",
+   "gold": "Thanks for providing the forum URL! I see that the issue may have been resolved. If not, please add details to the thread. ^ET",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with the details of the issue you posted on the AWS forum?",
+    "rag-8": "Hi, your support case has been received and is currently being looked into. ^JK",
+    "lora:1": "Hi, you can also post on our Forums here: <url> For more urgent issues, please contact our Forums Moderators here: <url> ^KK",
+    "vera:256": "Hi, I've shared your request with our AWS Forums team for review. Thanks for the feedback! ^ET"
+   }
+  },
+  {
+   "customer": "Is there an API to do the JSON -&gt; YAML -&gt; JSON converting?",
+   "gold": "Hi, that is a great question for our engineers, Martin. You can contact them via our Forums <url> ^KM",
+   "replies": {
+    "zero": "Yes, there is an API called \"json2yaml\" that can convert JSON to YAML and then convert YAML back to JSON.",
+    "rag-8": "Hi, John. We'd like to help, could you post details in our Amazon DynamoDB Forum &amp; send me the URL? <url> ^KM",
+    "lora:1": "Hi, you can use the following method to convert JSON to YAML: <url> &amp; the following method to convert YAML to JSON: <url> ^RH",
+    "vera:256": "Hi, you can use the following resources to learn more: <url> ^ET"
+   }
+  },
+  {
+   "customer": "need urgent #help. plz DM #AmazonCloud",
+   "gold": "We're currently unable to DM, Shikha. You can however contact us through our Support Center: <url> \ud83d\ude0a ^CM",
+   "replies": {
+    "zero": "Sure, I can help you with that. What would you like to know about Amazon Cloud?",
+    "rag-8": "Hi, I'm here to help you with your issue. Here's how to get in touch with our support team: <url> \ud83d\udcde ^TI",
+    "lora:1": "Hi, you can find more information on our forums here: <url> ^KK",
+    "vera:256": "Hi, I've shared your request with our AWS Support team for review. ^JK"
+   }
+  },
+  {
+   "customer": "When are you hiring me Amazon,  my kids are starving  please.",
+   "gold": "Hi, Rob. You can see a list of available jobs with AWS via this link: <url> ^KK",
+   "replies": {
+    "zero": "I'm sorry, but I'm afraid we can't accommodate your request at this time. We have a full schedule and need to prioritize our staffing needs. Can I assist you with anything else?",
+    "rag-8": "I'm sorry to hear that, but I'm not able to assist with that. If you have any questions about our services, please feel free to reach out to us using the following form: <url> ^CM",
+    "lora:1": "Hi, I'm sorry to hear that! Please let me know how we can help: <url> ^CM",
+    "vera:256": "Hi, I've sent your request to our Hiring Team for review. Thanks for the feedback! ^JK"
+   }
+  },
+  {
+   "customer": "And also allow for boto to process over 256kb messages! Or raise the limit to 1mb.",
+   "gold": "Thanks for sharing your request, Jeff. I've passed it along to our service team. \ud83d\ude0a ^CM",
+   "replies": {
+    "zero": "I'm sorry, but I cannot provide a solution to that.",
+    "rag-8": "Thanks for the suggestion. I will also forward this along! \ud83d\ude0a^ET",
+    "lora:1": "Thanks for the feedback, Chris! I've passed your request along to our team to consider. \ud83d\ude0a ^RH",
+    "vera:256": "Thanks for the feedback, Mike! I've passed your request along to our AWS Lambda team for consideration. ^ET"
+   }
+  },
+  {
+   "customer": "Dear @123644, please give me more #ECS #CloudWatch metrics such as per-container CPU&amp;Memory utilization, thanks.\n\nSincerely yours, Miguel.",
+   "gold": "Hi, we appreciate your feedback as we're always trying to improve our services. I've sent it over to the CloudWatch team. ^JK",
+   "replies": {
+    "zero": "Hi Miguel, I'm sorry to hear that you're looking for more #ECS #CloudWatch metrics. I can help you with that. Can you please provide me with more details about the specific metrics you need? For example, do you want to see the CPU and memory utilization per container, or do you need",
+    "rag-8": "I've shared your feature request with our ECS team for review. ^KM",
+    "lora:1": "Hi, Miguel. Here are some more details on how to get more info: <url> ^ES",
+    "vera:256": "Hi, Miguel. I've shared your request with our ECS team for consideration. ^ES"
+   }
+  },
+  {
+   "customer": "Really excited about #PostgreSQL on AWS Aurora. But @123644 @AWSSupport when will it come out of preview?",
+   "gold": "Thanks for the interest, Samuel! I've let our service team know you're waiting for this feature. \ud83d\ude04 ^RH",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'll do my best to help you. Can you please provide me with more details about your use case and the specific requirements you have for the PostgreSQL on AWS Aurora service?",
+    "rag-8": "Hi, I've shared your +1 for this requested feature with our Aurora team. Thanks for the feedback! ^KM",
+    "lora:1": "Hi, Chris. Thanks for the feedback! Our team has forwarded your request along. ^RH",
+    "vera:256": "Hi, I've shared your request with our Aurora team for consideration. Thanks for the feedback! ^JK"
+   }
+  },
+  {
+   "customer": "Get that livestream up!",
+   "gold": "Hi, Jeremy! Check out our live stream schedule here: <url> ^ET",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"get that livestream up.\" Can you please provide more context or clarify your request?",
+    "rag-8": "Hi, I've shared your +1 for this requested feature with our service team. Thanks for sharing your request! ^CM",
+    "lora:1": "Hi, I've sent your request to our support team for review. Thanks for the feedback! ^KM",
+    "vera:256": "Hi, I've sent your request to our Live Streaming team for review. Thanks for the feedback! ^KM"
+   }
+  },
+  {
+   "customer": "did you know that @123644 RDS (aurora) does not log access errors, even with all logs enabled? well, now you know.",
+   "gold": "We'd like to help. You can use our Feedback button on the bottom left of the console to provide more info <url> ^JK",
+   "replies": {
+    "zero": "I'm sorry to hear that. We will investigate this issue and provide a solution as soon as possible.",
+    "rag-8": "Hi there, David. We are aware of this issue and are working on a fix. Please let us know if you have any further questions: <url> ^KM",
+    "lora:1": "Hi, I've passed your feedback along to our RDS team for consideration. Thanks for the input! ^RH",
+    "vera:256": "Thanks for the heads up, @mikebuckley! I've passed your feedback along to our RDS team. ^ET"
+   }
+  },
+  {
+   "customer": "500 Internal Error with @123644 when trying ot use SNS and support does not know how to help. \n\nGuess what ? SNS means: Amazon Simple Notification Service. SIMPLE !!!\n\nSIMPLE !!! \n\n#fail @AWSSupport",
+   "gold": "Hi Cyril, I'm sorry for the trouble! If still an issue, feel free to post in our Forums so our community can help out: <url> ^KM",
+   "replies": {
+    "zero": "500 Internal Error with @123644 when trying ot use SNS and support does not know how to help. \n\nGuess what ? SNS means: Amazon Simple Notification Service. SIMPLE !!!\n\nSIMPLE !!! \n\n#fail @AWSSupport\nAgent: 500 Internal Error",
+    "rag-8": "Hi, @123644. I've created a case for you in the Support Center. Please check your email for more information. ^ET",
+    "lora:1": "Hi, I've passed your feedback along to our SNS team for consideration. Thanks for the feedback! ^TI",
+    "vera:256": "Thanks for the heads up, @123644! I've passed your request along to our SNS team for review. ^ET"
+   }
+  },
+  {
+   "customer": "Hey guys, you planning to add Container Linux by @28514 to AWS Lightsail?",
+   "gold": "Hi there! I've shared your query with our Lightsail team for review. \ud83d\udc4d ^RH",
+   "replies": {
+    "zero": "Yes, we are planning to add Container Linux by @28514 to AWS Lightsail.",
+    "rag-8": "Hi, @28514. Thanks for sharing your request. I have gone ahead and forwarded it to our service team. \ud83d\udc4d ^CM",
+    "lora:1": "Hi, I've passed your request along to our Lightsail team for consideration. Thanks for the feedback! ^RH",
+    "vera:256": "Hi, I've shared your request with our AWS Lightsail team. Thanks for the feedback! ^ET"
+   }
+  },
+  {
+   "customer": "Seeing issues bringing up m5.* instances in us-east-1. They fail instance health checks on boot and asg kills them. About 1 in 4 are failing. @AWSSupport",
+   "gold": "Sorry to hear about the trouble. There are a few options for getting help: <url> \ud83d\udcd6 ^TI",
+   "replies": {
+    "zero": "Hi, I have received your request. I will be in touch with you shortly.",
+    "rag-8": "Hi, @AWSSupport. I have forwarded your feedback to our AWS Support team. They will get back to you shortly. <url> ^ET",
+    "lora:1": "Hi, you can find more info here: <url> For assistance, please open a case here: <url> ^CM",
+    "vera:256": "Thanks for the feedback, Alex! I've passed your request along to our EC2 team for review. ^JK"
+   }
+  },
+  {
+   "customer": "Docker on @123644 Should I use ECS or Beanstalk?",
+   "gold": "Hi, Simon! This is a great question for our forums, where our experts and community can assist: <url> ^ET",
+   "replies": {
+    "zero": "You can use either ECS or Beanstalk. Which one do you prefer?",
+    "rag-8": "Hi, Artur. You can use either ECS or Beanstalk. The choice depends on your use case. ^ES",
+    "lora:1": "Hi, you can find more info here: <url> For more help, please post to our forums: <url> ^RH",
+    "vera:256": "Hi, you can use either, but I'd recommend using the correct service. Here's more info: <url> ^ES"
+   }
+  },
+  {
+   "customer": "New Email Campaign from #AWS\nWhy am I getting the email in this language? @123644 \nAnother misconfig? Hopefully, you are not breached! <url>",
+   "gold": "Hi, Pratik. I understand your concern, you can have this reported as confirmed here: <url> ^ES",
+   "replies": {
+    "zero": "I am sorry to hear that. Can you please provide more details about the email you received? What language is it in?",
+    "rag-8": "Hi, you can update your e-mail preferences via <url> ^KM",
+    "lora:1": "Hi, I've sent you a copy of the email so you can check it out. ^KM",
+    "vera:256": "Hi, I've sent you an email with more info. \ud83d\ude04 ^ET"
+   }
+  },
+  {
+   "customer": "Wow, @AWSSupport's forum is brutal. I can only post a single message a day, apparently? <url>",
+   "gold": "Hi, Steve, please find more info about posting messages to our forums here: <url> ^JK",
+   "replies": {
+    "zero": "I'm sorry to hear that. We're working on improving the forum experience for all users. In the meantime, you can still post your question and we'll do our best to help you. Is there anything else you'd like to know?",
+    "rag-8": "Hi, your forum post has been updated. If you have further questions, feel free to respond directly to the thread. ^KM",
+    "lora:1": "Sorry for the trouble, Chris! Please post your question here: <url> ^CM",
+    "vera:256": "Hi, I've forwarded your request to our Forum team for review. Thanks for the feedback! ^ET"
+   }
+  },
+  {
+   "customer": "Need help , keep getting \" There was a problem creating your user pool. Please try again. \" when trying to create user pool",
+   "gold": "Hello, Edwin. You can go ahead and post your query on our Forum here: <url> \ud83d\udc4d ^CM",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the error message you received? This will help me better understand the issue and provide a more accurate solution.",
+    "rag-8": "Hi, I found you've opened a case about this &amp; it's been addressed. Please follow-up here: <url> ^ES",
+    "lora:1": "Hi, you can find more info here: <url> For assistance, please contact us here: <url> ^RH",
+    "vera:256": "Hi, please provide more details about the issue you're facing. You can find the details here: <url> ^KK"
+   }
+  },
+  {
+   "customer": "honestly i did not understand. <url>",
+   "gold": "Please create a case via the Support Center so one of our agents can assist: <url> ^ET",
+   "replies": {
+    "zero": "Can you please rephrase the sentence to make it more understandable?",
+    "rag-8": "I apologize for the confusion, Shakti. Please feel free to reach out to us through the Support Center and our support team will gladly assist: <url> ^CM",
+    "lora:1": "Hi, you can find more information on our FAQs page: <url> ^CM",
+    "vera:256": "Hi, there are a few ways to get more help, check out our resources here: <url> ^TI"
+   }
+  },
+  {
+   "customer": "How long does it take to initialize an Organization? Getting err: FinalizingOrganizationException when calling the CreateAccount operation?",
+   "gold": "Hi, Gavin. Please reach out to us through the Support Center and our support team will gladly assist: <url> For more questions on Organizations, please feel free to take a look at the FAQ page: <url> ^CM",
+   "replies": {
+    "zero": "Hi there! I'm sorry to hear that you're experiencing an issue with the initialization of your Organization. Let me help you troubleshoot this problem. Can you please provide me with more details about the error message you're receiving? This will help me better understand the issue and provide you with the most accurate solution.",
+    "rag-8": "Hi, please check the Support Center for more info: <url> ^ET",
+    "lora:1": "Hi, you can find more info here: <url> For help, open a case: <url> ^RH",
+    "vera:256": "Hi, please check the following link for more details: <url> ^JK"
+   }
+  },
+  {
+   "customer": "Why you no say what version?!?!? @123644 #ebs <url>",
+   "gold": "Thanks for sharing this suggestion with us, Nathan. I've let the relevant team know about your request. \ud83d\ude0a ^ES",
+   "replies": {
+    "zero": "I apologize for the confusion. I am unable to provide the version number without more context. Could you please provide me with more information about the product or service you are referring to?",
+    "rag-8": "Hi, I'm sorry, but I'm not able to provide specific information about the version of AWS you're using. If you have any questions or concerns, please feel free to ask! <url> ^TI",
+    "lora:1": "Hi, I've updated the post with the version info. Thanks for the feedback! ^TI",
+    "vera:256": "Hi, I've passed your request along to our EBS team for review. Thanks for the feedback! ^KK"
+   }
+  },
+  {
+   "customer": "is it possible to upgrade the openssl used in a lambda function? Still is OpenSSL 1.0.0-fips",
+   "gold": "Hi, would you mind posting more details in our forums? Our engineers would like to assist: <url> ^JK",
+   "replies": {
+    "zero": "Yes, it is possible to upgrade the OpenSSL used in a Lambda function. You can use the AWS Lambda Layers feature to add custom code to your Lambda function, including OpenSSL. This allows you to use a newer version of OpenSSL than the one that is bundled with the Lambda runtime. To do this, you will need to",
+    "rag-8": "Hi, I'm sorry to hear that. We appreciate your feedback. Here's how to provide more info: <url> ^ET",
+    "lora:1": "Hi, you can find the latest version of OpenSSL here: <url> ^RH",
+    "vera:256": "Hi, you can try to upgrade the OpenSSL version in your Lambda function by adding the following code to your function's handler: <url> ^ES"
+   }
+  },
+  {
+   "customer": "Hi, I need to send an email to support, do you have any email?",
+   "gold": "Hi, Ricardo! You can contact us through the support center or via the following form: <url> ^ET",
+   "replies": {
+    "zero": "Yes, we do. What is the subject of the email?",
+    "rag-8": "Hi, Rishabh. Please create a case via the Support Center &amp; someone will take a look <url> ^KM",
+    "lora:1": "Hi, you can send an email to our support team here: <url> ^KK",
+    "vera:256": "Hi, you can send an email to our support team here: <url> ^KM"
+   }
+  },
+  {
+   "customer": "Whoa! @123644 Device Farm is incredibly slow (especially the UI)... Like... the worst UX experience among all AWS products so far o_O",
+   "gold": "Sorry for any trouble, Sergei. Would you mind posting details in our forums so our engineers can help? <url> ^JK",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about what you were doing when you experienced this issue?",
+    "rag-8": "Hi, Patrick. We're working on improving the UI and UX for Device Farm. Thanks for your feedback! ^TI",
+    "lora:1": "Thanks for the feedback, I've passed it along to our Device Farm team for review. ^RH",
+    "vera:256": "Sorry for the trouble, Alex. Please open a case with more details here: <url> ^RH"
+   }
+  },
+  {
+   "customer": "Dear @AWSSupport I know you're busy making $$$ with AWS but PLEASE take  time to invest in UI design &amp;fix the repeated inconsistencies <url>",
+   "gold": "Our VPC team is interested in your use case. Mind posting more info to our Forums &amp; sending me the URL? <url> ^KM",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing issues with the UI design. I understand that it can be frustrating when there are inconsistencies in the design. However, I'm not sure if I can fix the issues without more information. Can you please provide more details about the specific inconsistencies you're experiencing? This will help me",
+    "rag-8": "Hi, @123644. I've sent you a private message with the details. Please let me know if you have any questions. \ud83d\ude0a ^KK",
+    "lora:1": "Hi, I've shared your feedback with our UI team. Thanks for the input! ^RH",
+    "vera:256": "Thanks for the feedback, Alex! I've passed your request along to our Design team for review. ^ET"
+   }
+  },
+  {
+   "customer": "thanku you AWS ,PSI helped  me to resettle the exam without any extra pay",
+   "gold": "It's a pleasure, Sunil. I'm glad to hear your issue has been resolved. Good luck with your exam. \ud83d\ude0a ^KK",
+   "replies": {
+    "zero": "Thank you for your positive feedback! We're glad to hear that PSI helped you successfully resettle your exam. If you have any further questions or need assistance in the future, please don't hesitate to reach out. Have a great day!",
+    "rag-8": "You're welcome, thank you for your feedback! If you have any other questions, please don't hesitate to reach out: <url> ^TI",
+    "lora:1": "You're welcome, Mike! \ud83d\ude0a ^RH",
+    "vera:256": "I'm glad to hear that! If you have any other questions, feel free to reach out. ^JK"
+   }
+  },
+  {
+   "customer": "what the hell? <url>",
+   "gold": "Hi, sorry for the frustration. Please create a case through the Support Center so that we can assist you directly: <url> ^KM",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more context or details about the situation so I can better understand and assist you?",
+    "rag-8": "Hi, John. I'm sorry to hear that. I'll make sure to pass on your feedback to our support team. ^ET",
+    "lora:1": "Hi, I'm sorry for the trouble! Please provide more details in our feedback forum: <url> ^RH",
+    "vera:256": "Hi, there's a guide for creating a good post here: <url> ^JK"
+   }
+  },
+  {
+   "customer": "If I put a tag (APP: abc) in my batch compute env (using Spot instances) I should be able to see those in the EC2 dashboard now right?",
+   "gold": "Hi, Macarthy. Our Forum would be the perfect place to post this question. You can do so here: <url> ^CM",
+   "replies": {
+    "zero": "Yes, you should be able to see the tags in the EC2 dashboard.",
+    "rag-8": "Hi, Peter. This is a known issue. Please check the Support Center for more info: <url> ^KK",
+    "lora:1": "Hi, you can find more info here: <url> For more help, please open a case: <url> ^CM",
+    "vera:256": "Hi, you can see the tags in the EC2 dashboard, but you can also view the tags in the console using the following steps: <url> ^RH"
+   }
+  },
+  {
+   "customer": "how do we integrate #AWSLambda with my ML Model evaluation code? #AI #AmazonLex",
+   "gold": "Hi, Ayan. Feel free to post your question on our Forum and our engineers will gladly assist: <url> ^CM",
+   "replies": {
+    "zero": "To integrate AWS Lambda with your ML Model evaluation code, you can follow these steps:\n\n1. Create an AWS Lambda function: First, you need to create an AWS Lambda function that will be triggered by the Amazon Lex bot. This function will be responsible for evaluating the ML Model and returning the results to the bot.\n\n2",
+    "rag-8": "Hi, Ravi. You can use the AWS Lambda function to call your ML model evaluation code. Check out this post for more info: <url> \ud83d\ude0a ^TI",
+    "lora:1": "Hi, you can find more info here: <url> For help, open a case: <url> ^RH",
+    "vera:256": "Hi, you can use the Lex API to call your Lambda function from your Lambda function. Here's a sample code: <url> ^RH"
+   }
+  },
+  {
+   "customer": "- You need to update link in EC2 FAQ (Q: How can I find a list of Amazon Public Data Sets?) this link is broken (404) <url>",
+   "gold": "Thank you for bringing this to our attention! I've shared your feedback internally to be reviewed. Check out this doc for additional info \u27a1\ufe0f <url> ^ET",
+   "replies": {
+    "zero": "I have updated the link in the EC2 FAQ. Please let me know if you need any further assistance.",
+    "rag-8": "Hi, I've passed your feedback internally to be looked into. Thanks for the heads up! ^ET",
+    "lora:1": "Hi, I've passed your feedback along to our support team for consideration. Thanks for the input! ^RH",
+    "vera:256": "Thanks for the feedback, I've shared it with our Data Science team to look into. ^JK"
+   }
+  },
+  {
+   "customer": "#devicefarm nice to test on an android device and have it suddenly lock without informing about a pin-code anywhere. Also the comment box in the feedback window prevents typing... #bleh",
+   "gold": "I'm sorry for any difficulty. Please provide more info in our forums &amp; our engineers can assist: <url> ^JK",
+   "replies": {
+    "zero": "#devicefarm I'm sorry to hear that you're experiencing issues with your Android device. Can you please provide more details about the problem you're facing? For example, what specific error message or behavior are you seeing? Additionally, if you could describe the steps you took to reproduce the issue, that would be helpful in",
+    "rag-8": "Hi, I've forwarded your feedback to our Device Farm team. Thanks for the input, @123644! \ud83d\ude0a ^ET",
+    "lora:1": "Hi, please provide more details on the issue you're experiencing here: <url> ^KK",
+    "vera:256": "Sorry for the trouble, Alex. Please submit a case for further assistance: <url> ^JK"
+   }
+  },
+  {
+   "customer": "Would be nice to be able to link a \"prod\" EB env managed update to only occur after a successful \"staging\" EB env managed update.",
+   "gold": "Thanks for sharing your request, Ulrick. I've passed it along to our Elastic Beanstalk team to review. Feel free to send future feedback via the methods here: <url> \ud83d\ude0a ^ET",
+   "replies": {
+    "zero": "I understand your concern. We can add a new feature to allow you to link a \"prod\" EB env managed update to only occur after a successful \"staging\" EB env managed update. This will ensure that the \"prod\" environment is only updated after the \"staging\" environment has been successfully updated. Is",
+    "rag-8": "Hi, I've passed this feedback to our EB team for review. Thanks for the feedback, Sami! \ud83d\ude0a ^TI",
+    "lora:1": "Hi, I've passed your feedback along to our EB team for consideration. Thanks for the input! ^RH",
+    "vera:256": "Hi, I've shared your feedback with our EB team for review. ^JK"
+   }
+  }
+ ],
+ "style_examples": [
+  "Hi, Jamie, this post may help: <url> If you have more questions, please start a new thread. ^JK",
+  "Happy to help! \ud83d\ude03 ^JK",
+  "Hi, Nico. Our support team has updated your case here: <url> ^CM",
+  "I'm so sorry for the frustration! Here's what may be happening with those charges: <url> To figure this out &amp; get your account reinstated, follow the steps here: <url> ^CM",
+  "Hello, Peter. Please check the Support Center for more info: <url> ^KK"
+ ],
+ "seconds": 120.68065094947815
+}

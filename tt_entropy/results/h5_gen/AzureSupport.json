@@ -1,0 +1,432 @@
+{
+ "brand": "AzureSupport",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 26.79375,
+  "mean_response_tokens": 21.634375,
+  "response_type_token_ratio": 0.1304,
+  "distinct_response_share": 0.9375
+ },
+ "nll": {
+  "zero": 4.225355348510038,
+  "rag-8": 2.4982568637447513,
+  "lora:1": 1.9998379611639003,
+  "vera:256": 1.97803774506988
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.4087463283707732,
+  "lora:1": 0.5267053783135444,
+  "vera:256": 0.5318647588380031
+ },
+ "items": [
+  {
+   "customer": "#azhelp: Intune Can't get into Intune Device Managers. \"Error occurred while verifying account permissions\"",
+   "gold": "Is this a new deployment, or have you been able to login to Intune Device Manager before? ^TW",
+   "replies": {
+    "zero": "#azhelp: Can you please provide more details about the error message you are receiving?",
+    "rag-8": "Hello! We're here to help. Can you please provide more details about the issue you're experiencing? ^AB",
+    "lora:1": "Hi! Is this an Azure subscription? ^JI",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^PB"
+   }
+  },
+  {
+   "customer": "Thank you for helping, but I still cant deploy my Kurento media server on Azure. Connection refused every time. Ports on VM are opened.",
+   "gold": "I noticed one person on that post was able to fix this by configuring the STUN server a certain  1 ^PB",
+   "replies": {
+    "zero": "I see. Can you please provide me with more details about the error message you are receiving?",
+    "rag-8": "Could you please DM us with the link to the documentation you referred to? Thank you. ^AL",
+    "lora:1": "Could you post this on <url> and send us the link? We'll have an engineer take a look. ^DO",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^MM"
+   }
+  },
+  {
+   "customer": "we have an app service/site that's down. Looks like there are others having issues. Is there an #outage that might be related?",
+   "gold": "Could you please DM us with your SubID, region and affected services? Thank you.  ^PB\n <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me more about the app service/site and what kind of issues you're experiencing?",
+    "rag-8": "We're investigating. Please keep us updated.  ^JN",
+    "lora:1": "We're looking into the issue and will update you shortly. ^SN",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "#azTechHelp unable to view containers or anything else from my storage account. <url>",
+   "gold": "Can you send us your subscription ID in a private message? ^TW\n <url>",
+   "replies": {
+    "zero": "#azTechHelp can you please provide more details about the issue you are facing? What is the error message you are receiving? Also, can you share the URL of the storage account you are trying to access?",
+    "rag-8": "Could you please send us a screenshot of the error message you are receiving? ^FL",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^PB"
+   }
+  },
+  {
+   "customer": "Yes, please.",
+   "gold": "We would like to continue this conversation in a DM so we can obtain some further details.  ^SB\n <url>",
+   "replies": {
+    "zero": "Thank you. What is your name?",
+    "rag-8": "Thank you for reaching out. We will get back to you as soon as possible. ^DY",
+    "lora:1": "We are looking into your request and will have an update for you shortly. ^SN",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "Hey there... I've raised a ticket (safe to paste the reference in twitter?) but have been waiting over a week for an answer. How can I speed it up? It's only a simple sales query, after all.",
+   "gold": "Please DM us your case number and we'll take a look at its status. ^SN\n <url>",
+   "replies": {
+    "zero": "Hi there! I'm sorry to hear that you're experiencing delays. We understand how important it is to get your queries resolved quickly. To expedite the process, could you please provide me with the specific details of your query? This will help me better understand the issue and provide a more efficient response. Additionally, if",
+    "rag-8": "We're sorry to hear that. We'll make sure to follow up with you. ^SE",
+    "lora:1": "We're sorry to hear that. We're looking into your case and will have an engineer respond shortly. ^AL",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "Fonts blocked by CORS. Set CORS to * in Azure App service. Fonts served from /Content of <url> 4.5.2 app",
+   "gold": "Hello. Could you please Direct Message us some additional details regarding this? ^RS\n <url>",
+   "replies": {
+    "zero": "I see. Can you please provide more details about the CORS error and how it is affecting the fonts served from the /Content directory of your Azure App Service?",
+    "rag-8": "I'm sorry to hear that you're experiencing this issue. Could you please provide more details about the error message you're seeing?  ^JH",
+    "lora:1": "We're looking into your issue and will have an update for you shortly. ^BG",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "#azhelp:<url> says I do not have subscriptions.  When I try \"Start for Free\" link it says I already have sub",
+   "gold": "Can you Direct Message us a screenshot of what you are seeing so we may further assist? ^JY\n <url>",
+   "replies": {
+    "zero": "#azhelp: Hi, I see you are having trouble with your subscription. Can you please provide me with your email address so I can check your account and see if there is any issue with your subscription?",
+    "rag-8": "We recommend filing a free billing support case here: <url> Feel free to keep us updated.  2 ^PB",
+    "lora:1": "Hi, could you please direct message us with more information about your issue?  ^DO\n <url>",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "<url>",
+   "gold": "Thank you! We have alerted the team and they should respond to the post shortly.  ^PB",
+   "replies": {
+    "zero": "<url>",
+    "rag-8": "We're here to help. Can you DM us with more details of the issue you are having? ^SE\n <url>",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^DO",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^SE"
+   }
+  },
+  {
+   "customer": "#azTechHelp\nSalve, Devo eliminare una vm, ma anche se digito \"si\" non si attiva il pulsante di conferma",
+   "gold": "Are you still having issues? We're here to help.  ^AL",
+   "replies": {
+    "zero": "#azTechHelp\nCiao, \u00e8 un problema di sicurezza? Sei sicuro di voler eliminare la VM?",
+    "rag-8": "Hello, can you please provide more details about the issue? ^FL",
+    "lora:1": "Hi, could you please direct message us with more information about your issue? ^SN\n <url>",
+    "vera:256": "We're here to help. Could you please DM us with more information about your issue? ^AL"
+   }
+  },
+  {
+   "customer": "Not completely, but now I know where I might be wrong, trying to deploy kurento on azure..",
+   "gold": "Great. Feel free to keep us updated. ^BG",
+   "replies": {
+    "zero": "Sure, I can help you with that. Can you tell me more about the error you are getting?",
+    "rag-8": "That is a great question. We have some documentation that may help: <url> ^AL",
+    "lora:1": "We're sorry to hear this. We recommend filing a free support case here: <url> Feel free to keep us updated.  ^PB",
+    "vera:256": "We're here to help. Could you please direct message us with more information about your issue? ^MB"
+   }
+  },
+  {
+   "customer": "Thanks. FYI your last link does link to the Server product support, but it's the same place I started from that's currently broken.",
+   "gold": "Yes we can definitely Direct Message.  ^RS\n <url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll make sure to check it out and see if we can fix it. In the meantime, I can provide you with some alternative resources that may be helpful.",
+    "rag-8": "I apologize for the confusion. We've updated the link to the correct support forum. Please try again.  ^SN",
+    "lora:1": "We're sorry to hear that. We've forwarded your request to our engineers. They will be able to assist you further. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "Access keys (secrets) generated through the portal for Redis Cache instances aren't URL safe. Most redis clients support connecting with a URL. It takes several tries to generate one that is URL safe. (it should be url safe by default)",
+   "gold": "Could you possibly post here: <url> and send us the link to the created  1 ^PB",
+   "replies": {
+    "zero": "I see. We can add a feature to generate a URL safe access key by default. This will make it easier for users to connect to Redis Cache instances using a URL.",
+    "rag-8": "We would like to connect you with an engineer. Create a post here:  <url>  and send us the link.  ^DB",
+    "lora:1": "We're looking into your question and will have an update for you shortly.  ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^MM"
+   }
+  },
+  {
+   "customer": "Out in Minneapolis.  Cannot access <url> or <url>",
+   "gold": "Hello! Are you able to DM us information about your Service, Region and SubID? Thank you! ^MH\n <url>",
+   "replies": {
+    "zero": "I am sorry to hear that. Can you please provide me with more details about the issue you are facing? What is the specific error message you are receiving? Additionally, can you tell me if you have tried any troubleshooting steps or if you have already contacted the website's customer support team? This information will help me better",
+    "rag-8": "Can you please provide more details about the issue you are experiencing?  ^DB",
+    "lora:1": "We're looking into the issue and will have an update for you shortly. ^DO",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^PB"
+   }
+  },
+  {
+   "customer": "Thanks for such a quick response, will see if it helps. Great many thanks! Cheers!",
+   "gold": "Sure thing! ^TW",
+   "replies": {
+    "zero": "You're welcome. I'm glad I could help. If you have any more questions, feel free to ask. Have a great day!",
+    "rag-8": "You're welcome. We're glad to help. If you have any further questions, feel free to reach out. ^MM",
+    "lora:1": "No problem at all. We're here to help. Feel free to reach out again if you need further assistance. ^MM",
+    "vera:256": "We're here to help. Feel free to reach out if you need further assistance. ^AL"
+   }
+  },
+  {
+   "customer": "I'm using PolicyBased VPN Gateway",
+   "gold": "Just checking back in to see if the documentation sent has helped. Let us know! ^MB",
+   "replies": {
+    "zero": "What is the VPN Gateway you are using?",
+    "rag-8": "We're looking into your question and will have an update for you shortly.  ^BG",
+    "lora:1": "We're looking into your question and will have an update for you shortly.  ^BG",
+    "vera:256": "Could you please send us a private message and provide more information about your issue? ^MB"
+   }
+  },
+  {
+   "customer": "When .net 4.7.1 will be supported on azure websites?",
+   "gold": "Here's an announcement that you can follow: <url> ^JI",
+   "replies": {
+    "zero": "Azure Websites supports .NET Framework 4.7.1. You can find more information about .NET Framework 4.7.1 on the following link: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/whats-new-in-net-framework-4-7-1",
+    "rag-8": "We\u2019re looking into your question and will have an update for you shortly. ^SB",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly.  ^BG"
+   }
+  },
+  {
+   "customer": "Can u help me getting my #Azure up &amp; running? Billing stopped somehow, and now I cannot set it back.",
+   "gold": "We recommend filing a free subscription management support case here: <url> Feel free to keep us updated.  ^BG",
+   "replies": {
+    "zero": "Sure, I can help you with that. Can you please provide me with your email address so I can send you the necessary information and instructions?",
+    "rag-8": "Hello! Could you please DM us some additional details regarding this? We'll have an engineer take a look. ^SB",
+    "lora:1": "We're sorry to hear that. Please send us more details about your issue: <url> ^RS",
+    "vera:256": "We're here to help. Could you please DM us with more information about your issue? ^AL"
+   }
+  },
+  {
+   "customer": "Issues with creating Azure AD B2C?  After create, it just shows the loading animation across the top and never completes.",
+   "gold": "Thanks for reaching out here! Can you direct message us with more info so we may further investigate? ^JY\n <url>",
+   "replies": {
+    "zero": "Can you please provide more details about the issue you are facing while creating Azure AD B2C? Are you able to access the portal and see the loading animation? Is there any error message displayed?",
+    "rag-8": "We're sorry to hear that. Could you please provide us with more details on the issue you are experiencing? ^MB",
+    "lora:1": "We're looking into your question and will have an update for you shortly.  ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^MM"
+   }
+  },
+  {
+   "customer": "Yes that is correct.",
+   "gold": "We wanted to check back in and see if the documentation provided has helped you? Let us know! ^NW",
+   "replies": {
+    "zero": "Thank you for your call. I am sorry to hear that you are not satisfied with the service you received. I would like to offer you a 10% discount on your next purchase. Is that acceptable to you?",
+    "rag-8": "Great! If you have any other questions, please don't hesitate to reach out. ^DY",
+    "lora:1": "We are looking into your request and will have an update for you shortly. ^SN",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "If we dont use WHFB, do we need to take action on our AzureAD joined devices to remediate vulnerability?",
+   "gold": "Apologies for the delay. Our team have looked into this and confirmed that the suggested document is for the vulnerability of TPM with 1 ^FC",
+   "replies": {
+    "zero": "Yes, you need to take action on your AzureAD joined devices to remediate vulnerability. You can use the following steps to remediate the vulnerability:\n1. Update the device to the latest version of the operating system.\n2. Apply the latest security patches and updates.\n3. Configure the device to use the latest security",
+    "rag-8": "We'd like to have our engineers take a look. Could you post this on <url> and send us the link? ^SN",
+    "lora:1": "We recommend that you take the following steps: <url> ^TW",
+    "vera:256": "We'd like to take a look at this with our team. Could you DM us more details about the issue? ^DO"
+   }
+  },
+  {
+   "customer": "#azTechHelp There seems to be a bug when managing AAD app keys with PS: <url>",
+   "gold": ". Unfortunately the MSDN forum cannot be transferred to Stack Overflow. Let us know if you have any concerns.  3 ^FC",
+   "replies": {
+    "zero": "#azTechHelp Hi there! I'm here to help you troubleshoot the issue you're experiencing with managing AAD app keys using PowerShell. Can you please provide more details about the specific error message or behavior you're seeing? This will help me better understand the problem and provide a more accurate solution.",
+    "rag-8": "I see. This is a known issue: <url> ^TW",
+    "lora:1": "We're looking into the issue and will have an update for you shortly. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^PB"
+   }
+  },
+  {
+   "customer": "Does @118056 Time Series Insights use @98499's time series DB and visualization? If so, what's the markup $?",
+   "gold": "Could you post your questions about this here <url> and send us the link? We'll check with an engineer. ^SN",
+   "replies": {
+    "zero": "Yes, @118056 Time Series Insights uses @98499's time series DB and visualization. The markup for using @118056 Time Series Insights is $100 per month.",
+    "rag-8": "Hi there. We're here to help. Could you please DM us with more information about the issue you are experiencing? Thanks! ^SE\n <url>",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We'd like to take a look at this with our developers. Could you DM us more details about your use case? ^BG"
+   }
+  },
+  {
+   "customer": "#azTechHelp tngo la siguiente url <url> y quiero que apunte a <url> es posible?",
+   "gold": "We'll translate as best we can, but can only respond in English. Can you DM us with more details? ^JN\n <url>",
+   "replies": {
+    "zero": "#azTechHelp Tengo entendido que la URL que proporcionaste no es v\u00e1lida. Puedes proporcionar la URL correcta para que pueda ayudarte.",
+    "rag-8": "Can you please provide more details about the issue you are experiencing?  ^DB",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "Thank you! But sorry, I only use Intune for this, not hybrid.",
+   "gold": "Could you post this on <url> and send us the link? We'll have an engineer take a look.  ^BG",
+   "replies": {
+    "zero": "I see. So, you are using Intune for your mobile devices and you want to know if there is a way to use it for your Windows 10 PCs as well?",
+    "rag-8": "I'm sorry to hear that. We have a few other options for you. Please see the following documentation: <url> ^AL",
+    "lora:1": "We're sorry to hear this. We recommend filing a free support case here: <url> Feel free to keep us updated. ^AL",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "Altijd leuk: Azure cloud based demo's zonder werkend netwerk..? #oops #techdaysnl",
+   "gold": "Anything we may be able to help with? ^FC",
+   "replies": {
+    "zero": "We hebben een aantal demo's met Azure Cloud in de toekomst. We hebben een aantal demo's met Azure Cloud in de toekomst. We hebben een aantal demo's met Azure Cloud in de toekomst. We hebben een aantal demo's met Azure Cloud in de toekomst.",
+    "rag-8": "We're glad you're enjoying the demo. ^JN",
+    "lora:1": "We're sorry to hear this. We recommend filing a free support case here: <url> Feel free to keep us updated.  ^TW",
+    "vera:256": "We're sorry to hear that. Could you please DM us with more information about your issue? ^TW"
+   }
+  },
+  {
+   "customer": "How do i do the switch user",
+   "gold": "Are you still having issues? Let us know - we're here to help! ^AL",
+   "replies": {
+    "zero": "Hello, how can I assist you today?",
+    "rag-8": "We'd like to have our engineers take a look. Could you post this on <url> and send us the link? ^SN",
+    "lora:1": "We recommend checking out the following resources: <url> ^RS",
+    "vera:256": "We'd like to help, but we're not seeing the information you need. Could you please post your question on our <url> and send us the link? ^DO"
+   }
+  },
+  {
+   "customer": "#azTechHelp Having issues with a Server 2016 VM running on Azure. Trying to open a paid support incident but I get an error",
+   "gold": "Hello. Could you please Direct Message us some additional details regarding this? ^RS\n <url>",
+   "replies": {
+    "zero": "#azTechHelp Hi there! I'm here to help. Can you please provide me with more details about the error you're encountering?",
+    "rag-8": "I'm sorry to hear that. Can you please provide more details about the error message you're receiving? ^DO",
+    "lora:1": "Hi! Could you please DM us with more details about your issue? ^NA\n <url>",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "No, thank you... Now I have \"You raise me up\" stuck in my head...",
+   "gold": "You're most welcome!  ^AL",
+   "replies": {
+    "zero": "I'm sorry to hear that. Is there anything else I can help you with?",
+    "rag-8": "I'm sorry to hear that. I'll forward this to the support team. ^AL",
+    "lora:1": "We're sorry to hear this. Please send us your account details via DM. We'll have an engineer assist you shortly. ^DO",
+    "vera:256": "We're sorry to hear that. Please let us know if you have any further questions. ^SE"
+   }
+  },
+  {
+   "customer": "Okey, it's created now, please have a look at it\n<url>",
+   "gold": "Thanks. We have flagged these details with our team and someone will be in touch through the  1 ^FC",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to view the URL. Can you please provide me with the URL or the content of the page you want me to review?",
+    "rag-8": "Thank you for providing the link. We will review it and get back to you. ^JN",
+    "lora:1": "Great, we will keep an eye on it. Feel free to reach out again if you need further assistance. ^MM",
+    "vera:256": "We're looking into this and will have a response for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "After creating an image from a virtual machine, can I delete that VMs Data Disk without making the Image useless?",
+   "gold": "Hi! Thanks for contacting us for help. We're taking a look into this inquiry and will respond shortly! ^AS",
+   "replies": {
+    "zero": "Yes, you can delete the VMs Data Disk without making the Image useless. However, it is important to note that deleting the Data Disk will also delete the associated virtual machine. If you need to keep the virtual machine, you will need to create a new image from the virtual machine.",
+    "rag-8": "You can delete the VMs data disk and the image will still be usable. ^AL",
+    "lora:1": "We recommend reaching out to the following forum: <url> and providing us with the link.  ^PB",
+    "vera:256": "We're here to help. Could you send us a private message and send more details about your issue? ^DO"
+   }
+  },
+  {
+   "customer": "Tried signing up for an Azure account -&gt; Deducted money to verify my card -&gt; Error -&gt; Problem with your submission.",
+   "gold": "We recommend filing a free billing support case here: <url> Feel free to keep us updated.  ^PB",
+   "replies": {
+    "zero": "Thank you for contacting us. I am sorry to hear that you are experiencing issues with your Azure account. Can you please provide me with more details about the error message you received and the steps you have taken so far to resolve the issue?",
+    "rag-8": "Hi, we recommend filing a free billing support case here: <url> Feel free to keep us updated.  ^TW",
+    "lora:1": "We're looking into your issue and will have an update for you shortly.  ^FC",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "Do any of you tweeps know how to capture traffic from Microsoft Azure Storage Explorer with Fiddler?",
+   "gold": "Here are some steps that may help: <url> ^PB",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you mean by \"tweeps\" or how to capture traffic from Azure Storage Explorer with Fiddler. Can you please provide more context or clarify your question?",
+    "rag-8": "We have a few suggestions here: <url> ^SN",
+    "lora:1": "We don't have any direct support for this. We would recommend reaching out to the Microsoft community forums: <url> and upvoting the post. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^BG"
+   }
+  },
+  {
+   "customer": "It was generic...ended up recreating everything under the new subscription",
+   "gold": "Sorry if we couldn't advise you sooner. Hope it didn't take too long to do.  1 ^FC",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide more details about the issue you encountered with the generic subscription? This will help me better understand the problem and assist you in resolving it.",
+    "rag-8": "We're glad to hear that you were able to resolve the issue. If you have any further questions or concerns, feel free to reach out. ^JN",
+    "lora:1": "We're sorry to hear this. We recommend filing a free support case here: <url> Feel free to keep us updated. ^AL",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^AL"
+   }
+  },
+  {
+   "customer": "Thanks, the article given explains on how to migrate your existing #WordPress app to #Azure web app. But my requirement is exactly opposite.",
+   "gold": "Can you clarify, do you currently have a site hosted on Azure and you want to move it out of it? ^SN",
+   "replies": {
+    "zero": "Sure, I understand. Can you please tell me more about your requirements?",
+    "rag-8": "I'm sorry, but I'm not sure I understand your request. Could you please provide more details about your requirement? ^JH",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^MM"
+   }
+  },
+  {
+   "customer": "My ARM template is failing namespaces/hybridconnections deployment. Have the supported API versions changed? 2016-07-01 no go <url>",
+   "gold": "Hello! One moment as we review your inquiry. We'll be in touch shortly.  ^AS",
+   "replies": {
+    "zero": "Hi, I see that you are using the ARM template to deploy your hybrid connection. The supported API versions have changed since the 2016-07-01 no go <url> version. The latest supported API version is 2018-02-01 no go <url",
+    "rag-8": "We're looking into your question and will have an update for you shortly.  ^BG",
+    "lora:1": "Hi, could you please post this on <url> and send us the link? ^MB",
+    "vera:256": "Could you please direct message us with more information about the issue? ^JI"
+   }
+  },
+  {
+   "customer": "#azTechHelp\nAzureStrage\u3092\u30d5\u30a1\u30a4\u30eb\u5171\u6709\u306e\u63a5\u7d9a\u3067\u30b3\u30de\u30f3\u30c9\u3092\u30b3\u30d4\u30fc\u3057\u3066\u5b9f\u884c\u3059\u308b\u3068\u30b7\u30b9\u30c6\u30e0\u30a8\u30e9\u30fc87\u304c\u767a\u751f\u3057\u307e\u3057\u305f\u3002\u30d1\u30e9\u76ee\u2015T-\u304c\u9593\u9055\u3063\u3066\u3044\u307e\u3059\u3002\u3068\u3067\u307e\u3059\u3002\u5bfe\u51e6\u65b9\u6cd5\u3092\u6559\u3048\u3066\u304f\u3060\u3055\u3044",
+   "gold": "We'll translate to the best of our abilities but may only reply in English. Please DM us with more details. ^DY\n <url>",
+   "replies": {
+    "zero": "#azTechHelp\nAzure Storage\u306e\u30d5\u30a1\u30a4\u30eb\u5171\u6709\u63a5\u7d9a\u3067\u30b3\u30de\u30f3\u30c9\u3092\u30b3\u30d4\u30fc\u3057\u3066\u5b9f\u884c\u3059\u308b\u3068\u30b7\u30b9\u30c6\u30e0\u30a8\u30e9\u30fc87\u304c\u767a\u751f\u3057\u307e\u3057\u305f\u3002\u30d1\u30e9\u76ee\u2015T-\u304c\u9593\u9055\u3063\u3066\u3044\u307e\u3059\u3002\u3068\u3067\u307e\u3059\u3002\u5bfe\u51e6\u65b9\u6cd5\u3092\u6559\u3048\u3066\u304f\u3060\u3055\u3044",
+    "rag-8": "Hi there, I'm sorry to hear that you're experiencing an issue with Azure Storage. Can you please provide more details about the error message you're seeing? It seems like there might be a typo in the command. I'll do my best to assist you with the correct command.",
+    "lora:1": "We recommend filing a free community forum post.  ^TW",
+    "vera:256": "We are looking into this and will have an update for you shortly. ^MM"
+   }
+  },
+  {
+   "customer": "that's it.  Thank you.",
+   "gold": "Glad to hear it :) ^BG",
+   "replies": {
+    "zero": "You're welcome.  I'm glad I could help.  Is there anything else I can assist you with today?",
+    "rag-8": "You're welcome. ^SN",
+    "lora:1": "No problem. We're here to help. Feel free to reach out again if you need further assistance. ^DO",
+    "vera:256": "We're here to help. Is there anything else you'd like to talk about? Let us know. ^DO"
+   }
+  },
+  {
+   "customer": "Even the Azure status page is down right now. RIP",
+   "gold": "We're looking into the issue. Which region are you deployed? ^AS",
+   "replies": {
+    "zero": "I'm sorry to hear that. Is there anything else I can assist you with?",
+    "rag-8": "We're sorry to hear that. We're working to resolve the issue as quickly as possible. Please keep an eye on the SHD page for updates: <url>  ^BD",
+    "lora:1": "We're sorry to hear this. Could you direct message us with more information about the issue you are experiencing? ^DO\n <url>",
+    "vera:256": "We're sorry to hear that. Please let us know if you have any further questions. ^DO"
+   }
+  },
+  {
+   "customer": "Is something wrong with the portal? I'm unable to view or create new functions. Just keeps loading endlessly",
+   "gold": "That's not good! Could you please post here: <url> and send us the link? We'll have an engineer assist. ^PB",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you please provide me with more details about the issue you're experiencing? This will help me better understand the problem and assist you in resolving it.",
+    "rag-8": "Could you please send us a private message with your subscription ID? ^TW",
+    "lora:1": "We're looking into your question and will have an update for you shortly. ^BG",
+    "vera:256": "We're looking into this and will have an update for you shortly. ^AL"
+   }
+  }
+ ],
+ "style_examples": [
+  "Are you getting any errors that you can share?  ^DB",
+  "Hello! Is this endpoint from a Virtual Machine? ^BD",
+  "Hi, how can we help you today? ^FL",
+  "Engineers are currently investigating an issue in your area. Keep an eye on the SHD page here for details: <url>  ^BD",
+  "We don't really have information regarding compatibility with 3rd party applications. I can  1 ^TW"
+ ],
+ "seconds": 113.34618473052979
+}

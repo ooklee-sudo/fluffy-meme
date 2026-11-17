@@ -1,0 +1,432 @@
+{
+ "brand": "TfL",
+ "features": {
+  "n_examples": 320,
+  "mean_prompt_tokens": 32.690625,
+  "mean_response_tokens": 29.56875,
+  "response_type_token_ratio": 0.2082,
+  "distinct_response_share": 0.990625
+ },
+ "nll": {
+  "zero": 3.251061173786873,
+  "rag-8": 2.6850504561423483,
+  "lora:1": 2.470080762254233,
+  "vera:256": 2.472926600787041
+ },
+ "rel_gain": {
+  "zero": 0.0,
+  "rag-8": 0.1741002975299997,
+  "lora:1": 0.24022322859675543,
+  "vera:256": 0.23934787178841416
+ },
+ "items": [
+  {
+   "customer": "When can we use Apple Pay to top up?",
+   "gold": "Sorry, we don't have knowledge of any plans for this. Topping up can only be done using a UK registered payment card",
+   "replies": {
+    "zero": "You can use Apple Pay to top up your account at any time. You can also use Apple Pay to pay for your purchases.",
+    "rag-8": "Hi, you can use Apple Pay to top up your Oyster card at any tube station and at almost 3,800 Oyster Ticket Stops across London. Thanks",
+    "lora:1": "Hi, you can use Apple Pay to top up your Oyster card. Please note that this only works on Apple devices.",
+    "vera:256": "Hi, you can use Apple Pay to top up on any Oyster card."
+   }
+  },
+  {
+   "customer": "Yes... heading to Victoria... circle line has arrived, 30 mins after I watched the last one leave. We are all in tears! The sadness!",
+   "gold": "I hope you're home soon and the evening gets better",
+   "replies": {
+    "zero": "I'm so sorry to hear that. I'm sure you'll find a new place to visit soon.",
+    "rag-8": "Hi, sorry to hear that. Please see link to apply for a refund. <url>",
+    "lora:1": "Hi, sorry to hear this. Please accept our condolences. We'll be looking into this further.",
+    "vera:256": "Hi, sorry to hear this. Please log a support request here so we can investigate further: <url>"
+   }
+  },
+  {
+   "customer": "I bought two 2 oyster cards last weekend from Euston Station how do I get a refund as there is still credit on both of them? It is the standard oyster not a visitor. Many thanks :)",
+   "gold": "Hi Emma. You can surrender the oyster cards at any Underground or Overground station. Seek a member of station staff and they will issue a refund for any outstanding credit (upto \u00a310) and the \u00a35 security deposit. I hope this helps. Kind regards, ^Craig.",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'm afraid you will have to pay for the oyster cards. The credit on the cards will be refunded to your account within 14 days. You can check your account balance by logging into your account online or by calling the customer service number. If you have any",
+    "rag-8": "Hi, you can apply online. If not please call customer services on 0343 222 1234 (Mon-Sun, 8am-8pm). ^Craig.",
+    "lora:1": "Hi, please call 0343 222 1234 (8am-8pm) and an agent will be able to help you. Thanks ^Mark",
+    "vera:256": "Hi, please contact Oyster on 0343 222 1234 (Mon-Fri 9am-7pm) or email"
+   }
+  },
+  {
+   "customer": "So, @TfL , this horrendous behaviour from a member of your staff just gets ignored?",
+   "gold": "Hi Katy I'm sorry no one has responded to you yet and for the poor service you experienced. You can log your issue here <url> and we will investigate further. \n\nRegards,\nNeil.",
+   "replies": {
+    "zero": "I'm sorry, but I'm not sure what you're referring to.",
+    "rag-8": "Hi, I'm sorry to hear that. I will pass this on to the relevant team. Thanks",
+    "lora:1": "Hi, sorry to hear this. Please report this member to us using this link: <url>",
+    "vera:256": "Hi, sorry for the inconvenience caused. Please contact us on 0343 222 1234 (8am-8pm, Mon-Fri)"
+   }
+  },
+  {
+   "customer": "Well that\u2019s gonna be me late to university after travelling on a train that\u2019s gonna be packed thanks to @TfL\u2019s amazing service \ud83d\udc4d\ud83c\udffb",
+   "gold": "Sorry for any delays you've experienced. There's no reported issues but I'll make control aware. Hope you get there soon",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. I\u2019m sure you\u2019ll make it to university on time. What can I do to help?",
+    "rag-8": "Hi, I\u2019m sorry to hear that. We\u2019re working to improve our services and we\u2019ll be able to provide you with more information soon.",
+    "lora:1": "Hi, I'm sorry to hear this. Please log full details here <url> so we can investigate. Thanks",
+    "vera:256": "Hi, sorry to hear that. Please contact us on 0343 222 1234 (8am-8pm, Mon-Fri)"
+   }
+  },
+  {
+   "customer": ".@TfL just added my contactless to my Oyster a/c and found 10 journeys that are incomplete. How can I fix this as I know I have been taping it religiously to avoid being over charged. Ta!",
+   "gold": "once logged in, the system will give you the option to fill in the missing station for a refund.  Alternatively please call the helpline on 0343 222 1234 options 2 &amp; 4 and an advisor will look into this for you. Thanks.",
+   "replies": {
+    "zero": ".@TfL I have contacted you to let you know that your contactless payment has been added to your Oyster account. However, there are 10 incomplete journeys that need to be completed. Can you please confirm if you have been using the contactless payment method and if you have completed all the journeys",
+    "rag-8": "Hi, sorry for the delay in replying. You can do this yourself online, if the card is registered <url> Alternatively please log full details here <url> - an agent will be able to look into this for you. Thanks",
+    "lora:1": "Hi, sorry for the delay in replying to you. 1/2",
+    "vera:256": "Hi, please call 0343 222 1234 between 08:00-20:00 Mon-Fri for advice. Thanks"
+   }
+  },
+  {
+   "customer": "Hi, I\u2019m looking for 2018 travelcard prices please, are they out yet?",
+   "gold": "Hi William. These are not currently available as they haven't been released yet. They will be released closer to the beginning of 2018 when the rates change on 02 January. I hope this helps. Kind regards, ^Craig.",
+   "replies": {
+    "zero": "Yes, they are. They are \u00a311.50 for a single day, \u00a323 for a 7 day pass and \u00a335 for a 14 day pass.",
+    "rag-8": "Hi, these have not yet been released. Please keep an eye on our website as this will be updated shortly.",
+    "lora:1": "Hi, please visit our website to view the latest prices <url>",
+    "vera:256": "Hi, sorry for the late reply. The 2018 Travelcard prices are available here: <url>"
+   }
+  },
+  {
+   "customer": "hey, I\u2019ve just sent a direct message regarding a maximum fine I\u2019ve received, I look forward to your response, thank you.",
+   "gold": "Please speak with customer services on 0343 222 1234 8-8 Monday to Sunday. An advisor will look into this for you. Craig^",
+   "replies": {
+    "zero": "thank you for reaching out, we will review your case and get back to you as soon as possible.",
+    "rag-8": "Hi, I\u2019m sorry to hear that you\u2019ve received a fine. Please call the congestion charging team on 0343 222 2222 and an advisor will look into this for you. Kind regards, ^Craig.",
+    "lora:1": "Hi, I'm sorry to hear this. Please call us on 0343 222 1234 (between 8am and 8pm) to discuss this further. Alternatively, you can email us on <url>",
+    "vera:256": "Hi, please send a DM to the account holder for the refund."
+   }
+  },
+  {
+   "customer": "if I pay congestion charge with autopay will my T charge be deducted automatically or do I need to do something else? Thanks",
+   "gold": "Hi, there is more information about how the T-Charge is paid, here: <url>",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. The congestion charge is a one-off charge that you pay when you enter the city centre. It is not automatically deducted from your T charge. You will need to pay the congestion charge separately and then you can use your T card to pay for your T charge. Is there anything",
+    "rag-8": "Hi, you will need to pay the T charge separately. You can do this by using the app or by calling 0343 222 2222. You can also pay by credit or debit card.",
+    "lora:1": "Hi, you can use the online system to check the status of your payment.",
+    "vera:256": "Hi, please contact us on 0343 222 1234 (8am-8pm, Mon-Fri) or email us at <EMAIL>"
+   }
+  },
+  {
+   "customer": "Just bought a ticket from a machine from Kentish Town to Luton Airport Parkway but was given no Railcard 16-25 discount. Station attendant couldn't do it either. What's up?",
+   "gold": "Hi, some tickets are exempt from the discount but you're best to check this with National Rail on 03457 484950.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'll check the system and get back to you.",
+    "rag-8": "Hi, the Railcard is only valid for travel on the train, not the airport. If you want to use the discount, you'll need to buy a ticket from a ticket office. ^Sam",
+    "lora:1": "Hi, sorry for the late reply. Please use the contact details below to forward your details to the Railcard team. ^Mark",
+    "vera:256": "Hi, sorry to hear this. Please contact the Railcard team on 0343 222 1234 (8am-8pm, Mon-Fri) or email them at <url>"
+   }
+  },
+  {
+   "customer": "help, how do i cancel a refund on my oyster card??? it says my card has been stopped but i still need it",
+   "gold": "Hi Amarah, please DM us your Oyster card number and further details for us to look into this",
+   "replies": {
+    "zero": "hi, i am sorry to hear that. can you please provide me with your card number and the date of the transaction that you are referring to?",
+    "rag-8": "Hi, you can cancel the refund online. If you have any further queries, please call customer services on 0343 222 1234 (Mon-Sun, 8am-8pm). ^Craig.",
+    "lora:1": "Hi, please call 0343 222 1234 and ask for a refund. Alternatively, you can use the online refund form here: <url>",
+    "vera:256": "Hi, please call 0343 222 1234 between 08:00-20:00 Mon-Fri. Thanks ^Mark"
+   }
+  },
+  {
+   "customer": "I topped up using the new Oyster app but the money didn't appear on the card when I tapped in today",
+   "gold": "Hi Joanna. Can you confirm what station you started and finished your journeys today. Credit only gets applied when a journey has been completed so its essential to touch in and out. Please confirm your Oyster card number &amp; account password. Thanks, ^Craig.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me which card you used and which Oyster app you used?",
+    "rag-8": "Hi, your order will auto-refund to the payment card within 3-5 working days if you don't pick it up. Thanks",
+    "lora:1": "Hi, sorry for the late reply. Please use the Oyster online chat to report this: <url>",
+    "vera:256": "Hi, please contact us on 0343 222 1234 (8am-8pm, Mon-Fri) or email us at <url>"
+   }
+  },
+  {
+   "customer": "It's 05.42 and still no sign of the 05.34 @64110 train to Uxbridge, &amp; no info. #reliable #londonunderground #customerservice @tfl",
+   "gold": "Hi, Severe delays btn Wembley Park and Chesham / Amersham / Uxbridge and Watford only, signal failure at Harrow on the Hill.",
+   "replies": {
+    "zero": "I'm sorry to hear that. Can you tell me if you have tried calling the customer service number for the train service?",
+    "rag-8": "Hi, sorry to hear this. I'll make control aware of this. Thanks",
+    "lora:1": "Hi, sorry for the late reply. We've been working really hard to get this sorted. The train has now left. If you're still waiting, please be aware that it may be some time before the train arrives. Thanks ^Mark",
+    "vera:256": "Hi, sorry for the late reply. The train has been delayed due to a signal fault. Please see the full details here: <url>"
+   }
+  },
+  {
+   "customer": "How long until you fix the tube between Wimbledon and Parsons Green?",
+   "gold": "Hi, sorry this is likely to last all day. Thanks",
+   "replies": {
+    "zero": "We are working on it, but we can't give you a date yet.",
+    "rag-8": "Hi Meg, the suspension is btn Wimbledon - Parsons Green. If you are travelling from Earls Court - Parsons Green, this is fine.",
+    "lora:1": "Hi, sorry for the delay in replying to you. We are currently working on a solution. Please see the link below for more information. Thanks, Sammy.",
+    "vera:256": "Hi, please contact us on 0343 222 1234 between 9am-5pm, Mon-Fri. Thanks"
+   }
+  },
+  {
+   "customer": "Big shoutout to Greg of Finsbury Park  @TfL for taking care of me this morning when I was feeling very unwell.#itsthelittlethings \ud83d\udc4c\ud83c\udffb",
+   "gold": "Hi Adele, glad to hear you were looked after. I hope you're feeling better now ^Serena",
+   "replies": {
+    "zero": "I'm glad I could help you, @TfL. It's always great to hear from our customers who appreciate our efforts to make their journeys as smooth as possible. If you ever need assistance again, please don't hesitate to reach out. Have a great day!",
+    "rag-8": "Thank you for your kind words, glad you had a good day. Have a good night.",
+    "lora:1": "Hi, I'm sorry to hear you had to use the tube today. Please do let us know so we can investigate. ^Craig",
+    "vera:256": "Hi, thanks for your kind words. We're sorry to hear you were feeling unwell. Please feel free to contact us again if you need any help."
+   }
+  },
+  {
+   "customer": "can someone please remind routes 177, 180,161&amp;472 to there's stop before warspite rd after Greenwich uni tech college thank you",
+   "gold": "Hi, I'm sorry to hear that. If you need to complain go to the web page <url>",
+   "replies": {
+    "zero": "I'm sorry, but I'm not able to provide real-time reminders or directions. However, I can suggest a few ways you can find the information you need:\n\n1. **Google Maps**: You can use Google Maps to find the exact locations of these routes and their stops. Simply type in the route numbers (1",
+    "rag-8": "Hi, I've added a note to your journey history, please let me know if you need any further assistance",
+    "lora:1": "Hi, please use the contact us page to report any issues with the live journey information. <url>",
+    "vera:256": "Hi, please use the contact details on the back of your ticket. Thanks"
+   }
+  },
+  {
+   "customer": "our garden centre is getting submerged by your burst water pipe at Kew Gardens Station. 6 days now &amp; still not fixed. Causing lots of damage. Some consideration for your neighbours would be nice.",
+   "gold": "I'm sorry to hear about that. Have the station been made aware of the burst water pipe? \nHave you spoken to Customer Services - 0343 222 1234 to see what more can be done?",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing this issue. We understand the inconvenience it's causing, and we're working diligently to resolve the problem as quickly as possible. Could you please provide us with more details about the extent of the damage and any specific areas that are affected? This will help us prioritize our efforts and",
+    "rag-8": "Hi there, I'm sorry to hear about this. I will pass this on to the relevant team. Regards Chiedu",
+    "lora:1": "Hi, sorry for the delay in replying to you. We've been extremely busy over the last few days. We'll get this sorted as soon as possible.",
+    "vera:256": "Hi, sorry to hear this. Please contact the station on 020 8353 4343 for further assistance. Thanks"
+   }
+  },
+  {
+   "customer": "maybe consider giving the underground trains a clean occasionally... Not great seeing blood on the walls. #cleanme <url>",
+   "gold": "Hi John, sorry for the delay getting in touch. Do you have the carriage or train number? I can then pass this on. Thanks, Jo.",
+   "replies": {
+    "zero": "I'm sorry to hear that. It's important to maintain the cleanliness of public spaces, including underground trains. Regular cleaning helps to prevent the spread of germs and maintain a safe environment for everyone. If you have any suggestions or concerns about the cleanliness of the trains, please let me know, and I'll do my",
+    "rag-8": "Hi, I'm sorry to hear that. We're working on a plan to improve the cleanliness of the underground. Thanks for your feedback.",
+    "lora:1": "Hi, thanks for your message. We do clean our trains on a regular basis.",
+    "vera:256": "Hi, sorry to hear this. Please contact the Transport for London (TfL) helpline on 0343 222 1234 for further information. Thanks"
+   }
+  },
+  {
+   "customer": "the Bakerloo Line being closed this afternoon made me miss my train from Paddington and so have just had to buy a new single ticket. Anything that can be done to get a refund for this?",
+   "gold": "Hi Tom, a refund wouldn't normally be arranged; the line is closed, as for pre arranged/advertised planned engineering. However, you can send details of your journey to us here: <url> including a copy of the original/new ticket and this can be considered.",
+   "replies": {
+    "zero": "I'm sorry to hear that. I'm afraid that you will have to pay for the ticket as it is a one-way journey. However, if you have a valid ticket for the same journey on another day, you may be able to get a refund. Can I help you with anything else?",
+    "rag-8": "Hi, I can see that you have missed your train. I can see that you have a single ticket. I can see that you have a refund available. Please log in to your account and select the refund option. Thanks",
+    "lora:1": "Hi, sorry for the late reply. We can't refund this as it was a one way journey. Please accept our apologies for any inconvenience caused.",
+    "vera:256": "Hi, sorry to hear this. Please contact the customer service team on 0343 222 1234 (8am-8pm, Mon-Fri) for further information."
+   }
+  },
+  {
+   "customer": "hi if I book a travel card from Northampton to London can I go to Clapham Junction with it too? Thank you",
+   "gold": "Hi Chloe, I can't confirm that for you here... You'd need to check the validity of your ticket with the operator who issued it",
+   "replies": {
+    "zero": "yes you can",
+    "rag-8": "Hi, sorry, you can't use your travelcard to travel on the tube. You will need to use a contactless payment card or cash to pay for your journey.",
+    "lora:1": "Hi, yes you can, just use the card as normal.",
+    "vera:256": "Hi, sorry to hear that. Please contact us on 0343 222 1234 or email us at <url>"
+   }
+  },
+  {
+   "customer": "Hi my bank statement is saying that I have \u00a38.60 unpaid fairs but I haven't used my contactless card at all recently????",
+   "gold": "Hi, you will nee to call our Contactless team on 0343 222 1234 option 2,4 (8am-8pm) to have this looked into by one of our Contactless agents. Alternatively you can email: __email__  ^Jae",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'm not sure what you mean by \"contactless card\". Can you please tell me more about the card you're using?",
+    "rag-8": "Hi, please call 0343 222 1234 (options 2 &amp; 4) to have this looked into with one of our agents. They're open between 8am - 8pm, Monday to Sunday. Kind regards, Customer: Hi - I have",
+    "lora:1": "Hi, please call us on 0343 222 1234 and we can look into this for you. Thanks ^Jin",
+    "vera:256": "Hi, can you please send us a photo of your bank statement so we can check this for you? Thanks"
+   }
+  },
+  {
+   "customer": "still shocked on a daily basis by people ignoring priority seats - my favourite bit being the look at the bump &amp; badge and judging for themselves whether I\u2019m \u2018pregnant enough\u2019 for a seat <url>",
+   "gold": "Hi, sorry to hear and see your picture, we do have ongoing customer awareness campaigns but as you know good manners are hard to enforce. I hope your day gets better. Thanks",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. It\u2019s important to remember that everyone has their own reasons for not sitting in priority seats, and it\u2019s not always easy to understand. Have you tried explaining the importance of priority seating to the person in question?",
+    "rag-8": "Hi, I'm sorry to hear that. I'm not sure what you mean by 'priority seats' but I can see that you're on the tube. If you're on the tube, you can use the 'priority' button on the touch screen to get a seat. If you're on the bus, you",
+    "lora:1": "Hi, sorry to hear this. Please report any incidents to the Transport Policing team, 0343 222 1234. They will investigate.",
+    "vera:256": "Hi, sorry to hear this. Please log a support request here so we can investigate further: <url>"
+   }
+  },
+  {
+   "customer": "What\u2019s going on @tfl ? Pathetic service at Drayton Pk with trains cancelled at very last minute. Not good enough!!",
+   "gold": "Hi, for updates on the service from Drayton Park, please tweet @232537 thanks, Jo.",
+   "replies": {
+    "zero": "I\u2019m sorry to hear that. We\u2019re working on it. We\u2019ll get you a refund as soon as possible.",
+    "rag-8": "Hi, we are sorry to hear about the cancelled service at Drayton Park. We are working to improve the service and will keep you updated. Thanks, Jo.",
+    "lora:1": "Hi, sorry to hear this. Please log full details here <url> for investigation. Thanks",
+    "vera:256": "Hi, sorry for the inconvenience caused. Please call 0343 222 1234 between 08:00-20:00 to arrange a refund. Thanks"
+   }
+  },
+  {
+   "customer": "Any danger of a reply TFL?",
+   "gold": "If your request is declined, we can look into the issue further on your behalf and overturn manually if necessary. ^Tariq",
+   "replies": {
+    "zero": "No, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no,",
+    "rag-8": "Hi Khloe, please submit details of your journey. The system will make a decision based on where you started and finished and delay",
+    "lora:1": "Hi, please call 0343 222 1234 and an operator will be able to assist you. Thanks ^Mark",
+    "vera:256": "Hi, please use the contact details on the back of your ticket. Thanks"
+   }
+  },
+  {
+   "customer": "it's taken 50 mins for a 15 minutes journey due to signal failure... It isn't good enough ... What happens to my wasted time ??!",
+   "gold": "1/2 Hi Harman, sorry to hear you were delayed this morning. If the delay is within our control, pls see:<url>",
+   "replies": {
+    "zero": "I'm sorry to hear that. We are working on improving the signal quality and reducing the time it takes for trains to reach their destinations. In the meantime, we have implemented a feature that allows passengers to track their journey and receive notifications when they are approaching their destination. This will help you stay informed and plan your journey",
+    "rag-8": "2/2 to apply for a refund. Thanks, Jo.",
+    "lora:1": "Hi, sorry for the late reply. You can claim for this on the Railtrack website. <url>",
+    "vera:256": "Hi, sorry for the late reply. We're working on improving the journey times. Please see the link below for more information. <url>"
+   }
+  },
+  {
+   "customer": "Any chance of a Watford train tonight @320024 @TfL?",
+   "gold": "Hi Andrew, are you still waiting? nothing has been reported ^Sam",
+   "replies": {
+    "zero": "I'm afraid not, sorry. The train is delayed due to a technical issue.",
+    "rag-8": "Hi, sorry to hear you're having trouble. Please submit your journey details here: <url> I'll make control aware of this. Thanks",
+    "lora:1": "Hi, sorry for the late reply. We've been very busy today. We'll get this sorted as soon as possible. Thanks ^Mark",
+    "vera:256": "Hi, sorry for the late reply. We've been very busy with the Olympics and the rest of the week. We'll be back in action tomorrow."
+   }
+  },
+  {
+   "customer": "The card is on an 18+ Oyster",
+   "gold": "Can I have the Oyster card number please? ^Mark",
+   "replies": {
+    "zero": "Thank you for letting us know. We will check this and get back to you as soon as possible.",
+    "rag-8": "Hi, if you have a 18+ Oyster card, you can use it as a normal adult Oyster card. Thanks, Mark",
+    "lora:1": "Hi, sorry for the late reply. 1/2",
+    "vera:256": "Hi, sorry for the late reply. Please use the contactless payment on the card to pay for travel."
+   }
+  },
+  {
+   "customer": "Hi - trying to pay congestion charge for yesterday and website is still down. Will we be ok to do on Monday, or be fined?",
+   "gold": "Yes you do have until Monday midnight 23 October 2017 to make payments.\n\nThanks\n\nKevin",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. The website is currently experiencing technical difficulties. We apologize for any inconvenience this may cause. We will be working to resolve the issue as soon as possible. In the meantime, you can try accessing the website again later today or tomorrow. If you are unable to access the website,",
+    "rag-8": "Hi, sorry for the delay in replying to you. We have been extremely busy. To speak to someone about congestion charging, please call 0343 222 2222 between 08:00-22:00.",
+    "lora:1": "Hi, please call the congestion charge team on 0343 222 2222 between 8am-8pm. They will be able to advise you. Thanks",
+    "vera:256": "Hi, sorry for the late reply. We're currently working on a fix for this. Please try again tomorrow. Thanks"
+   }
+  },
+  {
+   "customer": "New trains have more technical difficulties than the old ones @TfL bring the old school trains back \ud83d\ude29",
+   "gold": "Which line are you referring to?",
+   "replies": {
+    "zero": "I'm sorry to hear that. The new trains are designed to be more efficient and reliable than the old ones. They have been thoroughly tested and are expected to perform better. If you have any concerns or issues with the new trains, please let us know so we can address them promptly. Thank you for your feedback.",
+    "rag-8": "Hi, we're sorry to hear that. We're working to resolve the issue as quickly as possible. ^Mark",
+    "lora:1": "Hi, sorry to hear this. We'll look into this further. Thanks for letting us know.",
+    "vera:256": "Hi, sorry to hear that. We'll be looking into this. Thanks for your feedback."
+   }
+  },
+  {
+   "customer": "Bought season ticket on your app that wasn\u2019t added to my Oyster at the barrier. Had to pay for all journeys. How do I get a refund?",
+   "gold": "Hi Trixie. Sorry to hear this. Please fill in our app form so we can look into this for you <url> ^Marc",
+   "replies": {
+    "zero": "Hi, I\u2019m sorry to hear that you\u2019ve had a problem with your Oyster. I can understand how frustrating it must be to have to pay for all your journeys. I would suggest that you contact the customer service team at the Oyster company to see if they can help you with a refund. They may be",
+    "rag-8": "Hi, sorry for the late reply. Please be aware that due to the volume of customers contacting us it may take some time for us to reply. Do you still require our assistance, if so please use following link: <url>",
+    "lora:1": "Hi, sorry for the late reply. You can apply for a refund by emailing us at <url>",
+    "vera:256": "Hi, sorry for the late reply. Please send us a message via the link below and we'll be able to look into this for you. Thanks ^Mark"
+   }
+  },
+  {
+   "customer": "Does anyone know why if you live on the @149964 you get your tickets checked everyday on the tube? @TfL",
+   "gold": "Coincidence? Timing? It's interesting if this is a daily occurrence. Pls DM us more info and we'll advise further.",
+   "replies": {
+    "zero": "I'm sorry, but I don't have access to real-time information about the specific rules or regulations regarding ticket checks on the tube. It's possible that there might be a temporary issue or a change in policy that affects certain areas or stations. I recommend checking the official TfL (Transport for London) website or contacting",
+    "rag-8": "Hi, we're sorry to hear that. We're working on a solution to this issue. We'll let you know when we have a solution. Customer: Hi, I'm a student and I'm trying to get a student ticket for the tube. I'm not sure if I'm eligible. Can you help?",
+    "lora:1": "Hi, sorry to hear this. You can request a refund for this here: <url>",
+    "vera:256": "Hi, we don't have any information on this. Please contact the station directly. Thanks"
+   }
+  },
+  {
+   "customer": "No reply to this? You're basically robbing me!",
+   "gold": "Sorry for the late reply. Please reply by Private Message with your Oyster card number, type of rail pass you have and details of the journey you make.\n\nRegards\nChiedu",
+   "replies": {
+    "zero": "I'm sorry, but I'm afraid I can't do that. I'm afraid I have to ask you to leave.",
+    "rag-8": "Hi, I'm sorry, I'm not able to assist with this issue. Please contact our customer service team for further assistance.",
+    "lora:1": "Hi, I'm sorry for the late reply. I've been extremely busy. I'll look into this for you. Thanks for the feedback.",
+    "vera:256": "Hi, sorry for the late reply. We're currently under a lot of pressure to respond to all queries. Please be patient."
+   }
+  },
+  {
+   "customer": "Can someone from @TfL please reply to my messages?? Or at least answer my calls??",
+   "gold": "Hi, we need your Oyster card number to investigate this further. Please confirm",
+   "replies": {
+    "zero": "I'm sorry, but I'm not authorized to reply to messages or answer calls on behalf of TfL. I can help you with general information about TfL or provide assistance with other matters. If you have any questions or need help with something else, please let me know, and I'll do my best to assist",
+    "rag-8": "Hi, I'm sorry but I'm not able to reply to your messages. Please DM me your card number and I'll try to help.",
+    "lora:1": "Hi, I'm sorry that we haven't responded sooner. Please could you confirm if you're still having issues?",
+    "vera:256": "Hi, please send a message to us at <url> and we'll get back to you as soon as possible. Thanks"
+   }
+  },
+  {
+   "customer": "011421812655",
+   "gold": "Please use link for us to process this and this can be resolved accordingly: <url>\n\nAlternatively please call the helpline on 0343 222 1234 options 2 &amp; 5 and an advisor will look into this for you.\n\nThanks\n\nKevin",
+   "replies": {
+    "zero": "011421812655",
+    "rag-8": "Hi, you can call 011421812655 to speak to a customer service representative. Regards",
+    "lora:1": "Hi, please call us on 0343 222 1234 and we will be able to assist you. Thanks ^Jin",
+    "vera:256": "Hi, sorry for the late reply. We've been very busy recently. Please use the contact details below to contact us. Thanks, ^Mark"
+   }
+  },
+  {
+   "customer": "Are shops charged to process oyster top ups? Ibwas charged 50p. Shopkeeper said he was passing on the charge he has to pay. True or false?",
+   "gold": "2/2 shop notifying their customers of the amount.",
+   "replies": {
+    "zero": "The shopkeeper is correct. The charge is passed on to the customer.",
+    "rag-8": "Hi, no, shops are not charged to process top-ups. The charge is passed on to the customer. Thanks",
+    "lora:1": "Hi, sorry for the late reply. Yes, Oyster is charged a 50p administration fee for each transaction.",
+    "vera:256": "Hi, sorry for the late reply. Yes, shops are charged to process Oyster top-ups."
+   }
+  },
+  {
+   "customer": "there's delays on the met line but announcement says good service. What a joke",
+   "gold": "of cancelled trains, time of day, and passengers affected all affect the service we provide. It is also important (2/6)",
+   "replies": {
+    "zero": "I'm sorry to hear that. I understand that delays can be frustrating, but I'm here to help. Can you tell me more about the specific delays you're experiencing on the Met Line? It would be helpful to know if there are any particular routes or times that are affected. Additionally, if you have any concerns",
+    "rag-8": "Hi, when deciding how to describe our service we have to consider the various criteria. Factors such as amount of late running, number (1/6)",
+    "lora:1": "Hi, sorry for the late reply. We've been inundated with similar messages. The line is currently running as normal.",
+    "vera:256": "Hi, sorry for the late reply. We've updated the information on the website. Please let us know if you have any further queries. ^Mark"
+   }
+  },
+  {
+   "customer": "want 2 challenge a PCN tried2use viewmypcn it said up to 24 hours but has now been many days &amp; site says delays. running out of time.",
+   "gold": "Hi Lance, please contact Penalty Charge Notice team on 0343 222 3333 (08:00-20:00 Monday to Friday) to have your query looked into ^Jae",
+   "replies": {
+    "zero": "I'm sorry to hear that you're experiencing delays with your PCN. Can you please provide me with more details about the issue you're facing? This will help me better understand the situation and assist you in resolving it as quickly as possible.",
+    "rag-8": "Hi, I'm sorry to hear that. I'll pass this on to the relevant team. We'll get back to you as soon as we can.",
+    "lora:1": "Hi, sorry for the late reply. We've been very busy. Please accept our apologies. ^Jin",
+    "vera:256": "Hi, sorry for the late reply. Please send us a message with the details of the PCN and we'll investigate. Thanks"
+   }
+  },
+  {
+   "customer": "I read somewhere that you can get your 1st gen oyster upgraded (1 sent to you free), is this true and if so, how? thanks",
+   "gold": "for information on how to replace this Oyster card please see the following link: <url>",
+   "replies": {
+    "zero": "Yes, that is true. We will send you a free 1st gen oyster to upgrade your 1st gen oyster to 2nd gen. You can do this by visiting our website and following the instructions on the page. Once you have upgraded your oyster, you will be able to enjoy the",
+    "rag-8": "Hi, you can upgrade your Oyster card to a 2nd generation card for free. You can do this by logging on through your Oyster account here:<url> ^Jae",
+    "lora:1": "Hi, please visit the Oyster website to find out more about this offer. <url>",
+    "vera:256": "Hi, sorry for the late reply. Yes, you can get your 1st Gen Oyster upgraded for free. Please visit the Oyster website for more information."
+   }
+  },
+  {
+   "customer": "Hi - any chance of a reply?",
+   "gold": "Hi Andy, any property lost on our Tube is stored by the Lost Property Office for up to three months after the date of loss. To report your property as lost, please use the online form on our website: <url>",
+   "replies": {
+    "zero": "Hi, I'm sorry, but I'm not able to provide a reply at this time. Can I assist you with anything else?",
+    "rag-8": "Hi, sorry to hear this, there are severe delays on the line but I'll make control aware of this. I hope you get a train soon. Thanks",
+    "lora:1": "Hi, please call us on 0343 222 1234 and we will be able to help you. Thanks ^Jae",
+    "vera:256": "Hi, sorry for the late reply. We've been very busy recently. Please accept our apologies."
+   }
+  },
+  {
+   "customer": "QQ - How do I download a journey history for my Oyster from April 5? It only lets me do it from mid Sept. Thanks",
+   "gold": "Hi, the data is only available for eight weeks... It would now be impossible to retrieve anything from April",
+   "replies": {
+    "zero": "Hi, I'm sorry to hear that. I'm not sure how to do that. Can you please provide me with your Oyster card number?",
+    "rag-8": "Hi, sorry for the delay in replying. You can download your journey history from the Oyster app. Please follow the instructions here: <url>",
+    "lora:1": "Hi, sorry for the late reply. You can download Journey History for the last 12 months from the Oyster app.",
+    "vera:256": "Hi, sorry for the late reply. You can download Journey History for the last 12 months from the Oyster app."
+   }
+  }
+ ],
+ "style_examples": [
+  "Hi Emma, sorry to hear this, there are no reported issues but I'll make control aware of this. Hope you've managed to get on a train^ Serena",
+  "Hi Katsy, I'm sorry for the delay responding to your tweet. To get a refund, please send full details of your journey to us here: <url>",
+  "Hi, apologies, I was referring to East Putney station.",
+  "Hi Ebba, Sorry for the late reply, hope you have caught a 43 and safely travelling home. this service is on diversion until early November",
+  "The behaviours described in your tweet is exactly what we expect of them, but their hard work is rarely recognised.  (2/3)"
+ ],
+ "seconds": 133.20408177375793
+}
