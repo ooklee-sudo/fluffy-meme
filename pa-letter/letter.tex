@@ -189,23 +189,13 @@ Human estimate $\mu_H(e)$ & $+0.45$ & $+0.45$ \\
 
 Prediction-powered inference \citep[PPI;][]{angelopoulos2023} and design-based supervised learning \citep[DSL;][]{egami2023} correct model-label estimates by combining model labels for all units with human labels for a random subsample, weighted by the inverse sampling probability. Because we have human labels for every post, we can ask how close such corrections come to the full human-label estimate when only part of the corpus is validated.
 
-We drew random subsets of 10\% to 50\% of the 191 posts, treated their human labels as the only ones available, and computed four estimates of each class response on the 95-event frame. The \emph{naive} estimate uses model labels only. The \emph{human-only} estimate uses the validated events alone. \emph{PPI} corrects the model-label class indicator with the validated residual. \emph{DSL} first predicts each post's human class from the votes of the five model runs \chk{confirm which five runs}, with five-fold cross-fitting on the validated subset, and then applies the same design-based correction. We repeated the draw 2,000 times and report the median absolute error of each estimate against the full human-label estimate (Figure~\ref{fig:sim}). The simulation was designed after the main results were known and is exploratory.
+We drew random subsets of 10\% to 50\% of the 191 posts, treated their human labels as the only ones available, and computed four estimates of each class response on the 95-event frame. The \emph{naive} estimate uses model labels only. The \emph{human-only} estimate uses the validated events alone. \emph{PPI} corrects the model-label class indicator with the validated residual. \emph{DSL} first predicts each post's human class from the votes of the five model runs \chk{confirm which five runs}, with five-fold cross-fitting on the validated subset, and then applies the same design-based correction. We repeated the draw 2,000 times and report the median absolute error of each estimate against the full human-label estimate; full details are in SI Section S5. The simulation was designed after the main results were known and is exploratory.
 
 The corrections remove the bias. The naive escalation estimate is off by a fixed $-0.28$ points with model~1 and $-0.13$ with the v2 majority, whereas the median signed error of DSL is within 0.04 points of zero once 30\% of posts are validated, and within 0.01 at 40\% and 50\%.
 
 Removing bias costs variance, however, and with few events the cost is large. A 30\% subsample contains on average only three of the ten human escalation events, and one in three 10\% subsamples contains none (SI Table S4). With model~1, DSL becomes more accurate than the naive estimate only once about 30\% of posts are validated (median absolute error 0.23 against 0.28). With the better v2 majority labels, even 50\% is not enough (0.14 against 0.13). For escalation, DSL is about as accurate as using the validated events alone. For de-escalation, it is far more accurate (0.15 against 0.42 at 30\%). The de-escalation mean depends on a few large moves that a small validated subsample often misses and that the model labels recover. PPI, which corrects the class indicator directly, is unstable for escalation, where its denominator is small. We do not recommend it for class means of this kind.
 
 Corrections do not fail, but a validated subsample is not a cheap fix when events are few. Its value depends on how biased the model labels are, how rare the target class is, and how heavy-tailed the outcome is; in our case, the better labels needed a larger validated share before correction paid off. At the scale of a single-episode study, a third to a half of the corpus may need human labels, and labelling everything may be the simpler choice.
-
-\begin{figure}[t]
-\centering
-\fbox{\parbox[c][2.5in][c]{0.9\textwidth}{\centering \chk{Figure 2 placeholder. 2$\times$2 panels: rows Model 1 / v2 majority; columns De-escalation / Escalation. x-axis: share of posts with human labels (10--50\%); y-axis: median absolute error (pp), shared within columns. Lines: Naive (horizontal dashed), Human-only (grey), DSL (dark). PPI moved to the SI.}}}
-\caption{Error of Naive, Human-Only, and DSL Estimates by Share of Posts with Human Labels}
-\label{fig:sim}
-\begin{minipage}{0.95\textwidth}
-\footnotesize\textit{Note:} Median absolute error over 2,000 random subsets, in percentage points, against the full human-label estimate on the 95-event frame. Top row: model~1 labels. Bottom row: v2 majority labels. The naive estimate does not depend on the validated share. PPI results are in SI Figure S1.
-\end{minipage}
-\end{figure}
 
 %======================================================================
 \section{Recommendations and Limits}

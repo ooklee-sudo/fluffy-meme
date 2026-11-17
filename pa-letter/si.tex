@@ -183,17 +183,7 @@ Human estimate $\mu_H(e)$ & $+0.94$ & $+0.94$ \\
 
 \paragraph{Design.} We drew random subsets of 10\%, 20\%, 30\%, 40\%, and 50\% of the 191 posts, treated their human labels as the only ones available, and computed four estimates of each class response on the 95-event frame, repeating the draw 2,000 times. The naive estimate uses model labels only. The human-only estimate uses the labelled events alone. PPI \citep{angelopoulos2023} corrects the model-label class indicator with the labelled residual. DSL \citep{egami2023} first predicts each post's human class from the votes of the five model runs \chk{confirm: model~1 and the four v2 runs?}, with five-fold cross-fitting on the labelled subset, and then applies the same design-based correction. The reference is the full human-label estimate on the 95-event frame. The simulation was designed after the main results were known and is exploratory.
 
-\paragraph{PPI.} Because PPI corrects the class indicator directly, its estimate of a class mean is a ratio whose denominator is the corrected number of events in the class. For the escalation class, with ten human events, that denominator is small and can approach zero in some draws, so the PPI error distribution has very long tails. Figure~S1 reports it separately from the main-text figure. We do not recommend PPI for class means of this kind.
-
-\begin{figure}[h]
-\centering
-\fbox{\parbox[c][2.2in][c]{0.9\textwidth}{\centering \chk{Figure S1 placeholder. Same layout as main-text Figure 2 (2$\times$2: Model 1 / v2 majority $\times$ De-escalation / Escalation), adding PPI. Use a log or truncated y-axis for the escalation panels, and report the share of draws with a near-zero denominator.}}}
-\caption{Error of PPI Compared with Naive, Human-Only, and DSL Estimates}
-\label{fig:ppi}
-\begin{minipage}{0.95\textwidth}
-\footnotesize\textit{Note:} Median absolute error over 2,000 random subsets, in percentage points, against the full human-label estimate on the 95-event frame.
-\end{minipage}
-\end{figure}
+\paragraph{PPI.} Because PPI corrects the class indicator directly, its estimate of a class mean is a ratio whose denominator is the corrected number of events in the class. For the escalation class, with ten human events, that denominator is small and can approach zero in some draws, so the PPI error distribution has very long tails. We do not recommend PPI for class means of this kind.
 
 \paragraph{Validated escalation events per draw.} Table~S4 gives the number of human escalation and de-escalation events that a random subset contains at each validated share. Because each subset is a simple random sample of posts drawn without replacement, and each of the ten human escalation events in the 95-event frame is a distinct post among the 191, the count follows a hypergeometric distribution, which we compute exactly. At 10\%, a third of the subsets contain no escalation event at all, so the correction must rest entirely on the model labels; at 30\%, the median subset contains three, and almost two in five contain two or fewer. Even at 50\%, the validated escalation sample is about five events. This is why the variance cost of correction is large for escalation but not for de-escalation.
 
@@ -300,16 +290,9 @@ Adjudicated by the investigator only & 1 (not tested) & 9; 0.30 (---); .30; $-0.
 
 To check that the co-movement is not an artifact of the hours in which posts fall, we drew placebo post times in the same clock hour on neighbouring days (same weekday status, at least two hours from any labelled post; 10,000 draws). The mean placebo return over 30 minutes is 0.04\% for de-escalation (95th percentile 0.20; 99th percentile 0.27; observed 0.93\% on the 31 of 32 events with a placebo pool), and none of the 10,000 draws reaches the observed value. For escalation, it is 0.07\% (95th percentile 0.27; 99th percentile 0.38; observed 0.45\% on all ten events), and 0.2\% of the draws reach the observed value. A second placebo uses only the 20\% of candidate times whose return over the preceding 30 minutes is closest to the event's own (on average 0.49\% for de-escalation events and 0.20\% for escalation events). Its means are 0.05\% and 0.16\% (95th percentiles 0.20 and 0.36); no draw reaches the observed de-escalation value, and 1\% of the draws reach the observed escalation value. Neither placebo is matched on news, so the placebos show that the post windows differ from comparable hours with comparable preceding drift, not that they differ from comparable news hours.
 
-\begin{figure}[h]
-\centering
-\fbox{\parbox[c][2.2in][c]{0.9\textwidth}{\centering \chk{Figure S2 placeholder. Directional WTI return relative to the price at the post time, from $-60$ to $+60$ minutes; de-escalation ($n = 32$) and escalation ($n = 10$); mean $\pm$ 1 SE and median; grey band = 95\% band of the mean at placebo times (original manuscript Figure 3).}}}
-\caption{Directional WTI Return Around Human-Labelled Posts}
-\label{fig:paths}
-\end{figure}
-
 \subsection{Pre-post drift}
 
-On the 29 de-escalation events with a price 60 minutes before the post, the 30 minutes before the post also exceed the placebo (0.48\%, against a placebo mean of 0.08\% and a 95th percentile of 0.24), as does the preceding hour (0.76\% against 0.12\%); no placebo draw reaches either value, and tick counts in the half hour before a de-escalation post are 19\% higher than in comparable hours. The mean path before de-escalation posts rises by about half a percentage point between 20 and 15 minutes before the post (Figure~S2); the median shows no such step, so a few events moving together produce it. For escalation, the preceding 30 minutes are not distinguishable from the placebo (0.23\% against 0.09\%; 18\% of the draws reach the observed value; nine events), and neither is the preceding hour. We describe the de-escalation drift as larger than in comparable hours and of unidentified cause: the market may be reacting to news that the post then repeats, or the same development may move both. On the earlier labels, whether an outside source reported a decision before the post made no difference to the drift (30 events, $p = 0.90$).
+On the 29 de-escalation events with a price 60 minutes before the post, the 30 minutes before the post also exceed the placebo (0.48\%, against a placebo mean of 0.08\% and a 95th percentile of 0.24), as does the preceding hour (0.76\% against 0.12\%); no placebo draw reaches either value, and tick counts in the half hour before a de-escalation post are 19\% higher than in comparable hours. The mean path before de-escalation posts rises by about half a percentage point between 20 and 15 minutes before the post; the median shows no such step, so a few events moving together produce it. For escalation, the preceding 30 minutes are not distinguishable from the placebo (0.23\% against 0.09\%; 18\% of the draws reach the observed value; nine events), and neither is the preceding hour. We describe the de-escalation drift as larger than in comparable hours and of unidentified cause: the market may be reacting to news that the post then repeats, or the same development may move both. On the earlier labels, whether an outside source reported a decision before the post made no difference to the drift (30 events, $p = 0.90$).
 
 \subsection{Robustness}
 

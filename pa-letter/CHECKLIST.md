@@ -31,16 +31,15 @@ SI 안에 남은 확인 사항 (`si.tex`의 `\chk`):
 |---|---|---|
 | B1 | S1.1 | API로 다시 실행한다면 그 설정과 결과 |
 | B2 | S5 | DSL의 "five model runs" 구성 (본문 A5와 같음) |
-| B3 | S5, Figure S1 | PPI 그림 제작 |
-| B5 | S6, Figure S2 | 사건 전후 가격 경로 그림 (원 원고 Figure 3) |
 | B6 | S7 | 분석 계획 전체 목록을 공개·인용할지 |
 
-## C. 그림 제작
+## C. 그림
+
+원 결과 파일이 없어 Figure 2와 SI Figure S1·S2는 넣지 않기로 했습니다. 해당 결과는 본문 6절과 SI S5·S6에 숫자로 남아 있습니다.
 
 | # | 내용 |
 |---|---|
 | C1 | Figure 1: 완료 (`figures/figure1.pdf`, `.png`, 스크립트 `figures/make_figure1.py`). 모델 라벨 세트별 평균의 CI는 원 원고에 없어 사람 라벨 CI만 표시. 모델별 CI를 계산하면 스크립트에 추가 |
-| C2 | Figure 2: 2×2 시뮬레이션 그림. PPI는 SI Figure S1로 |
 
 ## D. 참고문헌 서지 정보 확인 (`references.bib`의 `note = {VERIFY}`)
 
