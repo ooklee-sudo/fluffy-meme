@@ -11,7 +11,11 @@ model. Every adapter's update starts at exactly zero, so the model with a fresh 
 
 LoRA uses the rank-stabilized scale (Kalajdzievski 2023), the same 1/sqrt(r) factor as the TT adapter.
 VeRA follows Kopiczko et al. (2024).
+
+  quanta  QuanTA (Chen et al. 2024) with d axes ("quanta:4"): pairwise gates over a d-axis reshaping of the
+        features, dW = C(W) - C(W0); see QuantaDelta                       trainable: the gates
 """
+import itertools
 import math
 
 import torch
@@ -75,6 +79,62 @@ class VeRADelta(nn.Module):
         return F.linear(h, b_s.to(x.dtype)) * self.b.to(x.dtype)
 
 
+class QuantaDelta(nn.Module):
+    """QuanTA (Chen et al., 2024), ported from the authors' code (github.com/quanta-fine-tuning/quanta,
+    Apache-2.0), mode 'sum_opposite_freeze_one'.
+
+    The input is padded to prod(n) features and reshaped to d axes n = factorize(max(out, in), d). One
+    trainable "gate" acts on every pair of axes, applied in the authors' order; the output is cropped to `out`.
+    dW = C(W) - C(W0), where C is that circuit of gates and W0 is a frozen copy of the initial gates (Kaiming
+    uniform, as if each gate were a matrix). The authors merge -C(W0) into the base weight; the base weight is
+    shared between tenants here, so the frozen circuit is evaluated instead. The update is the same.
+    """
+
+    def __init__(self, out_features, in_features, d, device):
+        super().__init__()
+        self.out_features, self.in_features = out_features, in_features
+        self.n = factorize(max(out_features, in_features), d)
+        self.total = math.prod(self.n)
+        self.pairs = list(itertools.combinations(range(-1, -d - 1, -1), 2))
+        ws = []
+        for d1, d2 in self.pairs:
+            n1, n2 = self.n[d1], self.n[d2]
+            w = torch.empty(n2, n1, n2, n1, device=device)
+            nn.init.kaiming_uniform_(w.view(n2 * n1, n2 * n1), a=math.sqrt(5), nonlinearity="linear")
+            ws.append(nn.Parameter(w))
+        self.w = nn.ParameterList(ws)
+        self.register_buffer("w0", torch.cat([w.detach().flatten() for w in ws]))
+        self.eqs = []
+        for d1, d2 in self.pairs:  # x[..., axes]; contract axes d2, d1 with gate (out2, out1, in2, in1)
+            ax = [chr(97 + k) for k in range(d)]
+            o = ax.copy()
+            o[d1], o[d2] = "Y", "Z"
+            self.eqs.append(f"...{''.join(ax)},Z Y{ax[d2]}{ax[d1]}->...{''.join(o)}".replace(" ", ""))
+
+    def frozen(self):
+        out, k = [], 0
+        for w in self.w:
+            out.append(self.w0[k: k + w.numel()].view_as(w))
+            k += w.numel()
+        return out
+
+    def circuit(self, x, gates):
+        shape = x.shape[:-1]
+        x = F.pad(x, (0, self.total - self.in_features)).reshape(-1, *self.n)
+        for eq, g in zip(self.eqs, gates):
+            x = torch.einsum(eq, x, g.to(x.dtype))
+        return x.reshape(*shape, self.total)[..., : self.out_features]
+
+    def forward(self, x):
+        with torch.no_grad():
+            y0 = self.circuit(x, self.frozen())
+        return self.circuit(x, list(self.w)) - y0
+
+    def matrix(self):
+        eye = torch.eye(self.in_features, device=self.w0.device)
+        return self.forward(eye).T
+
+
 class Slot(nn.Module):
     """A frozen base linear layer plus one swappable adapter."""
 
@@ -127,6 +187,8 @@ def set_method(slots, method, r, seed=0):
             s.delta = LoRADelta(o, i, r, dev)
         elif method == "vera":
             s.delta = VeRADelta(o, i, shared, dev)
+        elif method == "quanta":
+            s.delta = QuantaDelta(o, i, r, dev)
         elif method == "none":
             s.delta = None
         else:
