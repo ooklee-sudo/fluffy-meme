@@ -100,7 +100,7 @@ Secondary (primary judge, 40 messages x 50 brands per pair):
 | LoRA r=1 vs none | 0.758 (50/50 brands) | 0.959 | 0.634 | 0.605 / 0.199 | 0.321 / 0.355 |
 
 The advantage over retrieval is in voice, not helpfulness, and retrieval replies more often contain unsupported
-specifics (copied from retrieved replies to other customers). The second judge (`openai/gpt-5-mini`) agreed with
+specifics (plausibly details carried over from retrieved replies to other customers; not checked). The second judge (`openai/gpt-5-mini`) agreed with
 the primary judge on 75.1% of 373 primary comparisons (Cohen's kappa 0.52) but put LoRA's win rate at only
 0.512, so the size of the quality advantage depends on the judge; human ratings (H6) are needed before the
 quality claim is made strongly.
