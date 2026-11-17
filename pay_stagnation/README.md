@@ -2,4 +2,5 @@
 
 - `data_table1.csv`, `data_table2.csv`: figures used in Tables 1-2 (KRW million unless noted). Blank = no published figure; nothing was interpolated.
 - `reproduce.py`: recomputes real indices (2013 = 100, 2024 prices), growth rates and pay ratios. Run `python reproduce.py`.
+- `make_fig2.py`, `fig2_revised.png`: script and output for Fig. 2 (requires matplotlib).
 - Sources are listed in the manuscript's Table 1/2 notes and in `SOURCE_CHECK.md` (cross-check of each figure against the cited article).
