@@ -54,13 +54,13 @@ Three conclusions hold under both splits (Table 4 and Figure 4). First, GPT-6.1-
 
 ### 5.4 Calibrating the count rule
 
-Proposition 1 needs $\theta_w$ and not $\theta$. Table 6 compares the thresholds that follow from the undivided $\theta$ with those under each split, for a cost of a wrong output of $F = 60$ and $F = 100$, a hand-off cost $H = 40$, a step cost of 1, an error cost of 5, a completion probability of 0.06, and an error rate of 0.054 per step. These costs are illustrative.
+Proposition 1 needs $\theta_w$ and not $\theta$. Table 6 gives the thresholds under the two splits for the costs calibrated in Appendix C: a hand-off costs $H = \$8.82$, one agent step $k = \$0.004$, the completion probability is 0.12 per step, and the error rate per step is that of each agent in control runs. The cost of repairing a wrong output $F$ is the least certain quantity and depends on the domain, so we show three values: one extra human contact ($\$12.35$) and two higher values that add a refund or goodwill ($\$22$ and $\$44$).
 
 {{NSTAR}}
 
-*Table 6. Count at which the firm should hand off ($F = 60$ / $F = 100$). "No rule" means errors of this kind do not lower this agent's success; "no rule needed" means the wrong-output risk is indistinguishable from zero.*
+*Table 6. Count at which the firm should hand off, for three costs of a wrong output, under the additive and the model-consistent split (a range when they differ). "n.s." marks a $\theta_w$ whose interval includes zero, which is treated as zero; "$>10$" means the rule would almost never bind. Rows give the agent and the kind of injected error.*
 
-The firm's rule changes materially for GPT-6.1-terra. A single misleading message does not call for a count-based hand-off on account of wrong output, because the agent hands off by itself. What that behavior calls for instead is staffing (Section 4.3): a misleading message nearly doubles the share of tasks that reach the reviewers. For Claude Sonnet 5.5 the threshold is two to four errors, a little higher than the undivided estimate suggests. For DeepSeek-V3.1 and a misleading message it ranges from no rule to two.
+The thresholds depend on the ratio of the cost of a wrong output to the cost of a hand-off. If a wrong output costs about one more human contact, the count rule hardly binds for any agent: even for Claude Sonnet 5.5 the threshold is nine errors or more, and an agent that makes a tool error in about one step in seventy rarely reaches it. The rule starts to matter when a wrong output costs two or more times a hand-off. For GPT-6.1-terra no count rule is warranted at any of the three costs, because the agent hands off by itself and its $\theta_w$ is indistinguishable from zero. What that behavior calls for instead is staffing (Section 4.3): a misleading message nearly doubles the share of tasks that reach the reviewers. For Claude Sonnet 5.5 the threshold is {{SONNET_N}}. For DeepSeek-V3.1 and a misleading message it ranges from no rule to seven errors at the lowest cost and from no rule to two at the highest, depending on the split. Using the undivided $\theta$ would have overstated the need for a rule for GPT-6.1-terra.
 
 ### 5.5 Robustness and limits
 

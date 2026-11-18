@@ -32,14 +32,60 @@ def tab_decomp(kind):
     return "\n".join(rows)
 
 
+def _rng(a, b, cap=10):
+    vals = sorted([a, b], key=lambda x: 99 if (x == float("inf") or x > cap) else x)
+    lo, hi = vals
+    f = lambda x: f">{cap}" if (x == float("inf") or x > cap) else str(int(x))
+    return f(lo) if f(lo) == f(hi) else f"{f(lo)} to {f(hi)}"
+
+
 def tab_nstar():
-    rows = ["| Agent, error type | Total θ, undivided | θ_w additive | θ_w model-consistent |", "|---|---|---|---|"]
-    for m in ["deepseek", "gpt61terra", "sonnet55"]:
-        for kind, lab in (("transient", "transient"), ("misleading", "misleading")):
-            d = T[m][kind]
-            fmt = lambda v: "/".join("no rule" if x == "none" else ("no rule needed" if x == "inf" else str(x)) for x in v)
-            rows.append(f"| {NAME[m]}, {lab} | {fmt(d['n_star_old'])} | {fmt(d['n_star_new'])} | {fmt(d['n_star_model_consistent'])} |")
+    import calibration as cal
+    rows = ["| Agent, error type | θ$_w$ (additive; model-consistent) | N* at F = $12.35 | N* at F = $22 | N* at F = $44 |", "|---|---|---|---|---|"]
+    for r in cal.rows():
+        th = f"{max(r['theta_w_add'], 0):.2f}{'' if r['sig_add'] else ' (n.s.)'}; {max(r['theta_w_model'], 0):.2f}{'' if r['sig_model'] else ' (n.s.)'}"
+        cells = [_rng(*r["cells"][str(F)]) for F in (cal.P["F_base"], cal.P["F_high"], cal.P["F_vhigh"])]
+        rows.append(f"| {NAME[r['agent']]}, {r['kind']} | {th} | {cells[0]} | {cells[1]} | {cells[2]} |")
     return "\n".join(rows)
+
+
+def sonnet_text():
+    import calibration as cal
+    r = [x for x in cal.rows() if x["agent"] == "sonnet55" and x["kind"] == "misleading"][0]
+    def phrase(F):
+        a, b = r["cells"][str(F)]
+        lo, hi = sorted([a, b], key=lambda x: 99 if (x == float("inf") or x > 10) else x)
+        if lo > 10 or lo == float("inf"): return "more than ten"
+        if hi == float("inf") or hi > 10: return f"{int(lo)} or more"
+        return str(int(lo)) if lo == hi else f"{int(lo)} to {int(hi)}"
+    return (f"{phrase(cal.P['F_base'])} errors when a wrong output costs $12.35, {phrase(cal.P['F_high'])} when it costs $22, and {phrase(cal.P['F_vhigh'])} when it costs $44")
+
+
+def tab_calib():
+    import calibration as cal
+    P = cal.P
+    rows = ["| Quantity | Symbol | Value used (range) | Basis | Reliability |", "|---|---|---|---|---|",
+            f"| Cost of a human-handled contact | $H$, $h$ | ${P['H']:.2f} (${P['H_low']:.0f}–{P['H_high']:.1f}) | Average cost per call of $8.82 reported by SQM Group (as cited by a vendor page); $13.50 per agent-assisted contact attributed to Gartner and $6–12 in other benchmarks (vendor roll-up) | Secondary, vendor sources |",
+            f"| Cost to detect and repair a wrong output | $F$ | ${P['F_base']:.2f} base (${P['F_low']:.2f}–{P['F_vhigh']:.0f}) | Base is one extra contact at the SQM cost per resolution ($8.82 × 1.4 contacts per resolution). Repeat contacts are reported to cost about as much as a first contact ($8–16). Values of $22 and $44 add a repair contact and goodwill or refund | Base: secondary. $22 and $44: assumptions; the domain sets $F/H$ |",
+            f"| Cost of one agent step | $k$ | ${P['k']:.3f} ($0.0017–0.0067) | Our run logs: mean cost per run divided by mean tool calls (GPT-6.1-terra $0.0124 / 7.4; Claude Sonnet 5.5 $0.054 / 8.1), including the simulated customer | Measured in our experiments |",
+            f"| Cost of an error | $c$ | ${P['c']:.3f} | Assumed equal to $k$ (one wasted call) | Assumption |",
+            f"| Completion probability per step | $q$ | {P['q']:.2f} | One over the mean number of tool calls per run in customer service (7.4–8.8) | Measured |",
+            "| Error rate per step | $\\mu$ | 0.012 (GPT-6.1-terra), 0.014 (Claude Sonnet 5.5), 0.055 (DeepSeek-V3.1) | Agent-error rate per call in control runs, customer service (Table 3 of the earlier analysis; `inject/results`) | Measured |",
+            f"| Reviewer service rate | $m$ | {P['m_per_hour']:.0f} per hour (average handle time {P['aht_min']} min; 6–10 min) | Voice median attributed to ICMI (via an aggregator); MetricNet 2023 voice 7.0 and chat 9.8 minutes; Zendesk chat 8–12 minutes | Secondary; definitions differ by channel |",
+            f"| Value of customer waiting time | $\\omega$ | ${P['wage']:.2f} per hour = ${P['omega_per_service_time']:.2f} per service time | Median hourly wage of customer service representatives, May 2025 (BLS), used as the value of a customer's time | Wage: official. Use as value of time: assumption |",
+            "| For comparison: cost of an AI resolution | – | $0.41–2.00 | Vendor-reported cost per AI resolution; our own cost per simulated customer-service run is $0.012–0.054 | Vendor; measured |"]
+    return "\n".join(rows)
+
+
+def tab_sens():
+    import calibration as cal
+    P = cal.P
+    Fs = [P["F_low"], P["F_base"], P["F_high"], P["F_vhigh"]]
+    rows = ["| Hand-off cost $H$ | " + " | ".join(f"$F$ = ${F:g}" for F in Fs) + " |", "|---|" + "---|" * len(Fs)]
+    for H, v in cal.sensitivity().items():
+        rows.append(f"| ${float(H):g} | " + " | ".join(("more than 10" if (x == float('inf') or x > 10) else str(int(x))) for x in v.values()) + " |")
+    be = {nm: cal.breakeven_ratio(0.12, nmax=nm) for nm in (10, 5, 3, 2)}
+    return "\n".join(rows), be
 
 
 def tab_behaviour():
@@ -81,7 +127,8 @@ def tab_obs():
     return "\n".join(rows)
 
 
-TABLES.update(SUCCESS=tab_success(), OBS=tab_obs())
+_sens, _be = tab_sens()
+TABLES.update(SUCCESS=tab_success(), OBS=tab_obs(), CALIB=tab_calib(), SENS=_sens, SONNET_N=sonnet_text(), BE10=f"{_be[10]:.1f}", BE5=f"{_be[5]:.1f}", BE3=f"{_be[3]:.1f}", BE2=f"{_be[2]:.1f}")
 
 if __name__ == "__main__":
     for k, v in TABLES.items(): print(f"--- {k}\n{v}\n")

@@ -82,11 +82,11 @@ If $R \ge 1$ the firm should hand off at once. If $R \le 0$, or if all $\theta_{
 
 *Remark (what self-transfer changes).* The agent's own transfers affect the threshold only through the factors $e^{\sum_j\mu_j\tilde\theta_j}$ and $\rho$, which differ from one by terms of order $\mu$. In numerical examples ($\theta_w$ between 0.1 and 0.3, $F = 60$ or $100$) the optimal count did not change when $\theta_h$ was varied from 0 to 0.8, except in one case ($\theta_w = 0.3$, $F = 60$), where it fell from two to one. The threshold is set by $\theta_w$. Self-transfer matters for how much work reaches the reviewers (Section 4.3) and for the value of verification (Section 4.2), not for when the firm should step in.
 
-Figure 1 shows the threshold as a function of $\theta_w$. In our data, for example, the estimate of $\theta_w$ for Claude Sonnet 5.5 after a misleading message is about 0.12, which gives a threshold of two to four errors, whereas for GPT-6.1-terra $\theta_w$ is indistinguishable from zero and no count rule is warranted, even though its misleading errors have large consequences in another way: they send work to reviewers (Section 5).
+Figure 1 shows the threshold as a function of $\theta_w$ for three costs of repairing a wrong output. With the costs calibrated in Appendix C, a hand-off costs $H = \$8.82$, and a wrong output costs at least one more human contact ($F = \$12.35$). The threshold is set mainly by the ratio $F/H$. With $\theta_w = 0.12$ the count rule binds within ten errors only if a wrong output costs at least 1.4 times a hand-off, within five errors at 2.1 times, and within three at 3.1 times. For Claude Sonnet 5.5, whose estimate of $\theta_w$ after a misleading message is about 0.12, the threshold is 9 or more errors when a wrong output costs $12.35, 4 to 5 when it costs $22, and 2 when it costs $44. For GPT-6.1-terra $\theta_w$ is indistinguishable from zero and no count rule is warranted, even though its misleading errors have large consequences in another way: they send work to reviewers (Section 5).
 
 ![](../figures/fig1_threshold.png){width=100%}
 
-**Figure 1.** *The firm's count threshold falls as errors become more harmful. Optimal number of errors after which the firm hands the task to a person (Proposition 1) as a function of the probability $\theta_w$ that an error leads to a wrong output, for two costs of a wrong output ($F = 60$ and $100$). Hand-off cost $H = 40$; other costs are illustrative. Horizontal bars mark the estimated $\theta_w$ of each agent after a misleading message in customer service; the ends of each bar are the additive and the model-consistent estimates (Section 5.3). For GPT-6.1-terra $\theta_w$ is indistinguishable from zero and no count rule is warranted. The number of errors is capped at 12 in the plot.*
+**Figure 1.** *The count threshold falls as wrong outputs become more costly. Optimal number of errors after which the firm hands the task to a person (Proposition 1) as a function of the probability $\theta_w$ that an error leads to a wrong output, for three costs of a wrong output (\$12.35, \$22, and \$44, that is 1.4, 2.5, and 5 times the cost of a hand-off $H = \$8.82$; Appendix C). Horizontal bars mark the estimated $\theta_w$ of each agent after a misleading message in customer service; the ends of each bar are the additive and the model-consistent estimates (Section 5.3). For GPT-6.1-terra $\theta_w$ is indistinguishable from zero and no count rule is warranted. Error rate per step 0.014, $\theta_h = 0.05$; the number of errors is capped at 12 in the plot.*
 
 ### 4.2 Escalation and verification are substitutes
 
@@ -108,11 +108,11 @@ Let $G(H, F)$ be the expected cost of the best count rule for a given hand-off c
 
 *In words.* Checking outputs and stepping in during the run do the same job, so more of one means less of the other. Escalation is worth most at the margin of delegation; verification is worth most when people are hardest to reach. An agent that transfers tasks on its own also lowers the need to check its outputs, because a task that has been handed over cannot end with a wrong output.
 
-Figure 2 shows which combination of controls is best as the cost of reaching a person and the fixed cost of verification vary, without self-transfer and with frequent self-transfer ($\theta_h = 0.5$). Self-transfer lowers the value of verification. The probability of finishing derailed when the firm never intervenes falls from 0.10 to 0.03, and verification is adopted in 12 of the 54 cases shown, against 24 without self-transfer. We did not manipulate verification in our experiments. The coding agent can run the tests, which checks its own work, and its effects were smaller than those of the customer-service agent, which is consistent with the ordering of Figure 2 but does not test it.
+Figure 2 shows which combination of controls is best as the cost of reaching a person and the cost of verifying one output vary, without self-transfer and with frequent self-transfer ($\theta_h = 0.5$). Self-transfer lowers the value of verification. The probability of finishing derailed when the firm never intervenes falls from 0.014 to 0.006, and verification is adopted in 16 of the 48 cases shown, against 23 without self-transfer. We did not manipulate verification in our experiments. The coding agent can run the tests, which checks its own work, and its effects were smaller than those of the customer-service agent, which is consistent with the ordering of Figure 2 but does not test it.
 
 ![](../figures/fig2_portfolio.png){width=100%}
 
-**Figure 2.** *The best combination of controls as the cost of reaching a person varies. Best portfolio as the cost $H$ of handing a task to a person and the fixed cost $K$ of verifying outputs vary (Proposition 3), (a) without self-transfer and (b) with frequent self-transfer ($\theta_h = 0.5$). Colors give the escalation policy (E: always hand off; C: count rule; N: never hand off); hatching marks that output verification is adopted. Verification detects a derailed output with probability 0.8 and turns the cost of an undetected wrong output (100) into a repair cost (30). Probability that an error derails the task: $\theta_w = 0.12$ (the estimate for Claude Sonnet 5.5). Verification is adopted in 24 of 54 cases in (a) and in 12 in (b). Costs are illustrative; verification was not manipulated in the experiments.*
+**Figure 2.** *The best combination of controls as the cost of reaching a person varies. Best portfolio as the cost $H$ of handing a task to a person and the cost $K$ of verifying one output vary (Proposition 3), (a) without self-transfer and (b) with frequent self-transfer ($\theta_h = 0.5$). Colors give the escalation policy (E: always hand off; C: count rule that binds within ten errors; N: no hand-off in practice); hatching marks that output verification is adopted. Verification detects a derailed output with probability 0.8 and turns the cost of an undetected wrong output (\$44) into a repair cost (\$8.82). $\theta_w = 0.12$ and error rate 0.014 per step (Claude Sonnet 5.5-like). A typical human-handled contact costs \$6--13.5, and a check by a language-model judge costs cents. Verification is adopted in 23 of 48 cases in (a) and in 16 in (b). Verification was not manipulated in the experiments.*
 
 ### 4.3 Reviewer capacity
 
@@ -122,11 +122,11 @@ So far the hand-off cost $H$ is a constant. With a limited number of reviewers, 
 
 *In words.* A rule that looks at how busy the reviewers seem now ignores the delay that a new case causes for everyone behind it, so it escalates too much.
 
-In the example of Figure 3 the extra cost of the average-wait rule ranges from zero to about 17%, and to about 28% when the cost of a wrong output is doubled. It tends to be larger when the same total capacity is pooled across more reviewers. The costs in these examples are illustrative, and we use an approximation (Allen–Cunneen) for queues with variable arrivals. We present Proposition 4 as an application of Naor's (1969) externality, and capacity-dependent thresholds also appear in Wang and Rachev (2026), so we treat this part as supporting.
+In the calibrated example of Figure 3, an agent with the error rate of DeepSeek-V3.1 and a wrong output that costs five times a hand-off, the extra cost of the average-wait rule peaks at 7.4%, 9.7%, 14.1%, and 16.7% when the same total capacity is split across 1, 2, 5, or 10 reviewers. Pooling delays the loss to higher arrival rates but raises its peak. The loss is much smaller when a wrong output is cheaper (0.4% with one reviewer and 1.3% with ten at $F = \$22$) and negligible for an agent that rarely errs (at most 0.1% at the error rate of Claude Sonnet 5.5), because few tasks are then handed off by the firm's rule. The proposition therefore matters mainly for error-prone agents and costly wrong outputs. We use an approximation (Allen–Cunneen) for queues with variable arrivals. We present Proposition 4 as an application of Naor's (1969) externality, and capacity-dependent thresholds also appear in Wang and Rachev (2026), so we treat this part as supporting.
 
 ![](../figures/fig3_average_wait.png){width=100%}
 
-**Figure 3.** *A rule based on the observed wait hands off too many tasks. (a) Share of tasks handed to a person under the system optimum and under a rule that treats the average observed wait as the price of a hand-off, as the arrival rate of tasks grows; one reviewer with service rate 1 and delay cost 10 per unit of time (Proposition 4). (b) Cost of the average-wait rule relative to the system optimum when the same total capacity is split across 1, 2, 5, or 10 reviewers (Allen–Cunneen approximation with arrival variability equal to 1, queueing delay only). The curves are not smooth because the number of errors at which the rule hands off is an integer. Pooling raises the loss in most but not all cases: averaged over arrival rates of 2 or more, the loss is 4.9%, 6.2%, 8.4%, and 10.1% for 1, 2, 5, and 10 reviewers, and it exceeds the one-reviewer loss at 88% or more of the arrival rates tried. $\theta_w = 0.12$, $\theta_h = 0.05$ (Claude Sonnet 5.5-like), $F = 100$, reviewer working cost $h = 20$; illustrative.*
+**Figure 3.** *A rule based on the observed wait hands off too many tasks. (a) Share of tasks handed to a person under the system optimum and under a rule that treats the average observed wait as the price of a hand-off, as the arrival rate of tasks grows; one reviewer with service rate 1 (Proposition 4). (b) Extra cost of the average-wait rule relative to the system optimum when the same total capacity is split across 1, 2, 5, or 10 reviewers (Allen–Cunneen approximation with arrival variability equal to 1, queueing delay only). The curves are not smooth because the number of errors at which the rule hands off is an integer. The agent is DeepSeek-V3.1-like ($\theta_w = 0.17$, $\theta_h = 0.27$, error rate 0.055 per step), a wrong output costs \$44, a hand-off costs \$8.82, and delay costs \$2.69 per service time (Appendix C). Averaged over arrival rates of 2 or more, the loss is 2.8%, 3.4%, 4.2%, and 4.4% for 1, 2, 5, and 10 reviewers; it is below the one-reviewer loss at most arrival rates because pooling delays its onset.*
 
 *Link to Section 5.* In this extension the arrival rate of work at the reviewers is not a primitive. It is $\Lambda P$, where $P$ depends on the agent's self-transfer probability $\theta_h$ as well as on the firm's rule. In our data a misleading tool message changed GPT-6.1-terra's transfer rate from 0.40 to 0.74, which nearly doubles the load on the reviewers while changing the firm's threshold hardly at all (the Remark in Section 4.1). The accuracy of the tools the agent relies on therefore enters the staffing decision directly.
 
@@ -218,20 +218,18 @@ Three conclusions hold under both splits (Table 4 and Figure 4). First, GPT-6.1-
 
 ### 5.4 Calibrating the count rule
 
-Proposition 1 needs $\theta_w$ and not $\theta$. Table 6 compares the thresholds that follow from the undivided $\theta$ with those under each split, for a cost of a wrong output of $F = 60$ and $F = 100$, a hand-off cost $H = 40$, a step cost of 1, an error cost of 5, a completion probability of 0.06, and an error rate of 0.054 per step. These costs are illustrative.
+Proposition 1 needs $\theta_w$ and not $\theta$. Table 6 gives the thresholds under the two splits for the costs calibrated in Appendix C: a hand-off costs $H = \$8.82$, one agent step $k = \$0.004$, the completion probability is 0.12 per step, and the error rate per step is that of each agent in control runs. The cost of repairing a wrong output $F$ is the least certain quantity and depends on the domain, so we show three values: one extra human contact ($\$12.35$) and two higher values that add a refund or goodwill ($\$22$ and $\$44$).
 
-| Agent, error type | Total θ, undivided | θ_w additive | θ_w model-consistent |
-|---|---|---|---|
-| DeepSeek-V3.1, transient | 2/1 | 3/2 | 2/1 |
-| DeepSeek-V3.1, misleading | 2/1 | no rule needed/no rule needed | 2/2 |
-| GPT-6.1-terra, transient | no rule/no rule | no rule/no rule | no rule/no rule |
-| GPT-6.1-terra, misleading | 1/1 | no rule needed/no rule needed | no rule needed/no rule needed |
-| Claude Sonnet 5.5, transient | no rule/no rule | no rule/no rule | no rule/no rule |
-| Claude Sonnet 5.5, misleading | 2/2 | 4/2 | 3/2 |
+| Agent, error type | θ$_w$ (additive; model-consistent) | N* at F = $12.35 | N* at F = $22 | N* at F = $44 |
+|---|---|---|---|---|
+| GPT-6.1-terra, misleading | 0.00 (n.s.); 0.06 (n.s.) | >10 | >10 | >10 |
+| DeepSeek-V3.1, misleading | 0.00 (n.s.); 0.17 | 7 to >10 | 3 to >10 | 2 to >10 |
+| DeepSeek-V3.1, transient | 0.14; 0.26 | 5 to 9 | 2 to 4 | 1 to 2 |
+| Claude Sonnet 5.5, misleading | 0.11; 0.13 | 9 to >10 | 4 to 5 | 2 |
 
-*Table 6. Count at which the firm should hand off ($F = 60$ / $F = 100$). "No rule" means errors of this kind do not lower this agent's success; "no rule needed" means the wrong-output risk is indistinguishable from zero.*
+*Table 6. Count at which the firm should hand off, for three costs of a wrong output, under the additive and the model-consistent split (a range when they differ). "n.s." marks a $\theta_w$ whose interval includes zero, which is treated as zero; "$>10$" means the rule would almost never bind. Rows give the agent and the kind of injected error.*
 
-The firm's rule changes materially for GPT-6.1-terra. A single misleading message does not call for a count-based hand-off on account of wrong output, because the agent hands off by itself. What that behavior calls for instead is staffing (Section 4.3): a misleading message nearly doubles the share of tasks that reach the reviewers. For Claude Sonnet 5.5 the threshold is two to four errors, a little higher than the undivided estimate suggests. For DeepSeek-V3.1 and a misleading message it ranges from no rule to two.
+The thresholds depend on the ratio of the cost of a wrong output to the cost of a hand-off. If a wrong output costs about one more human contact, the count rule hardly binds for any agent: even for Claude Sonnet 5.5 the threshold is nine errors or more, and an agent that makes a tool error in about one step in seventy rarely reaches it. The rule starts to matter when a wrong output costs two or more times a hand-off. For GPT-6.1-terra no count rule is warranted at any of the three costs, because the agent hands off by itself and its $\theta_w$ is indistinguishable from zero. What that behavior calls for instead is staffing (Section 4.3): a misleading message nearly doubles the share of tasks that reach the reviewers. For Claude Sonnet 5.5 the threshold is 9 or more errors when a wrong output costs $12.35, 4 to 5 when it costs $22, and 2 when it costs $44. For DeepSeek-V3.1 and a misleading message it ranges from no rule to seven errors at the lowest cost and from no rule to two at the highest, depending on the split. Using the undivided $\theta$ would have overstated the need for a rule for GPT-6.1-terra.
 
 ### 5.5 Robustness and limits
 
@@ -261,7 +259,7 @@ The threshold for stepping in depends on the probability that an error leads to 
 
 ### 6.2 Implications for practice
 
-1. **Classify the errors your agent meets, and measure what each kind leads to.** Count errors by their probability of leading to a wrong output (Proposition 1). An error type that never does should carry no weight, however often it occurs. A small injection experiment, in which known errors of each type are inserted at random points of real tasks, estimates these probabilities and the rate of agent-initiated transfers. Our design used 328 runs per arm for each commercial agent (164 tasks, two repetitions). With a paired design and a task-level standard deviation of the difference of about 0.45, that detects effects of about 0.10 or larger with 80% power (the standard error is $0.45/\sqrt{164} \approx 0.035$, and the minimum detectable effect is 2.8 times that). Smaller effects, such as a drop of a few points, would need more runs.
+1. **Classify the errors your agent meets, and measure what each kind leads to.** Count errors by their probability of leading to a wrong output (Proposition 1). An error type that never does should carry no weight, however often it occurs. The rule only binds when a wrong output costs at least about two human contacts (Appendix C), so a firm should first estimate that cost. A small injection experiment, in which known errors of each type are inserted at random points of real tasks, estimates these probabilities and the rate of agent-initiated transfers. Our design used 328 runs per arm for each commercial agent (164 tasks, two repetitions). With a paired design and a task-level standard deviation of the difference of about 0.45, that detects effects of about 0.10 or larger with 80% power (the standard error is $0.45/\sqrt{164} \approx 0.035$, and the minimum detectable effect is 2.8 times that). Smaller effects, such as a drop of a few points, would need more runs.
 
 2. **Treat tool accuracy as an input to staffing.** For one agent, a single misleading tool message changed the share of tasks reaching a person from 40% to 74%. A firm that connects an agent to enterprise data should plan reviewer capacity for the error rate of those data sources and not only for the agent's own reliability, and should expect data governance and capacity planning to move together. This should be confirmed with more agents and domains before it is generalized.
 
@@ -283,7 +281,7 @@ The threshold for stepping in depends on the probability that an error leads to 
 
 *Model.*
 
-- The firm is a single decision maker with known, constant parameters, and the costs of a hand-off, of a wrong output, and of delay are illustrative. The agent's own transfers are exogenous probabilities and not the result of a strategic choice.
+- The firm is a single decision maker with known, constant parameters, and the costs of a hand-off, of a wrong output, and of delay are calibrated from secondary sources and our run logs (Appendix C). The cost of a wrong output in particular depends on the domain, and the conclusions about thresholds depend on its ratio to the cost of a hand-off. The agent's own transfers are exogenous probabilities and not the result of a strategic choice.
 - Errors are independent across steps, and the probability that an error derails a task does not depend on history. The observational data suggest a persistent component that we do not model.
 - The capacity extension uses an approximation for queues with variable arrivals (Allen–Cunneen) and neglects reviewer fatigue and the quality of review (Turan 2026; Wang and Rachev 2026).
 
@@ -426,3 +424,34 @@ In the M/M/1 queue the mean number waiting is $L_q = \rho^2/(1-\rho)$ with $\rho
 | Claude Sonnet 5.5 | +0.03 [-0.03, +0.08] | +0.00 [-0.02, +0.03] | +0.02 [-0.03, +0.07] | +0.00 [+0.00, +0.02] | +0.00 [-0.07, +0.07] |
 
 *Table A1. Customer service, transient failure. Same definitions as Table 4.*
+
+
+## Appendix C. Calibration of costs
+
+The numerical results use the costs in Table C1, expressed in dollars. Where a value comes from a vendor or other secondary source, we say so; these were found by web search and several were not checked against the original reports (the SQM Group white paper, the ICMI and MetricNet benchmarks, and the Gartner figure). They should be verified before the values are relied on. Values measured in our own experiments come from the run logs in the replication package.
+
+| Quantity | Symbol | Value used (range) | Basis | Reliability |
+|---|---|---|---|---|
+| Cost of a human-handled contact | $H$, $h$ | $8.82 ($6–13.5) | Average cost per call of $8.82 reported by SQM Group (as cited by a vendor page); $13.50 per agent-assisted contact attributed to Gartner and $6–12 in other benchmarks (vendor roll-up) | Secondary, vendor sources |
+| Cost to detect and repair a wrong output | $F$ | $12.35 base ($8.82–44) | Base is one extra contact at the SQM cost per resolution ($8.82 × 1.4 contacts per resolution). Repeat contacts are reported to cost about as much as a first contact ($8–16). Values of $22 and $44 add a repair contact and goodwill or refund | Base: secondary. $22 and $44: assumptions; the domain sets $F/H$ |
+| Cost of one agent step | $k$ | $0.004 ($0.0017–0.0067) | Our run logs: mean cost per run divided by mean tool calls (GPT-6.1-terra $0.0124 / 7.4; Claude Sonnet 5.5 $0.054 / 8.1), including the simulated customer | Measured in our experiments |
+| Cost of an error | $c$ | $0.004 | Assumed equal to $k$ (one wasted call) | Assumption |
+| Completion probability per step | $q$ | 0.12 | One over the mean number of tool calls per run in customer service (7.4–8.8) | Measured |
+| Error rate per step | $\mu$ | 0.012 (GPT-6.1-terra), 0.014 (Claude Sonnet 5.5), 0.055 (DeepSeek-V3.1) | Agent-error rate per call in control runs, customer service (Table 3 of the earlier analysis; `inject/results`) | Measured |
+| Reviewer service rate | $m$ | 8 per hour (average handle time 7.5 min; 6–10 min) | Voice median attributed to ICMI (via an aggregator); MetricNet 2023 voice 7.0 and chat 9.8 minutes; Zendesk chat 8–12 minutes | Secondary; definitions differ by channel |
+| Value of customer waiting time | $\omega$ | $21.53 per hour = $2.69 per service time | Median hourly wage of customer service representatives, May 2025 (BLS), used as the value of a customer's time | Wage: official. Use as value of time: assumption |
+| For comparison: cost of an AI resolution | – | $0.41–2.00 | Vendor-reported cost per AI resolution; our own cost per simulated customer-service run is $0.012–0.054 | Vendor; measured |
+
+*Table C1. Costs used in the numerical results.*
+
+The wrong-output cost $F$ and the ratio $F/H$ drive the thresholds. Table C2 shows the threshold for an agent with $\theta_w = 0.12$, $\theta_h = 0.05$, and a Claude Sonnet 5.5-like error rate, for a range of $H$ and $F$. The smallest ratio $F/H$ at which the count rule binds within 10, 5, 3, and 2 errors is 1.4, 2.1, 3.1, and 4.4 at $H = \$8.82$.
+
+| Hand-off cost $H$ | $F$ = $8.82 | $F$ = $12.35 | $F$ = $22 | $F$ = $44 |
+|---|---|---|---|---|
+| $6 | 9 | 6 | 3 | 2 |
+| $8.82 | more than 10 | 10 | 4 | 2 |
+| $13.5 | more than 10 | more than 10 | 8 | 3 |
+
+*Table C2. Count at which the firm should hand off, by hand-off cost $H$ (rows) and wrong-output cost $F$ (columns), for $\theta_w = 0.12$ and $\theta_h = 0.05$.*
+
+*Sources.* SQM Group first-call-resolution white paper (https://survey.sqmgroup.com/pdf/FCRWhitepaper2020.pdf); vendor roll-up of cost-per-resolution benchmarks (https://www.retellai.com/learn/cost-per-resolution-benchmarks-for-ai-and-human-handled-calls); vendor-reported cost per AI resolution (https://fin.ai/learn/ai-customer-service-cost-savings-industry); repeat-contact costs (https://www.kustomer.com/glossary/cost-per-contact/; https://televerde.com/what-a-repeat-contact-really-costs-in-your-contact-center/); handle-time benchmarks as summarized by an aggregator (https://stealthagents.com/research/customer-support-average-handle-time-statistics-2026/); U.S. Bureau of Labor Statistics, Occupational Outlook Handbook, customer service representatives (https://www.bls.gov/ooh/office-and-administrative-support/customer-service-representatives.htm).

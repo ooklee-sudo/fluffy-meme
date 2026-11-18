@@ -1,0 +1,140 @@
+{
+ "params": {
+  "H": 8.82,
+  "H_low": 6.0,
+  "H_high": 13.5,
+  "F_low": 8.82,
+  "F_base": 12.35,
+  "F_high": 22.0,
+  "F_vhigh": 44.0,
+  "k": 0.004,
+  "c": 0.004,
+  "q": 0.12,
+  "mu": {
+   "gpt61terra": 0.012,
+   "sonnet55": 0.014,
+   "deepseek": 0.055
+  },
+  "aht_min": 7.5,
+  "wage": 21.53,
+  "m_per_hour": 8.0,
+  "omega_per_service_time": 2.69125,
+  "h": 8.82
+ },
+ "rows": [
+  {
+   "agent": "gpt61terra",
+   "kind": "misleading",
+   "theta_w_add": -0.06746031746031747,
+   "theta_w_model": 0.06468023255813948,
+   "sig_add": false,
+   "sig_model": false,
+   "cells": {
+    "12.35": [
+     Infinity,
+     Infinity
+    ],
+    "22.0": [
+     Infinity,
+     Infinity
+    ],
+    "44.0": [
+     Infinity,
+     Infinity
+    ]
+   }
+  },
+  {
+   "agent": "deepseek",
+   "kind": "misleading",
+   "theta_w_add": 0.004504504504504508,
+   "theta_w_model": 0.17043478260869582,
+   "sig_add": false,
+   "sig_model": true,
+   "cells": {
+    "12.35": [
+     Infinity,
+     7
+    ],
+    "22.0": [
+     Infinity,
+     3
+    ],
+    "44.0": [
+     Infinity,
+     2
+    ]
+   }
+  },
+  {
+   "agent": "deepseek",
+   "kind": "transient",
+   "theta_w_add": 0.13513513513513517,
+   "theta_w_model": 0.2603636363636366,
+   "sig_add": true,
+   "sig_model": true,
+   "cells": {
+    "12.35": [
+     9,
+     5
+    ],
+    "22.0": [
+     4,
+     2
+    ],
+    "44.0": [
+     2,
+     1
+    ]
+   }
+  },
+  {
+   "agent": "sonnet55",
+   "kind": "misleading",
+   "theta_w_add": 0.10948905109489052,
+   "theta_w_model": 0.13444296145089107,
+   "sig_add": true,
+   "sig_model": true,
+   "cells": {
+    "12.35": [
+     11,
+     9
+    ],
+    "22.0": [
+     5,
+     4
+    ],
+    "44.0": [
+     2,
+     2
+    ]
+   }
+  }
+ ],
+ "sensitivity": {
+  "6.0": {
+   "8.82": 9,
+   "12.35": 6,
+   "22.0": 3,
+   "44.0": 2
+  },
+  "8.82": {
+   "8.82": 44,
+   "12.35": 10,
+   "22.0": 4,
+   "44.0": 2
+  },
+  "13.5": {
+   "8.82": Infinity,
+   "12.35": Infinity,
+   "22.0": 8,
+   "44.0": 3
+  }
+ },
+ "breakeven": {
+  "10": 1.3798387134309928,
+  "5": 2.1055691245169843,
+  "3": 3.1167681718544076,
+  "2": 4.391585546245715
+ }
+}

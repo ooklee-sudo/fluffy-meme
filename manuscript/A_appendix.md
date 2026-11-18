@@ -66,3 +66,20 @@ In the M/M/1 queue the mean number waiting is $L_q = \rho^2/(1-\rho)$ with $\rho
 *Replication.* The replication package contains the run-level logs and the code of the experiments. The scripts for the splits, the tables, the figures, the numerical checks of the propositions, and the build of this document are in the repository.
 
 {{TA1}}
+
+
+## Appendix C. Calibration of costs
+
+The numerical results use the costs in Table C1, expressed in dollars. Where a value comes from a vendor or other secondary source, we say so; these were found by web search and several were not checked against the original reports (the SQM Group white paper, the ICMI and MetricNet benchmarks, and the Gartner figure). They should be verified before the values are relied on. Values measured in our own experiments come from the run logs in the replication package.
+
+{{CALIB}}
+
+*Table C1. Costs used in the numerical results.*
+
+The wrong-output cost $F$ and the ratio $F/H$ drive the thresholds. Table C2 shows the threshold for an agent with $\theta_w = 0.12$, $\theta_h = 0.05$, and a Claude Sonnet 5.5-like error rate, for a range of $H$ and $F$. The smallest ratio $F/H$ at which the count rule binds within 10, 5, 3, and 2 errors is {{BE10}}, {{BE5}}, {{BE3}}, and {{BE2}} at $H = \$8.82$.
+
+{{SENS}}
+
+*Table C2. Count at which the firm should hand off, by hand-off cost $H$ (rows) and wrong-output cost $F$ (columns), for $\theta_w = 0.12$ and $\theta_h = 0.05$.*
+
+*Sources.* SQM Group first-call-resolution white paper (https://survey.sqmgroup.com/pdf/FCRWhitepaper2020.pdf); vendor roll-up of cost-per-resolution benchmarks (https://www.retellai.com/learn/cost-per-resolution-benchmarks-for-ai-and-human-handled-calls); vendor-reported cost per AI resolution (https://fin.ai/learn/ai-customer-service-cost-savings-industry); repeat-contact costs (https://www.kustomer.com/glossary/cost-per-contact/; https://televerde.com/what-a-repeat-contact-really-costs-in-your-contact-center/); handle-time benchmarks as summarized by an aggregator (https://stealthagents.com/research/customer-support-average-handle-time-statistics-2026/); U.S. Bureau of Labor Statistics, Occupational Outlook Handbook, customer service representatives (https://www.bls.gov/ooh/office-and-administrative-support/customer-service-representatives.htm).
