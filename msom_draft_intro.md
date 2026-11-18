@@ -32,13 +32,34 @@ This paper is about the decision behind that queue: when should a task be taken 
 **[What we find: evidence]** We use two kinds of evidence. A public corpus of 80,036 trajectories of an open-source software-engineering agent shows strong clustering of errors, but most of it disappears once tasks are allowed to differ in difficulty. We then ran two randomized fault-injection experiments, in customer service and in code repair, with five agents and 11,352 runs, in which we inserted either a transient failure or a misleading "not found" message at a random point. Transient failures rarely hurt the recent models. A misleading message is different: it raises GPT-6.1-terra's rate of transferring the case to a human from 0.39 to 0.74, and its success rate falls from 0.77 to 0.46, but the additional failures are almost all transfers and not wrong outputs. **[Claude Sonnet 5.5, in contrast, shows genuine wrong-output derailment (about 0.12); for DeepSeek-V3.1 the split depends on how the two channels are separated.]** In code repair, where the agent can run tests, the effects are smaller.
 
 **[Contributions]**
-- *For research on human–AI delegation:* we move from the question of whether to delegate to the question of when and by whom a delegation should be reversed, and we show that the answer depends on reviewer capacity, which prior treatments hold fixed.
+- *For research on human–AI delegation:* we move from the question of whether to delegate to the question of when and by whom a delegation should be reversed. Operations research already studies capacity-dependent deferral from classifiers and screening judges (Lykouris and Weng; Wang and Rachev; Lin and Zhang); we add the error structure of multistep agents and evidence on what agents actually do after an error.
 - *For research on IS control:* we separate behavior control (monitoring and escalation) from outcome control (verification) and show that they substitute, with a clear boundary in the hand-off cost.
 - *For practice:* we show that the quality of tool outputs drives escalation volume, so that data governance and staffing are the same decision; we show how to calibrate the rule and the staffing from a modest injection experiment of the kind we run; and we flag a common mistake, setting escalation thresholds from the observed queue.
 
 **[A caution about our own results]** The first version of this work interpreted the drop in success after a misleading message as wrong outputs. A closer look at the transcripts shows that for two of the three agents most of it is the agent's own transfer. We report both channels and show where the conclusions depend on how they are separated.
 
 **[Roadmap]** Section 2 reviews related work. Section 3 presents the model and Section 4 the results on thresholds, capacity, and verification. Section 5 reports the observational and experimental evidence, separates the two channels, and calibrates the model. Section 6 discusses implications and limits.
+
+---
+
+## 2. Related Literature (초안, 검색으로 확인한 문헌 포함)
+
+> 확인 수준: Grassmann(1983)과 Naor(1969)는 서지를 확인했다. arXiv 논문 네 편은 **초록과 메타데이터만** 읽었고 본문은 읽지 않았다. 투고 전에 본문을 읽고 차별점을 다시 확인할 것.
+
+**Delegation to and from AI agents (IS).** Baird and Maruping (2021) treat delegation to agentic IS artifacts as an ongoing allocation of rights and responsibilities; Fügener et al. (2022) show that people delegate poorly to AI; Berente et al. (2021) frame AI management as a balance of autonomy, learning, and inscrutability. These papers ask whether to delegate. We ask when and by whom a delegation should be reversed once the agent acts over many steps.
+
+**Deferral and escalation under congestion (operations, ML).** The closest work studies when to send cases to scarce human reviewers.
+- Lykouris and Weng (2024, arXiv:2402.12237, v4 2025), *Learning to Defer in Congested Systems: The AI–Human Interplay*: an AI classifies items and sends uncertain ones to a congested human queue, with delayed and selectively sampled feedback; they give a near-optimal online-learning algorithm. Their object is a classifier on independent items.
+- Wang and Rachev (2026, arXiv:2601.22295), *Operating Imperfect AI: Reliability Drift and Human Congestion*: a dynamic queueing control problem with a state-dependent risk threshold, an endogenous shadow price of capacity, a threshold that rises with backlog, and a capacity phase transition. **This overlaps most with our capacity results (threshold rising in load, a shadow price of capacity).** Our capacity analysis should not be presented as the main novelty; we differ in the object (multistep agents, errors with consequences that depend on type), in separating self-transfer from wrong outputs, and in the verification margin. Unverified: whether they compare an individually rational rule with the planner's.
+- Lin and Zhang (2026, arXiv:2603.13870), *When to Screen, When to Bypass: LLM-Judges in Resource-Scarce AI-Human Workflow*: routing through an imperfect LLM judge in a queueing network with rework; screening helps only when reviewers are the bottleneck ("rework trap"). Closest to our verification margin, but the judge screens finished outputs and does not interact with error counts during a run.
+- Turan (2026, arXiv:2606.08919), *Oversight Has a Capacity*: agent action gates with a fatiguing reviewer; safety peaks at an intermediate escalation rate. A systems and measurement paper that does not claim novel mechanisms; useful as practical motivation.
+- Alves et al. (DeCCaF, arXiv:2403.06906): cost-sensitive learning to defer with workload constraints.
+
+**Queues and individual versus social optimization.** Naor (1969, *Econometrica* 37(1):15–24) shows that joining decisions made against the observed queue exceed the social optimum; our over-escalation result applies this externality to hand-off rules (we claim an application, not a new principle). For convexity of the mean queue size in the M/M/c queue we rely on Grassmann (1983, *J. Appl. Probab.* 20:916–919); Lee and Cohen (1983, same volume, pp. 920–923) cover related performance measures.
+
+**Optimal stopping and monitoring.** Wald (1947); Shiryaev (1963); Chow, Robbins, and Siegmund (1971) for the monotone case; Holmström (1979) and Blackwell (1953) for informativeness; Kirsch (1997) for control portfolios.
+
+**Reliability and failure of LLM agents.** Benchmarks (SWE-agent, τ-bench) report success rates and not within-run error dynamics; we add randomized fault injection and separate error types.
 
 ---
 
@@ -59,6 +80,7 @@ This paper is about the decision behind that queue: when should a task be taken 
 | DeepSeek 오도 오류의 θ_w | §12.2 | **추정기 의존** (0.00 대 0.17), 구간 보고 |
 | 코드 수리는 효과가 작다 | 원고 Table 2, 4 | 원고 값 그대로, 분해는 못 함 |
 | 관측 코퍼스: 이질성 반영 후 분기비 0.38–0.56 | 원고 Table 1 | 원고 값 그대로 |
+| 용량 의존 임계·그림자 가격은 기존 연구와 겹침 | Wang & Rachev (2026, arXiv:2601.22295) 초록 | **기여로 내세우지 말 것.** 본문 미확인 |
 | "도구 출력 정확성이 검토자 부하를 정한다" | GPT에서 ΔP(transfer) = +0.34 [0.28, 0.41] (§12.5) | 한 에이전트의 증거. 일반화 금지 |
 
 ## 아직 비어 있는 것
@@ -66,6 +88,6 @@ This paper is about the decision behind that queue: when should a task be taken 
 1. **검증 직접 실험 없음.** 레짐 지도와 대체성은 이론과 기존 데이터의 일관성으로만 뒷받침된다 (§9~10은 실험 설계). 본문에 "직접 조작하지 않았다"고 명시.
 2. **자기 인계의 이유.** 로그에 에이전트 발화가 없어 "왜 넘겼는가"는 모른다. 과제가 transfer를 정답으로 기대하는 경우도 분리하지 못했다.
 3. **파라미터 현실화.** h, d, s, Λ, F, H는 예시 값이다. 실제 콜센터 수치나 산업 보고서에서 근거를 찾아 그림에 고정할 것.
-4. **M/M/c의 볼록성 인용** (Grassmann 1983) 서지 확인, Allen–Cunneen 근사의 한계 명시.
-5. **관련 문헌.** 큐잉에서의 Naor 외부효과와 human-in-the-loop 에스컬레이션, 최근 arXiv 논문 ("Oversight Has a Capacity" 등)과의 차별점 정리.
-6. **원고 숫자 재확인.** 80,036, 11,352, 분기비 0.38–0.56 등은 ISR 제출본에서 가져온 값이므로 Table에서 재확인.
+4. ~~M/M/c의 볼록성 인용~~ **확인 완료**: Grassmann (1983), *J. Appl. Probab.* 20:916–919. Allen–Cunneen 근사의 한계는 여전히 본문에 명시할 것.
+5. **관련 문헌**: 초안은 위 §2. 경쟁 논문 네 편은 초록만 읽었으므로 본문 확인과, 특히 Wang & Rachev와의 차별점 정리가 남아 있다.
+6. ~~원고 숫자 재확인~~ **대부분 확인 완료** (원고 PDF 1–25쪽 기준): 80,036과 11,352, 5개 에이전트, 분기비 0.50/0.38/0.56 (Table 1), 성공률 GPT 0.77→0.46과 Sonnet 0.84→0.69, Table 4의 θ 0.40/0.29/0.18과 N* 1·1 / 2·1 / 2·2가 재계산과 일치. 부록(26–31쪽)은 읽지 않았다.
