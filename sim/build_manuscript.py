@@ -84,6 +84,9 @@ if __name__ == "__main__":
     pr = checks(text)
     print("consistency checks:", "all passed" if not pr else "")
     for p in pr: print("  -", p)
-    r = subprocess.run(["pandoc", str(out), "-o", str(M / "manuscript_draft.docx"), "--from", "markdown+tex_math_dollars+pipe_tables+implicit_figures",
-                        "--resource-path", str(M)], capture_output=True, text=True)
-    print("docx:", "ok" if r.returncode == 0 else r.stderr[:300])
+    import make_docx
+    try:
+        make_docx.build(out, M / "manuscript_draft.docx"); ok = True
+    except Exception as ex:
+        ok = False; print("docx error:", str(ex)[:300])
+    print("docx:", "ok" if ok else "failed")
