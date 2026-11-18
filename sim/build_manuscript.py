@@ -21,6 +21,7 @@ FIG = {
 def numbers():
     import json
     fd = json.load(open(ROOT / "sim/f_domains.json"))["breakeven"]
+    pw = json.load(open(ROOT / "sim/power_airline.json"))
     n = json.load(open(ROOT / "figures/figure_numbers.json"))
     f2, f3 = n["fig2"], n["fig3"]
     m = f3["mean_loss_lam_ge_2"]; mx = f3["max_loss"]
@@ -28,7 +29,7 @@ def numbers():
     d22 = f3["max_loss_deepseek_F22"]; son = f3["max_loss_sonnet_F44"]
     return {"F2_Z0": f"{f2['z_inf']['0.0']:.3f}", "F2_Z1": f"{f2['z_inf']['0.5']:.3f}", "F2_NV0": str(f2["n_with_verification"]["0.0"]),
             "F2_NV1": str(f2["n_with_verification"]["0.5"]), "F2_N": str(f2["n_cells"]),
-            "BE_AIR5": f"{100 * fd['5']['p_severe_airline']:.1f}%", "BE_AIR3": f"{100 * fd['3']['p_severe_airline']:.1f}%", "F3_MEANS": lst(m), "F3_PEAKS": lst(mx),
+            "PW_GPT": f"{pw['gpt61terra']['mde_now']:.2f}", "PW_SON": f"{pw['sonnet55']['mde_now']:.2f}", "PW_DS": f"{pw['deepseek']['mde_now']:.2f}", "PW_GPT4": f"{pw['gpt61terra']['mde_by_reps']['4']:.2f}", "PW_SON4": f"{pw['sonnet55']['mde_by_reps']['4']:.2f}", "BE_AIR5": f"{100 * fd['5']['p_severe_airline']:.1f}%", "BE_AIR3": f"{100 * fd['3']['p_severe_airline']:.1f}%", "F3_MEANS": lst(m), "F3_PEAKS": lst(mx),
             "F3_F22": f"{d22['1']:.1f}% with one reviewer and {d22['10']:.1f}% with ten", "F3_SON": f"{max(son.values()):.1f}%"}
 
 
