@@ -10,7 +10,7 @@ If $R \ge 1$ the firm should hand off at once. If $R \le 0$, or if all $\theta_{
 
 *In words.* Count each error by how likely it is to lead to a wrong output, and hand off when the total gets large enough. An error type that never produces a wrong output should not be counted at all, however often it occurs. Without self-transfer ($\theta_{hj} = 0$) the rule reduces to the single-type threshold of Equation (A1) in Appendix A.
 
-*Remark (what self-transfer changes).* The agent's own transfers affect the threshold only through the factors $e^{\sum_j\mu_j\tilde\theta_j}$ and $\rho$, which differ from one by terms of order $\mu$. In numerical examples ($\theta_w$ between 0.1 and 0.3, $F = 60$ or $100$) the optimal count did not change when $\theta_h$ was varied from 0 to 0.8, except in one case ($\theta_w = 0.3$, $F = 60$), where it fell from two to one. The threshold is set by $\theta_w$. Self-transfer matters for how much work reaches the reviewers (Section 4.3), not for when the firm should step in.
+*Remark (what self-transfer changes).* The agent's own transfers affect the threshold only through the factors $e^{\sum_j\mu_j\tilde\theta_j}$ and $\rho$, which differ from one by terms of order $\mu$. In numerical examples ($\theta_w$ between 0.1 and 0.3, $F = 60$ or $100$) the optimal count did not change when $\theta_h$ was varied from 0 to 0.8, except in one case ($\theta_w = 0.3$, $F = 60$), where it fell from two to one. The threshold is set by $\theta_w$. Self-transfer matters for how much work reaches the reviewers (Section 4.3) and for the value of verification (Section 4.2), not for when the firm should step in.
 
 Figure 1 shows the threshold as a function of $\theta_w$. In our data, for example, the estimate of $\theta_w$ for Claude Sonnet 5.5 after a misleading message is about 0.12, which gives a threshold of two to four errors, whereas for GPT-6.1-terra $\theta_w$ is indistinguishable from zero and no count rule is warranted, even though its misleading errors have large consequences in another way: they send work to reviewers (Section 5).
 
@@ -32,9 +32,11 @@ Let $G(H, F)$ be the expected cost of the best count rule for a given hand-off c
 
 (c) The value of verification $V(H; d)$ is nondecreasing in $H$. It is zero when hand-offs are so cheap that the firm always hands off, and it equals $d\,(F_u - F_d)\,z_\infty$ when the firm never hands off, where $z_\infty$ is the probability that a task finishes derailed when the firm never intervenes. With $v(d) = \kappa d^2$ the check that is worth buying in that case has quality $d = (F_u - F_d)\,z_\infty/(2\kappa)$ and a net gain of $[(F_u - F_d)\,z_\infty]^2/(4\kappa)$.
 
-*In words.* Checking outputs and stepping in during the run do the same job, so more of one means less of the other. Escalation is worth most at the margin of delegation; verification is worth most when people are hardest to reach.
+(d) The probability $z_c$ of finishing derailed, and with it the largest value of verification $d\,(F_u - F_d)\,z_\infty$, is nonincreasing in the agent's self-transfer probability $\theta_h$.
 
-Figure 2 shows which combination of controls is best as the cost of reaching a person and the fixed cost of verification vary. We did not manipulate verification in our experiments. The coding agent can run the tests, which checks its own work, and its effects were smaller than those of the customer-service agent, which is consistent with the ordering of Figure 2 but does not test it.
+*In words.* Checking outputs and stepping in during the run do the same job, so more of one means less of the other. Escalation is worth most at the margin of delegation; verification is worth most when people are hardest to reach. An agent that transfers tasks on its own also lowers the need to check its outputs, because a task that has been handed over cannot end with a wrong output.
+
+Figure 2 shows which combination of controls is best as the cost of reaching a person and the fixed cost of verification vary, without self-transfer and with frequent self-transfer ($\theta_h = 0.5$). Self-transfer lowers the value of verification. The probability of finishing derailed when the firm never intervenes falls from {{F2_Z0}} to {{F2_Z1}}, and verification is adopted in {{F2_NV1}} of the {{F2_N}} cases shown, against {{F2_NV0}} without self-transfer. We did not manipulate verification in our experiments. The coding agent can run the tests, which checks its own work, and its effects were smaller than those of the customer-service agent, which is consistent with the ordering of Figure 2 but does not test it.
 
 {{FIG2}}
 
@@ -46,7 +48,7 @@ So far the hand-off cost $H$ is a constant. With a limited number of reviewers, 
 
 *In words.* A rule that looks at how busy the reviewers seem now ignores the delay that a new case causes for everyone behind it, so it escalates too much.
 
-In numerical examples the extra cost of the average-wait rule ranges from zero to about 30%. It tends to be larger when the same total capacity is pooled across more reviewers, and smaller under bursty arrivals in most but not all cases (Figure 3). The costs in these examples are illustrative, and we use an approximation (Allen–Cunneen) for queues with variable arrivals. We present Proposition 4 as an application of Naor's (1969) externality, and capacity-dependent thresholds also appear in Wang and Rachev (2026), so we treat this part as supporting.
+In the example of Figure 3 the extra cost of the average-wait rule ranges from zero to about {{F3_MAX}}%, and to about {{F3_MAX200}}% when the cost of a wrong output is doubled. It tends to be larger when the same total capacity is pooled across more reviewers. The costs in these examples are illustrative, and we use an approximation (Allen–Cunneen) for queues with variable arrivals. We present Proposition 4 as an application of Naor's (1969) externality, and capacity-dependent thresholds also appear in Wang and Rachev (2026), so we treat this part as supporting.
 
 {{FIG3}}
 

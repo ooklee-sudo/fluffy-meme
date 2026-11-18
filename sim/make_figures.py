@@ -76,82 +76,108 @@ def fig1():
 
 
 # ---------------------------------------------------------------- Figure 2
-def fig2():
-    theta = 0.12
-    Pn, an, zn, ns = sc.az_table(theta)
-    Fu, Fd, dbar = 100.0, 30.0, 0.8
+def portfolio_grid(tw, th, Ks, Hs, Fu=100.0, Fd=30.0, dbar=0.8):
+    import chain_selftransfer as ch
+    Pn, an, zn, ns = ch.table(tw, th)
     Fv = dbar * Fd + (1 - dbar) * Fu
-    Ks = [0.5, 1, 2, 4, 6, 10]
-    Hs = [10, 20, 30, 40, 60, 80, 100, 150, 300]
-    COL = {"E": BLUE, "C": ORANGE, "N": AQUA}
-    fig, ax = plt.subplots(figsize=(6.6, 3.5))
     grid = []
-    for iK, Kfix in enumerate(Ks):
+    for Kfix in Ks:
         row = []
-        for iH, Hc in enumerate(Hs):
+        for Hc in Hs:
             best = None
             for tag, F_, add in (("", Fu, 0.0), ("V", Fv, Kfix)):
                 cs = [an[i] + F_ * zn[i] + Pn[i] * Hc + add for i in range(len(ns))]
                 i = int(np.argmin(cs)); n = ns[i]
-                typ = "E" if n == 0 else ("N" if n == sc.NINF else "C")
+                typ = "E" if n == 0 else ("N" if n == ch.NINF else "C")
                 if best is None or cs[i] < best[0]: best = (cs[i], typ, tag == "V")
             row.append(best[1:])
-            ax.add_patch(Rectangle((iH + 0.03, iK + 0.03), 0.94, 0.94, facecolor=COL[best[1]], edgecolor=SURF, lw=0,
-                                   hatch="////" if best[2] else None, alpha=1.0))
-            if best[2]:
-                ax.add_patch(Rectangle((iH + 0.03, iK + 0.03), 0.94, 0.94, facecolor="none", edgecolor=SURF, lw=0, hatch="////"))
-            lab = {"E": "E", "C": "C", "N": "N"}[best[1]] + ("+V" if best[2] else "")
-            ax.text(iH + 0.5, iK + 0.5, lab, ha="center", va="center", fontsize=8.5, color="#ffffff" if best[1] != "N" else "#0b0b0b",
-                    fontweight="bold", bbox=dict(boxstyle="round,pad=0.12", fc=COL[best[1]], ec="none"))
         grid.append(row)
-    ax.set_xlim(0, len(Hs)); ax.set_ylim(0, len(Ks)); ax.invert_yaxis()
-    ax.set_xticks([i + 0.5 for i in range(len(Hs))]); ax.set_xticklabels([str(h) for h in Hs])
-    ax.set_yticks([i + 0.5 for i in range(len(Ks))]); ax.set_yticklabels([f"{k:g}" for k in Ks])
-    ax.grid(False)
-    for s in ax.spines.values(): s.set_visible(False)
-    ax.tick_params(length=0)
-    ax.set_xlabel("Cost of handing the task to a person (H)")
-    ax.set_ylabel("Fixed cost of output\nverification (K)")
-    # legend by hand
+    return grid
+
+
+def fig2():
+    tw = 0.12
+    Ks = [0.5, 1, 2, 4, 6, 10]
+    Hs = [10, 20, 30, 40, 60, 80, 100, 150, 300]
+    COL = {"E": BLUE, "C": ORANGE, "N": AQUA}
+    fig, axs = plt.subplots(1, 2, figsize=(11.2, 3.7), gridspec_kw={"wspace": 0.12}, sharey=True)
+    grids = {}
+    for ax, th, ttl in zip(axs, (0.0, 0.5), ("(a) no self-transfer ($\\theta_h = 0$)", "(b) frequent self-transfer ($\\theta_h = 0.5$)")):
+        grid = portfolio_grid(tw, th, Ks, Hs); grids[th] = grid
+        for iK, row in enumerate(grid):
+            for iH, (typ, v) in enumerate(row):
+                ax.add_patch(Rectangle((iH + 0.03, iK + 0.03), 0.94, 0.94, facecolor=COL[typ], edgecolor=SURF, lw=0))
+                if v: ax.add_patch(Rectangle((iH + 0.03, iK + 0.03), 0.94, 0.94, facecolor="none", edgecolor=SURF, lw=0, hatch="////"))
+                lab = typ + ("+V" if v else "")
+                ax.text(iH + 0.5, iK + 0.5, lab, ha="center", va="center", fontsize=8, color="#ffffff" if typ != "N" else "#0b0b0b",
+                        fontweight="bold", bbox=dict(boxstyle="round,pad=0.12", fc=COL[typ], ec="none"))
+        ax.set_xlim(0, len(Hs)); ax.set_ylim(0, len(Ks)); ax.invert_yaxis()
+        ax.set_xticks([i + 0.5 for i in range(len(Hs))]); ax.set_xticklabels([str(h) for h in Hs])
+        ax.set_yticks([i + 0.5 for i in range(len(Ks))]); ax.set_yticklabels([f"{k:g}" for k in Ks])
+        ax.grid(False)
+        for sp in ax.spines.values(): sp.set_visible(False)
+        ax.tick_params(length=0)
+        ax.set_xlabel("Cost of handing the task to a person (H)")
+        ax.set_title(ttl, loc="left", fontsize=9.5, pad=8)
+    axs[0].set_ylabel("Fixed cost of output\nverification (K)")
     from matplotlib.patches import Patch
     hs = [Patch(fc=BLUE, label="E  always hand off"), Patch(fc=ORANGE, label="C  count rule"), Patch(fc=AQUA, label="N  never hand off"),
           Patch(fc=SURF, ec=INK2, hatch="////", label="+V  verify outputs")]
-    ax.legend(handles=hs, ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.0), fontsize=8, handlelength=1.4, columnspacing=1.1)
+    fig.legend(handles=hs, ncol=4, loc="lower center", bbox_to_anchor=(0.5, -0.07), fontsize=8, handlelength=1.4, columnspacing=1.4)
+    same = all(grids[0.0][i][j] == grids[0.5][i][j] for i in range(len(Ks)) for j in range(len(Hs)))
+    ndiff = sum(grids[0.0][i][j] != grids[0.5][i][j] for i in range(len(Ks)) for j in range(len(Hs)))
     save(fig, "fig2_portfolio")
+    import chain_selftransfer as ch
+    nv = {str(th): int(sum(v for row in g for (_, v) in row)) for th, g in grids.items()}
+    zinf = {str(th): float(ch.quantities(ch.NINF, tw, th)[1]) for th in (0.0, 0.5)}
+    return dict(identical=bool(same), n_cells=len(Ks) * len(Hs), n_different=int(ndiff), n_with_verification=nv, z_inf=zinf)
 
 
 # ---------------------------------------------------------------- Figure 3
 def fig3():
-    theta, F, h, om = 0.29, 100.0, 20.0, 10.0
-    Pn, an, zn, ns = sc.az_table(theta)
-    Hh = sc.Hull(Pn, an + F * zn)
+    import chain_selftransfer as ch
+    tw, th, F, h, om = 0.12, 0.05, 100.0, 20.0, 10.0
     Lams = np.arange(0.5, 6.01, 0.25)
-    # (a) M/M/1, time in system; (b) pooled capacity (wait only)
-    P_sys, P_dec, loss1 = [], [], []
+
+    def losses(Fv, c_, grid=2501):
+        Pn, an, zn, ns = ch.table(tw, th)
+        Hh = sc.Hull(Pn, an + Fv * zn)
+        out = []
+        for L in Lams:
+            r = sc.solve(Hh, sc.Queue(c_, 1.0 / c_, 1, 1, L, include_service=(c_ == 1 and False)), h, om, grid=grid)
+            out.append((r, 100 * (r["cost_dec"] - r["cost_sys"]) / r["cost_sys"]))
+        return out
+    Pn, an, zn, ns = ch.table(tw, th)
+    Hh = sc.Hull(Pn, an + F * zn)
+    P_sys, P_dec = [], []
     for L in Lams:
-        r = sc.solve(Hh, sc.Queue(1, 1.0, 1, 1, L), h, om, grid=4001)
-        P_sys.append(r["P_sys"]); P_dec.append(r["P_dec"]); loss1.append(100 * (r["cost_dec"] - r["cost_sys"]) / r["cost_sys"])
+        r = sc.solve(Hh, sc.Queue(1, 1.0, 1, 1, L, include_service=False), h, om, grid=4001)
+        P_sys.append(r["P_sys"]); P_dec.append(r["P_dec"])
     fig, axs = plt.subplots(1, 2, figsize=(9.0, 3.5), gridspec_kw={"wspace": 0.28})
     ax = axs[0]
     ax.plot(Lams, P_dec, color=ORANGE, lw=2); ax.plot(Lams, P_sys, color=BLUE, lw=2)
     ax.text(Lams[-1] + 0.06, P_dec[-1] + 0.012, "average-wait\nrule", color=INK2, fontsize=8, va="center")
     ax.text(Lams[-1] + 0.06, P_sys[-1] - 0.025, "system\noptimum", color=INK2, fontsize=8, va="center")
-    ax.set_xlim(0.5, 7.6); ax.set_ylim(0, 0.5)
+    ax.set_xlim(0.5, 7.6); ax.set_ylim(0, max(P_dec) * 1.15)
     ax.set_xlabel("Task arrival rate (one reviewer, service rate 1)"); ax.set_ylabel("Share of tasks handed to a person")
     ax.set_title("(a) Average-wait rules hand off too many tasks", loc="left", fontsize=9.5, pad=8)
     ax = axs[1]
+    res = {}
     for c_, col in zip((1, 2, 5, 10), RAMP):
-        ls = []
-        for L in Lams:
-            r = sc.solve(Hh, sc.Queue(c_, 1.0 / c_, 1, 1, L, include_service=False), h, om, grid=2501)
-            ls.append(100 * (r["cost_dec"] - r["cost_sys"]) / r["cost_sys"])
+        ls = np.array([x[1] for x in losses(F, c_, 2001)]); res[c_] = ls
         ax.plot(Lams, ls, color=col, lw=2)
         ax.text(Lams[-1] + 0.06, ls[-1], f"{c_} reviewer" + ("s" if c_ > 1 else ""), color=INK2, fontsize=8, va="center")
     ax.set_xlim(0.5, 7.6); ax.set_ylim(0, None)
     ax.set_xlabel("Task arrival rate (total reviewer capacity 1)"); ax.set_ylabel("Extra cost of the average-wait rule (%)")
     ax.set_title("(b) Pooling reviewers tends to enlarge the loss", loc="left", fontsize=9.5, pad=8)
     save(fig, "fig3_average_wait")
-    return Lams, loss1
+    hi = Lams >= 2
+    res200 = {c_: np.array([x[1] for x in losses(200.0, c_, 2001)]) for c_ in (1, 2, 5, 10)}
+    return dict(params=dict(theta_w=tw, theta_h=th, F=F, h=h, omega=om),
+                mean_loss_lam_ge_2={str(c_): float(v[hi].mean()) for c_, v in res.items()},
+                max_loss={str(c_): float(v.max()) for c_, v in res.items()},
+                share_exceeding_one_reviewer={str(c_): float((res[c_][hi] > res[1][hi]).mean()) for c_ in (2, 5, 10)},
+                max_loss_F200={str(c_): float(v.max()) for c_, v in res200.items()})
 
 
 # ---------------------------------------------------------------- Figure 4
@@ -209,7 +235,12 @@ def fig4():
 
 
 if __name__ == "__main__":
-    fig1(); fig2()
-    Lams, loss1 = fig3(); fig4()
+    fig1()
+    n2 = fig2()
+    n3 = fig3()
+    fig4()
+    (OUT / "figure_numbers.json").write_text(json.dumps(dict(fig2=n2, fig3=n3), indent=1))
     print("figures written to", OUT)
-    print("M/M/1 loss of the average-wait rule over load (min, max): %.1f%%, %.1f%%" % (min(loss1), max(loss1)))
+    print("fig2:", n2)
+    print("fig3 mean loss (arrival rate >= 2):", {k: round(v, 1) for k, v in n3["mean_loss_lam_ge_2"].items()}, "| max:", {k: round(v, 1) for k, v in n3["max_loss"].items()},
+          "| share above 1 reviewer:", {k: round(v, 2) for k, v in n3["share_exceeding_one_reviewer"].items()}, "| max at F=200:", {k: round(v, 1) for k, v in n3["max_loss_F200"].items()})

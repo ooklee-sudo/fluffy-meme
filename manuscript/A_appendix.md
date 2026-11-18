@@ -37,7 +37,9 @@ Every policy $\pi$ has expected cost $A_\pi + H P_\pi$, where $A_\pi$ is the exp
 
 *(c).* Let $G(H, F) = \min_c \{a_c + F z_c + H P_c\}$. It is concave and piecewise linear in $F$ with $\partial G/\partial F = z_{c^*(H,F)}$ almost everywhere (envelope theorem), so $V(H; d) = G(H, F_u) - G(H, F(d)) = \int_{F(d)}^{F_u} z_{c^*(H,f)}\,df$. By (b), $c^*(H, f)$ is nondecreasing in $H$ for every $f$ and $z_c$ is nondecreasing in $c$, so the integrand and hence $V$ are nondecreasing in $H$. For $H$ large enough the firm never hands off, $c^* = \infty$ for every $f$ in the range, and $V = (F_u - F(d))\,z_\infty = d\,(F_u - F_d)\,z_\infty$. When hand-offs are so cheap that $c^* = 0$, $z_0 = 0$ and $V = 0$. With $v(d) = \kappa d^2$ the net gain $d(F_u-F_d)z_\infty - \kappa d^2$ is maximized at $d = (F_u - F_d)z_\infty/(2\kappa)$, with value $[(F_u-F_d)z_\infty]^2/(4\kappa)$. $\square$
 
-We checked these statements numerically in 40 random parameter sets for each claim, without self-transfer: no violations of the monotonicity in (a) and (b), of the monotonicity and plateau in (c), or of the envelope identity.
+*(d).* Mark each error with an independent uniform variable and let the agent transfer the task at an error whose mark is below $\theta_h$. A larger $\theta_h$ makes $\tau_h$ weakly earlier on every path, so the event $\{T < \min(\tau_c, \tau_h)\}$ shrinks, and since the payoff $\pi(S_{T+1}) \ge 0$ does not depend on $\theta_h$, $z_c$ is nonincreasing in $\theta_h$; $z_\infty$ is its limit in $c$. $\square$
+
+We checked (a), (b), and (c) numerically in 40 random parameter sets each, with and without self-transfer (half of the sets had $\theta_h = 0$): no violations of the monotonicity of $a_c$, $z_c$, and $P_c$, of the monotonicity of the optimal threshold in $H$ and in $d$ (with costs within $10^{-9}$ treated as tied, since neighbouring large thresholds are reached with probability below $10^{-16}$ and have identical cost up to rounding), of the monotonicity and the plateau of the value of verification, or of the envelope identity.
 
 ### Proof of Proposition 4
 
