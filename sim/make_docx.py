@@ -100,9 +100,10 @@ def style_tables(doc):
         rows = t.rows
         for ri, row in enumerate(rows):
             trPr = row._tr.get_or_add_trPr()
-            cs = OxmlElement("w:cantSplit"); trPr.append(cs)          # keep a row on one page
-            if ri == 0:
-                th = OxmlElement("w:tblHeader"); trPr.append(th)      # repeat the header row on each page
+            if trPr.find(qn("w:cantSplit")) is None:
+                trPr.append(OxmlElement("w:cantSplit"))                # keep a row on one page
+            if ri == 0 and trPr.find(qn("w:tblHeader")) is None:
+                trPr.append(OxmlElement("w:tblHeader"))                # repeat the header row on each page
             for c in row.cells:
                 for p in c.paragraphs:
                     p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
