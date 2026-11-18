@@ -1,6 +1,6 @@
 ## References
 
-Alves JV, Leitão D, Jesus S, Sampaio MOP, Liébana J, Saleiro P, Figueiredo MAT, Bizarro P (2024) Cost-sensitive learning to defer to multiple experts with workload constraints. Preprint, arXiv:2403.06906 (v3).
+Alves JV, Leitão D, Jesus S, Sampaio MOP, Liébana J, Saleiro P, Figueiredo MAT, Bizarro P (2024) Cost-sensitive learning to defer to multiple experts with workload constraints. *Transactions on Machine Learning Research*, July 2024 (arXiv:2403.06906).
 
 Apgar D (2026) Chargebacks: The case for coordination. White paper, Javelin Strategy & Research, sponsored by Mastercard, January 29.
 
