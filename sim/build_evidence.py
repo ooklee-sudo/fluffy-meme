@@ -52,7 +52,7 @@ Three conclusions hold under both splits. First, **GPT-6.1-terra's drop is almos
 
 *Transient failures* (appendix Table A.1) are largely harmless for the commercial models and carry both channels for DeepSeek-V3.1.
 
-*What the agent does after the message (descriptive).* For a misleading message we classify the next two calls as a cross-check (a different read-only tool), a retry (the same tool again), or neither. In 94 of the 97 misleading-message runs of GPT-6.1-terra in which it did neither, the next call was a transfer. For this agent a misleading message also lowers cross-checking by 0.27 [−0.34, −0.20] relative to the paired control run. Success is highest when the agent checks elsewhere and lowest when it neither checks nor retries (Table 5.3).
+*What the agent does after the message (descriptive).* For a misleading message we classify the next two calls as a cross-check (a different read-only tool), a retry (the same tool again), or neither. In 94 of the 97 misleading-message runs of GPT-6.1-terra in which it did neither, a transfer to a human appeared within the next two calls. For this agent a misleading message also lowers cross-checking by 0.27 [−0.34, −0.20] relative to the paired control run. Success is highest when the agent checks elsewhere and lowest when it neither checks nor retries (Table 5.3).
 
 {{BEHAV}}
 
