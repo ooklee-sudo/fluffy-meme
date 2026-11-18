@@ -2,6 +2,8 @@
 
 Alves JV, Leitão D, Jesus S, Sampaio MOP, Liébana J, Saleiro P, Figueiredo MAT, Bizarro P (2024) Cost-sensitive learning to defer to multiple experts with workload constraints. Preprint, arXiv:2403.06906 (v3).
 
+Apgar D (2026) Chargebacks: The case for coordination. White paper, Javelin Strategy & Research, sponsored by Mastercard, January 29.
+
 Baird A, Maruping LM (2021) The next generation of research on IS use: A theoretical framework of delegation to and from agentic IS artifacts. *MIS Quarterly* 45(1):315–341.
 
 Barres V, Dong H, Ray S, Si X, Narasimhan K (2025) $\tau^2$-Bench: Evaluating conversational agents in a dual-control environment. Preprint, submitted June 9, https://arxiv.org/abs/2506.07982.
@@ -54,8 +56,8 @@ Yang J, Jimenez CE, Wettig A, Lieret K, Yao S, Narasimhan K, Press O (2024) SWE-
 
 Yao S, Shinn N, Razavi P, Narasimhan K (2024) $\tau$-bench: A benchmark for tool-agent-user interaction in real-world domains. Preprint, submitted June 17, https://arxiv.org/abs/2406.12045.
 
-Allen AO (1990) *Probability, Statistics, and Queueing Theory with Computer Science Applications*, 2nd ed. (Academic Press, Boston). [The Allen–Cunneen approximation is attributed to Allen and Cunneen; the first edition is 1978. Verify edition and publisher.]
+Allen AO (1990) *Probability, Statistics, and Queueing Theory with Computer Science Applications*, 2nd ed. (Academic Press). [The first edition is from 1978; the approximation is attributed to Allen and Cunneen, and the 1978 edition and Cunneen's original source were not checked.]
 
-Whitt W (1993) Approximations for the GI/G/m queue. *Production and Operations Management* 2(2):114–161. [Verify.]
+Whitt W (1993) Approximations for the GI/G/m queue. *Production and Operations Management* 2(2):114–161.
 
 *Not used and removed from the earlier version:* Jovanovic (1979) and Wang and Strong (1996).
