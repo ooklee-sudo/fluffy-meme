@@ -94,8 +94,10 @@ def load(m):
     return list(out.values())
 
 
-def est(m):
-    R = load(m); tasks = sorted({r["domain"] + ":" + r["task"] for r in R}); idx = {t: i for i, t in enumerate(tasks)}
+def est(m, dom=None):
+    R = load(m)
+    if dom is not None: R = [r for r in R if r["domain"] == dom]
+    tasks = sorted({r["domain"] + ":" + r["task"] for r in R}); idx = {t: i for i, t in enumerate(tasks)}
     by = {a: [[] for _ in tasks] for a in ("control", "single", "blame")}
     for r in R:
         if r["arm"] not in by: continue

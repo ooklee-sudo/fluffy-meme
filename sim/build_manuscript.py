@@ -20,6 +20,7 @@ FIG = {
 
 def numbers():
     import json
+    fd = json.load(open(ROOT / "sim/f_domains.json"))["breakeven"]
     n = json.load(open(ROOT / "figures/figure_numbers.json"))
     f2, f3 = n["fig2"], n["fig3"]
     m = f3["mean_loss_lam_ge_2"]; mx = f3["max_loss"]
@@ -27,7 +28,7 @@ def numbers():
     d22 = f3["max_loss_deepseek_F22"]; son = f3["max_loss_sonnet_F44"]
     return {"F2_Z0": f"{f2['z_inf']['0.0']:.3f}", "F2_Z1": f"{f2['z_inf']['0.5']:.3f}", "F2_NV0": str(f2["n_with_verification"]["0.0"]),
             "F2_NV1": str(f2["n_with_verification"]["0.5"]), "F2_N": str(f2["n_cells"]),
-            "F3_MEANS": lst(m), "F3_PEAKS": lst(mx),
+            "BE_AIR5": f"{100 * fd['5']['p_severe_airline']:.1f}%", "BE_AIR3": f"{100 * fd['3']['p_severe_airline']:.1f}%", "F3_MEANS": lst(m), "F3_PEAKS": lst(mx),
             "F3_F22": f"{d22['1']:.1f}% with one reviewer and {d22['10']:.1f}% with ten", "F3_SON": f"{max(son.values()):.1f}%"}
 
 
@@ -35,7 +36,7 @@ def build():
     text = "\n\n".join((M / f).read_text().strip() for f in ORDER) + "\n"
     for k, (img, cap) in FIG.items():
         text = text.replace("{{" + k + "}}", f"![]({'../figures/' + img}){{width=100%}}\n\n{cap}")
-    for k in ("OBS", "SUCCESS", "ARMS", "DECOMP_MIS", "BEHAV", "NSTAR", "CALIB", "SENS", "SONNET_N", "BE10", "BE5", "BE3", "BE2"):
+    for k in ("OBS", "SUCCESS", "ARMS", "DECOMP_MIS", "BEHAV", "NSTAR", "DOMAIN_TH", "DOMAIN_N", "AIR_UPPER", "AIR_UPPER_N", "CALIB", "SENS", "SONNET_N", "BE10", "BE5", "BE3", "BE2"):
         text = text.replace("{{" + k + "}}", TABLES[k])
     text = text.replace("{{TA1}}", TABLES["DECOMP_TRA"] + "\n\n*Table A1. Customer service, transient failure. Same definitions as Table 4.*")
     for k, v in numbers().items(): text = text.replace("{{" + k + "}}", v)
@@ -55,7 +56,7 @@ def checks(text):
     for n in range(1, 5):
         if f"Figure {n}" not in body: problems.append(f"Figure {n} not referenced in text")
         if f"**Figure {n}.**" not in text: problems.append(f"Figure {n} caption missing")
-    for n in range(1, 7):
+    for n in range(1, 9):
         if not re.search(rf"\*Table {n}\.", text): problems.append(f"Table {n} caption missing")
         if not re.search(rf"Table {n}\b", re.sub(rf"\*Table {n}\..*?\*", "", body, flags=re.S)): problems.append(f"Table {n} not referenced in text")
     for n in range(1, 5):

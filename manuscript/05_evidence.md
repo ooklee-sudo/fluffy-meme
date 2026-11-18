@@ -50,6 +50,12 @@ Three conclusions hold under both splits (Table 4 and Figure 4). First, GPT-6.1-
 
 *Table 5. Misleading arm: $\theta$ by what the agent did in the two calls after the message (95% intervals).*
 
+*By domain.* The effect of a misleading message is concentrated in retail, which has 114 of the 164 tasks (Table 7). In retail GPT-6.1-terra's transfer rate rises by 0.42 and Claude Sonnet 5.5's $\theta_w$ is 0.15 to 0.18 with intervals that exclude zero. In airline, with 50 tasks, no agent shows a significant change in either channel, but the intervals are wide, so this is an absence of evidence and not evidence of absence. The pooled estimates in Table 4 are therefore a weighted average of two domains that differ both in the size of $\theta$ and, as Section 5.4 shows, in the cost of a wrong output.
+
+{{DOMAIN_TH}}
+
+*Table 7. Misleading message by customer-service domain: control success, transfer rate in control runs and its change, and the two channels (additive and model-consistent splits; task-clustered bootstrap intervals).*
+
 *Code repair.* Effects are smaller (Table 2). A misleading message lowers the success of DeepSeek-V3.1 and Claude Sonnet 5.5 by about 0.06, with intervals that exclude zero, and leaves GPT-6.1-terra, which repairs 99% of the bugs, unchanged. The Llama agents succeed too rarely to learn from. The coding environment has no transfer tool, so $\theta_h$ is zero and the whole effect is wrong output. One reason the effects may be smaller is that the coding agent can run the tests and discover that something is wrong; we did not manipulate this.
 
 ### 5.4 Calibrating the count rule
@@ -62,10 +68,19 @@ Proposition 1 needs $\theta_w$ and not $\theta$. Table 6 gives the thresholds un
 
 The thresholds depend on the ratio of the cost of a wrong output to the cost of a hand-off. If a wrong output costs about one more human contact, the count rule hardly binds for any agent: even for Claude Sonnet 5.5 the threshold is nine errors or more, and an agent that makes a tool error in about one step in seventy rarely reaches it. The rule starts to matter when a wrong output costs two or more times a hand-off. For GPT-6.1-terra no count rule is warranted at any of the three costs, because the agent hands off by itself and its $\theta_w$ is indistinguishable from zero. What that behavior calls for instead is staffing (Section 4.3): a misleading message nearly doubles the share of tasks that reach the reviewers. For Claude Sonnet 5.5 the threshold is {{SONNET_N}}. For DeepSeek-V3.1 and a misleading message it ranges from no rule to seven errors at the lowest cost and from no rule to two at the highest, depending on the split. Using the undivided $\theta$ would have overstated the need for a rule for GPT-6.1-terra.
 
+*Domain-specific costs.* The cost of a wrong output differs by domain, and with it the threshold (Appendix C, Table C3). In retail, a wrong refund or return costs a repair contact plus the processing of a return (reported at $10 to $30 per return) and, if the customer disputes the charge, a chargeback (a fee of $15 to $50 and an all-in cost reported at about $128), so $F$ is about $29 and up to about $157. In airline, a wrong answer can have severe consequences: a tribunal ordered Air Canada to pay CA$812 after its chatbot gave wrong fare information, and flat compensation of €250 to €600 applies to cancellations and denied boarding in the European Union. We do not observe how often a wrong output becomes such a case. Table 8 gives thresholds with $F$ of $29$ and $157$ in retail and with $F$ of $8.82$ and $39$ in airline (the latter if one wrong output in twenty becomes a severe case of about $600$).
+
+{{DOMAIN_N}}
+
+*Table 8. Count at which the firm should hand off, by domain and agent, for a lower and a higher cost of a wrong output. "n.s." marks a $\theta_w$ whose interval includes zero, which is treated as zero.*
+
+In retail the rule binds quickly for Claude Sonnet 5.5, at one to three errors, and the answer for DeepSeek-V3.1 depends on the split. For GPT-6.1-terra no rule is warranted, since $\theta_w$ is not distinguishable from zero. In airline we find no evidence of the wrong-output channel, but with 50 tasks we cannot rule it out: at the upper ends of the intervals for Claude Sonnet 5.5 ($\theta_w$ of {{AIR_UPPER}}) and the central airline cost, the threshold would be {{AIR_UPPER_N}} errors. The share of wrong outputs that must become severe cases for the rule to bind within five errors is {{BE_AIR5}} (within three: {{BE_AIR3}}) at the airline cost of Table C3. Even a small share of severe cases therefore makes the rule worth having.
+
 ### 5.5 Robustness and limits
 
 - *How the split is made matters for one agent.* The DeepSeek-V3.1 conclusion changes between the two splits. We report both and do not choose.
 - *A transfer is not always an error.* GPT-6.1-terra transfers in about 40% of control runs, and some tasks may call for a transfer. We classify a run by whether it contains any transfer call and have not separated the tasks for which transfer is the correct action. Success among runs with a transfer is low (about 0.35 for GPT-6.1-terra after a misleading message), so transfers are mostly scored as failures. But the success measure, the final database state, does not say what a transfer is worth.
+- *Domain heterogeneity.* The effects are concentrated in retail. The airline sample is small (50 tasks), its intervals are wide, and the cost of a wrong output there is dominated by rare severe cases that we do not observe.
 - *One agent and one domain for the volume result.* The near-doubling is for GPT-6.1-terra in customer service. DeepSeek-V3.1 shows a smaller increase (0.21) and Claude Sonnet 5.5 almost none. We do not claim that tool-output errors raise escalation volume in general.
 - *The reason for a transfer is unknown.* The run-level logs record tool calls and not the agent's messages, so we cannot say what the agent told the customer or why it transferred.
 - *Exogenous errors.* Injected errors do not arise from the agent's own confusion and may differ from natural errors. The misleading message reads like the agent's own mistake and asserts something false at the same time, and the design does not separate the two.

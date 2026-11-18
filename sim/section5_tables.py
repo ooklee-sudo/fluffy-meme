@@ -127,8 +127,10 @@ def tab_obs():
     return "\n".join(rows)
 
 
+import f_domains as _fd
 _sens, _be = tab_sens()
-TABLES.update(SUCCESS=tab_success(), OBS=tab_obs(), CALIB=tab_calib(), SENS=_sens, SONNET_N=sonnet_text(), BE10=f"{_be[10]:.1f}", BE5=f"{_be[5]:.1f}", BE3=f"{_be[3]:.1f}", BE2=f"{_be[2]:.1f}")
+_up, _upn = _fd.airline_upper()
+TABLES.update(DOMAIN_TH=_fd.tab_theta(), DOMAIN_N=_fd.tab_nstar_domain(), AIR_UPPER=f"{_up[0]:.2f} and {_up[1]:.2f}", AIR_UPPER_N=(str(int(_upn[0])) if _upn[0]==_upn[1] and _upn[0] != float('inf') else f"{int(min(_upn))} to {int(max(_upn))}"), SUCCESS=tab_success(), OBS=tab_obs(), CALIB=tab_calib(), SENS=_sens, SONNET_N=sonnet_text(), BE10=f"{_be[10]:.1f}", BE5=f"{_be[5]:.1f}", BE3=f"{_be[3]:.1f}", BE2=f"{_be[2]:.1f}")
 
 if __name__ == "__main__":
     for k, v in TABLES.items(): print(f"--- {k}\n{v}\n")
