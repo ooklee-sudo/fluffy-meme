@@ -1,3 +1,5 @@
+> **SUPERSEDED** by manuscript/03_model.md, 04_analysis.md. This file is kept for its status notes and claims ledger; edit the manuscript files, not this one.
+
 # M&SOM 초안: 3절 Model, 4절 Analysis
 
 > 상태 표기: **[증명]** = 증명 완료 (위치 병기), **[수치]** = 수치 검증만, **[스케치]** = 증명 스케치. 기호는 ISR 원고와 맞췄다 (k: 걸음당 비용, c: 오류당 비용, q: 걸음당 완료 확률, μ: 걸음당 오류율, H: 인계 비용, F: 틀린 출력의 탐지·복구 비용). 오류 유형 색인은 원고의 k와 충돌하지 않도록 j를 쓰고, 대기비용은 ω, 검증 품질은 d로 쓴다.

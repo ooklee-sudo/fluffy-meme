@@ -1,3 +1,5 @@
+> **SUPERSEDED** by sim/build_manuscript.py (captions) and manuscript/manuscript_draft.md. This file is kept for its status notes and claims ledger; edit the manuscript files, not this one.
+
 # M&SOM 초안: 그림과 캡션
 
 그림 생성: `python sim/make_figures.py` (numpy, matplotlib 필요). 출력은 `figures/`에 PNG(200dpi)와 PDF(벡터). 팔레트는 dataviz 스킬의 기준 팔레트이고 검증 스크립트를 통과했다 (범주 2색 통과, 범주 3색 전 쌍 통과, 순서형 파랑 램프 통과). 검증에서 aqua는 밝은 표면 대비 대비가 3:1 미만이라는 경고가 있어 그림 2에서는 칸마다 글자 레이블을 붙였다 (색만으로 구분하지 않음). 그림 2의 빗금은 색과 별개의 보조 부호화다.

@@ -1,3 +1,5 @@
+> **SUPERSEDED** by manuscript/06_discussion.md. This file is kept for its status notes and claims ledger; edit the manuscript files, not this one.
+
 # M&SOM 초안: 6절 Discussion, 7절 Conclusion
 
 > 상태: 초안. 모든 주장은 앞 절의 결과에 근거하며 대괄호는 확인이 필요한 항목. 증거 수준 표기는 `msom_draft_intro.md`의 주장 대장을 따른다.

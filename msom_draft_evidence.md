@@ -1,3 +1,5 @@
+> **SUPERSEDED** by manuscript/05_evidence.md. This file is kept for its status notes and claims ledger; edit the manuscript files, not this one.
+
 # M&SOM 초안: 5절 Evidence
 
 > 상태: 초안. 표는 `sim/section5_tables.py`가 분석 결과 JSON에서 생성한다 (`sim/build_evidence.py`로 이 파일 전체를 다시 만든다). 대괄호는 확인이 필요한 항목. 모든 분석은 사전등록되지 않은 탐색 분석이다.

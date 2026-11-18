@@ -33,7 +33,7 @@ def tab_decomp(kind):
 
 
 def tab_nstar():
-    rows = ["| Agent, error type | Manuscript (total θ) | θ_w additive | θ_w model-consistent |", "|---|---|---|---|"]
+    rows = ["| Agent, error type | Total θ, undivided | θ_w additive | θ_w model-consistent |", "|---|---|---|---|"]
     for m in ["deepseek", "gpt61terra", "sonnet55"]:
         for kind, lab in (("transient", "transient"), ("misleading", "misleading")):
             d = T[m][kind]
@@ -56,5 +56,32 @@ def tab_behaviour():
 
 
 TABLES = dict(ARMS=tab_arms(), DECOMP_MIS=tab_decomp("misleading"), DECOMP_TRA=tab_decomp("transient"), NSTAR=tab_nstar(), BEHAV=tab_behaviour())
+
+REP = ROOT.parent / "replication/replication_agent_handoff"
+ALLNAME = {"llama8b": "Llama-3.1-8B", "llama70b": "Llama-3.1-70B", "deepseek": "DeepSeek-V3.1", "gpt61terra": "GPT-6.1-terra", "sonnet55": "Claude Sonnet 5.5"}
+
+
+def tab_success():
+    A = json.load(open(REP / "inject/inject_results.json")); C = json.load(open(REP / "inject_code/code_results.json"))
+    rows = ["| Domain | Agent | Control success | Transient − control | Misleading − control |", "|---|---|---|---|---|"]
+    for dom, J in (("Customer service", A), ("Code repair", C)):
+        for m in ["llama8b", "llama70b", "deepseek", "gpt61terra", "sonnet55"]:
+            r = J[m]["success"]
+            def cell(k):
+                d = r[k]; return f"{d['diff']:+.3f} [{d['ci'][0]:+.3f}, {d['ci'][1]:+.3f}]"
+            rows.append(f"| {dom} | {ALLNAME[m]} | {r['control']['rate']:.2f} | {cell('single_minus_control')} | {cell('blame_minus_control')} |")
+    return "\n".join(rows)
+
+
+def tab_obs():
+    rows = ["| Model | Trajectories | Branching ratio, no heterogeneity | Branching ratio, with heterogeneity | 95% bootstrap interval | α | δ | CV of μ | LR statistic |", "|---|---|---|---|---|---|---|---|---|",
+            "| Llama-3.1-8B | 3,000 | 1.85 | 0.50 | [0.44, 0.56] | 0.20 | 0.60 | 1.79 | 2077 |",
+            "| Llama-3.1-70B | 3,000 | 1.48 | 0.38 | [0.31, 0.42] | 0.21 | 0.45 | 1.41 | 1130 |",
+            "| Llama-3.1-405B | 1,140 | 2.08 | 0.56 | [0.49, 0.62] | 0.15 | 0.73 | 3.05 | 659 |"]
+    return "\n".join(rows)
+
+
+TABLES.update(SUCCESS=tab_success(), OBS=tab_obs())
+
 if __name__ == "__main__":
     for k, v in TABLES.items(): print(f"--- {k}\n{v}\n")

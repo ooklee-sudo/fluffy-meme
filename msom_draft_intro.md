@@ -1,3 +1,5 @@
+> **SUPERSEDED** by manuscript/00_front.md, 01_introduction.md, 02_literature.md. This file is kept for its status notes and claims ledger; edit the manuscript files, not this one.
+
 # M&SOM 투고용 abstract / introduction 초안
 
 > 상태: 초안. 대괄호 `[...]`는 아직 증명·검증·확정이 필요한 항목이다. 문서 끝의 "주장 대장"에서 각 문장의 근거와 상태를 확인할 것. 근거 파일은 `msom_reframing.md`(절 번호)와 `sim/`.
