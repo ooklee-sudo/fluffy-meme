@@ -1,7 +1,7 @@
 """Calibration of the cost parameters in dollars, and the thresholds that follow.
 
 Sources (see manuscript Appendix C for the table with links and reliability)
-  H   cost of a human-handled contact: SQM Group average cost per call $8.82 (cited by a vendor page); other benchmarks $6-13.50.
+  H   cost of a human-handled contact: SQM Group average cost per call $8.82 (white paper text checked); Gartner 2024 median $13.50 per assisted contact (via summary); other benchmarks $6-12.
   F   cost to detect and repair a wrong output: one extra human contact. Base $12.35 = SQM cost per resolution (8.82 x 1.4 contacts per
       resolution); low $8.82 (one extra contact); high and very high $22 and $44 (assumption: repair contact plus refund or goodwill,
       NOT sourced; the domain decides how large F/H is).

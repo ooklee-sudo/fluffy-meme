@@ -2,7 +2,7 @@
 
 F by domain (see manuscript Appendix C, Table C3, for sources and reliability). F is the cost to detect and repair a wrong output,
 H = $8.82 is the cost of one human-handled contact.
-  repeat contact (generic)  $8.82-16     one repeat contact (SQM, Kustomer, Televerde)
+  any customer service      $8.82-30     human resolving the issue: $8.82 per call, $12.35 per resolution (SQM); repeat contact $14-30 (Kustomer, unsourced)
   retail                    $29-157      repair contact $8.82 + return processing $20 (range $10-30) [+ one chargeback, all-in $128]
   airline                   $9-609       repair contact $8.82 + remediation of a severe case, e.g. Moffatt v. Air Canada CA$812 (about
                                           US$600; exchange rate approximate), EU261 compensation EUR 250-600; expected F depends on the share
