@@ -1,6 +1,11 @@
 ---
 title: "Mutation Scores Overstate the Fault-Finding Reach of LLM-Written Unit Tests: Evidence from Mutants and Real Faults"
+author: "Ook Lee"
 ---
+
+Department of Information Systems, Hanyang University, Seoul, Republic of Korea
+
+**Correspondence:** Ook Lee, Department of Information Systems, Hanyang University, Seoul, Republic of Korea. Email: ooklee@hanyang.ac.kr
 
 # Abstract
 
@@ -128,6 +133,10 @@ The author declares no conflict of interest.
 # Funding Statement
 
 This research received no specific funding.
+
+# Author Contributions
+
+O.L. conceived the study, built the pipeline, ran the analyses and wrote the manuscript.
 
 # Use of Generative AI
 
