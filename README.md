@@ -93,4 +93,11 @@ python qec_decoder.py --d 5 --p 0.005 --steps 20000 --device cuda
 python qec_decoder.py --d 3 --eval-d 3 5 7 --eval-p 0.003 0.008 --steps 20000 --device cuda   # 거리/노이즈 일반화
 ```
 
+**하이브리드 모드** (`--hybrid`): MWPM의 예측·가중치를 입력으로 주고 신경망은 "MWPM이 틀리는가"만 학습합니다. 최종 예측은 MWPM XOR 보정이라 MWPM 수준에서 시작합니다. `--large`는 dim 256, 6층, bs 512, 6만 스텝 프리셋입니다(학습 중 20%마다 간이 평가를 출력).
+
+```bash
+python qec_decoder.py --d 5 --p 0.005 --hybrid --large --device cuda
+python qec_decoder.py --d 5 --p 0.005 --large --device cuda      # 비하이브리드 대조군
+```
+
 8GB GPU 기준 d=3~7, dim 128~256, 4~6층까지 여유 있습니다. 결과는 `results/qec_decoder.json`에 저장됩니다.
