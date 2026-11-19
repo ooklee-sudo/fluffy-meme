@@ -165,3 +165,24 @@ python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --steps 20000 --bs 256 --bm
 python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --hybrid --steps 20000 --bs 256 --bm --ckpt results/c_hybrid.pt --device cuda
 python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --large --bm --ckpt results/c_large.pt --device cuda   # 큰 모델, 6만 스텝
 ```
+
+### hyperedge를 쓰는 강한 기준선 (BMh, BPOSD)
+
+`--hcalib-shots N`: 오류 메커니즘의 **구조**(상관 hyperedge 포함)는 실제 회로의 DEM에서 가져오고(기준선에 유리한 가정), **확률**은 라벨 없는 N샷에서 추정한 `MWPMh`/`BMh`. 검출기 부분집합 A에 대해 E[Π(−1)^x] = Π_{|A∩S_m| 홀수}(1−2p_m)이므로 log E_A가 log(1−2p_m)에 선형이며, 모든 단일/쌍/3개 이상 메커니즘 집합에 대한 가중 최소제곱으로 풉니다(d=5, 50만 샷: 메커니즘 확률 상대오차 중앙값 5%).
+
+`--bposd`: DEM 검사행렬 위의 BP+OSD(`ldpc`, 반복 100, osd_cs 차수 30). MWPM과 달리 hyperedge를 직접 씁니다. `BPOSD`(가정 그래프), `BPOSDh`(보정), `BPOSD*`(oracle). `pip install ldpc beliefmatching` 필요.
+
+```bash
+python qec_decoder.py --baselines-only --d 5 --p 0.005 --corr-p 0.002 --hcalib-shots 500000 --eval-n 12000 --bposd
+```
+
+d=5, p=0.005, corr-p=0.002 (샘플 수가 다른 두 번의 측정):
+
+| 디코더 | 오류율 | 샷 |
+| --- | --- | --- |
+| MWPM / MWPMc / MWPM* | 0.0413 / 0.0401 / 0.0399 | 100000 |
+| BM / BMc / BM* | 0.0372 / 0.0364 / 0.0415 | 100000 |
+| MWPMh | 0.0378 | 12000 |
+| BPOSD / BPOSDh / BPOSD* | 0.0350 / 0.0351 / 0.0354 | 12000 |
+
+주의: BP+OSD는 설정에 매우 민감합니다(반복 30, 차수 0: 0.053 / 반복 100, 차수 30: 0.035). d=3에서는 oracle 구조의 BPOSD가 가정 그래프보다 나빴습니다(0.0646 vs 0.0496, 원인 미확인). d=5 설정에서만 점검했습니다.

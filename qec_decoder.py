@@ -114,11 +114,12 @@ class Sampler:
                 unlabeled shots of the true noise          (no oracle knowledge)"""
 
     def __init__(self, d, rounds, p, meas_mult=1.0, data_mult=1.0, assume_p=None, calib_shots=0,
-                 corr_p=0.0, corr_type="X"):
+                 corr_p=0.0, corr_type="X", hcalib_shots=0):
         self.d, self.rounds, self.p = d, rounds, p
         self.meas_mult, self.data_mult = meas_mult, data_mult
         self.assume_p = p if assume_p is None else assume_p
         self.calib_shots = calib_shots
+        self.hcalib_shots = hcalib_shots
         self.corr_p = corr_p
         self.circ = make_circuit(d, rounds, **noise_params(p, meas_mult, data_mult))
         if corr_p > 0:
@@ -130,6 +131,7 @@ class Sampler:
         self.circ_assumed = (make_circuit(d, rounds, **noise_params(self.assume_p))
                              if self.mismatch else self.circ)
         self.calibrated = self.mismatch and calib_shots > 0
+        self.hcalibrated = hcalib_shots > 0
         self._cache = {}
 
     # -- detector error models for the three decoder variants
@@ -139,9 +141,81 @@ class Sampler:
                                                   ignore_decomposition_failures=True)
         if which == "assumed":
             return self.circ_assumed.detector_error_model(decompose_errors=True)
+        if which == "hcalib":
+            if ("dem", "hcalib") not in self._cache:
+                self._cache[("dem", "hcalib")] = self._hcalibrated_dem()
+            return self._cache[("dem", "hcalib")]
         if ("dem", "calib") not in self._cache:
             self._cache[("dem", "calib")] = self._calibrated_dem()
         return self._cache[("dem", "calib")]
+
+    def _hcalibrated_dem(self):
+        """Hyperedge-aware calibration.  The mechanism STRUCTURE (which detector sets can
+        flip together, incl. correlated hyperedges) is taken from the true circuit's DEM -
+        generous to the baseline - but every probability is re-estimated from
+        `hcalib_shots` unlabeled shots.  For any detector subset A,
+            E[prod_{i in A} (-1)^x_i] = prod_{m: |A & S_m| odd} (1 - 2 p_m),
+        i.e. log E_A is LINEAR in theta_m = log(1 - 2 p_m).  We solve a bounded, precision-
+        weighted least-squares problem over all singletons, all pairs and all mechanism
+        sets with >= 3 detectors."""
+        from scipy.optimize import lsq_linear
+        dem0 = self._dem("oracle")
+        n_det = self.circ.num_detectors
+        errs = []
+        for ins in dem0.flattened():
+            if ins.type != "error":
+                continue
+            targets = ins.targets_copy()
+            S = set()
+            for t in targets:
+                if t.is_relative_detector_id():
+                    S ^= {t.val}
+            errs.append((ins.args_copy()[0], targets, frozenset(S)))
+        groups = {}
+        for i, (_, _, S) in enumerate(errs):
+            if S:
+                groups.setdefault(S, []).append(i)
+        keys = list(groups)
+        B = np.zeros((len(keys), n_det))
+        for k, S in enumerate(keys):
+            B[k, sorted(S)] = 1.0
+        big = [k for k, S in enumerate(keys) if len(S) >= 3]
+        N, chunk = self.hcalib_shots, 50000
+        s1, s2, sb, done = np.zeros(n_det), np.zeros((n_det, n_det)), np.zeros(len(big)), 0
+        while done < N:
+            b = min(chunk, N - done)
+            det, _ = self.sampler.sample(b, separate_observables=True)
+            z = 1.0 - 2.0 * det.astype(np.float32)
+            s1 += z.sum(0)
+            s2 += (z.T @ z).astype(np.float64)
+            for j, k in enumerate(big):
+                sb[j] += np.prod(z[:, sorted(keys[k])], axis=1).sum()
+            done += b
+        E1, E2, Eb = s1 / N, s2 / N, sb / N
+        rows, ys, ws = [], [], []
+
+        def add(row, E):
+            E = max(float(E), 1e-3)
+            sigma = math.sqrt(max(1 - E * E, 1e-9) / N) / E
+            rows.append(row); ys.append(math.log(E)); ws.append(1.0 / sigma)
+
+        for i in range(n_det):
+            add(B[:, i], E1[i])
+        for i in range(n_det):
+            for j in range(i + 1, n_det):
+                add(np.abs(B[:, i] - B[:, j]), E2[i, j])
+        for j, k in enumerate(big):
+            add((B @ B[k]) % 2, Eb[j])
+        M, y, w = np.array(rows), np.array(ys), np.array(ws)
+        sol = lsq_linear(M * w[:, None], y * w, bounds=(math.log(1 - 2 * 0.499), 0.0))
+        p_est = {S: (1 - math.exp(sol.x[k])) / 2 for k, S in enumerate(keys)}
+        tot = {S: sum(errs[i][0] for i in idx) for S, idx in groups.items()}
+        self.hcalib_diag = [(tot[S], p_est[S], len(S)) for S in keys]  # (true, estimated, size)
+        lines = [f"detector D{i}" for i in range(n_det)]
+        for p, targets, S in errs:
+            pn = p_est[S] * p / tot[S] if S else p
+            lines.append(f"error({min(max(pn, 1e-9), 0.499)}) " + " ".join(str(t) for t in targets))
+        return stim.DetectorErrorModel("\n".join(lines))
 
     def _calibrated_dem(self):
         """Estimate every graph-edge probability from detector-pair statistics
@@ -205,6 +279,24 @@ class Sampler:
     def sample(self, n):
         det, obs = self.sampler.sample(n, separate_observables=True)
         return det, obs[:, 0]
+
+    def bposd(self, det, which="assumed", osd_order=30, max_iter=100):
+        """BP+OSD (ldpc) on the DEM check matrix, hyperedges included: the generic decoder
+        that can use correlated multi-detector mechanisms (MWPM cannot)."""
+        key = ("bposd", which, osd_order)
+        if key not in self._cache:
+            from beliefmatching import detector_error_model_to_check_matrices as to_mats
+            from ldpc import BpOsdDecoder
+            m = to_mats(self._dem(which), allow_undecomposed_hyperedges=True)
+            dec = BpOsdDecoder(m.check_matrix, error_channel=list(m.priors), max_iter=max_iter,
+                               bp_method="minimum_sum", ms_scaling_factor=0.625,
+                               osd_method="osd_cs", osd_order=osd_order)
+            self._cache[key] = (dec, m.observables_matrix)
+        dec, O = self._cache[key]
+        out = np.zeros(len(det), dtype=bool)
+        for k in range(len(det)):
+            out[k] = ((O @ dec.decode(det[k].astype(np.uint8))) % 2)[0] == 1
+        return out
 
     def mwpm(self, det, which="assumed"):
         """MWPM prediction (bool) and matching weight (float32) per shot."""
@@ -271,13 +363,14 @@ def run_batch(model, smp, n, coords, device):
 
 # ------------------------------------------------------------ train/eval
 @torch.no_grad()
-def evaluate(model, smp, n, device, bs=1024, with_bm=False):
+def evaluate(model, smp, n, device, bs=1024, with_bm=False, with_bposd=False):
     """Logical error rates of the network (if model is not None) and the baselines."""
     hybrid = model is not None and model.hybrid
     if model is not None:
         model.eval()
         coords = torch.tensor(smp.coords, device=device)
-    c = dict(nn=0, mw=0, mw_or=0, mw_ca=0, bm=0, bm_or=0, bm_ca=0, flip=0, fixed=0, broken=0)
+    c = dict(nn=0, mw=0, mw_or=0, mw_ca=0, mw_h=0, bm=0, bm_or=0, bm_ca=0, bm_h=0,
+             flip=0, fixed=0, broken=0, bp=0, bp_h=0, bp_or=0)
     done = 0
     while done < n:
         b = min(bs, n - done)
@@ -299,8 +392,18 @@ def evaluate(model, smp, n, device, bs=1024, with_bm=False):
             c["mw_or"] += int((smp.mwpm(det, "oracle")[0] != obs).sum())
         if smp.calibrated:
             c["mw_ca"] += int((smp.mwpm(det, "calib")[0] != obs).sum())
+        if smp.hcalibrated:
+            c["mw_h"] += int((smp.mwpm(det, "hcalib")[0] != obs).sum())
+        if with_bposd:
+            c["bp"] += int((smp.bposd(det) != obs).sum())
+            if smp.hcalibrated:
+                c["bp_h"] += int((smp.bposd(det, "hcalib") != obs).sum())
+            if smp.mismatch:
+                c["bp_or"] += int((smp.bposd(det, "oracle") != obs).sum())
         if with_bm:
             c["bm"] += int((smp.belief_matching(det) != obs).sum())
+            if smp.hcalibrated:
+                c["bm_h"] += int((smp.belief_matching(det, "hcalib") != obs).sum())
             if smp.mismatch:
                 c["bm_or"] += int((smp.belief_matching(det, "oracle") != obs).sum())
             if smp.calibrated:
@@ -317,8 +420,19 @@ def evaluate(model, smp, n, device, bs=1024, with_bm=False):
     if smp.calibrated:
         out["ler_mwpm_calib"] = c["mw_ca"] / n
         out["calib_shots"] = smp.calib_shots
+    if smp.hcalibrated:
+        out["ler_mwpm_h"] = c["mw_h"] / n
+        out["hcalib_shots"] = smp.hcalib_shots
+    if with_bposd:
+        out["ler_bposd"] = c["bp"] / n
+        if smp.hcalibrated:
+            out["ler_bposd_h"] = c["bp_h"] / n
+        if smp.mismatch:
+            out["ler_bposd_oracle"] = c["bp_or"] / n
     if with_bm:
         out["ler_bm"] = c["bm"] / n
+        if smp.hcalibrated:
+            out["ler_bm_h"] = c["bm_h"] / n
         if smp.mismatch:
             out["ler_bm_oracle"] = c["bm_or"] / n
         if smp.calibrated:
@@ -333,8 +447,9 @@ def fmt(r):
     if "ler_nn" in r:
         parts.append(f"NN {r['ler_nn']:.4f}")
     parts.append(f"MWPM {r['ler_mwpm']:.4f}")
-    for k, name in (("ler_mwpm_calib", "MWPMc"), ("ler_mwpm_oracle", "MWPM*"), ("ler_bm", "BM"),
-                    ("ler_bm_calib", "BMc"), ("ler_bm_oracle", "BM*")):
+    for k, name in (("ler_mwpm_calib", "MWPMc"), ("ler_mwpm_h", "MWPMh"), ("ler_mwpm_oracle", "MWPM*"),
+                    ("ler_bm", "BM"), ("ler_bm_calib", "BMc"), ("ler_bm_h", "BMh"), ("ler_bm_oracle", "BM*"),
+                    ("ler_bposd", "BPOSD"), ("ler_bposd_h", "BPOSDh"), ("ler_bposd_oracle", "BPOSD*")):
         if k in r:
             parts.append(f"{name} {r[k]:.4f}")
     s = "  ".join(parts)
@@ -358,6 +473,11 @@ def main():
                     help="noise rate assumed by the matching graph (default: --p)")
     ap.add_argument("--calib-shots", type=int, default=200000,
                     help="unlabeled shots used to re-estimate the DEM weights (mismatch only)")
+    ap.add_argument("--hcalib-shots", type=int, default=0,
+                    help="if >0: hyperedge-aware calibrated baselines MWPMh/BMh (structure from the "
+                         "true DEM, probabilities fitted from this many unlabeled shots)")
+    ap.add_argument("--bposd", action="store_true",
+                    help="also evaluate BP+OSD baselines (use correlated hyperedges; BPOSDh/BPOSD*)")
     ap.add_argument("--baselines-only", action="store_true",
                     help="no network: evaluate MWPM/BM baselines (assumed/calibrated/oracle)")
     ap.add_argument("--eval-d", type=int, nargs="*", default=None)
@@ -383,6 +503,12 @@ def main():
     ap.add_argument("--init", default=None, help="start from weights and keep training")
     ap.add_argument("--smoke", action="store_true", help="tiny CPU run")
     a = ap.parse_args()
+    if a.bposd:
+        try:
+            import ldpc  # noqa: F401
+            import beliefmatching  # noqa: F401
+        except ImportError:
+            raise SystemExit("--bposd needs 'ldpc' and 'beliefmatching': pip install ldpc beliefmatching")
     if a.bm:  # fail fast, before any long training run
         try:
             import beliefmatching  # noqa: F401
@@ -405,13 +531,13 @@ def main():
     if a.device == "cuda":
         torch.set_float32_matmul_precision("high")
     mk = lambda d, r, p: Sampler(d, r, p, a.meas_mult, a.data_mult, assume_p, a.calib_shots,
-                                 a.corr_p, a.corr_type)
+                                 a.corr_p, a.corr_type, a.hcalib_shots)
     if a.baselines_only:
         results = []
         for d in (a.eval_d or [a.d]):
             for p in [a.p] + (a.eval_p or []):
                 r = evaluate(None, mk(d, d if d != a.d else rounds, p), a.eval_n, a.device,
-                             with_bm=a.bm)
+                             with_bm=a.bm, with_bposd=a.bposd)
                 results.append(r)
                 print(f"d={d} p={p}: " + fmt(r), flush=True)
         a.out = a.out or "results/qec_baselines.json"
@@ -465,7 +591,7 @@ def main():
     for d in (a.eval_d or [a.d]):
         for p in [a.p] + (a.eval_p or []):
             r = evaluate(model, mk(d, d if d != a.d else rounds, p), a.eval_n, a.device,
-                         with_bm=a.bm)
+                         with_bm=a.bm, with_bposd=a.bposd)
             results.append(r)
             print(f"eval d={d} p={p}: " + fmt(r), flush=True)
 
