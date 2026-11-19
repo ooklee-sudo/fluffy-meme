@@ -44,7 +44,7 @@ LLM tests that failed on the original code were discarded before mutation analys
 
 ## 3.3 Real faults (RQ2, RQ3)
 
-We used BugsInPy [8]. For each bug we checked out the faulty and fixed commits, installed the project in its own environment, and confirmed that the developer's fault-revealing test fails on the faulty version and passes on the fixed version. Of the thirteen projects we tried, 87 bugs in seven projects passed this check: youtube-dl (38), thefuck (32), tqdm (7), httpie (5), and fastapi, tornado and cookiecutter (5 together). Bugs in luigi, black and scrapy failed to build with their pinned dependencies.
+We used BugsInPy [8]. For each bug we checked out the faulty and fixed commits, installed the project in its own environment, and confirmed that the developer's fault-revealing test fails on the faulty version and passes on the fixed version. Of 229 bugs in twelve projects that we tried, 87 bugs in seven projects passed this check: youtube-dl (38), thefuck (32), tqdm (7), httpie (5), fastapi (3), tornado (1) and cookiecutter (1). No bug in luigi, black, scrapy, sanic or PySnooper passed, mostly because the developer's test could not run under the project's pinned dependencies.
 
 The model received the non-test source files changed by the fix (up to 40,000 characters each) in their faulty state, without the bug report or the fix. A fault is *revealed* if at least one generated test fails on the faulty version and passes on the fixed version. The human baseline is the developer's fault-revealing test, so human reach is 1 by construction. Intervals resample projects and then bugs within projects (3,000 resamples).
 
