@@ -82,3 +82,15 @@ python run_pairs.py
 - Recovery is `R = (L_none − L_method) / (L_none − L_retrain)`, where L is test MSE (toy) or held-out response NLL (LLM), and `none` is the target model without an adapter.
 - `act_llama.py` reports `C_A/C_N` from compute time only. The paper argues C_N should also include data acquisition and revalidation labor. Add those before drawing conclusions.
 - In `act_llama.py`, calibration inputs are task prompts without answers (Appendix A.4). α is chosen per module from 13 values in [1e-3, 1e3] on an 80/20 split, using a Gram-only validation error. Decoder layers are corrected sequentially from the input side.
+
+## QEC 디코더 트랜스포머 (양자 오류정정, 별도 실험)
+
+`qec_decoder.py`: Stim으로 surface code(회로 수준 노이즈) 신드롬을 즉석 생성하고, 트랜스포머 디코더를 학습해 MWPM(PyMatching)과 논리 오류율을 비교합니다. 데이터 다운로드가 필요 없습니다. 위치 인코딩이 좌표 기반이라 작은 거리로 학습한 모델을 큰 거리에서 평가할 수 있습니다(`--eval-d`).
+
+```bash
+python qec_decoder.py --smoke                                   # CPU 스모크 테스트 (~10초)
+python qec_decoder.py --d 5 --p 0.005 --steps 20000 --device cuda
+python qec_decoder.py --d 3 --eval-d 3 5 7 --eval-p 0.003 0.008 --steps 20000 --device cuda   # 거리/노이즈 일반화
+```
+
+8GB GPU 기준 d=3~7, dim 128~256, 4~6층까지 여유 있습니다. 결과는 `results/qec_decoder.json`에 저장됩니다.
