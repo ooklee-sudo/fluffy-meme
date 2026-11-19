@@ -169,6 +169,8 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--ckpt", default=None, help="save model weights here (every 20%% and at the end)")
+    ap.add_argument("--load", default=None, help="load weights and skip training (evaluate only)")
     ap.add_argument("--smoke", action="store_true", help="tiny CPU run")
     a = ap.parse_args()
     if a.large:
@@ -191,11 +193,16 @@ def main():
     print(f"d={a.d} rounds={rounds} p={a.p} detectors={train.circ.num_detectors} "
           f"params={n_params/1e6:.2f}M hybrid={a.hybrid} device={a.device}")
 
-    opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=0.01)
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, a.lr, total_steps=a.steps, pct_start=0.05)
     coords = torch.tensor(train.coords, device=a.device)
     history = []
     t0 = time.time()
+    if a.load:
+        model.load_state_dict(torch.load(a.load, map_location=a.device))
+        print("loaded", a.load, "- skipping training")
+        a.steps = 0
+    else:
+        opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=0.01)
+        sched = torch.optim.lr_scheduler.OneCycleLR(opt, a.lr, total_steps=a.steps, pct_start=0.05)
     for step in range(1, a.steps + 1):
         model.train()
         logits, obs, m, _ = run_batch(model, train, a.bs, coords, a.device)
@@ -214,7 +221,11 @@ def main():
                 history.append({"step": step, **r})
                 msg += f" | quick eval NN {r['ler_nn']:.4f} MWPM {r['ler_mwpm']:.4f}"
             print(msg, flush=True)
+            if a.ckpt and step % max(1, a.steps // 5) == 0:
+                torch.save(model.state_dict(), a.ckpt)
 
+    if a.ckpt and not a.load:
+        torch.save(model.state_dict(), a.ckpt)
     results = []
     for d in (a.eval_d or [a.d]):
         for p in [a.p] + (a.eval_p or []):
