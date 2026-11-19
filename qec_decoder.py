@@ -383,6 +383,12 @@ def main():
     ap.add_argument("--init", default=None, help="start from weights and keep training")
     ap.add_argument("--smoke", action="store_true", help="tiny CPU run")
     a = ap.parse_args()
+    if a.bm:  # fail fast, before any long training run
+        try:
+            import beliefmatching  # noqa: F401
+        except ImportError:
+            raise SystemExit("--bm needs the 'beliefmatching' package: "
+                             "pip install beliefmatching (or drop --bm)")
     if a.large:
         a.dim, a.layers, a.heads, a.bs, a.steps, a.lr = 256, 6, 8, 512, 60000, 2e-4
     if a.smoke:
