@@ -16,6 +16,9 @@ Noise mismatch (the setting where a data-driven decoder should win)
                  the true noise model.  --eval-p changes only the TRUE p (drift)
                  while the assumed graph stays fixed.
 
+  --corr-p       correlated errors on non-adjacent data pairs (outside the graph model of
+                 the assumed/calibrated decoders; the oracle DEM includes them)
+
 Modes
   plain    the network predicts the logical flip directly.
   --hybrid MWPM's (assumed-graph) prediction m and weight w are fed to the
@@ -62,6 +65,37 @@ def make_circuit(d, rounds, p_gate, p_data, p_reset, p_meas):
     )
 
 
+def _data_pairs(circ):
+    """Non-adjacent data-qubit pairs: same row or column, distance 4 (crosstalk-like)."""
+    xy = circ.get_final_qubit_coordinates()
+    data = {q: tuple(c) for q, c in xy.items() if int(c[0]) % 2 == 1 and int(c[1]) % 2 == 1}
+    pairs = [(a, b) for a, ca in data.items() for b, cb in data.items() if a < b and (
+        (ca[1] == cb[1] and abs(ca[0] - cb[0]) == 4) or (ca[0] == cb[0] and abs(ca[1] - cb[1]) == 4))]
+    return set(data), pairs
+
+
+def _augment(circ, data_set, pairs, q, kind):
+    out = stim.Circuit()
+    tgt = stim.target_x if kind == "X" else (stim.target_z if kind == "Z" else stim.target_y)
+    for ins in circ:
+        if isinstance(ins, stim.CircuitRepeatBlock):
+            out.append(stim.CircuitRepeatBlock(ins.repeat_count, _augment(
+                ins.body_copy(), data_set, pairs, q, kind)))
+            continue
+        out.append(ins)
+        if ins.name == "DEPOLARIZE1" and {t.value for t in ins.targets_copy()} == data_set:
+            for a, b in pairs:  # one independent correlated event per pair and round
+                out.append("CORRELATED_ERROR", [tgt(a), tgt(b)], q)
+    return out
+
+
+def add_correlated_noise(circ, q, kind="X"):
+    """Insert, after every round's data-qubit depolarization, an independent correlated
+    error (kind on both qubits, probability q) for each non-adjacent data pair."""
+    data_set, pairs = _data_pairs(circ)
+    return _augment(circ, data_set, pairs, q, kind)
+
+
 def noise_params(p, meas_mult=1.0, data_mult=1.0):
     return dict(p_gate=p, p_data=min(p * data_mult, 0.5),
                 p_reset=min(p * meas_mult, 0.5), p_meas=min(p * meas_mult, 0.5))
@@ -79,15 +113,20 @@ class Sampler:
       calib     assumed graph re-weighted from syndrome statistics of `calib_shots`
                 unlabeled shots of the true noise          (no oracle knowledge)"""
 
-    def __init__(self, d, rounds, p, meas_mult=1.0, data_mult=1.0, assume_p=None, calib_shots=0):
+    def __init__(self, d, rounds, p, meas_mult=1.0, data_mult=1.0, assume_p=None, calib_shots=0,
+                 corr_p=0.0, corr_type="X"):
         self.d, self.rounds, self.p = d, rounds, p
         self.meas_mult, self.data_mult = meas_mult, data_mult
         self.assume_p = p if assume_p is None else assume_p
         self.calib_shots = calib_shots
+        self.corr_p = corr_p
         self.circ = make_circuit(d, rounds, **noise_params(p, meas_mult, data_mult))
+        if corr_p > 0:
+            self.circ = add_correlated_noise(self.circ, corr_p, corr_type)
         self.sampler = self.circ.compile_detector_sampler()
         self.coords = detector_coords(self.circ)
-        self.mismatch = not (meas_mult == 1.0 and data_mult == 1.0 and self.assume_p == p)
+        self.mismatch = not (meas_mult == 1.0 and data_mult == 1.0 and self.assume_p == p
+                             and corr_p == 0)
         self.circ_assumed = (make_circuit(d, rounds, **noise_params(self.assume_p))
                              if self.mismatch else self.circ)
         self.calibrated = self.mismatch and calib_shots > 0
@@ -96,7 +135,8 @@ class Sampler:
     # -- detector error models for the three decoder variants
     def _dem(self, which):
         if which == "oracle":
-            return self.circ.detector_error_model(decompose_errors=True)
+            return self.circ.detector_error_model(decompose_errors=True,
+                                                  ignore_decomposition_failures=True)
         if which == "assumed":
             return self.circ_assumed.detector_error_model(decompose_errors=True)
         if ("dem", "calib") not in self._cache:
@@ -267,7 +307,8 @@ def evaluate(model, smp, n, device, bs=1024, with_bm=False):
                 c["bm_ca"] += int((smp.belief_matching(det, "calib") != obs).sum())
         done += b
     out = {"d": smp.d, "rounds": smp.rounds, "p": smp.p, "assume_p": smp.assume_p,
-           "meas_mult": smp.meas_mult, "data_mult": smp.data_mult, "shots": n,
+           "meas_mult": smp.meas_mult, "data_mult": smp.data_mult, "corr_p": smp.corr_p,
+           "shots": n,
            "ler_mwpm": c["mw"] / n}
     if model is not None:
         out["ler_nn"] = c["nn"] / n
@@ -309,6 +350,10 @@ def main():
     ap.add_argument("--p", type=float, default=0.005, help="true physical noise rate")
     ap.add_argument("--meas-mult", type=float, default=1.0)
     ap.add_argument("--data-mult", type=float, default=1.0)
+    ap.add_argument("--corr-p", type=float, default=0.0,
+                    help="probability of a correlated error per non-adjacent data pair and round "
+                         "(not known to the assumed/calibrated graphs; the oracle knows it)")
+    ap.add_argument("--corr-type", default="X", choices=["X", "Y", "Z"])
     ap.add_argument("--assume-p", type=float, default=None,
                     help="noise rate assumed by the matching graph (default: --p)")
     ap.add_argument("--calib-shots", type=int, default=200000,
@@ -353,7 +398,8 @@ def main():
     np.random.seed(a.seed)
     if a.device == "cuda":
         torch.set_float32_matmul_precision("high")
-    mk = lambda d, r, p: Sampler(d, r, p, a.meas_mult, a.data_mult, assume_p, a.calib_shots)
+    mk = lambda d, r, p: Sampler(d, r, p, a.meas_mult, a.data_mult, assume_p, a.calib_shots,
+                                 a.corr_p, a.corr_type)
     if a.baselines_only:
         results = []
         for d in (a.eval_d or [a.d]):
@@ -372,7 +418,7 @@ def main():
     model.amp = a.device == "cuda" and not a.no_amp and torch.cuda.is_bf16_supported()
     n_params = sum(p.numel() for p in model.parameters())
     print(f"d={a.d} rounds={rounds} p={a.p} meas_mult={a.meas_mult} data_mult={a.data_mult} "
-          f"assume_p={assume_p} mismatch={train.mismatch} detectors={train.circ.num_detectors} "
+          f"assume_p={assume_p} corr_p={a.corr_p} mismatch={train.mismatch} detectors={train.circ.num_detectors} "
           f"params={n_params/1e6:.2f}M hybrid={a.hybrid} amp={model.amp} device={a.device}")
 
     coords = torch.tensor(train.coords, device=a.device)

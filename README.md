@@ -146,3 +146,22 @@ python qec_decoder.py --baselines-only --d 5 --p 0.005 --meas-mult 5 --eval-n 20
 | 측정 ×3, 데이터 ×0.3 | 0.0244 | 0.0212 | 0.0217 | | | |
 
 보정은 oracle 수준(통계 오차 범위 이내)까지 회복합니다. 보정 샷 수 의존성(측정 ×5, 40000샷 평가): 1000샷은 오히려 악화(0.0697), 5000샷 0.0575, 20000샷 이상 oracle 수준. p만 균일하게 바뀌는 drift에서는 MWPM의 가정 불일치 손해가 거의 없습니다.
+
+### 상관 오류 실험 (그래프 모형 밖의 노이즈)
+
+`--corr-p q`는 매 라운드 데이터 큐빗 depolarization 직후, 같은 행/열에서 거리 4인(인접하지 않은) 데이터 큐빗 쌍마다 독립적인 상관 오류(`--corr-type X|Y|Z`, 기본 X)를 확률 q로 넣습니다(d=5: 쌍 30개). 가정/보정 그래프는 이 오류를 모르고(`MWPM`, `MWPMc`, `BM`, `BMc`), `*` oracle DEM은 포함하지만 hyperedge 분해가 근사라 "진짜 최적"은 아닙니다.
+
+CPU 기준선 (d=5, p=0.005, 20000샷, 보정 샷 200000):
+
+| corr-p | MWPM | MWPMc | MWPM* | BM | BMc | BM* |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0.002 | 0.0418 | 0.0405 | 0.0399 | 0.0364 | **0.0360** | 0.0425 |
+| 0.006 | 0.1009 | 0.0954 | 0.0900 | 0.0948 | **0.0903** | 0.0946 |
+
+신경망이 BMc(그래프 기준선 중 최선)보다 낮아야 의미가 있습니다. 같은 노이즈를 보는 신경망:
+
+```bash
+python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --steps 20000 --bs 256 --bm --ckpt results/c_plain.pt --device cuda
+python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --hybrid --steps 20000 --bs 256 --bm --ckpt results/c_hybrid.pt --device cuda
+python qec_decoder.py --d 5 --p 0.005 --corr-p 0.002 --large --bm --ckpt results/c_large.pt --device cuda   # 큰 모델, 6만 스텝
+```
