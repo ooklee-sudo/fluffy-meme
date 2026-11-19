@@ -101,3 +101,29 @@ python qec_decoder.py --d 5 --p 0.005 --large --device cuda      # 비하이브�
 ```
 
 8GB GPU 기준 d=3~7, dim 128~256, 4~6층까지 여유 있습니다. 결과는 `results/qec_decoder.json`에 저장됩니다.
+
+### 노이즈 불일치 실험 (신경망이 유리할 수 있는 설정)
+
+MWPM/belief-matching은 노이즈 모델(DEM)을 미리 알아야 합니다. 실제 장비에서는 노이즈가 틀어지므로, 데이터는 실제 노이즈로 만들고 매칭 그래프는 틀린 노이즈로 만들어 비교합니다.
+
+| 옵션 | 의미 |
+| --- | --- |
+| `--p` | 실제 물리 오류율 |
+| `--meas-mult`, `--data-mult` | 실제 측정/리셋 오류 = p×meas_mult, 데이터 큐빗 오류 = p×data_mult |
+| `--assume-p` | 매칭 그래프가 가정하는 균일 노이즈 (기본: `--p`) |
+| `--eval-p` | 실제 p만 바꿔 평가 (drift), 가정은 고정 |
+| `--bm` | belief-matching 기준선 포함 (`*` 표시는 실제 노이즈를 아는 oracle) |
+| `--init` / `--load` / `--ckpt` | 가중치에서 이어 학습(fine-tune) / 평가만 / 저장 |
+
+출력의 `MWPM*`, `BM*`는 실제 노이즈를 아는 기준선이고, `fixed`/`broken`은 하이브리드가 MWPM을 뒤집어 고친/망친 샷 수입니다.
+
+```bash
+# d=5, 측정 오류가 5배 큰 노이즈. 매칭 그래프는 균일 p=0.005로 가정. 작은 모델 (~20분 내외)
+python qec_decoder.py --d 5 --p 0.005 --meas-mult 5 --hybrid --steps 20000 --bs 256 --bm --ckpt results/h_meas5.pt --device cuda
+# 같은 설정, 큰 모델
+python qec_decoder.py --d 5 --p 0.005 --meas-mult 5 --hybrid --large --steps 40000 --bm --ckpt results/h_meas5_large.pt --device cuda
+# drift: 가정 p=0.005 고정, 실제 p 변화
+python qec_decoder.py --d 5 --p 0.005 --hybrid --eval-p 0.003 0.008 0.012 --bm --device cuda
+```
+
+참고(d=5, p=0.005, 20000샷, 일치 노이즈): MWPM 0.0136, belief-matching 0.0100.

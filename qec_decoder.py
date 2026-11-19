@@ -1,24 +1,37 @@
-"""Transformer decoder for the rotated surface code vs. MWPM (PyMatching).
+"""Transformer decoder for the rotated surface code vs. MWPM / belief-matching.
 
-Data are generated on the fly with Stim (circuit-level depolarizing noise), so
-there is no dataset to download.  Each detector is one token: its Fourier-
-encoded (x, y, t) coordinates plus a learned embedding of its 0/1 outcome.
-Because the position encoding is coordinate based, a model trained at one code
-distance can be evaluated at another (--eval-d).
+Data are generated on the fly with Stim (circuit-level noise), so there is no
+dataset to download.  Each detector is one token: its Fourier-encoded (x,y,t)
+coordinates plus a learned embedding of its 0/1 outcome.  Position encoding is
+coordinate based, so a model trained at one code distance can be evaluated at
+another (--eval-d).
+
+Noise mismatch (the setting where a data-driven decoder should win)
+  --p            true physical noise rate of the data
+  --meas-mult    true reset/measurement error = p * meas_mult
+  --data-mult    true data-qubit depolarization = p * data_mult
+  --assume-p     uniform noise rate that the MWPM / belief-matching *graph* assumes
+                 (default: --p).  With meas_mult/data_mult != 1 or assume_p != p
+                 the matching graphs are misspecified; the "oracle" baselines use
+                 the true noise model.  --eval-p changes only the TRUE p (drift)
+                 while the assumed graph stays fixed.
 
 Modes
-  plain   (default)  the network predicts the logical flip directly.
-  --hybrid           MWPM's prediction m and matching weight w are fed to the
-                     network (added to the CLS token) and the network predicts
-                     whether MWPM is WRONG (target = obs XOR m).  The final
-                     prediction is m XOR flip, so the decoder starts at MWPM
-                     quality and only has to learn corrections.
+  plain    the network predicts the logical flip directly.
+  --hybrid MWPM's (assumed-graph) prediction m and weight w are fed to the
+           network and it predicts whether MWPM is WRONG (target = obs XOR m);
+           final prediction = m XOR flip, so it starts at MWPM quality.
+
+Other
+  --bm        also evaluate belief-matching baselines (slower)
+  --init PATH start from saved weights and keep training (fine-tune after drift)
+  --load PATH load weights, skip training, evaluate only
+  --ckpt PATH save weights (every 20% and at the end)
 
 Examples
-  python qec_decoder.py --smoke                      # CPU, ~10 s
-  python qec_decoder.py --smoke --hybrid
-  python qec_decoder.py --d 5 --p 0.005 --hybrid --large --device cuda
-  python qec_decoder.py --d 3 --eval-d 3 5 7 --steps 20000 --device cuda
+  python qec_decoder.py --smoke --hybrid --bm
+  python qec_decoder.py --d 5 --p 0.005 --hybrid --meas-mult 3 --bm --device cuda
+  python qec_decoder.py --d 5 --p 0.005 --hybrid --assume-p 0.002 --eval-p 0.002 0.005 0.008 --bm
 """
 import argparse
 import json
@@ -35,16 +48,21 @@ import torch.nn.functional as F
 
 
 # ----------------------------------------------------------------- data
-def make_circuit(d, rounds, p):
+def make_circuit(d, rounds, p_gate, p_data, p_reset, p_meas):
     return stim.Circuit.generated(
         "surface_code:rotated_memory_z",
         distance=d,
         rounds=rounds,
-        after_clifford_depolarization=p,
-        after_reset_flip_probability=p,
-        before_measure_flip_probability=p,
-        before_round_data_depolarization=p,
+        after_clifford_depolarization=p_gate,
+        before_round_data_depolarization=p_data,
+        after_reset_flip_probability=p_reset,
+        before_measure_flip_probability=p_meas,
     )
+
+
+def noise_params(p, meas_mult=1.0, data_mult=1.0):
+    return dict(p_gate=p, p_data=min(p * data_mult, 0.5),
+                p_reset=min(p * meas_mult, 0.5), p_meas=min(p * meas_mult, 0.5))
 
 
 def detector_coords(circ):
@@ -53,28 +71,45 @@ def detector_coords(circ):
 
 
 class Sampler:
-    def __init__(self, d, rounds, p):
+    """Samples from the TRUE noise; baselines decode with an ASSUMED graph
+    (uniform noise assume_p) and, if different, with the true ("oracle") graph."""
+
+    def __init__(self, d, rounds, p, meas_mult=1.0, data_mult=1.0, assume_p=None):
         self.d, self.rounds, self.p = d, rounds, p
-        self.circ = make_circuit(d, rounds, p)
+        self.meas_mult, self.data_mult = meas_mult, data_mult
+        self.assume_p = p if assume_p is None else assume_p
+        self.circ = make_circuit(d, rounds, **noise_params(p, meas_mult, data_mult))
         self.sampler = self.circ.compile_detector_sampler()
         self.coords = detector_coords(self.circ)
-        self._matching = None
+        self.mismatch = not (meas_mult == 1.0 and data_mult == 1.0 and self.assume_p == p)
+        self.circ_assumed = (make_circuit(d, rounds, **noise_params(self.assume_p))
+                             if self.mismatch else self.circ)
+        self._cache = {}
 
-    @property
-    def matching(self):
-        if self._matching is None:
-            dem = self.circ.detector_error_model(decompose_errors=True)
-            self._matching = pymatching.Matching.from_detector_error_model(dem)
-        return self._matching
+    def _matching(self, oracle):
+        key = ("mw", oracle)
+        if key not in self._cache:
+            c = self.circ if oracle else self.circ_assumed
+            dem = c.detector_error_model(decompose_errors=True)
+            self._cache[key] = pymatching.Matching.from_detector_error_model(dem)
+        return self._cache[key]
 
     def sample(self, n):
         det, obs = self.sampler.sample(n, separate_observables=True)
         return det, obs[:, 0]
 
-    def mwpm(self, det):
+    def mwpm(self, det, oracle=False):
         """MWPM prediction (bool) and matching weight (float32) per shot."""
-        pred, w = self.matching.decode_batch(det, return_weights=True)
+        pred, w = self._matching(oracle).decode_batch(det, return_weights=True)
         return pred[:, 0].astype(bool), np.asarray(w, dtype=np.float32)
+
+    def belief_matching(self, det, oracle=False):
+        from beliefmatching import BeliefMatching
+        key = ("bm", oracle)
+        if key not in self._cache:
+            self._cache[key] = BeliefMatching(self.circ if oracle else self.circ_assumed,
+                                              max_bp_iters=20)
+        return self._cache[key].decode_batch(det)[:, 0].astype(bool)
 
 
 # ---------------------------------------------------------------- model
@@ -94,6 +129,7 @@ class Decoder(nn.Module):
     def __init__(self, dim=128, layers=4, heads=4, hybrid=False):
         super().__init__()
         self.hybrid = hybrid
+        self.amp = False
         self.pos = FourierPos(dim)
         self.val = nn.Embedding(2, dim)
         self.cls = nn.Parameter(torch.zeros(1, 1, dim))
@@ -113,52 +149,87 @@ class Decoder(nn.Module):
         if self.hybrid:
             cls = cls + self.m_emb(m.long())[:, None] + self.w_proj(torch.log1p(w)[:, None])[:, None]
         x = torch.cat([cls, x], dim=1)
-        return self.head(self.enc(x)[:, 0]).squeeze(-1)
+        return self.head(self.enc(x)[:, 0]).squeeze(-1).float()
 
 
 def run_batch(model, smp, n, coords, device):
-    """Sample n shots; return (logits, obs, mwpm_pred) with obs/mwpm as numpy bool."""
+    """Sample n shots; return (logits, obs, mwpm_pred, det), numpy bool except logits."""
     det, obs = smp.sample(n)
     m, w = (smp.mwpm(det) if model.hybrid else (None, None))
     t = lambda a: torch.tensor(a, device=device)
-    logits = model(t(det), coords, t(m) if m is not None else None, t(w) if w is not None else None)
+    with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=model.amp):
+        logits = model(t(det), coords, t(m) if m is not None else None,
+                       t(w) if w is not None else None)
     return logits, obs, m, det
 
 
 # ------------------------------------------------------------ train/eval
 @torch.no_grad()
-def evaluate(model, smp, n, device, bs=1024):
+def evaluate(model, smp, n, device, bs=1024, with_bm=False):
     model.eval()
     coords = torch.tensor(smp.coords, device=device)
-    n_err_nn = n_err_mw = n_flip = done = 0
+    c = dict(nn=0, mw=0, mw_or=0, bm=0, bm_or=0, flip=0, fixed=0, broken=0)
+    done = 0
     while done < n:
         b = min(bs, n - done)
         logits, obs, m, det = run_batch(model, smp, b, coords, device)
         flip = (logits > 0).cpu().numpy()
         mw = m if m is not None else smp.mwpm(det)[0]
         pred = (flip ^ m) if model.hybrid else flip
-        n_err_nn += int((pred != obs).sum())
-        n_err_mw += int((mw != obs).sum())
-        n_flip += int(flip.sum()) if model.hybrid else 0
+        c["nn"] += int((pred != obs).sum())
+        c["mw"] += int((mw != obs).sum())
+        if model.hybrid:
+            c["flip"] += int(flip.sum())
+            c["fixed"] += int((flip & (m != obs)).sum())
+            c["broken"] += int((flip & (m == obs)).sum())
+        if smp.mismatch:
+            c["mw_or"] += int((smp.mwpm(det, oracle=True)[0] != obs).sum())
+        if with_bm:
+            c["bm"] += int((smp.belief_matching(det) != obs).sum())
+            if smp.mismatch:
+                c["bm_or"] += int((smp.belief_matching(det, oracle=True) != obs).sum())
         done += b
-    out = {"d": smp.d, "rounds": smp.rounds, "p": smp.p, "shots": n,
-           "ler_nn": n_err_nn / n, "ler_mwpm": n_err_mw / n}
+    out = {"d": smp.d, "rounds": smp.rounds, "p": smp.p, "assume_p": smp.assume_p,
+           "meas_mult": smp.meas_mult, "data_mult": smp.data_mult, "shots": n,
+           "ler_nn": c["nn"] / n, "ler_mwpm": c["mw"] / n}
+    if smp.mismatch:
+        out["ler_mwpm_oracle"] = c["mw_or"] / n
+    if with_bm:
+        out["ler_bm"] = c["bm"] / n
+        if smp.mismatch:
+            out["ler_bm_oracle"] = c["bm_or"] / n
     if model.hybrid:
-        out["override_rate"] = n_flip / n  # how often the net overrides MWPM
+        out.update(override_rate=c["flip"] / n, n_fixed=c["fixed"], n_broken=c["broken"])
     return out
+
+
+def fmt(r):
+    s = f"NN {r['ler_nn']:.4f}  MWPM {r['ler_mwpm']:.4f}"
+    for k, name in (("ler_mwpm_oracle", "MWPM*"), ("ler_bm", "BM"), ("ler_bm_oracle", "BM*")):
+        if k in r:
+            s += f"  {name} {r[k]:.4f}"
+    if "override_rate" in r:
+        s += f"  | override {r['override_rate']:.4f} (fixed {r['n_fixed']}, broken {r['n_broken']})"
+    return s
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--d", type=int, default=3, help="training code distance")
     ap.add_argument("--rounds", type=int, default=None, help="default: d")
-    ap.add_argument("--p", type=float, default=0.005)
+    ap.add_argument("--p", type=float, default=0.005, help="true physical noise rate")
+    ap.add_argument("--meas-mult", type=float, default=1.0)
+    ap.add_argument("--data-mult", type=float, default=1.0)
+    ap.add_argument("--assume-p", type=float, default=None,
+                    help="noise rate assumed by the matching graph (default: --p)")
     ap.add_argument("--eval-d", type=int, nargs="*", default=None)
     ap.add_argument("--eval-p", type=float, nargs="*", default=None,
-                    help="extra noise levels to evaluate at (distribution shift)")
+                    help="extra TRUE noise levels to evaluate at (drift); assumed graph stays fixed")
     ap.add_argument("--hybrid", action="store_true", help="learn a correction on top of MWPM")
+    ap.add_argument("--bm", action="store_true", help="also evaluate belief-matching baselines")
     ap.add_argument("--large", action="store_true",
                     help="preset: dim 256, 6 layers, 8 heads, bs 512, 60000 steps, lr 2e-4")
+    ap.add_argument("--no-amp", action="store_true", help="disable bf16 autocast on cuda")
     ap.add_argument("--steps", type=int, default=5000)
     ap.add_argument("--bs", type=int, default=256)
     ap.add_argument("--lr", type=float, default=3e-4)
@@ -169,8 +240,9 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default=None)
-    ap.add_argument("--ckpt", default=None, help="save model weights here (every 20%% and at the end)")
-    ap.add_argument("--load", default=None, help="load weights and skip training (evaluate only)")
+    ap.add_argument("--ckpt", default=None, help="save weights (every 20%% and at the end)")
+    ap.add_argument("--load", default=None, help="load weights, skip training (evaluate only)")
+    ap.add_argument("--init", default=None, help="start from weights and keep training")
     ap.add_argument("--smoke", action="store_true", help="tiny CPU run")
     a = ap.parse_args()
     if a.large:
@@ -182,23 +254,28 @@ def main():
         tag = ("_hybrid" if a.hybrid else "") + ("_smoke" if a.smoke else "")
         a.out = f"results/qec_decoder{tag}.json"
     rounds = a.rounds or a.d
+    assume_p = a.assume_p if a.assume_p is not None else a.p
 
     torch.manual_seed(a.seed)
     np.random.seed(a.seed)
     if a.device == "cuda":
         torch.set_float32_matmul_precision("high")
-    train = Sampler(a.d, rounds, a.p)
+    mk = lambda d, r, p: Sampler(d, r, p, a.meas_mult, a.data_mult, assume_p)
+    train = mk(a.d, rounds, a.p)
     model = Decoder(a.dim, a.layers, a.heads, a.hybrid).to(a.device)
+    model.amp = a.device == "cuda" and not a.no_amp and torch.cuda.is_bf16_supported()
     n_params = sum(p.numel() for p in model.parameters())
-    print(f"d={a.d} rounds={rounds} p={a.p} detectors={train.circ.num_detectors} "
-          f"params={n_params/1e6:.2f}M hybrid={a.hybrid} device={a.device}")
+    print(f"d={a.d} rounds={rounds} p={a.p} meas_mult={a.meas_mult} data_mult={a.data_mult} "
+          f"assume_p={assume_p} mismatch={train.mismatch} detectors={train.circ.num_detectors} "
+          f"params={n_params/1e6:.2f}M hybrid={a.hybrid} amp={model.amp} device={a.device}")
 
     coords = torch.tensor(train.coords, device=a.device)
     history = []
     t0 = time.time()
+    if a.load or a.init:
+        model.load_state_dict(torch.load(a.load or a.init, map_location=a.device))
+        print("loaded", a.load or a.init)
     if a.load:
-        model.load_state_dict(torch.load(a.load, map_location=a.device))
-        print("loaded", a.load, "- skipping training")
         a.steps = 0
     else:
         opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=0.01)
@@ -219,7 +296,7 @@ def main():
             if step % max(1, a.steps // 5) == 0 and step < a.steps:  # quick progress check
                 r = evaluate(model, train, 4000, a.device)
                 history.append({"step": step, **r})
-                msg += f" | quick eval NN {r['ler_nn']:.4f} MWPM {r['ler_mwpm']:.4f}"
+                msg += " | quick eval " + fmt(r)
             print(msg, flush=True)
             if a.ckpt and step % max(1, a.steps // 5) == 0:
                 torch.save(model.state_dict(), a.ckpt)
@@ -229,10 +306,10 @@ def main():
     results = []
     for d in (a.eval_d or [a.d]):
         for p in [a.p] + (a.eval_p or []):
-            r = evaluate(model, Sampler(d, d if d != a.d else rounds, p), a.eval_n, a.device)
+            r = evaluate(model, mk(d, d if d != a.d else rounds, p), a.eval_n, a.device,
+                         with_bm=a.bm)
             results.append(r)
-            extra = f"  override {r['override_rate']:.4f}" if "override_rate" in r else ""
-            print(f"eval d={d} p={p}: NN {r['ler_nn']:.4f}  MWPM {r['ler_mwpm']:.4f}{extra}")
+            print(f"eval d={d} p={p}: " + fmt(r), flush=True)
 
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     with open(a.out, "w") as f:
