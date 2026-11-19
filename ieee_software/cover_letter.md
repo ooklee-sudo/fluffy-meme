@@ -15,7 +15,7 @@ Please consider the enclosed manuscript, "Your LLM Judge Measures Your Protocol:
 
 Many engineering teams now compare coding assistants by letting one large language model (LLM) grade another's answers. They use the resulting scores to choose which assistant to license, to detect regressions after a vendor update, and to judge which teams or languages benefit from a tool. Our article shows, through a concrete case, how fragile such scores can be.
 
-We set out to test whether Stack Overflow lost the most questions in the topics where LLMs answer best. We graded the answers of four models to nearly 2,000 Stack Overflow questions in 50 tags and stress-tested the measure before using it. The results carry a lesson that reaches well beyond Stack Overflow:
+We set out to test whether Stack Overflow lost the most questions in the topics where LLMs answer best. We built tag-level accuracy measures for 50 tags from nearly 2,000 Stack Overflow questions, using answers from four models graded by an LLM, and stress-tested the measures before using them. The results carry a lesson that reaches well beyond Stack Overflow:
 
 - On the same questions, the grading rubric moved measured accuracy by up to 52 percentage points, and moving one sentence of instruction from the user message to the system message moved it by 11 points. Either change was enough to reverse the ranking of models.
 - Accuracy levels per topic were moderately stable, but per-topic improvements between two model versions did not replicate across prompt formats.
