@@ -20,7 +20,7 @@ We ask three research questions:
 - **RQ2** What share of real faults do LLM-written tests reveal, from source code alone?
 - **RQ3** Why do the two measures differ? In particular, how often do LLM-written tests fail on faulty code without revealing the fault?
 
-Our contributions are (i) a measurement of reach on both mutants and real faults with the same models and prompts, (ii) evidence that the two measures lead to opposite conclusions about substituting generated tests for developer tests, and (iii) an account of the disagreement in terms of oracle errors. All code, prompts and results are public.
+Our contributions are (i) a measurement of reach on both mutants and real faults with the same models and prompts, (ii) evidence that the two measures lead to opposite conclusions about substituting generated tests for developer tests, and (iii) an account of the disagreement in terms of oracle errors. All code, prompts and results are available from the author on request.
 
 # 2 Background and Related Work
 
@@ -119,7 +119,7 @@ LLM-written unit tests reach or exceed parity with existing tests on mutants wit
 
 # Data Availability Statement
 
-Code, prompts, per-bug and per-module results and analysis scripts are available in a public archive [DOI to be inserted]. BugsInPy and the studied libraries are public.
+Code, prompts, per-bug and per-module results and analysis scripts are available from the corresponding author on request. BugsInPy and the studied libraries are public.
 
 # Conflict of Interest Statement
 

@@ -12,7 +12,7 @@ Department of Information Systems, Hanyang University, Seoul, Republic of Korea
 
 **Word count:** about 2,300 (main text including tables and figure caption, excluding abstract and references)
 
-**Data availability:** Code, prompts, per-bug and per-module results and analysis scripts are available on Zenodo (doi: [TO BE CONFIRMED]). BugsInPy and the studied libraries are public.
+**Data availability:** Code, prompts, per-bug and per-module results and analysis scripts are available from the corresponding author on request. BugsInPy and the studied libraries are public.
 
 **Conflict of interest:** The author declares no conflict of interest.
 
