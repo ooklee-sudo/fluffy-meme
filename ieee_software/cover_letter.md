@@ -1,7 +1,7 @@
 Ook Lee
 Department of Information Systems
 Hanyang University
-Seoul, 04763, Republic of Korea
+Seoul, 04763, South Korea
 ooklee@hanyang.ac.kr
 
 [Date]

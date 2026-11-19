@@ -2,7 +2,7 @@
 # references renumbered in order of first citation.
 TITLE = "Your LLM Judge Measures Your Protocol: Lessons from Trying to Explain Stack Overflow's Decline"
 HEADER = "Feature Article: LLM-Graded Evaluation"
-AUTHOR = ("Ook Lee", "Hanyang University, Seoul, 04763, Republic of Korea")
+AUTHOR = ("Ook Lee", "Hanyang University, Seoul, 04763, South Korea")
 ABSTRACT = ("Teams increasingly score coding assistants by letting one large language model (LLM) grade another's answers. "
  "We tried to use such scores for a concrete purpose: to test whether Stack Overflow lost the most questions in the topics where LLMs answer best. "
  "Across 50 tags and four models, measured accuracy moved by up to 52 percentage points with the grading rubric and by 11 points with the prompt format alone, enough to reverse the ranking of models. "
@@ -93,4 +93,4 @@ REFS = [
  "Stack Exchange, Stack Overflow Developer Survey data, 2023 to 2026. Accessed: Oct. 30, 2026. [Online]. Available: https://github.com/StackExchange/Survey",
 ]
 
-BIO = ("OOK LEE", " is a [TODO: position] in the Department of Information Systems, Hanyang University, Seoul, 04763, Republic of Korea. [TODO: three brief research interests.] Lee received the [TODO: highest degree] in [TODO: topic] from [TODO: institution]. [TODO: IEEE Computer Society membership, if any.] Contact Ook Lee at ooklee@hanyang.ac.kr.")
+BIO = ("Ook Lee", " is a professor in the Department of Information System at Hanyang University, Seoul, 04763, South Korea. He was previously a faculty member at the University of Queensland, Australia; the University of Nevada, Las Vegas, USA; and North Carolina A&T State University, USA. His research interests include information system economics, information system maintenance, large language models, and critical social theory. Lee received the Ph.D. degree in management of information systems from Claremont Graduate University, Claremont, CA, USA. He is a Member of IEEE. Contact him at ooklee@hanyang.ac.kr.")
