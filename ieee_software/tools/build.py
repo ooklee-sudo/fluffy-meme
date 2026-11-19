@@ -33,6 +33,23 @@ for t in tts[1:]: t.text = ''
 outside = [t for t in p0.iter(qn('w:t')) if t not in tts]
 outside[0].text = C.TITLE
 for t in outside[1:]: t.text = ''
+# send the decorative VML bands behind the text so a three-line title is not covered
+import re as _re
+for v in p0.iter('{urn:schemas-microsoft-com:vml}rect'):
+    st = v.get('style')
+    v.set('style', _re.sub(r'z-index:(\d+)', lambda m: 'z-index:-' + m.group(1), st))
+# readable title: 1.15 line spacing, 24 pt, no negative tracking
+ppr0 = p0.find(qn('w:pPr'))
+sp = OxmlElement('w:spacing'); sp.set(qn('w:before'),'640'); sp.set(qn('w:after'),'240'); sp.set(qn('w:line'),'276'); sp.set(qn('w:lineRule'),'auto')
+ppr0.append(sp)
+for t in outside:
+    r = t.getparent(); rpr = r.find(qn('w:rPr'))
+    if rpr is None: rpr = OxmlElement('w:rPr'); r.insert(0, rpr)
+    for tag in ('w:sz','w:szCs','w:spacing'):
+        e = rpr.find(qn(tag))
+        if e is not None: rpr.remove(e)
+    for tag,val in (('w:spacing','0'),('w:sz','48'),('w:szCs','48')):
+        e = OxmlElement(tag); e.set(qn('w:val'), val); rpr.append(e)
 
 # ---- authors: write into els[4] (keeps sectPr), drop 2,3
 a = els[4]
