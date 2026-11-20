@@ -13,9 +13,9 @@ Qualtrics refers to loop columns by number: `${lm://Field/n}`. Paste each `loop_
 | 7 | E, cost of extra errors (thousand dollars) | key figures |
 | 8 | L, loss if exposure occurs (thousand dollars) | key figures; WTP range |
 | 9 | exposure probability (%): 2 or 6 | key figures |
-| 10 | accuracy, local model (%) | performance table |
-| 11 | accuracy, cloud API (%) | performance table |
-| 12 | cost-per-correct row (HTML), empty for the accuracy-only cells | performance table |
+| 10 | accuracy, local model (%) | analysis only (already inside field 12) |
+| 11 | accuracy, cloud API (%) | analysis only (already inside field 12) |
+| 12 | complete performance table (HTML); includes the cost-per-correct row only in the C2 and C4 cells | placed in a `<div>` in the question text |
 | 13 | upper limit of the WTP question (L/4, thousand dollars) | Q3 prompt |
 
 Cell definitions: C1 = 2%, accuracy only; C2 = 2%, accuracy + cost; C3 = 6%, accuracy only; C4 = 6%, accuracy + cost.

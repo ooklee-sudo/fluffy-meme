@@ -37,9 +37,18 @@ LATIN = {"V1": "ABCD", "V2": "BCDA", "V3": "CDAB", "V4": "DABC"}
 FIELDS = ["cell", "case", "title", "task", "data", "B", "E", "L", "lam", "accL", "accA", "costrow", "smax"]
 
 
-def costrow(c):
-    return ("<tr><td>Cost per 1,000,000 correct answers (local model: including hardware and electricity)</td>"
+def perftable(c, perf):
+    """Complete performance table as one HTML string (no tabs/newlines).
+
+    The whole table lives in a Loop & Merge field and is placed inside a <div> in the question text: loose text
+    between <tr> elements would be moved out of the table by the HTML editor.
+    """
+    head = ('<table border="1" cellpadding="6" style="border-collapse:collapse">'
+            "<tr><th></th><th>Local model</th><th>Cloud API</th></tr>"
+            f"<tr><td>Accuracy</td><td>{c['accL']}%</td><td>{c['accA']}%</td></tr>")
+    cost = ("<tr><td>Cost per 1,000,000 correct answers (local model: including hardware and electricity)</td>"
             f"<td>${c['costL']}</td><td>${c['costA']}</td></tr>")
+    return head + (cost if perf == 2 else "") + "</table>"
 
 
 def rows_for(version):
@@ -48,7 +57,7 @@ def rows_for(version):
         lam, perf = CELLS[cell]
         c = CASES[case]
         out.append([cell, case, c["title"], c["task"], c["data"], c["B"], c["E"], c["L"], lam, c["accL"], c["accA"],
-                    costrow(c) if perf == 2 else "", c["L"] // 4])
+                    perftable(c, perf), c["L"] // 4])
     return out
 
 
@@ -70,11 +79,7 @@ SCENARIO_HTML = """<p><b>Scenario ${lm://CurrentLoopNumber} of 4: ${lm://Field/3
 <li><b>Data exposure with the local model.</b> All data stay in-house, so there is no exposure risk from a vendor.</li>
 </ul>
 <p>The cost figures above already take into account the performance difference shown below.</p>
-<table border="1" cellpadding="6" style="border-collapse:collapse">
-<tr><th></th><th>Local model</th><th>Cloud API</th></tr>
-<tr><td>Accuracy</td><td>${lm://Field/10}%</td><td>${lm://Field/11}%</td></tr>
-${lm://Field/12}
-</table>
+<div>${lm://Field/12}</div>
 """
 
 FIELD_MAP = """# Loop & Merge field map (Study 2)
@@ -92,9 +97,9 @@ Qualtrics refers to loop columns by number: `${lm://Field/n}`. Paste each `loop_
 | 7 | E, cost of extra errors (thousand dollars) | key figures |
 | 8 | L, loss if exposure occurs (thousand dollars) | key figures; WTP range |
 | 9 | exposure probability (%): 2 or 6 | key figures |
-| 10 | accuracy, local model (%) | performance table |
-| 11 | accuracy, cloud API (%) | performance table |
-| 12 | cost-per-correct row (HTML), empty for the accuracy-only cells | performance table |
+| 10 | accuracy, local model (%) | analysis only (already inside field 12) |
+| 11 | accuracy, cloud API (%) | analysis only (already inside field 12) |
+| 12 | complete performance table (HTML); includes the cost-per-correct row only in the C2 and C4 cells | placed in a `<div>` in the question text |
 | 13 | upper limit of the WTP question (L/4, thousand dollars) | Q3 prompt |
 
 Cell definitions: C1 = 2%, accuracy only; C2 = 2%, accuracy + cost; C3 = 6%, accuracy only; C4 = 6%, accuracy + cost.
