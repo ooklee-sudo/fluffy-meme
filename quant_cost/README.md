@@ -63,3 +63,14 @@ python -m quant_cost.bench --model models/qwen2.5-3b-instruct-q4_k_m.gguf --n 10
 - `temperature=0`, `seed=0`이라 재현은 되지만 양자화 간 차이를 보려면 `--n`을 100 이상으로 두고 CI를 확인하세요.
 - 합성 과제는 방법 검증용입니다. 논문 결과에는 실제 도메인 데이터(`--task-file`)를 쓰는 것이 설득력이 높습니다.
 - 양자화 파일은 모델마다 이름 규칙이 다르니 `--prefix`/`--quants`를 HF 저장소의 파일명에 맞춰 주세요.
+
+---
+
+## 연구 문서 구성
+
+| 연구 | 설계 | 설문 | 사전등록 | 규범 값 |
+| --- | --- | --- | --- | --- |
+| Study 1 (옵션 가치, H1·H3) — 보류 | `experiment_design.md` | `survey_instrument.md` | `preregistration_aspredicted_final.md` | `normative_check.py` |
+| **Study 2 (프라이버시 사고 사례 H2, 성능 제시 H3)** | `study2_design.md` | `study2_survey_instrument.md` | `study2_preregistration_aspredicted.md` | `normative_check_study2.py` |
+
+공통: 이론 `theory_h2_h3.md`, 선별 문항 `screening_items.md`, 측정 계획 `measurement_plan_rtx4060.md`.

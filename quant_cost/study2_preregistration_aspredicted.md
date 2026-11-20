@@ -1,0 +1,73 @@
+# Study 2: AsPredicted 제출본 (영어, 항목별 복사·붙여넣기용)
+
+> **제출 전 확인 (한국어 메모, 제출본에는 넣지 않는다)**
+> 1. 성능 수치를 `quant_cost` 측정값으로 확정했고 설문(`study2_survey_instrument.md`)을 **동결**했다. B, E, L, λ 기본값(2%/6%, L=200만 달러 등)을 지도교수와 검토했다.
+> 2. 전문직 20명 사전 점검을 마쳤고, 점검에서 설문이 바뀌었다면 아래 본문과 대조했다.
+> 3. `[ ... ]`가 남아 있지 않다. 사전 점검을 하지 않고 제출한다면 1번 항목 답을 "No."로만 바꾼다.
+> 4. AsPredicted의 현재 입력 항목과 글자 수 제한은 확인하지 못했다. 항목 이름이 다르면 의미가 맞는 칸에 붙여 넣고, 넘으면 문장을 줄인다. 작성자 이메일 입력, 공저자 확인, 공개 옵션은 사이트에서 직접 진행한다.
+> 5. IRB: Study 2가 승인 범위인지 확인한다(HY-IRB-2026-11-033).
+> 6. 효과 크기(d=0.35 등)는 **가정**이다. Study 1 사전등록과 별개의 제출이다.
+
+---
+
+## 1. Data collection. Have any data been collected for this study already?
+
+No data relevant to the hypotheses have been collected. A pilot of 20 participants from the same panel was run only to test the survey (completion time, comprehension and attention-check failure rates, comprehension of the willingness-to-pay question, recruitment speed, technical errors). Pilot responses are not used in any hypothesis test and are not part of the final sample. [Pilot completed on YYYY-MM-DD. Survey changes made after the pilot: none / list.]
+
+## 2. Hypothesis. What's the main question being asked or hypothesis being tested in this study?
+
+Main question: Do vivid privacy-incident information and the format in which AI performance is presented distort professionals' choice between a cloud AI service (API) and a local small language model, even though neither changes the normatively relevant numbers?
+
+Normative benchmark (risk-neutral; participants are told to decide as a risk-neutral manager and can compute it from the numbers shown). Per year, in thousands of dollars: the local model saves B in running cost but its extra errors cost E; the cloud API exposes customer data with probability λ per year, with loss L if exposure occurs. The net advantage of the local model is (B − E) + λL; it is optimal iff positive. The normative willingness to pay (WTP) to eliminate the API's exposure risk is λL. In every scenario B = 100 m, E = 180 m, L = 2,000 m with scenario scale m ∈ {0.6, 0.8, 1.0, 1.2}. For λ = 2% the net advantage is negative (API optimal; WTP* = 40 m); for λ = 6% it is positive (local optimal; WTP* = 120 m); break-even λ* = 4%. Thus the normative ln(WTP/L) rises by ln 3 = 1.099 from the low to the high λ. Neither the incident news item nor the performance format changes any of these numbers: the stated λ is described as based on industry-wide data on all reported incidents, and the performance difference is stated to be already included in B and E. Participants are not shown the product λL.
+
+Primary confirmatory hypothesis:
+- H2c (probability insensitivity). Participants who read a (fictional) data-exposure incident report are less sensitive to the stated exposure probability than participants who read a neutral news item: the within-person difference S = mean ln(WTP/L) at λ = 6% − mean ln(WTP/L) at λ = 2% is smaller in the incident group.
+
+Secondary confirmatory hypotheses (Holm correction, family of two):
+- H2a. The incident group has a higher mean ln(WTP/L) across the four scenarios.
+- H3a. Presenting accuracy alone, rather than accuracy plus cost per correct answer, lowers the probability of choosing the local model.
+
+Planned but not confirmatory: H2b (the incident effect on WTP is mediated by the excess of the participant's own estimated exposure probability over the stated one) and H3b (the performance-format effect on choice is mediated by perceived quality disadvantage of the local model).
+Exploratory: moderation of H3a by numeracy, AI experience and decision authority; the incident × performance-format interaction; and the relative support for two accounts of the incident effect, an upward shift of subjective probability (availability) versus a flatter response to stated probability (affect-driven probability insensitivity).
+
+## 3. Dependent variable. Describe the key dependent variable(s) specifying how they will be measured.
+
+In each of four scenarios: (DV1) choice between the local model and the cloud API (binary: local = 1); (DV2) WTP, the amount per year the participant would pay to eliminate the cloud API's data-exposure risk altogether, on a slider from $0 to L/4 (analysed as ln(WTP/L), with WTP = 0 replaced by 0.001 L). Derived: S as defined above, per participant (average over the two performance formats at each λ level).
+Mediators and checks (measured after DV1 and DV2): the participant's own estimate of the yearly exposure probability in the scenario (0–100%); perceived quality disadvantage of the local model (1–7); a comprehension check per scenario (the stated exposure probability). Before the scenarios: the general estimated 12-month probability that a mid-sized company's customer data is exposed through an external AI vendor (0–100%). Covariates: job function, seniority, decision authority, budget authority, AI experience, numeracy, privacy concern, risk attitude.
+
+## 4. Conditions. How many and which conditions will participants be assigned to?
+
+Mixed design.
+Between-subject: participants are randomly assigned (50:50) to read, before the scenarios, either a short fictional data-exposure incident report (an insurer's customer records exposed through its AI vendor) or a neutral fictional news item of equal length about companies comparing AI deployment options.
+Within-subject 2×2: stated annual exposure probability λ (2% vs. 6%) × performance presentation (accuracy only vs. accuracy plus cost per correct answer). Each participant sees all four scenarios. Four business cases (customer inquiry classification, HR records, contract documents, insurance claims; scale m = 0.8, 0.6, 1.0, 1.2) are assigned to the four cells with a Latin square (four versions, equally likely); scenario order is randomized. Amounts are in USD, no country-specific rules are mentioned, and the scenario text states that the cost figures already include the performance difference.
+
+## 5. Analyses. Specify exactly which analyses you will conduct to examine the main question/hypothesis.
+
+- H2c (primary, α = .05, two-sided): Welch two-sample t-test of S between the incident and neutral groups. Effect size (Cohen's d) with 95% CI. Robustness: a linear mixed model of ln(WTP/L) with incident, λ level, their interaction, performance format, scenario position, business case and a participant random intercept; the incident × λ coefficient is the corresponding test.
+- H2a and H3a (Holm family, overall α = .05, two-sided): H2a, Welch t-test of each participant's mean ln(WTP/L) across the four scenarios between groups. H3a, mixed-effects logistic regression: local choice ~ performance format + λ level + incident + scenario position + business case + (1 | participant); the performance-format coefficient is tested.
+- Planned mediation: H2b, indirect effect of incident on mean ln(WTP/L) through the participant's mean excess probability (own estimate − stated λ, in percentage points), percentile bootstrap with 5,000 resamples at the participant level. H3b, multilevel mediation of performance format on local choice through perceived quality disadvantage, participant-level bootstrap (5,000). Reported with 95% CIs; not interpreted confirmatorily.
+- Manipulation checks (reported, not part of the test family): the local model is chosen more often at λ = 6% than at 2% (λ coefficient in the logistic model); the incident group's general probability estimate differs from the neutral group's (Welch).
+- Exploratory analyses are labelled as such. Models are reported with and without covariates.
+
+## 6. Outliers and Exclusions. Describe exactly how outliers will be defined and handled, and your precise rule(s) for excluding observations.
+
+Exclusions are applied automatically before looking at the dependent variables. A participant is not eligible (and is screened out before the scenarios) unless: current job function is one of the listed IT/data/security/procurement/finance/general-management categories; their role in technology or vendor decisions is "final decision", "my recommendation effectively decides", or "member of the deciding group"; at least one of (level ≥ manager, can approve ≥ USD 10k of technology budget alone, or final/decisive role) holds; they have taken part in at least a discussion about adopting an AI/LLM service in the past two years; and their organization has at least 10 employees. Participants who took part in the authors' other study on AI sourcing are not eligible.
+Among eligible respondents we exclude those who: fail either of two attention checks; answer incorrectly at least 2 of the 4 scenario comprehension checks; give job function or level at the end that differs from the screening answers; finish in less than one third of the median completion time; or give identical WTP and identical choices in all four scenarios. WTP is bounded by the slider, so no outlier trimming is applied. We report the number excluded by each rule.
+
+## 7. Sample Size. How many observations will be collected or what will determine sample size?
+
+Target: 260 analysable participants (about 130 per incident group). We start by recruiting about 325 eligible-panel participants (assuming ~20% exclusions) and recruit additional batches until 260 pass all exclusion rules, with a hard cap of 400 recruited participants. No interim analysis of hypotheses is run and no data-dependent stopping is used. If the cap is reached with fewer than 260 analysable participants, we analyse those available and report the shortfall. Justification: a two-group comparison with d = 0.35, α = .05 (two-sided), power = .80 requires about 260 participants (H2c); d = 0.40 at α = .025 requires about 242 (H2a); a paired effect of dz = 0.25 at α = .025 requires about 155 (H3a). The effect sizes are assumptions; power is lower for smaller effects.
+
+## 8. Anything else you would like to pre-register?
+
+- Participants: professionals recruited through Prolific with employment/job-role filters where available; the screening items are used to verify eligibility because filters are self-reported. No country filter is applied.
+- Compensation: hourly-equivalent rate of about USD 20 (about 18 minutes). The study is approved by the Hanyang University IRB (HY-IRB-2026-11-033) [confirm that this study is within the approved protocol].
+- Design choices: participants decide as risk-neutral managers (stated in the instructions). No instruction asks participants to ignore the incident report. The product λL is never displayed.
+- Fallback rule for the willingness-to-pay measure (fixed now, applied to the pilot only): if in the pilot 30% or more of participants give identical WTP in all four scenarios or fail the comprehension check in two or more scenarios, the primary dependent variable for H2c becomes the choice-based sensitivity S_choice = P(local | λ = 6%) − P(local | λ = 2%) per participant, and WTP analyses become secondary.
+- Accuracy and cost figures for the local model and the API shown in the scenarios come from our own measurements of quantized open models on a laptop GPU and a cloud API; the cost figures B, E and L are fixed design values independent of those measurements. Anonymized data, materials and analysis code will be shared.
+- Limitations stated in advance: hypothetical stakes, self-reported job role, country-neutral scenarios, a single study, risk-neutrality instruction, and limited power for exploratory analyses.
+- Any deviation from this plan will be reported and labelled.
+
+## 9. Name. Give a title for this AsPredicted pre-registration
+
+Vivid incident information, probability sensitivity, and performance presentation in professionals' choice between cloud AI services and local language models
