@@ -114,7 +114,7 @@ def main():
 
     if a.stage in ("report", "all"):
         run([sys.executable, "-m", "quant_cost.analyze", "--dir", a.results_dir, "--out", a.results_dir,
-             "--pii-loss-usd", "0.01"], log, a.dry_run)
+             "--pii-loss-usd", "0"], log, a.dry_run)  # privacy loss is a model assumption: pass it explicitly to analyze.py when needed
         sc = [sys.executable, "-m", "quant_cost.scenario_numbers", "--dir", a.results_dir]
         if a.local_label:
             sc += ["--local-label", a.local_label]
