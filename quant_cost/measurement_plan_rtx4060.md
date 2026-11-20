@@ -1,5 +1,20 @@
 # 측정 계획: RTX 4060 Laptop 8GB
 
+## 가장 빠른 시작 (명령 3개)
+
+```bash
+pip install -r quant_cost/requirements.txt          # 또는 PyTorch 경로: requirements-torch.txt (아래 부록)
+python -m quant_cost.run_laptop --stage check       # 1분: GPU, 드라이버, 어느 경로가 되는지 점검
+python -m quant_cost.run_laptop --stage smoke       # 약 10분: 0.5B 모델로 끝까지 시험(전력·VRAM 측정 포함)
+python -m quant_cost.run_laptop --stage all         # 수 시간: 전체 사다리 + API 기준선 + 분석 + 시나리오 수치
+```
+
+- `check`가 사용 가능한 경로(`llamacpp` 또는 `torch`)를 알려 주고 `--route`를 자동 선택한다. 둘 다 안 되면 오류를 읽고 고친 뒤 다시 실행한다.
+- 모든 단계는 **이어 하기**가 된다(끝난 모델은 건너뜀). 실행 기록은 `results/quant_cost/run_log.txt`.
+- API 기준선은 환경변수 `OPENROUTER_API_KEY`가 있을 때만 실행된다(없으면 안내만 출력).
+- 끝나면 `python -m quant_cost.scenario_numbers --local-label <라벨>`이 설문 시나리오의 `[REPLACE]` 성능 표를 채울 값을 출력한다(`--local-label`을 생략하면 6.5GiB 이하 중 정확도가 가장 높은 모델을 자동 선택).
+- 노트북 전력은 `nvidia-smi`로 안 읽히는 기종이 있다. `check`가 알려 주면 모델별로 `bench.py --wall-watts`를 따로 실행한다(한 값으로 전체를 돌리면 에너지가 왜곡된다).
+
 > 파일 크기는 Hugging Face 저장소 목록에서 읽은 값이다. 실행 시간과 tok/s는 **추정**이며 실제와 다를 수 있다. 이 컨테이너에는 GPU가 없어서 GPU 경로(CUDA 오프로드, nvidia-smi 전력 측정)와 **분할(shard) GGUF 로딩**은 아직 시험하지 못했다. 첫 실행에서 아래 "1단계 점검"으로 확인한다.
 
 ## 0. 환경 준비
