@@ -224,7 +224,7 @@ Which factors matter most when your organization decides how to source AI for se
 **C1.** Before we finish, please confirm your current main job function and level.
 - Job function: *(same options as S1)*
 - Level: *(same options as S2)*
-[구현] S1·S2와 불일치하면 제외(사전등록).
+[구현] S1·S2와 불일치하면 제외(사전등록). 단 IT·데이터·보안(S1 = 1~3)은 같은 묶음으로 본다.
 
 **About you** *(optional)*
 - Age: ○ 18 to 24 ○ 25 to 34 ○ 35 to 44 ○ 45 to 54 ○ 55 or older ○ Prefer not to say

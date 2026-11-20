@@ -94,7 +94,9 @@ def build_row(d):
     # preregistered exclusion flags
     row["ex_attention"] = int(a.get("A1_correct") is False or a.get("A2_correct") is False)
     row["ex_comprehension"] = int(q1_wrong >= 2)
-    row["ex_c1"] = int(a.get("C1_S1") is not None and (a.get("C1_S1") != a.get("S1") or a.get("C1_S2") != a.get("S2")))
+    # C1: IT, data, and security functions (S1 = 1, 2, 3) count as one group; level (S2) must match exactly
+    grp = lambda v: 1 if v in (1, 2, 3) else v
+    row["ex_c1"] = int(a.get("C1_S1") is not None and (grp(a.get("C1_S1")) != grp(a.get("S1")) or a.get("C1_S2") != a.get("S2")))
     row["ex_straightline"] = int(len(choices) == 4 and len(set(choices)) == 1 and len(set(wtps)) == 1)
     return row
 
