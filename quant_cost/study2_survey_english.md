@@ -144,7 +144,7 @@ The cost figures above already take into account the performance difference show
 | C | Extracting key terms from contracts | extract key terms from contracts | The contracts contain the names and contact details of the people and companies involved. |
 | D | Triaging insurance claims | sort incoming insurance claims into priority categories | The claims contain policyholders' personal and claim information. |
 
-| Case | B | E | L | Slider range for Q3 | Accuracy (local / API) | Cost per 1,000,000 correct answers (local / API) |
+| Case | B | E | L | Entry range for Q3 | Accuracy (local / API) | Cost per 1,000,000 correct answers (local / API) |
 | --- | --- | --- | --- | --- | --- | --- |
 | A | 80 | 144 | 1,600 | $0 to $400k | 94% / 99% | $2.39 / $29.52 |
 | B | 60 | 108 | 1,200 | $0 to $300k | 99% / 100% | $33.27 / $73.09 |
@@ -163,8 +163,8 @@ The exposure probability {λ} is **2%** or **6%**, depending on the condition (`
 ○ The local model ○ The cloud API
 
 **Q3.** How much would you be willing to pay per year to eliminate the exposure risk of the cloud API altogether, that is, to be certain that no personal data is exposed through a vendor?
-*Move the slider to the amount you choose. The amount is shown next to the slider.*
-[구현] 슬라이더 $0 to $(L/4)k, 초기값 없음.
+*Enter an amount in thousands of dollars, between 0 and {smax}. For example, 120 means $120,000 per year.*
+[구현] 숫자 입력(텍스트 입력, Number 검증, 최소 0, 초기값 없음). 안내문의 {smax}는 L/4: A 400, B 300, C 500, D 600. L/4를 넘는 입력은 분석에서 L/4로 자른다.
 
 **Q4.** In your own judgment, what is the chance per year that personal data is exposed through the cloud vendor in this scenario?
 Enter a number from 0 to 100 (%).

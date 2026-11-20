@@ -21,7 +21,7 @@
 
 **[구현] 무선화**
 - 응답자 단위로 독립 배정: (1) 사고 사례 노출/비노출(50:50), (2) 라틴 방격 버전 V1–V4(균등). 시나리오 순서는 매번 무선.
-- 슬라이더/숫자 입력은 초기값 없음. 선택 문항만 응답 강제.
+- 숫자 입력은 초기값 없음. 선택 문항과 WTP에 응답 강제.
 - 매개 문항(추정 확률, 지각된 품질 격차)은 **선택과 WTP 뒤**에 둔다.
 - A1은 시나리오 2와 3 사이.
 
@@ -82,7 +82,7 @@ Thinking about companies in general, **what do you think is the chance, over the
 
 ### 4-2. 사례와 수치 (천 달러/년, 사례 C 기준 B=100, E=180, L=2,000; 나머지는 비례)
 
-| 사례 | 업무 | 운영비 절감 B | 추가 오류 비용 E | 노출 시 손실 L | WTP 슬라이더 범위 (0–L/4) |
+| 사례 | 업무 | 운영비 절감 B | 추가 오류 비용 E | 노출 시 손실 L | WTP 입력 범위 (0–L/4) |
 | --- | --- | --- | --- | --- | --- |
 | A | 고객 문의 분류 | 80 | 144 | 1,600 | $0–$400k |
 | B | 인사 기록 정리 | 60 | 108 | 1,200 | $0–$300k |
@@ -146,7 +146,7 @@ The figures above **already take into account** the performance difference shown
 ○ The local model ○ The cloud API
 
 **Q3. (DV2 WTP)** **How much would you be willing to pay per year to eliminate the exposure risk of the cloud API altogether** (that is, to be certain that no customer data is exposed through a vendor)?
-(slider $0 – $[L/4]k, 값이 숫자로 표시됨)
+(**숫자 입력**, 천 달러 단위. 안내문에 "between 0 and {L/4}" 범위를 명시하고 검증은 0 이상의 숫자. L/4 초과 입력은 분석에서 L/4로 자르고 표시한다.)
 
 **Q4. (추정 확률, 매개)** In your own judgment, what is the chance per year that customer data is exposed through the cloud vendor in this scenario? (0–100%, numeric entry)
 
@@ -210,6 +210,6 @@ The figures above **already take into account** the performance difference shown
 1. 성능 수치를 `quant_cost` 측정값으로 교체한다. B, E, L, λ는 건드리지 않는다.
 2. 사고 사례/중립 보도의 길이를 맞춘다.
 3. 8그룹(V1–V4 × 노출/비노출) 무선 배정이 되는지 테스트 응답으로 확인한다.
-4. 모바일에서 슬라이더와 숫자 입력이 되는지 확인한다.
+4. 모바일에서 숫자 입력(숫자 자판)이 되는지 확인한다.
 5. 이해 점검 오답률과 WTP 분포를 사전 점검(20명)에서 확인하고, 사전등록의 진행 기준과 대조한다.
 6. 영어 원문을 원어민 또는 전문가가 검수한다.

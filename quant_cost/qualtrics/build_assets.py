@@ -258,6 +258,11 @@ The local model
 The cloud API
 
 [[Question:TextEntry]]
+[[ID:Q3]]
+How much would you be willing to pay per year to eliminate the exposure risk of the cloud API altogether, that is, to be certain that no personal data is exposed through a vendor?<br><br>
+<i>Enter an amount in thousands of dollars, between 0 and ${lm://Field/13}. For example, 120 means $120,000 per year.</i>
+
+[[Question:TextEntry]]
 [[ID:Q4]]
 In your own judgment, what is the chance per year that personal data is exposed through the cloud vendor in this scenario? Enter a number from 0 to 100 (%).
 
