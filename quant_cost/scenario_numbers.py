@@ -16,9 +16,9 @@ import os
 
 from .analyze import load, local_cost
 
-DEFAULT_MAP = "A=ticket,B=extract,C=arith,D=*"   # "*" = average over all tasks
-CASE_NAMES = {"A": "customer inquiry classification", "B": "HR records", "C": "contract documents",
-              "D": "insurance claims"}
+DEFAULT_MAP = "A=ticket,B=extract,C=extract,D=ticket"   # short-output tasks only; "*" = average over all tasks
+CASE_NAMES = {"A": "customer inquiry classification", "B": "HR record extraction",
+              "C": "contract key-term extraction", "D": "insurance claim triage"}
 
 
 def parse_map(s):
@@ -56,6 +56,8 @@ def main():
     ap.add_argument("--life-years", type=float, default=3.0)
     ap.add_argument("--utilization", type=float, default=0.25)
     ap.add_argument("--marginal-energy", action="store_true")
+    ap.add_argument("--per", type=float, default=1_000_000,
+                    help="show cost per this many correct answers (default 1,000,000; per-answer values are ~1e-5 dollars)")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -87,18 +89,23 @@ def main():
                       "cost_per_correct_api": c_a / q_a if q_a else None}
 
     print(f"\nlocal = {lr['meta']['label']}   api = {ar['meta']['label']}\n")
-    print("| case | task | accuracy local / API | cost per correct answer local / API |")
+    print(f"| case | task | accuracy local / API | cost per {a.per:,.0f} correct answers local / API |")
     print("| --- | --- | --- | --- |")
     for case, r in rows.items():
         cl = r["cost_per_correct_local"]
         ca = r["cost_per_correct_api"]
         print(f"| {case} ({CASE_NAMES.get(case, '')}) | {r['task']} | {r['acc_local']*100:.0f}% / {r['acc_api']*100:.0f}% "
-              f"| ${usd(cl)} / ${usd(ca)} |" if cl and ca else f"| {case} | {r['task']} | n/a | n/a |")
+              f"| ${usd(cl*a.per)} / ${usd(ca*a.per)} |" if cl and ca else f"| {case} | {r['task']} | n/a | n/a |")
     print("\nSurvey rows (study2_survey_instrument.md section 4-2, second table):")
     for case, r in rows.items():
         if r["cost_per_correct_local"] and r["cost_per_correct_api"]:
             print(f"| {case} | [{r['acc_local']*100:.0f}]% / [{r['acc_api']*100:.0f}]% | "
-                  f"$[{usd(r['cost_per_correct_local'])}] / $[{usd(r['cost_per_correct_api'])}] |")
+                  f"$[{usd(r['cost_per_correct_local']*a.per)}] / $[{usd(r['cost_per_correct_api']*a.per)}] |")
+    cheaper = [c for c, r in rows.items() if r['cost_per_correct_local'] and r['cost_per_correct_api'] and r['cost_per_correct_local'] >= r['cost_per_correct_api']]
+    if cheaper:
+        print(f"\nWARNING: for case(s) {', '.join(cheaper)} the local model is NOT cheaper per correct answer than the API. "
+              "The survey says the local model is cheaper to run, and the 'cost per correct answer' format would then "
+              "favour the API (reversing the direction predicted for H3a). Use tasks/models where local is cheaper.")
     print("\nCaveat: the synthetic tasks are proxies for the business cases; local cost depends on --hw-usd, "
           "--utilization, electricity price and the energy method recorded in each result.")
 

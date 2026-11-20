@@ -85,8 +85,8 @@ Thinking about companies in general, **what do you think is the chance, over the
 | --- | --- | --- | --- | --- | --- |
 | A | 고객 문의 분류 | 80 | 144 | 1,600 | $0–$400k |
 | B | 인사 기록 정리 | 60 | 108 | 1,200 | $0–$300k |
-| C | 계약 문서 요약 | 100 | 180 | 2,000 | $0–$500k |
-| D | 보험 청구 심사 보조 | 120 | 216 | 2,400 | $0–$600k |
+| C | 계약 문서 핵심 조항 추출 | 100 | 180 | 2,000 | $0–$500k |
+| D | 보험 청구 분류(트리아지) | 120 | 216 | 2,400 | $0–$600k |
 
 성능 수치는 `quant_cost` 측정값으로 채운다(예시, `[REPLACE]`):
 
@@ -132,7 +132,7 @@ The figures above **already take into account** the performance difference shown
 | | Local model | Cloud API |
 | --- | --- | --- |
 | Accuracy | [88]% | [95]% |
-| Cost per correct answer | $[0.0045] | $[0.0126] |
+| Cost per 1,000,000 correct answers | $[4.75] | $[29.4] |
 
 ### 4-5. 시나리오마다 묻는 문항 (이 순서)
 
