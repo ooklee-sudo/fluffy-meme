@@ -88,14 +88,14 @@ Thinking about companies in general, **what do you think is the chance, over the
 | C | 계약 문서 핵심 조항 추출 | 100 | 180 | 2,000 | $0–$500k |
 | D | 보험 청구 분류(트리아지) | 120 | 216 | 2,400 | $0–$600k |
 
-성능 수치는 `quant_cost` 측정값이다. **아래는 잠정값**(로컬 3B nf4 n=500, API n=500, 이용률 50%; 제가 노트북 출력의 반올림된 지연·에너지로 암산한 값)이며, `scenario_numbers.py` 출력으로 **확정 값으로 교체**한다. 비용 기준은 **균등화(장비 상각 + 전기료)**:
+성능 수치는 `quant_cost` 측정값이며 **확정**이다(로컬 Qwen2.5-3B nf4 n=500, API Qwen2.5-72B n=500, 이용률 50%, `scenario_numbers.py` 출력). 비용 기준은 **균등화(장비 상각 + 전기료)**:
 
 | 사례 | 로컬/API 정확도 | 정답당 비용 로컬/API |
 | --- | --- | --- |
-| A | [94]% / [99]% | $[2.2] / $[29.5] |
-| B | [99]% / [100]% | $[33] / $[73] |
-| C | [99]% / [100]% | $[33] / $[73] |
-| D | [94]% / [99]% | $[2.2] / $[29.5] |
+| A | 94% / 99% | $2.39 / $29.52 |
+| B | 99% / 100% | $33.27 / $73.09 |
+| C | 99% / 100% | $33.27 / $73.09 |
+| D | 94% / 99% | $2.39 / $29.52 |
 
 (성능 수치는 맥락일 뿐 B, E 수치는 성능과 무관하게 고정한 설계값이다. 측정값을 넣을 때 B, E, L은 건드리지 않는다. **설문에는 균등화 비용만 보여 주고**, 전기료만 센 한계비용과 고정비 대 변동비 손익분기는 논문 부록과 논의에서 보고한다.)
 
@@ -134,7 +134,7 @@ The figures above **already take into account** the performance difference shown
 | | Local model | Cloud API |
 | --- | --- | --- |
 | Accuracy | [94]% | [99]% |
-| Cost per 1,000,000 correct answers (local model: including hardware and electricity) | $[2.2] | $[29.5] |
+| Cost per 1,000,000 correct answers (local model: including hardware and electricity) | $[2.39] | $[29.52] |
 
 ### 4-5. 시나리오마다 묻는 문항 (이 순서)
 
