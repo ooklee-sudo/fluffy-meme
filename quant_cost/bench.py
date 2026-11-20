@@ -13,7 +13,7 @@ import re
 import statistics
 import time
 
-from .power import PowerMeter, measure_idle
+from .power import PowerMeter, gpu_info, measure_idle
 from .tasks import build_tasks
 
 SYSTEM = "You are a precise assistant. Follow the output format exactly."
@@ -27,6 +27,15 @@ def wilson(k, n, z=1.96):
     c = (p + z * z / (2 * n)) / d
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
     return (max(0.0, c - h), min(1.0, c + h))
+
+
+def model_bytes(path):
+    """File size; for sharded GGUF (`...-00001-of-0000N.gguf`) the sum of all shards."""
+    m = re.match(r"^(.*)-\d+-of-(\d+)\.gguf$", path)
+    if m:
+        import glob
+        return sum(os.path.getsize(f) for f in glob.glob(f"{m.group(1)}-*-of-{m.group(2)}.gguf"))
+    return os.path.getsize(path)
 
 
 def quant_label(path):
@@ -135,7 +144,7 @@ def main():
     llm = Llama(model_path=args.model, n_gpu_layers=args.n_gpu_layers, n_ctx=args.n_ctx,
                 n_threads=args.threads, verbose=False)
     load_s = time.perf_counter() - t0
-    print(f"[{label}] quant={q} loaded in {load_s:.1f}s, file={os.path.getsize(args.model)/2**30:.2f} GiB, "
+    print(f"[{label}] quant={q} loaded in {load_s:.1f}s, file={model_bytes(args.model)/2**30:.2f} GiB, "
           f"idle={idle}")
 
     chat(llm, "Say OK.", 4)  # warm-up (kernel compile / cache)
@@ -143,8 +152,8 @@ def main():
     tasks = build_tasks([t for t in args.tasks.split(",") if t], args.n, args.seed, args.task_file)
     res = {"meta": {"label": label, "kind": "local", "model_file": os.path.basename(args.model), "quant": q,
                     "nominal_bits": approx_bits(q), "params_b": args.params_b,
-                    "file_gib": os.path.getsize(args.model) / 2**30, "load_s": load_s,
-                    "n_gpu_layers": args.n_gpu_layers, "n_ctx": args.n_ctx, "idle": idle,
+                    "file_gib": model_bytes(args.model) / 2**30, "load_s": load_s,
+                    "n_gpu_layers": args.n_gpu_layers, "n_ctx": args.n_ctx, "idle": idle, "gpu": gpu_info(args.gpu_index),
                     "date": time.strftime("%Y-%m-%d %H:%M:%S")},
            "tasks": {}, "records": {}}
     for task in tasks:

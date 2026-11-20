@@ -92,3 +92,18 @@ def measure_idle(seconds=5.0, **kw):
     return {"gpu_idle_w": r["gpu_avg_w"],
             "cpu_idle_w": (r["cpu_energy_j"] / r["duration_s"]) if r["cpu_energy_j"] is not None else None,
             "gpu_idle_mem_mib": r["gpu_peak_mem_mib"]}
+
+
+def gpu_info(gpu_index=0):
+    """GPU name, driver, VRAM and power limits (laptop TGP varies by model: record it)."""
+    if shutil.which("nvidia-smi") is None:
+        return None
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", f"--id={gpu_index}",
+             "--query-gpu=name,driver_version,memory.total,power.limit,power.max_limit,clocks.max.sm",
+             "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=10).stdout.strip()
+        keys = ["name", "driver", "mem_total_mib", "power_limit_w", "power_max_limit_w", "max_sm_clock_mhz"]
+        return dict(zip(keys, [x.strip() for x in out.split(",")]))
+    except Exception:
+        return None

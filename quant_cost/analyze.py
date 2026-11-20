@@ -133,7 +133,24 @@ def main():
     ax[0].legend()
     fig.tight_layout()
     fig.savefig(os.path.join(a.out, "quant_curves.png"), dpi=150)
-    print("wrote", os.path.join(a.out, "summary.csv"), "and quant_curves.png")
+
+    # ---- figure: accuracy vs memory footprint (which model size/quant uses a fixed VRAM budget best?)
+    fig2, ax2 = plt.subplots(1, len(tasks), figsize=(4.2 * len(tasks), 3.8), squeeze=False)
+    for k, t in enumerate(tasks):
+        by_size = {}
+        for r in local:
+            if t in r["tasks"]:
+                by_size.setdefault(r["meta"].get("params_b") or 0, []).append(
+                    (r["meta"]["file_gib"], r["tasks"][t]["acc"]))
+        for size, pts in sorted(by_size.items()):
+            pts.sort()
+            ax2[0][k].plot([p[0] for p in pts], [p[1] for p in pts], "o-", label=f"{size:g}B")
+        ax2[0][k].axhline(api["tasks"][t]["acc"], ls=":", color="gray")
+        ax2[0][k].set(title=t, xlabel="model file size (GiB)", ylabel="accuracy")
+    ax2[0][0].legend()
+    fig2.tight_layout()
+    fig2.savefig(os.path.join(a.out, "memory_frontier.png"), dpi=150)
+    print("wrote", os.path.join(a.out, "summary.csv"), "quant_curves.png and memory_frontier.png")
 
 
 if __name__ == "__main__":

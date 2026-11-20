@@ -7,8 +7,21 @@ Finished rungs are skipped on rerun. Anything after `--` goes to quant_cost.benc
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
+
+
+def pick_files(repo_files, prefix, q):
+    """Single file `<prefix>-<q>.gguf` or all shards `<prefix>-<q>-0000i-of-0000n.gguf` (sorted)."""
+    single = f"{prefix}-{q}.gguf"
+    if single in repo_files:
+        return [single]
+    pat = re.compile(rf"^{re.escape(prefix)}-{re.escape(q)}-(\d+)-of-(\d+)\.gguf$")
+    shards = sorted(f for f in repo_files if pat.match(f))
+    if shards and len(shards) == int(pat.match(shards[0]).group(2)):
+        return shards
+    return []
 
 
 def main():
@@ -28,22 +41,28 @@ def main():
     ap.add_argument("--keep", action="store_true", help="keep downloaded files (default: delete after each rung)")
     a = ap.parse_args(argv)
 
-    from huggingface_hub import hf_hub_download
+    from huggingface_hub import hf_hub_download, list_repo_files
 
+    repo_files = set(list_repo_files(a.repo))
     os.makedirs(a.models_dir, exist_ok=True)
     for q in a.quants.split(","):
-        fname = f"{a.prefix}-{q}.gguf"
         label = f"{a.prefix}-{q}"
         if os.path.exists(os.path.join(a.out_dir, label + ".json")):
             print(f"skip {label} (done)")
             continue
-        print(f"=== {label}")
-        path = hf_hub_download(a.repo, fname, local_dir=a.models_dir)
+        files = pick_files(repo_files, a.prefix, q)
+        if not files:
+            print(f"skip {label}: no such file in {a.repo}")
+            continue
+        print(f"=== {label} ({len(files)} file(s))")
+        paths = [hf_hub_download(a.repo, f, local_dir=a.models_dir) for f in files]
+        path = paths[0]  # llama.cpp loads the remaining shards from the same directory
         cmd = [sys.executable, "-m", "quant_cost.bench", "--model", path, "--label", label, "--n", str(a.n),
                "--out-dir", a.out_dir] + (["--params-b", str(a.params_b)] if a.params_b else []) + extra
         subprocess.run(cmd, check=True)
         if not a.keep:
-            os.remove(path)
+            for p_ in paths:
+                os.remove(p_)
 
 
 if __name__ == "__main__":
