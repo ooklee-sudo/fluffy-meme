@@ -6,6 +6,7 @@ import argparse
 import glob
 import json
 import os
+import statistics
 
 from export_csv import build_row
 
@@ -17,12 +18,17 @@ def main():
     ap.add_argument("--data-dir", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
     a = ap.parse_args()
     files = sorted(glob.glob(os.path.join(a.data_dir, "participants", "*.json")))
-    print("no  status      min   flags                         S1->C1_S1  S2->C1_S2")
-    tot = {k: 0 for k in FLAGS}
-    for i, p in enumerate(files, 1):
+    data = []
+    for p in files:
         with open(p, encoding="utf-8") as f:
             d = json.load(f)
-        r = build_row(d)
+        data.append((d, build_row(d)))
+    durs = [r["duration_s"] for d, r in data if d.get("completed") and d.get("eligible") and r.get("duration_s")]
+    med = statistics.median(durs) if durs else None
+    print("no  status      min   flags                         S1->C1_S1  S2->C1_S2")
+    tot = {k: 0 for k in FLAGS}
+    for i, (d, r) in enumerate(data, 1):
+        r["ex_speed"] = int(med is not None and r.get("duration_s") is not None and r["duration_s"] < med / 3)
         ans = d.get("answers", {})
         status = "completed" if d.get("completed") else ("screenout" if d.get("screenedOut") else "partial")
         mins = f"{r['duration_s'] / 60:5.1f}" if r.get("duration_s") else "  n/a"
