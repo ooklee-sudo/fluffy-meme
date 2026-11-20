@@ -3,7 +3,7 @@
 var CONTENT = {
   consentHTML:
     "<h2>About this study</h2>" +
-    "<p>You are invited to take part in a research study on how professionals make decisions about adopting artificial intelligence (AI) tools in their organizations. The survey takes about 19 minutes. You will read a short news item and four brief business scenarios, and you will be asked what you would choose in each one. All scenarios and figures are hypothetical.</p>" +
+    "<p>You are invited to take part in a research study on how professionals make decisions about adopting artificial intelligence (AI) tools in their organizations. The survey takes about 22 minutes. You will read a short news item and four brief business scenarios, and you will be asked what you would choose in each one. All scenarios and figures are hypothetical.</p>" +
     "<p>Taking part is voluntary. You may stop at any time without penalty by returning the study on Prolific. Your responses are anonymous and will be used for research purposes only. We will not ask for your name or the name of your employer.</p>" +
     "<p>This study has been approved by the Institutional Review Board of Hanyang University (approval no. HY-IRB-2026-11-033). If you have any questions about the study, you can contact the researcher at ooklee@hanyang.ac.kr.</p>",
   consentLabel: "I have read the information above and agree to take part.",

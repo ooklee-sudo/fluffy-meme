@@ -8,7 +8,7 @@
 ## 0. Consent
 
 **About this study**
-You are invited to take part in a research study on how professionals make decisions about adopting artificial intelligence (AI) tools in their organizations. The survey takes about 19 minutes. You will read a short news item and four brief business scenarios, and you will be asked what you would choose in each one. All scenarios and figures are hypothetical.
+You are invited to take part in a research study on how professionals make decisions about adopting artificial intelligence (AI) tools in their organizations. The survey takes about 22 minutes. You will read a short news item and four brief business scenarios, and you will be asked what you would choose in each one. All scenarios and figures are hypothetical.
 
 Taking part is voluntary. You may stop at any time without penalty by returning the study on Prolific. Your responses are anonymous and will be used for research purposes only. We will not ask for your name or the name of your employer.
 
