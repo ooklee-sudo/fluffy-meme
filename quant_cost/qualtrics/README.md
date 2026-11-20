@@ -65,7 +65,7 @@ Randomizer: Randomly present 1 of 4, Evenly Present Elements
 
 - [ ] TXT 가져오기에서 블록 13개, 문항 39개
 - [ ] 시나리오 4개 블록 모두 표 13열 4행, 반복 순서 무작위
-- [ ] 미리보기에서 본문에 `$80k`처럼 달러 표시가 나온다. **`$$80k`로 보이면** `scenario_body.html`의 `<b>$${lm://Field/6}k</b>`를 `<b>&#36;${lm://Field/6}k</b>`로 바꾼다(`$`를 HTML 코드로 쓰는 방법)
+- [ ] 미리보기에서 본문에 `$80k`처럼 달러 표시가 나온다. `scenario_body.html`은 `$`를 HTML 코드 `&#36;`로 써서 치환 문법과 겹치지 않게 했다. `&#36;`가 글자 그대로 보이면 Rich Content Editor의 **소스 보기**에서 붙여 넣었는지 확인한다.
 - [ ] 셀 C1, C3에는 비용 행이 없고 C2, C4에는 "Cost per 1,000,000 correct answers" 행이 있다
 - [ ] V1~V4 각각 미리보기: 사례 순서가 라틴 방격과 같다(V1: A, B, C, D / V2: B, C, D, A / V3: C, D, A, B / V4: D, A, B, C)
 - [ ] 뉴스 항목이 한 번에 하나만 나온다
