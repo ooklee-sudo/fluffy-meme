@@ -448,12 +448,13 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
         free, _ = torch.cuda.mem_get_info()
         return acc if free > 10 * d * d * 8 else cpu  # ~10 float64 d x d matrices live during a solve
 
-    # On a GPU with mode != "double", ridge systems are solved by mixed-precision iterative refinement: LU factor in
-    # float32 (consumer GPUs run float64 at 1/64 of the float32 rate), residuals and updates in float64, iterated to a
-    # relative residual of 1e-12, with a plain float64 solve as fallback.  The solution matches the float64 solve to
-    # that tolerance.
+    # On a GPU with mode != "double", ridge systems are solved by mixed-precision iterative refinement: Cholesky (LU if
+    # Cholesky fails) factor in float32 (consumer GPUs run float64 at 1/64 of the float32 rate), residuals and updates
+    # in float64, iterated to a relative residual of 1e-12, with a plain float64 solve as fallback.  The solution
+    # matches the float64 solve to that tolerance.
     refine = (acc.type == "cuda" or os.environ.get("ACT_FORCE_REFINE") == "1") and mode != "double"  # env: tests
-    n_fallback = [0]
+    prof = {"layer_inputs_s": 0.0, "forward_and_gram_s": 0.0, "solves_s": 0.0, "advance_s": 0.0,
+            "factor_s": 0.0, "n_factor": 0, "refine_iters": 0, "solve_fallbacks": 0, "lu_factors": 0}
 
     def ridge_solve(Gtt, Gst, A_s, alpha, d):
         lam = (alpha * torch.trace(Gtt) / d).item()
@@ -464,25 +465,36 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
         diag = Gtt.diagonal().clone()
         Gtt.diagonal().add_(lam)  # Gtt + lam I in place, restored exactly below
         try:
-            LU, piv = torch.linalg.lu_factor(Gtt.float())
-            X = torch.linalg.lu_solve(LU, piv, rhs.float()).double()
+            tf = tick()
+            M32 = Gtt.float()
+            L, bad = torch.linalg.cholesky_ex(M32)
+            if bad.item() == 0:
+                del M32
+                sol = lambda R: torch.cholesky_solve(R.float(), L).double()
+            else:
+                prof["lu_factors"] += 1
+                LU, piv = torch.linalg.lu_factor(M32)
+                del M32
+                sol = lambda R: torch.linalg.lu_solve(LU, piv, R.float()).double()
+            X = sol(rhs)
+            prof["factor_s"] += tick() - tf; prof["n_factor"] += 1
             nb = rhs.norm()
             ok = False
-            for _ in range(20):
+            for _ in range(30):
                 R = rhs - Gtt @ X
                 if R.norm() <= 1e-12 * nb:
                     ok = True
                     break
-                X += torch.linalg.lu_solve(LU, piv, R.float()).double()
-            del LU
+                X += sol(R)
+                prof["refine_iters"] += 1
             if not ok:
-                n_fallback[0] += 1
+                prof["solve_fallbacks"] += 1
                 X = torch.linalg.solve(Gtt, rhs)
         finally:
             Gtt.diagonal().copy_(diag)
         return X.T
 
-    prof = {"layer_inputs_s": 0.0, "forward_and_gram_s": 0.0, "solves_s": 0.0, "advance_s": 0.0}
+    flush_every = 8 if prod_dtype != sum_dtype else 1  # sum up to 8 float32 batch products before the float64 add
 
     def tick():
         sync(device)
@@ -496,9 +508,15 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             move(tgt_layers[l], device)
         lnames = [n for n in names if layer_index(n) == l]
         G = {n: {k: 0.0 for k in ("tt_f", "st_f", "tt_v", "st_v", "ss_v", "dn", "sn")} for n in lnames}
+        part = {}  # float32 partial sums, flushed into G every `flush_every` batches
+
+        def flush():
+            for (n, key), v in part.items():
+                G[n][key] = G[n][key] + v.to(sum_dtype)
+            part.clear()
         t0 = tick()
         for split in ("f", "v"):
-            for ent in caches[split]:
+            for bi, ent in enumerate(caches[split]):
                 xs, xt = {}, {}
                 hs = collect(src_mods, lnames, ent["mask"], xs)
                 ent["s_next"] = run_layer(src_layers[l], ent["s"])
@@ -510,13 +528,19 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
                     h.remove()
                 for n in lnames:
                     s_, t_ = xs[n].to(acc, prod_dtype), xt[n].to(acc, prod_dtype)
-                    G[n]["tt_" + split] = G[n]["tt_" + split] + (t_.T @ t_).to(sum_dtype)
-                    G[n]["st_" + split] = G[n]["st_" + split] + (s_.T @ t_).to(sum_dtype)
+                    prods = [("tt_" + split, t_.T @ t_), ("st_" + split, s_.T @ t_)]
                     if split == "v":
-                        G[n]["ss_v"] = G[n]["ss_v"] + (s_.T @ s_).to(sum_dtype)
-                    G[n]["dn"] += (t_ - s_).double().pow(2).sum().item()
-                    G[n]["sn"] += s_.double().pow(2).sum().item()
+                        prods.append(("ss_v", s_.T @ s_))
+                    for key, P in prods:
+                        part[(n, key)] = part[(n, key)] + P if (n, key) in part else P
+                    G[n]["dn"] = G[n]["dn"] + (t_ - s_).double().pow(2).sum()
+                    G[n]["sn"] = G[n]["sn"] + s_.double().pow(2).sum()
                 del xs, xt
+                if (bi + 1) % flush_every == 0:
+                    flush()
+            flush()
+        for n in lnames:
+            G[n]["dn"], G[n]["sn"] = float(G[n]["dn"]), float(G[n]["sn"])
         t1 = tick(); prof["forward_and_gram_s"] += t1 - t0
         for n in lnames:
             m = tgt_mods[n]
@@ -553,7 +577,6 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             move(tgt_layers[l], cpu)
             torch.cuda.empty_cache()
         print(f"  ACT(fast) layer {l}: alphas " + ", ".join(f"{info[n]['alpha']:.0e}" for n in lnames))
-    prof["solve_fallbacks"] = n_fallback[0]
     prof["refined_solves"] = refine
     prof["offload_moves_s"] = move_s[0]
     return info, move_s[0], prof
