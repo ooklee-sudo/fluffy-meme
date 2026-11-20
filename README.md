@@ -186,3 +186,11 @@ d=5, p=0.005, corr-p=0.002 (샘플 수가 다른 두 번의 측정):
 | BPOSD / BPOSDh / BPOSD* | 0.0350 / 0.0351 / 0.0354 | 12000 |
 
 주의: BP+OSD는 설정에 매우 민감합니다(반복 30, 차수 0: 0.053 / 반복 100, 차수 30: 0.035). d=3에서는 oracle 구조의 BPOSD가 가정 그래프보다 나빴습니다(0.0646 vs 0.0496, 원인 미확인). d=5 설정에서만 점검했습니다.
+
+### `--bm` / `--bposd` 설치 (C 컴파일러가 없는 환경 포함)
+
+`pip install ldpc beliefmatching`이 numpy를 소스에서 빌드하려다 `gcc` 없음으로 실패할 수 있습니다(파이썬 3.14 등). 의존성을 건드리지 않고 설치하면 됩니다.
+
+```bash
+pip install --no-deps ldpc beliefmatching sinter
+```
