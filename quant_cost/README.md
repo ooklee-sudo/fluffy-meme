@@ -72,5 +72,6 @@ python -m quant_cost.bench --model models/qwen2.5-3b-instruct-q4_k_m.gguf --n 10
 | --- | --- | --- | --- | --- |
 | Study 1 (옵션 가치, H1·H3) — 보류 | `experiment_design.md` | `survey_instrument.md` | `preregistration_aspredicted_final.md` | `normative_check.py` |
 | **Study 2 (프라이버시 사고 사례 H2, 성능 제시 H3)** | `study2_design.md` | `study2_survey_instrument.md` | `study2_preregistration_aspredicted.md` | `normative_check_study2.py` |
+| **Study 3 (비용 × 기밀, 지배 비율 ρ; H6–H8) — 개략 설계** | `study3_outline.md` | (미작성) | (미작성) | `normative_check_study3.py` |
 
 공통: 이론 `theory_h2_h3.md`, 선별 문항 `screening_items.md`, 측정 계획 `measurement_plan_rtx4060.md`.
