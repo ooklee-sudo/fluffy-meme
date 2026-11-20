@@ -1,5 +1,6 @@
 # Qualtrics 구현 안내서 (Study 2)
 
+> **가져오기 파일과 더 단순한 구현법(Loop & Merge)은 `qualtrics/README.md`를 먼저 본다.** 그 방법을 쓰면 아래 §5의 셀별 Embedded Data 입력이 필요 없다.
 > 응답자에게 보이는 문안은 `study2_survey_english.md`, 조건 배정과 수치는 `study2_survey_instrument.md` §4를 따른다. 이 안내서는 **제가 Qualtrics의 기능을 기억에 의존해 쓴 것**이라 메뉴 이름이나 옵션 위치가 다를 수 있다. 각 단계 끝의 **[확인]**은 미리보기나 테스트 응답으로 직접 확인할 지점이다. Prolific 연동 문구는 Prolific 연구 설정 화면의 안내와 같은지 대조한다.
 
 ## 0. 설계 요약 (무엇을 구현하는가)
