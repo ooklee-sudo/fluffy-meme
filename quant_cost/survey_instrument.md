@@ -30,7 +30,7 @@
 **Study information**
 You are invited to take part in a research study about how professionals make technology sourcing decisions. The survey takes about 15 minutes. You will read four short business scenarios and answer questions about the choices you would make. All scenarios are hypothetical.
 
-Your participation is voluntary, and you may stop at any time without penalty (return the study on Prolific). Your answers are anonymous and will be used only for research. We will not ask for your name or employer. [IRB 승인 번호/연락처: REPLACE]
+Your participation is voluntary, and you may stop at any time without penalty (return the study on Prolific). Your answers are anonymous and will be used only for research. We will not ask for your name or employer. This study has been reviewed and approved by the Hanyang University Institutional Review Board (approval no. HY-IRB-2026-11-033). [연구자 연락처: REPLACE]
 
 ☐ I have read the information above and agree to participate.
 
@@ -215,7 +215,7 @@ Thank you for taking part. We want to be transparent about what this study invol
 - All companies, figures, and reports in this survey were **fictional**, including the customer-data exposure report (if you saw one) and the background figure for incident probability.
 - The study examines how professionals weigh uncertainty, data-risk information, and the way performance information is presented when choosing between cloud and local AI. Some conditions differed between participants on purpose.
 - Your answers do not reflect any real decision at your employer, and nothing here is advice about a real purchase.
-- If you have questions, please contact [연구자 이메일, REPLACE]. [IRB 문구 REPLACE]
+- If you have questions, please contact [연구자 이메일, REPLACE]. This study was approved by the Hanyang University Institutional Review Board (HY-IRB-2026-11-033).
 
 Your completion code is [Prolific 완료 URL/코드: REPLACE].
 
