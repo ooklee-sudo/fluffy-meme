@@ -30,6 +30,20 @@ from peft import LoraConfig, get_peft_model
 
 ALPHAS = [10 ** (e / 2) for e in range(-6, 7)]  # 13 values in [1e-3, 1e3]
 
+# Task presets (--task).  Each sets the dataset defaults; explicit flags still win.  `response` maps a row to the answer
+# text when it is not a plain string field; `prompt_trunc` = which end of a long prompt to cut ("left" keeps the end, so
+# the question after a long passage or dialogue survives).
+TASKS = {
+    "gsm8k": dict(dataset="openai/gsm8k", dataset_config="main", eval_split="test",
+                  prompt_template="Question: {question}\nAnswer:", response_field="answer", prompt_trunc="right"),
+    "samsum": dict(dataset="knkarthick/samsum", dataset_config=None, eval_split="test",
+                   prompt_template="Dialogue:\n{dialogue}\nSummary:", response_field="summary", prompt_trunc="left"),
+    "boolq": dict(dataset="google/boolq", dataset_config=None, eval_split="validation",
+                  prompt_template="Passage: {passage}\nQuestion: {question}?\nAnswer (yes or no):",
+                  response_field="answer", prompt_trunc="left"),
+}
+RESPONSE_FN = {"boolq": lambda row: "yes" if row["answer"] else "no"}
+
 
 class StopForward(Exception):
     pass
@@ -50,11 +64,16 @@ def load_examples(args, tok):
     from datasets import load_dataset
     ds = load_dataset(args.dataset, args.dataset_config)
     tr, te = ds["train"].shuffle(seed=args.seed), ds[args.eval_split].shuffle(seed=args.seed)
+    resp = RESPONSE_FN.get(args.task, lambda row: row[args.response_field])
+    keep = args.max_len // 2
 
     def enc(row, with_resp=True):
         p = tok(args.prompt_template.format(**row), add_special_tokens=True)["input_ids"]
-        r = tok(" " + row[args.response_field] + tok.eos_token, add_special_tokens=False)["input_ids"]
-        return p[: args.max_len // 2], (r[: args.max_len - len(p[: args.max_len // 2])] if with_resp else [])
+        if len(p) > keep and args.prompt_trunc == "left":  # keep a leading BOS, cut the start of the text
+            head = p[:1] if tok.bos_token_id is not None and p[0] == tok.bos_token_id else []
+            p = head + p[len(p) - (keep - len(head)):]
+        r = tok(" " + resp(row) + tok.eos_token, add_special_tokens=False)["input_ids"]
+        return p[:keep], (r[: args.max_len - len(p[:keep])] if with_resp else [])
     train = [enc(tr[i]) for i in range(args.n_train)]
     evals = [enc(te[i]) for i in range(args.n_eval)]
     # calibration = task prompts without answers (A.4), disjoint from training rows
@@ -101,6 +120,8 @@ def tiny_config(arch, vocab):
         return T.LlamaConfig(num_key_value_heads=4, **common)
     if arch == "qwen2":
         return T.Qwen2Config(num_key_value_heads=4, tie_word_embeddings=True, **common)
+    if arch == "olmo2":
+        return T.Olmo2Config(num_key_value_heads=4, **common)
     if arch == "gpt_neox":
         return T.GPTNeoXConfig(use_parallel_residual=True, **common)
     raise ValueError(arch)
@@ -182,8 +203,25 @@ def train_lora(pm, data, args, device, pad_id, seed=0):
     for n, p in pm.named_parameters():
         p.requires_grad_("lora_" in n)
     opt = torch.optim.AdamW(params, lr=args.lr, weight_decay=0.0)
+    base = pm.get_base_model()
+    if args.grad_ckpt:  # trade compute for memory (8 GB GPUs); the timing of C_N includes the recomputation
+        base.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+        base.enable_input_require_grads()
+        base.config.use_cache = False
     pm.train()
     step, t0 = 0, time.time()
+    try:
+        _train_loop(pm, opt, data, args, device, pad_id, seed)
+    finally:
+        if args.grad_ckpt:
+            base.gradient_checkpointing_disable()
+    pm.eval()
+    sync(device)
+    return time.time() - t0
+
+
+def _train_loop(pm, opt, data, args, device, pad_id, seed):
+    step = 0
     while step < args.steps:
         for b in batches(data, args.bs, shuffle=True, seed=seed + step):
             ids, att, lab = collate(b, pad_id, device)
@@ -194,9 +232,6 @@ def train_lora(pm, data, args, device, pad_id, seed=0):
                 print(f"  step {step}/{args.steps} loss {loss.item():.4f}")
             if step >= args.steps:
                 break
-    pm.eval()
-    sync(device)
-    return time.time() - t0
 
 
 @torch.no_grad()
@@ -315,10 +350,35 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
     The inputs of each decoder layer are cached (source and target, per calibration batch).  For layer l the layer is
     run once on each model with hooks on its LoRA modules to collect the Gram matrices; after the modules of the layer are
     corrected, the corrected target layer is run once more to produce the cached input of layer l+1.  The number of layer
-    passes is then 3L instead of L(L+1)."""
+    passes is then 3L instead of L(L+1).
+
+    Memory options for small GPUs (both keep the method unchanged):
+      args.offload   -- both models live on the CPU; each model is moved to the GPU only to compute the inputs of the
+                        first layer, and then one decoder layer of each model at a time.  Time spent moving weights is
+                        returned separately so that it can be excluded from C_A.
+      args.gram_acc  -- "double" (default, as in the paper runs); "mixed": float32 batch products (consumer GPUs have
+                        little float64 throughput) summed in float64; "float": float32 throughout.  Ridge solves are
+                        float64 and run on the GPU when there is room, on the CPU otherwise (e.g. the 8192-wide input of
+                        an MLP down-projection on an 8 GB card).
+
+    Returns (info, move_seconds)."""
     src_mods, tgt_mods = lora_modules(src_pm), lora_modules(tgt_pm)
+    offload = getattr(args, "offload", False) and device.type == "cuda"
+    cpu = torch.device("cpu")
+    move_s = [0.0]
+
+    def move(m, dev):
+        sync(device); t = time.time()
+        m.to(dev)
+        sync(device); move_s[0] += time.time() - t
+
+    if offload:
+        move(tgt_pm, device)
     names = forward_order(tgt_pm, tgt_mods, device)
-    acc = device if device.type == "cuda" else torch.device("cpu")
+    acc = device if device.type == "cuda" else cpu  # MPS has no float64
+    mode = getattr(args, "gram_acc", "double")
+    prod_dtype = torch.float64 if mode == "double" else torch.float32  # dtype of each batch product
+    sum_dtype = torch.float32 if mode == "float" else torch.float64    # dtype of the running sum
     layers = sorted({layer_index(n) for n in names})
     n_fit = int(0.8 * len(calib))
     fit, val = calib[:n_fit], calib[n_fit:]
@@ -354,12 +414,22 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
         return out[0] if isinstance(out, (tuple, list)) else out
 
     caches = {"f": [], "v": []}
-    for split, data in (("f", fit), ("v", val)):
-        for b in batches(data, args.bs):
-            ids, att, _ = collate(b, pad_id, device)
-            caches[split].append({"mask": att.bool().reshape(-1),
-                                  "s": first_inputs(src_pm, src_layers[layers[0]], ids, att),
-                                  "t": first_inputs(tgt_pm, tgt_layers[layers[0]], ids, att)})
+    for who in ("s", "t"):  # one model at a time on the GPU when offloading
+        pm, lay = (src_pm, src_layers) if who == "s" else (tgt_pm, tgt_layers)
+        if offload and who == "s":
+            move(tgt_pm, cpu)
+            move(src_pm, device)
+        if offload and who == "t":
+            move(src_pm, cpu)
+            move(tgt_pm, device)
+        for split, data in (("f", fit), ("v", val)):
+            for i, b in enumerate(batches(data, args.bs)):
+                ids, att, _ = collate(b, pad_id, device)
+                if who == "s":
+                    caches[split].append({"mask": att.bool().reshape(-1)})
+                caches[split][i][who] = first_inputs(pm, lay[layers[0]], ids, att)
+    if offload:
+        move(tgt_pm, cpu)
 
     def collect(mods, lnames, mask, store):
         hs = []
@@ -369,8 +439,17 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             hs.append(mods[n].register_forward_hook(hook))
         return hs
 
+    def solve_device(d):
+        if acc.type != "cuda":
+            return acc
+        free, _ = torch.cuda.mem_get_info()
+        return acc if free > 10 * d * d * 8 else cpu  # ~10 float64 d x d matrices live during a solve
+
     info = {}
     for l in layers:
+        if offload:
+            move(src_layers[l], device)
+            move(tgt_layers[l], device)
         lnames = [n for n in names if layer_index(n) == l]
         G = {n: {k: 0.0 for k in ("tt_f", "st_f", "tt_v", "st_v", "ss_v", "dn", "sn")} for n in lnames}
         for split in ("f", "v"):
@@ -385,21 +464,25 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
                 for h in hs:
                     h.remove()
                 for n in lnames:
-                    s_, t_ = xs[n].to(acc).double(), xt[n].to(acc).double()
-                    G[n]["tt_" + split] = G[n]["tt_" + split] + t_.T @ t_
-                    G[n]["st_" + split] = G[n]["st_" + split] + s_.T @ t_
+                    s_, t_ = xs[n].to(acc, prod_dtype), xt[n].to(acc, prod_dtype)
+                    G[n]["tt_" + split] = G[n]["tt_" + split] + (t_.T @ t_).to(sum_dtype)
+                    G[n]["st_" + split] = G[n]["st_" + split] + (s_.T @ t_).to(sum_dtype)
                     if split == "v":
-                        G[n]["ss_v"] = G[n]["ss_v"] + s_.T @ s_
-                    G[n]["dn"] += (t_ - s_).pow(2).sum().item()
-                    G[n]["sn"] += s_.pow(2).sum().item()
+                        G[n]["ss_v"] = G[n]["ss_v"] + (s_.T @ s_).to(sum_dtype)
+                    G[n]["dn"] += (t_ - s_).double().pow(2).sum().item()
+                    G[n]["sn"] += s_.double().pow(2).sum().item()
+                del xs, xt
         for n in lnames:
             m = tgt_mods[n]
-            A_s = src_mods[n].lora_A["default"].weight.to(acc).double()
-            B = m.lora_B["default"].weight.to(acc).double()
+            g = G.pop(n)
+            d = src_mods[n].lora_A["default"].weight.shape[1]
+            sd = solve_device(d)
+            for key in ("tt_f", "st_f", "tt_v", "st_v", "ss_v"):
+                g[key] = g[key].to(sd, torch.float64)
+            A_s = src_mods[n].lora_A["default"].weight.to(sd).double()
+            B = m.lora_B["default"].weight.to(sd).double()
             BtB = B.T @ B
-            g = G[n]
-            d = A_s.shape[1]
-            eye = torch.eye(d, dtype=torch.float64, device=acc)
+            eye = torch.eye(d, dtype=torch.float64, device=sd)
 
             def solve(Gtt, Gst, alpha):
                 lam = alpha * torch.trace(Gtt) / d
@@ -416,13 +499,18 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             w = m.lora_A["default"].weight
             w.copy_(A_new.to(device=w.device, dtype=w.dtype))
             info[n] = {"alpha": best, "drift": math.sqrt(g["dn"] / max(g["sn"], 1e-12))}
+            del g, eye, A_new
         if l != layers[-1]:  # advance the cached inputs: source from this pass, target through the corrected layer
             for split in ("f", "v"):
                 for ent in caches[split]:
-                    ent["s"]["h"] = ent["s_next"]
+                    ent["s"]["h"] = ent.pop("s_next")
                     ent["t"]["h"] = run_layer(tgt_layers[l], ent["t"])
+        if offload:
+            move(src_layers[l], cpu)
+            move(tgt_layers[l], cpu)
+            torch.cuda.empty_cache()
         print(f"  ACT(fast) layer {l}: alphas " + ", ".join(f"{info[n]['alpha']:.0e}" for n in lnames))
-    return info
+    return info, move_s[0]
 
 
 # ---------------------------------------------------------------- main
@@ -431,11 +519,15 @@ def main():
     ap.add_argument("--source", default="meta-llama/Llama-3.2-1B")
     ap.add_argument("--target", default="meta-llama/Llama-3.2-1B-Instruct")
     ap.add_argument("--pair-name", default=None, help="label stored as 'drift' in the output JSON")
+    ap.add_argument("--task", choices=sorted(TASKS), default="gsm8k",
+                    help="dataset preset; --dataset etc. still override it")
     ap.add_argument("--dataset", default="openai/gsm8k")
     ap.add_argument("--dataset-config", default="main")
     ap.add_argument("--eval-split", default="test")
     ap.add_argument("--prompt-template", default="Question: {question}\nAnswer:")
     ap.add_argument("--response-field", default="answer")
+    ap.add_argument("--prompt-trunc", choices=["right", "left"], default="right",
+                    help="which end of a prompt longer than max_len/2 to cut (left keeps the question at the end)")
     ap.add_argument("--n-train", type=int, default=2000)
     ap.add_argument("--n-eval", type=int, default=500)
     ap.add_argument("--n-cal", type=int, default=256)
@@ -452,8 +544,15 @@ def main():
     ap.add_argument("--target-revision", default=None)
     ap.add_argument("--target-modules", nargs="+", default=["auto"],
                     help="'auto' = every linear inside the decoder layers")
-    ap.add_argument("--preset", choices=["gpu", "cpu"], default=None,
-                    help="cpu = smaller run sized for a laptop/desktop CPU")
+    ap.add_argument("--preset", choices=["gpu", "cpu", "gpu8"], default=None,
+                    help="cpu = smaller run sized for a laptop/desktop CPU; gpu8 = 1-2B models on an 8 GB NVIDIA GPU")
+    ap.add_argument("--grad-ckpt", action="store_true", help="gradient checkpointing during LoRA training")
+    ap.add_argument("--offload", action="store_true",
+                    help="keep both models on the CPU and move to the GPU only what each step needs (needs --act-impl fast)")
+    ap.add_argument("--gram-acc", choices=["double", "mixed", "float"], default="double",
+                    help="ACT(fast) Gram matrices: double = float64 throughout (paper runs); mixed = float32 batch "
+                         "products summed in float64 (fast on consumer GPUs); float = float32 throughout. "
+                         "Ridge solves are always float64")
     ap.add_argument("--threads", type=int, default=None, help="torch CPU threads")
     ap.add_argument("--steps", type=int, default=1000)
     ap.add_argument("--bs", type=int, default=8)
@@ -463,14 +562,20 @@ def main():
     ap.add_argument("--gpu-price", type=float, default=2.0, help="$ per compute hour, for the cost report")
     ap.add_argument("--out", default="results/act_llama.json")
     ap.add_argument("--tiny", action="store_true", help="CPU smoke test with random tiny models")
-    ap.add_argument("--tiny-arch", choices=["llama", "qwen2", "gpt_neox"], default="llama")
+    ap.add_argument("--tiny-arch", choices=["llama", "qwen2", "gpt_neox", "olmo2"], default="llama")
     ap.add_argument("--tiny-vocab", type=int, default=64)
     ap.add_argument("--tiny-drift", type=float, default=0.3)
     ap.add_argument("--tiny-pretrain", type=int, default=200)
     pre, _ = ap.parse_known_args()
-    if pre.preset == "cpu":  # explicit flags on the command line still win
+    ap.set_defaults(**TASKS[pre.task])  # explicit flags on the command line still win
+    if pre.preset == "cpu":
         ap.set_defaults(n_train=500, n_eval=200, n_cal=128, max_len=256, steps=300, bs=4, lr=5e-4)
+    if pre.preset == "gpu8":
+        ap.set_defaults(n_train=2000, n_eval=500, n_cal=256, max_len=256, steps=600, bs=4, lr=3e-4,
+                        grad_ckpt=True, offload=True, gram_acc="mixed", act_impl="fast")
     args = ap.parse_args()
+    if args.offload and args.act_impl != "fast":
+        raise SystemExit("--offload needs --act-impl fast (the original implementation keeps both models on the GPU)")
     if args.threads:
         torch.set_num_threads(args.threads)
 
@@ -497,22 +602,37 @@ def main():
             raise SystemExit("source and target tokenizers differ: ACT needs a shared tokenizer (Appendix A.1)")
         tok.pad_token = tok.pad_token or tok.eos_token
         pad_id = tok.pad_token_id
-        src = load_model(args.source, args.source_revision, device, dtype)
-        tgt = load_model(args.target, args.target_revision, device, dtype)
+        home = torch.device("cpu") if args.offload and device.type == "cuda" else device
+        src = load_model(args.source, args.source_revision, home, dtype)
+        tgt = load_model(args.target, args.target_revision, home, dtype)
         tag = lambda m, r: m + (f"@{r}" if r else "")
         args.pair_name = args.pair_name or f"{tag(args.source, args.source_revision)}->{tag(args.target, args.target_revision)}"
     train, evals, calib = load_examples(args, tok)
     print(f"device={device} train={len(train)} eval={len(evals)} calib={len(calib)}")
 
+    # Seed the LoRA initialisation.  Before this was added, torch's process-random default seed made the adapter
+    # initialisation (and hence every recovery) differ between otherwise identical runs, including the paper's runs.
+    torch.manual_seed(10_000 + args.seed)
     src_pm, tgt_pm = add_lora(src, args), add_lora(tgt, args)
     init = get_lora_state(tgt_pm)
-    res = {"pair": args.pair_name, "args": vars(args)}
+    res = {"pair": args.pair_name, "args": vars(args), "device": str(device), "dtype": str(dtype)}
+    if device.type == "cuda":
+        res["gpu"] = torch.cuda.get_device_name(0)
+        torch.cuda.reset_peak_memory_stats()
+    offload = args.offload and device.type == "cuda"
+
+    def on_gpu(pm):  # with --offload only one model sits on the GPU at a time (moves are not timed)
+        if offload:
+            other = tgt_pm if pm is src_pm else src_pm
+            other.to("cpu"); torch.cuda.empty_cache(); pm.to(device)
 
     print("[1] train source adapter")
+    on_gpu(src_pm)
     res["time_train_source_s"] = train_lora(src_pm, train, args, device, pad_id, seed=2 * args.seed)
     src_state = get_lora_state(src_pm)
 
     print("[2] retrain on target (upper bound, C_N)")
+    on_gpu(tgt_pm)
     set_lora_state(tgt_pm, init)
     res["time_retrain_s"] = train_lora(tgt_pm, train, args, device, pad_id, seed=2 * args.seed + 1)
     retr_state = get_lora_state(tgt_pm)
@@ -540,8 +660,12 @@ def main():
         if args.act_impl == "both":
             set_lora_state(tgt_pm, src_state)
         sync(device); t0 = time.time()
-        res["act_info_fast"] = act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id)
-        sync(device); res["time_act_fast_s"] = time.time() - t0
+        res["act_info_fast"], move_s = act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id)
+        sync(device)
+        # C_A excludes the time spent moving weights between CPU and GPU under --offload (an artifact of a small GPU)
+        res["time_act_fast_s"] = time.time() - t0 - move_s
+        res["time_act_offload_moves_s"] = move_s
+        on_gpu(tgt_pm)
         res["act_fast"] = evaluate("act_fast")
         if args.act_impl == "fast":
             res["act_info"], res["time_act_s"], res["act"] = res["act_info_fast"], res["time_act_fast_s"], res["act_fast"]
@@ -560,6 +684,8 @@ def main():
         n_, r_ = res["none"]["nll"], res["retrain"]["nll"]
         res["recovery_fast"] = {"R_C": R_C, "R_A": (n_ - res["act_fast"]["nll"]) / (n_ - r_)}
         res["C_A_fast_over_C_N"] = res["time_act_fast_s"] / res["time_retrain_s"]
+    if device.type == "cuda":
+        res["peak_gpu_mem_gb"] = torch.cuda.max_memory_allocated() / 2 ** 30
     res["cost_usd"] = {k: res[f"time_{k}_s"] / 3600 * args.gpu_price for k in ("retrain", "act")}
     print(f"\nR_C={R_C:.4f}  R_A={R_A:.4f}  (NLL-based)   "
           f"C_A/C_N={res['C_A_over_C_N']:.3f} (compute time only; add data and revalidation labor to C_N)")
