@@ -178,7 +178,7 @@ async function runFull(browser, pid, viewport) {
   });
 
   server.kill();
-  fs.rmSync(dataDir, { recursive: true, force: true });
+  if (process.env.KEEP_DATA) console.log("data kept in", dataDir); else fs.rmSync(dataDir, { recursive: true, force: true });
   console.log(failures === 0 ? "ALL TESTS PASSED" : `${failures} TEST(S) FAILED`);
   process.exit(failures === 0 ? 0 : 1);
 })().catch((e) => { console.error(e); server.kill(); process.exit(2); });
