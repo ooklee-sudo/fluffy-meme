@@ -1,5 +1,6 @@
 # Study 2 서베이 문안 (Prolific 배포용, 영어 원문 + 한국어 구현 메모)
 
+> **응답자에게 보이는 영어 최종 문안은 `study2_survey_english.md`다.** 이 문서의 영어 문장은 구현 참고용이며, 서로 다르면 `study2_survey_english.md`를 따른다.
 > 응답자에게 보이는 문안은 영어이고 `[구현]`은 연구자용 메모, `[REPLACE]`는 확정값으로 교체한다. 설계는 `study2_design.md`, 규범 값은 `normative_check_study2.py`. 소요 시간 약 19분.
 > 선별 문항(S1–S8)과 자격 규칙은 `screening_items.md`, 공변량·일관성·인구통계 블록(§5–§6)은 `survey_instrument.md`와 같다. 아래에는 Study 2에서 달라진 부분만 적는다.
 
