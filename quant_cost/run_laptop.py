@@ -38,7 +38,8 @@ def run(cmd, log, dry):
         return 0
     with open(log, "a", encoding="utf-8") as f:
         f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  {line}\n")
-    return subprocess.run(cmd).returncode
+    # unbuffered child output, so progress shows up in run.out while a model is still being measured
+    return subprocess.run(cmd, env=dict(os.environ, PYTHONUNBUFFERED="1")).returncode
 
 
 def sweep_cmds(route, ladders, n, out_dir, a):
