@@ -87,7 +87,7 @@ def main():
             d_cost = c_a_eff - c_l
             d_val = (a.value_usd * q_l - c_l) - (a.value_usd * q_a - c_a_eff)
             rows.append({
-                "task": t, "option": r["meta"]["label"], "bits": r["meta"].get("nominal_bits") or "",
+                "task": t, "option": r["meta"]["label"], "bits": r["meta"].get("nominal_bits") or "", "backend": r["meta"].get("backend", "llama.cpp"),
                 "acc": q_l, "acc_lo": lt["acc_ci95"][0], "acc_hi": lt["acc_ci95"][1],
                 "lat_s": lt["latency_mean_s"], "cost_per_req": c_l, "energy_usd": e, "capex_usd": cap,
                 "cost_per_correct": c_l / q_l if q_l else float("inf"), "pii_per_req": 0.0,
@@ -95,7 +95,7 @@ def main():
                 "n_star_value": a.setup_usd / d_val if d_val > 0 else "never"})
 
     os.makedirs(a.out, exist_ok=True)
-    cols = ["task", "option", "bits", "acc", "acc_lo", "acc_hi", "lat_s", "cost_per_req", "energy_usd",
+    cols = ["task", "option", "backend", "bits", "acc", "acc_lo", "acc_hi", "lat_s", "cost_per_req", "energy_usd",
             "capex_usd", "cost_per_correct", "pii_per_req", "n_star_cost", "n_star_value"]
     with open(os.path.join(a.out, "summary.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, cols, extrasaction="ignore")

@@ -65,19 +65,20 @@ def pct(xs, q):
     return xs[min(len(xs) - 1, int(q * len(xs)))] if xs else None
 
 
-def run_task(llm, task, args, idle, hw_label):
+def run_task(chat_fn, task, args, idle, hw_label):
+    """chat_fn(prompt, max_tokens) -> (text, prompt_tokens, completion_tokens, seconds); shared by all backends."""
     items = task["items"]
     meter = PowerMeter(gpu_index=args.gpu_index).start()
     recs = []
     for it in items:
-        out, pt, ct, dt = chat(llm, it["prompt"], task["max_tokens"])
+        out, pt, ct, dt = chat_fn(it["prompt"], task["max_tokens"])
         s = task["score"](out, it)
         recs.append({"score": s, "correct": s == 1.0, "prompt_tokens": pt, "completion_tokens": ct,
                      "latency_s": dt, "output": out[:300]})
     pw = meter.stop()
 
     # time-to-first-token: re-run a few prompts with max_tokens=1 (prefill cost)
-    ttft = [chat(llm, it["prompt"], 1)[3] for it in items[:min(5, len(items))]]
+    ttft = [chat_fn(it["prompt"], 1)[3] for it in items[:min(5, len(items))]]
 
     dur = pw["duration_s"]
     n = len(items)
@@ -157,7 +158,7 @@ def main():
                     "date": time.strftime("%Y-%m-%d %H:%M:%S")},
            "tasks": {}, "records": {}}
     for task in tasks:
-        res["tasks"][task["name"]], res["records"][task["name"]] = run_task(llm, task, args, idle, label)
+        res["tasks"][task["name"]], res["records"][task["name"]] = run_task(lambda p_, n_: chat(llm, p_, n_), task, args, idle, label)
 
     os.makedirs(args.out_dir, exist_ok=True)
     path = os.path.join(args.out_dir, f"{label}.json")

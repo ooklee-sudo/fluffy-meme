@@ -71,3 +71,31 @@ python -m quant_cost.analyze --pii-loss-usd 0.01
 - [ ] 로컬 0.5B 같은 퇴화 모델이 없는지 `records`의 출력을 샘플로 읽었다 (예: 티켓 분류가 한 클래스만 출력)
 - [ ] 정확도 신뢰구간이 양자화 간 차이보다 좁은지 확인했다 (좁지 않으면 `--n`을 늘린다)
 - [ ] `summary.csv`의 값으로 `survey_instrument.md`의 `[REPLACE]` 수치를 교체했다
+
+---
+
+## 부록. PyTorch 경로 (Windows에서 llama.cpp 빌드가 막힐 때)
+
+`bench_hf.py`는 PyTorch + transformers + bitsandbytes로 같은 과제를 측정하고 **같은 결과 형식(JSON)**을 쓰므로 `analyze.py`를 그대로 쓴다. `pip`만으로 설치된다.
+
+```bash
+# 1) 드라이버에 맞는 CUDA 빌드 torch를 먼저 설치 (https://pytorch.org 에서 명령 확인)
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install -r quant_cost/requirements-torch.txt
+
+# 2) 한 모델의 양자화 모드를 차례로 측정 (모드마다 새 프로세스라 GPU 메모리가 비워진다)
+python -m quant_cost.sweep_hf --model Qwen/Qwen2.5-3B-Instruct --quants fp16,int8,nf4,fp4 --params-b 3 --n 100
+python -m quant_cost.sweep_hf --model Qwen/Qwen2.5-7B-Instruct --quants nf4,fp4 --params-b 7 --n 100
+
+# 3) 한 번만 측정
+python -m quant_cost.bench_hf --model Qwen/Qwen2.5-3B-Instruct --quant nf4 --params-b 3 --n 100
+```
+
+**8GB에서의 한계 (추정 가중치 크기)**: 3B는 fp16 약 6.2GiB(빠듯), int8 약 3.5, nf4 약 2.2. 7B는 nf4만 가능(약 5.0), fp16·int8은 KV 캐시까지 합치면 안 들어간다. 14B는 nf4도 약 9GiB라 불가.
+
+**llama.cpp 경로와의 차이**
+- 비트 사다리가 거칠다: 16 / 8 / 4(nf4, fp4)뿐이고, GGUF의 Q2~Q6 같은 세밀한 구간은 없다.
+- bitsandbytes 4비트는 역양자화 때문에 llama.cpp보다 느린 경우가 많다. **지연·에너지는 백엔드마다 달라서 한 그래프에 섞지 말 것.** 결과 JSON의 `meta.backend`와 `summary.csv`의 `backend` 열로 구분한다.
+- `meta.file_gib`는 파일 크기가 아니라 로드된 가중치 메모리(`get_memory_footprint`)이며, 작업별 `torch_peak_alloc_mib`, `torch_peak_reserved_mib`도 기록한다.
+- bitsandbytes의 Windows 지원 여부와 설치 가능한 버전은 제가 확인하지 못했다. 설치가 안 되면 오류 메시지를 알려 달라.
+- 이 컨테이너(GPU 없음)에서는 `bf16`/`fp32` CPU 경로만 시험했다. **int8/nf4/fp4와 CUDA 측정(nvidia-smi 전력, VRAM)은 노트북에서 처음 확인해야 한다.**
