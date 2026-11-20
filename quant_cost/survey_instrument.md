@@ -115,10 +115,10 @@ Your company wants to use AI to **[업무 설명: e.g., classify incoming custom
 - The estimated present value of the savings it would generate over the next three years: **$[V]**
 
 **[변동성 문구 — 저]**
-Over the next 12 months, API prices and the performance of small AI models are expected to stay **very stable**. Analysts' forecasts agree closely with each other.
+The value of these savings depends on cloud API prices and on how well small AI models perform. Looking at past years, this value has been **very stable**: it typically moves by only about **10% per year**, up or down. Analysts' forecasts for the next 12 months agree closely with each other.
 
 **[변동성 문구 — 고]**
-Over the next 12 months, API prices and the performance of small AI models could **change a great deal, up or down**. Analysts' forecasts disagree widely.
+The value of these savings depends on cloud API prices and on how well small AI models perform. Looking at past years, this value has been **highly volatile**: it typically moves by about **50% per year**, up or down. Analysts' forecasts for the next 12 months disagree widely.
 
 **[성능 제시 — 정확도만 (C1, C3)]**
 
@@ -156,7 +156,7 @@ Over the next 12 months, API prices and the performance of small AI models could
 **Q4. (DV3 대기)** Ignoring your answer above, **how many months would you prefer to wait before committing money to a local build?** (0 = commit now, 24 = wait two years)
 (slider 0–24)
 
-**Q5. (변동성 지각 점검)** How much do you expect API prices and small-model performance to change over the next 12 months in this scenario?
+**Q5. (변동성 지각 점검)** How much do you expect the value of the savings to change over the next 12 months in this scenario?
 1 = Almost no change … 7 = Very large changes
 
 (시나리오 2와 3 사이에 주의 점검 A1을 넣는다. 5-A 참조.)
