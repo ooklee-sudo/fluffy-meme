@@ -618,6 +618,8 @@ def main():
     ap.add_argument("--grad-ckpt", action="store_true", help="gradient checkpointing during LoRA training")
     ap.add_argument("--offload", action="store_true",
                     help="keep both models on the CPU and move to the GPU only what each step needs (needs --act-impl fast)")
+    ap.add_argument("--precision-check", action="store_true",
+                    help="after ACT(fast), rerun it with --gram-acc double on the same adapters and compare")
     ap.add_argument("--gram-acc", choices=["double", "mixed", "float"], default="double",
                     help="ACT(fast) Gram matrices: double = float64 throughout (paper runs); mixed = float32 batch "
                          "products summed in float64 (fast on consumer GPUs); float = float32 throughout. "
@@ -740,6 +742,29 @@ def main():
         res["act_fast"] = evaluate("act_fast")
         if args.act_impl == "fast":
             res["act_info"], res["time_act_s"], res["act"] = res["act_info_fast"], res["time_act_fast_s"], res["act_fast"]
+        if args.precision_check and args.gram_acc != "double":
+            # same trained adapters, float64 Gram matrices and float64 solves: isolates the effect of the precision mode
+            print("[4b] precision check: ACT(fast) again with --gram-acc double on the same adapters")
+            act_state = get_lora_state(tgt_pm)
+            set_lora_state(tgt_pm, src_state)
+            ref_args = argparse.Namespace(**{**vars(args), "gram_acc": "double"})
+            sync(device); t0 = time.time()
+            info64, mv64, prof64 = act_transfer_fast(src_pm, tgt_pm, calib, ref_args, device, pad_id)
+            sync(device)
+            on_gpu(tgt_pm)
+            r64 = evaluate("act_f64")
+            same = sum(info64[k]["alpha"] == res["act_info_fast"][k]["alpha"] for k in info64)
+            n_, rt_ = res["none"]["nll"], res["retrain"]["nll"]
+            res["precision_check"] = {
+                "same_alpha": same, "n_modules": len(info64), "nll_mixed": res["act_fast"]["nll"], "nll_double": r64["nll"],
+                "R_A_mixed": (n_ - res["act_fast"]["nll"]) / (n_ - rt_), "R_A_double": (n_ - r64["nll"]) / (n_ - rt_),
+                "time_mixed_s": res["time_act_fast_s"], "time_double_s": time.time() - t0 - mv64,
+                "alpha_diff": {k: [res["act_info_fast"][k]["alpha"], info64[k]["alpha"]] for k in info64
+                               if info64[k]["alpha"] != res["act_info_fast"][k]["alpha"]}, "profile_double": prof64}
+            pc = res["precision_check"]
+            print(f"  same alpha in {same}/{len(info64)} modules; ACT NLL {pc['nll_mixed']:.6f} (mixed) vs "
+                  f"{pc['nll_double']:.6f} (double); time {pc['time_mixed_s']:.0f}s vs {pc['time_double_s']:.0f}s")
+            set_lora_state(tgt_pm, act_state)
 
     def recovery(metric, higher_better):
         n, r = res["none"][metric], res["retrain"][metric]

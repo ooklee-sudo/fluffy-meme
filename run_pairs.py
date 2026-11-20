@@ -235,19 +235,15 @@ def main_gpu8():
               flush=True)
         return rc == 0
 
-    if a.check_precision:
+    if a.check_precision:  # one process, same adapters: mixed vs float64 Gram matrices and solves
         name, src, srev, tgt, trev = GPU8_PAIRS[0]
-        ref = os.path.join(a.outdir, "gsm8k", slug(name) + "_s0.json")
-        chk = os.path.join(a.outdir, "check", slug(name) + "_s0_double.json")
-        if not os.path.exists(ref):
-            run(name, src, srev, tgt, trev, "gsm8k", 0, ref)
-        run(name, src, srev, tgt, trev, "gsm8k", 0, chk, ["--gram-acc", "double"])
-        r1, r2 = json.load(open(ref)), json.load(open(chk))
-        same = sum(r1["act_info"][k]["alpha"] == r2["act_info"][k]["alpha"] for k in r1["act_info"])
-        print(f"\nmixed vs double: same alpha in {same}/{len(r1['act_info'])} modules; "
-              f"ACT NLL {r1['act']['nll']:.5f} vs {r2['act']['nll']:.5f}; "
-              f"R_A {r1['recovery'][0]['R_A']:.4f} vs {r2['recovery'][0]['R_A']:.4f}; "
-              f"ACT time {r1['time_act_s']:.0f}s vs {r2['time_act_s']:.0f}s")
+        chk = os.path.join(a.outdir, "check", slug(name) + "_s0_precision.json")
+        os.makedirs(os.path.dirname(chk), exist_ok=True)
+        if run(name, src, srev, tgt, trev, "gsm8k", 0, chk, ["--precision-check"]):
+            pc = json.load(open(chk))["precision_check"]
+            print(f"\nmixed vs double (same adapters): same alpha in {pc['same_alpha']}/{pc['n_modules']} modules; "
+                  f"ACT NLL {pc['nll_mixed']:.6f} vs {pc['nll_double']:.6f}; R_A {pc['R_A_mixed']:.5f} vs "
+                  f"{pc['R_A_double']:.5f}; ACT time {pc['time_mixed_s']:.0f}s vs {pc['time_double_s']:.0f}s")
         return
 
     if not a.summary_only:
