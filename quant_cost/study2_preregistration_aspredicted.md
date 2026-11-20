@@ -5,7 +5,7 @@
 > 2. 전문직 20명 사전 점검을 마쳤고, 점검에서 설문이 바뀌었다면 아래 본문과 대조했다.
 > 3. `[ ... ]`가 남아 있지 않다. 사전 점검을 하지 않고 제출한다면 1번 항목 답을 "No."로만 바꾼다.
 > 4. AsPredicted의 현재 입력 항목과 글자 수 제한은 확인하지 못했다. 항목 이름이 다르면 의미가 맞는 칸에 붙여 넣고, 넘으면 문장을 줄인다. 작성자 이메일 입력, 공저자 확인, 공개 옵션은 사이트에서 직접 진행한다.
-> 5. IRB: Study 2가 승인 범위인지 확인한다(HY-IRB-2026-11-033).
+> 5. IRB: 사무국이 Study 2에 변경 심의·별도 승인이 필요 없다고 답변했다. 답변 서면과 확인 일자를 보관한다.
 > 6. 효과 크기(d=0.35 등)는 **가정**이다. Study 1 사전등록과 별개의 제출이다.
 
 ---
@@ -61,7 +61,7 @@ Target: 260 analysable participants (about 130 per incident group). We start by 
 ## 8. Anything else you would like to pre-register?
 
 - Participants: professionals recruited through Prolific with employment/job-role filters where available; the screening items are used to verify eligibility because filters are self-reported. No country filter is applied.
-- Compensation: hourly-equivalent rate of about USD 20 (about 18 minutes). The study is approved by the Hanyang University IRB (HY-IRB-2026-11-033) [confirm that this study is within the approved protocol].
+- Compensation: hourly-equivalent rate of about USD 20 (about 18 minutes). The study is approved by the Hanyang University IRB (HY-IRB-2026-11-033); the IRB office confirmed that this study needs no amendment or separate approval.
 - Design choices: participants decide as risk-neutral managers (stated in the instructions). No instruction asks participants to ignore the incident report. The product λL is never displayed.
 - Fallback rule for the willingness-to-pay measure (fixed now, applied to the pilot only): if in the pilot 30% or more of participants give identical WTP in all four scenarios or fail the comprehension check in two or more scenarios, the primary dependent variable for H2c becomes the choice-based sensitivity S_choice = P(local | λ = 6%) − P(local | λ = 2%) per participant, and WTP analyses become secondary.
 - Accuracy and cost figures for the local model and the API shown in the scenarios come from our own measurements of quantized open models on a laptop GPU and a cloud API; the cost figures B, E and L are fixed design values independent of those measurements. Anonymized data, materials and analysis code will be shared.

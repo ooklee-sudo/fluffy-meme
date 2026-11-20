@@ -34,7 +34,7 @@ Your participation is voluntary, and you may stop at any time without penalty (r
 
 ☐ I have read the information above and agree to participate.
 
-[구현] Study 2가 승인된 프로토콜 범위인지 IRB 사무국에 확인한 뒤 승인 번호를 확정한다.
+[구현] IRB 사무국이 Study 2에 별도 승인이 필요 없다고 답변했다(승인 번호 HY-IRB-2026-11-033 유지). 답변 서면을 보관한다.
 
 ---
 
