@@ -1,6 +1,6 @@
 # 서베이 문안 (Prolific 배포용, 영어 원문 + 한국어 구현 메모)
 
-> 응답자에게 보이는 문안은 영어이고, `[구현]` 표시는 연구자용 메모다. `[REPLACE]`는 `quant_cost` 측정값이나 확정값으로 교체한다. 설문 도구(Qualtrics 등)의 무선화 기능으로 구현한다. 소요 시간 약 15분.
+> 응답자에게 보이는 문안은 영어이고, `[구현]` 표시는 연구자용 메모다. `[REPLACE]`는 `quant_cost` 측정값이나 확정값으로 교체한다. 설문 도구(Qualtrics 등)의 무선화 기능으로 구현한다. 소요 시간 약 17분.
 > 선별 문항 S1–S7과 자격 규칙은 `screening_items.md`를 그대로 쓴다(이 문서의 Part 1 위치). 가설과 분석은 `experiment_design.md`, `preregistration_draft.md` 참조.
 
 ---
@@ -13,7 +13,7 @@
 | 1 | 선별 | S1–S7 (`screening_items.md`), 부적격 시 종료 |
 | 2 | 소개와 기저율 | 모든 응답자에게 같은 문안 |
 | 3 | **H2 조작** | 사고 사례 노출 / 비노출 (무선 배정), 추정 유출확률 측정 |
-| 4 | 시나리오 4개 | 각 시나리오: 본문 → 이해 점검 → 선택 → F_max → 대기 개월 → 변동성 지각 |
+| 4 | 시나리오 4개 | 각 시나리오: 본문 → 이해 점검 → 선택 → F_max → 불확실성 지각 |
 | 5 | 공변량 | 수리능력, AI 경험, 프라이버시 우려, 위험 선호 (주의 점검 A1, A2 포함) |
 | 6 | 일관성·인구통계 | C1(S1·S2 재확인), 인구통계 |
 | 7 | 해설(debrief) | 시나리오·사고 사례가 가상임을 알림, 완료 코드 |
@@ -28,7 +28,7 @@
 ## 0. 동의
 
 **Study information**
-You are invited to take part in a research study about how professionals make technology sourcing decisions. The survey takes about 15 minutes. You will read four short business scenarios and answer questions about the choices you would make. All scenarios are hypothetical.
+You are invited to take part in a research study about how professionals make technology sourcing decisions. The survey takes about 17 minutes. You will read four short business scenarios and answer questions about the choices you would make. All scenarios are hypothetical.
 
 Your participation is voluntary, and you may stop at any time without penalty (return the study on Prolific). Your answers are anonymous and will be used only for research. We will not ask for your name or employer. This study has been reviewed and approved by the Hanyang University Institutional Review Board (approval no. HY-IRB-2026-11-033). If you have questions about the study, you may contact the researcher at ooklee@hanyang.ac.kr.
 
@@ -75,25 +75,40 @@ Thinking about a company like the one described, **what do you think is the chan
 ## 4. 시나리오 (4개 × 반복 구조)
 
 ### 4-1. 조건 정의
-4개 조건(셀)은 변동성 × 성능 제시의 2×2.
+4개 조건(셀)은 **불확실성(변동성) × 성능 제시**의 2×2다.
 
-| 셀 | 변동성 | 성능 제시 |
+- **불확실성(변동성)**: 내년 절감 가치가 "좋은 상황(Good)"과 "나쁜 상황(Bad)" 두 상태 중 하나로 정해지고 확률은 각 50%이다. 두 조건의 **평균은 같고 퍼짐만 다르다**(평균 보존 분산 확대). 저변동은 평균의 ±10%, 고변동은 ±50%.
+- **성능 제시**: 정확도만 / 정확도 + 정답당 비용. 성능 정보는 이미 절감액에 반영되어 있다고 명시하므로 **규범적으로는 선택에 영향이 없다**(H3).
+
+| 셀 | 불확실성 | 성능 제시 |
 | --- | --- | --- |
-| C1 | 저 | 정확도만 |
-| C2 | 저 | 정확도 + 정답당 비용 |
-| C3 | 고 | 정확도만 |
-| C4 | 고 | 정확도 + 정답당 비용 |
+| C1 | 저 (±10%) | 정확도만 |
+| C2 | 저 (±10%) | 정확도 + 정답당 비용 |
+| C3 | 고 (±50%) | 정확도만 |
+| C4 | 고 (±50%) | 정확도 + 정답당 비용 |
 
-### 4-2. 사례와 수치 (V = 1.8·F로 고정, 모두 `[REPLACE]`)
+### 4-2. 사례와 수치 (단위: 천 달러, 모두 계산 가능하도록 고정)
 
-| 사례 | 업무 | F (일회성 구축비) | V (3년 절감 현재가치) | F_max 슬라이더 범위 (0–1.2V) | 로컬/API 정확도 | 로컬/API 요청당 비용 | 정답당 비용 로컬/API |
+규범 구조(모든 사례에서 같은 비율): F = 구축비, s = 올해 절감액 = 0.12F, 내년 절감 가치 평균 = 1.2F.
+저변동: 평균 ×0.9 / ×1.1, 고변동: 평균 ×0.5 / ×1.5.
+
+| 사례 | 업무 | F | s | 저변동 Bad / Good | 고변동 Bad / Good | 내년 절감 가치 평균 | F_max 슬라이더 범위 (0–1.8F) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| A | 고객 문의 분류 | $400,000 | $720,000 | $0–$864,000 | 88% / 95% | $0.004 / $0.012 | $0.0045 / $0.0126 |
-| B | 인사 기록 정리 | $300,000 | $540,000 | $0–$648,000 | 86% / 96% | $0.005 / $0.013 | $0.0058 / $0.0135 |
-| C | 계약 문서 요약 | $500,000 | $900,000 | $0–$1,080,000 | 84% / 95% | $0.010 / $0.028 | $0.0119 / $0.0295 |
-| D | 보험 청구 심사 보조 | $600,000 | $1,080,000 | $0–$1,296,000 | 87% / 97% | $0.008 / $0.022 | $0.0092 / $0.0227 |
+| A | 고객 문의 분류 | 400 | 48 | 432 / 528 | 240 / 720 | 480 | 0–720 |
+| B | 인사 기록 정리 | 300 | 36 | 324 / 396 | 180 / 540 | 360 | 0–540 |
+| C | 계약 문서 요약 | 500 | 60 | 540 / 660 | 300 / 900 | 600 | 0–900 |
+| D | 보험 청구 심사 보조 | 600 | 72 | 648 / 792 | 360 / 1,080 | 720 | 0–1,080 |
 
-(정답당 비용 = 요청당 비용 ÷ 정확도. 위 값은 형식 예시이며 실제 측정값으로 반드시 교체하고 계산을 다시 한다.)
+성능 수치는 `quant_cost` 측정값으로 채운다(예시, `[REPLACE]`):
+
+| 사례 | 로컬/API 정확도 | 정답당 비용 로컬/API |
+| --- | --- | --- |
+| A | [88]% / [95]% | $[0.0045] / $[0.0126] |
+| B | [86]% / [96]% | $[0.0058] / $[0.0135] |
+| C | [84]% / [95]% | $[0.0119] / $[0.0295] |
+| D | [87]% / [97]% | $[0.0092] / $[0.0227] |
+
+(정답당 비용 = 요청당 비용 ÷ 정확도. 절감액 수치는 성능과 독립적으로 고정한 설계값이며, 성능 수치는 "이미 반영되어 있다"는 문구와 함께 맥락으로만 제시한다. 실제 측정값을 넣을 때 정확도·비용 수치만 바꾸고 절감액 구조는 건드리지 않는다.)
 
 ### 4-3. 라틴 방격 (사례 → 셀)
 
@@ -108,17 +123,20 @@ Thinking about a company like the one described, **what do you think is the chan
 
 **Scenario [n] of 4 — [업무명]**
 
-Your company wants to use AI to **[업무 설명: e.g., classify incoming customer inquiries]**. These documents contain customers' personal information. The company currently uses the cloud API.
+Your company wants to use AI to **[업무 설명: e.g., classify incoming customer inquiries]**. These documents contain customers' personal information. The company currently uses the cloud API. You could instead build a **local small AI model** that runs on your own servers.
 
-**Option to build a local model.** You could build a local small AI model that runs on your own servers.
-- One-time cost to build it: **$[F]**
-- The estimated present value of the savings it would generate over the next three years: **$[V]**
+**Key numbers.** All amounts are in today's dollars (ignore interest and inflation).
+- **Cost to build the local model: $[F].** It is paid once, cannot be recovered, and is the same whether you build now or next year.
+- **If you build now, you also receive this year's savings: $[s].**
+- **Savings from next year onward** (their total value) are not yet known. Next year, conditions will turn out to be either **Bad** or **Good**, with equal chances (50% each):
 
-**[변동성 문구 — 저]**
-The value of these savings depends on cloud API prices and on how well small AI models perform. Looking at past years, this value has been **very stable**: it typically moves by only about **10% per year**, up or down. Analysts' forecasts for the next 12 months agree closely with each other.
+| | Bad conditions (50%) | Good conditions (50%) |
+| --- | --- | --- |
+| Total savings from next year onward | $[V_Bad] | $[V_Good] |
 
-**[변동성 문구 — 고]**
-The value of these savings depends on cloud API prices and on how well small AI models perform. Looking at past years, this value has been **highly volatile**: it typically moves by about **50% per year**, up or down. Analysts' forecasts for the next 12 months disagree widely.
+  On average, these savings are worth **$[평균]**.
+
+The savings figures above **already take into account** the performance of the local model compared with the cloud API, shown below.
 
 **[성능 제시 — 정확도만 (C1, C3)]**
 
@@ -134,32 +152,43 @@ The value of these savings depends on cloud API prices and on how well small AI 
 | Cost per correct answer | $[0.0045] | $[0.0126] |
 
 **Your options**
-- **(a) Build the local model now.**
-- **(b) Wait 12 months, then decide again.** You keep using the cloud API in the meantime. Later you could still build the local model, but the cost and the expected savings will have changed.
-- **(c) Keep using the cloud API.** You do not build a local model.
+- **(a) Build the local model now.** You pay $[F] now. You receive this year's savings of $[s] and the savings from next year onward, whichever conditions occur.
+- **(b) Wait 12 months.** You do not build now and you do not receive this year's savings. Next year you will learn whether conditions are Bad or Good. Then you may build (paying $[F]) or not.
+- **(c) Keep using the cloud API and never build the local model.** Nothing changes compared with today.
 
 ### 4-5. 시나리오마다 묻는 문항 (이 순서)
 
-**Q1. (이해 점검, K)** In this scenario, what is the one-time cost of building the local model?
-- $[F] (정답)
-- $[V]
-- $[F의 절반]
-- $[F의 2배]
+**Q1. (이해 점검, K)** In this scenario, if conditions next year turn out to be **Bad**, what are the total savings from next year onward?
+- $[V_Bad] (정답)
+- $[V_Good]
+- $[평균]
+- $[F]
 (선택지 순서 무선)
 
 **Q2. (DV1 선택)** Which option would you choose?
-○ (a) Build the local model now ○ (b) Wait 12 months, then decide again ○ (c) Keep using the cloud API
+○ (a) Build the local model now ○ (b) Wait 12 months ○ (c) Keep using the cloud API
 
-**Q3. (DV2 F_max)** Suppose the quoted cost of $[F] could be different. **What is the highest one-time cost you would still be willing to pay to build the local model now?**
-(slider $0 – $[1.2V], 값이 숫자로 표시됨)
+**Q3. (DV2 F_max)** Suppose the cost to build the local model could be different, with everything else in this scenario unchanged. **What is the highest building cost at which you would still choose (a) build now, rather than (b) waiting or (c) keeping the cloud API?**
+(slider $0 – $[1.8F], 값이 숫자로 표시됨)
 
-**Q4. (DV3 대기)** Ignoring your answer above, **how many months would you prefer to wait before committing money to a local build?** (0 = commit now, 24 = wait two years)
-(slider 0–24)
-
-**Q5. (변동성 지각 점검)** How much do you expect the value of the savings to change over the next 12 months in this scenario?
-1 = Almost no change … 7 = Very large changes
+**Q4. (불확실성 지각 점검)** How uncertain do you consider next year's savings in this scenario?
+1 = Almost certain … 7 = Extremely uncertain
 
 (시나리오 2와 3 사이에 주의 점검 A1을 넣는다. 5-A 참조.)
+
+### 4-6. 규범 키 (연구자용, 응답자에게 보이지 않음)
+
+세 선택지의 기대 순가치(단위: 천 달러): (a) = s + E[V] − F, (b) = E[max(V − F, 0)], (c) = 0.
+(a)와 (b)의 차이 = s − E[max(F − V, 0)], 즉 "올해 절감액" 대 "기다려서 나쁜 상황을 피하는 가치".
+
+| 사례 | 저변동 (a) / (b) | 최적 | 고변동 (a) / (b) | 최적 | F* 저 / 고 | ln(F*고/F*저) |
+| --- | --- | --- | --- | --- | --- | --- |
+| A | 128 / 80 | (a) 지금 구축 | 128 / 160 | (b) 기다림 | 528 / 336 | −0.452 |
+| B | 96 / 60 | (a) | 96 / 120 | (b) | 396 / 252 | −0.452 |
+| C | 160 / 100 | (a) | 160 / 200 | (b) | 660 / 420 | −0.452 |
+| D | 192 / 120 | (a) | 192 / 240 | (b) | 792 / 504 | −0.452 |
+
+F*는 "그 구축비까지는 (a)가 여전히 최적인 최고 비용"이고 모든 사례에서 비율이 0.636이다. 값은 `normative_check.py`로 계산·검증한다 (`python -m quant_cost.normative_check`). 단순 기대값 비교(옵션을 무시하고 E[V] − F로 판단하는 경우)는 두 조건 모두 (a)를 고른다.
 
 ---
 
@@ -223,7 +252,7 @@ Your completion code is [Prolific 완료 URL/코드: REPLACE].
 
 ## 구현 체크리스트
 
-1. 모든 `[REPLACE]` 수치를 `quant_cost` 측정값으로 교체하고 정답당 비용을 재계산한다. V = 1.8F를 유지한다.
+1. 모든 `[REPLACE]` 수치를 `quant_cost` 측정값으로 교체하고 정답당 비용을 재계산한다. 절감액 구조(s = 0.12F, 내년 평균 = 1.2F)와 두 상태의 퍼짐(±10%, ±50%)을 유지한다. 규범 값은 `normative_check.py`로 다시 확인한다.
 2. 사고 사례/비노출 문단의 길이를 맞추고, 기저율 문구는 두 집단에 **동일하게** 표시한다(H2의 핵심 통제).
 3. 라틴 방격 V1–V4와 사고 사례 노출(2) = 8 그룹에 무선 배정되는지 테스트 응답으로 확인한다.
 4. 슬라이더는 초기 위치가 없고, 값이 숫자로 보이는지 확인한다. 휴대폰에서도 조작되는지 본다.
