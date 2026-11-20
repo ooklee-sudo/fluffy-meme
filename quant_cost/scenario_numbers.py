@@ -14,7 +14,7 @@ import json
 import math
 import os
 
-from .analyze import load, local_cost
+from .analyze import S_PER_YEAR, load, local_cost
 
 DEFAULT_MAP = "A=ticket,B=extract,C=extract,D=ticket"   # short-output tasks only; "*" = average over all tasks
 CASE_NAMES = {"A": "customer inquiry classification", "B": "HR record extraction",
@@ -57,6 +57,9 @@ def main():
     ap.add_argument("--utilization", type=float, default=0.5,
                     help="share of the hardware lifetime available to this workload (default 0.5 = decided baseline; see --sensitivity)")
     ap.add_argument("--marginal-energy", action="store_true")
+    ap.add_argument("--basis", choices=["levelized", "marginal"], default="levelized",
+                    help="levelized = energy + amortized hardware (default); marginal = energy only, for a firm that already owns the hardware")
+    ap.add_argument("--setup-usd", type=float, default=2000.0, help="one-time engineering/setup cost, used only in the break-even table")
     ap.add_argument("--per", type=float, default=1_000_000,
                     help="show cost per this many correct answers (default 1,000,000; per-answer values are ~1e-5 dollars)")
     ap.add_argument("--sensitivity", action="store_true", help="also print local cost at utilization 25%%, 50%%, 75%%")
@@ -84,13 +87,13 @@ def main():
             continue
         q_l = mean(lr["tasks"][t]["acc"] for t in ts)
         q_a = mean(ar["tasks"][t]["acc"] for t in ts)
-        c_l = mean(local_cost(lr["tasks"][t], a)[0] for t in ts)
+        c_l = mean(local_cost(lr["tasks"][t], a)[1 if a.basis == "marginal" else 0] for t in ts)
         c_a = mean(ar["tasks"][t]["cost_usd_per_req"] for t in ts)
         rows[case] = {"task": tk, "acc_local": q_l, "acc_api": q_a, "cost_req_local": c_l, "cost_req_api": c_a,
                       "cost_per_correct_local": c_l / q_l if q_l else None,
                       "cost_per_correct_api": c_a / q_a if q_a else None}
 
-    print(f"\nlocal = {lr['meta']['label']}   api = {ar['meta']['label']}\n")
+    print(f"\nlocal = {lr['meta']['label']}   api = {ar['meta']['label']}   cost basis = {a.basis}\n")
     print(f"| case | task | accuracy local / API | cost per {a.per:,.0f} correct answers local / API |")
     print("| --- | --- | --- | --- |")
     for case, r in rows.items():
@@ -125,6 +128,31 @@ def main():
                 cells.append("$" + usd(cl * a.per))
             ca = mean(ar["tasks"][t]["cost_usd_per_req"] for t in ts) / mean(ar["tasks"][t]["acc"] for t in ts)
             print(f"| {case} | {tk} | " + " | ".join(cells) + f" | ${usd(ca * a.per)} |")
+    # ---- fixed vs variable structure: local = hardware (+ setup) up front + tiny energy per request; API = pay per request
+    print("\nFixed vs variable cost (what the levelized number hides). Local: fixed hardware"
+          f" ${a.hw_usd:,.0f} (+ ${a.setup_usd:,.0f} setup labour) and energy per request; API: price per request only.")
+    print("| case | task | local energy-only $/M correct | API $/M correct | break-even requests, hardware only | "
+          "with setup labour | laptop capacity over lifetime* |")
+    print("| --- | --- | --- | --- | --- | --- | --- |")
+    for case, tk in cmap.items():
+        ts = [t for t in (tasks_both if tk == "*" else [tk]) if t in tasks_both]
+        if not ts:
+            continue
+        m_l = mean(local_cost(lr["tasks"][t], a)[1] for t in ts)
+        p_a = mean(ar["tasks"][t]["cost_usd_per_req"] for t in ts)
+        lat = mean(lr["tasks"][t]["latency_mean_s"] for t in ts)
+        q_l = mean(lr["tasks"][t]["acc"] for t in ts)
+        q_a = mean(ar["tasks"][t]["acc"] for t in ts)
+        cap = a.life_years * S_PER_YEAR * a.utilization / lat
+        if p_a <= m_l:
+            be1 = be2 = "never"
+        else:
+            be1 = f"{a.hw_usd / (p_a - m_l) / 1e6:,.1f}M"
+            be2 = f"{(a.hw_usd + a.setup_usd) / (p_a - m_l) / 1e6:,.1f}M" + \
+                  (" (exceeds capacity)" if (a.hw_usd + a.setup_usd) / (p_a - m_l) > cap else "")
+        print(f"| {case} | {tk} | ${usd(m_l / q_l * a.per)} | ${usd(p_a / q_a * a.per)} | {be1} | {be2} | {cap / 1e6:,.0f}M |")
+    print("* requests one laptop can serve in its lifetime at the assumed utilization (latency-bound). "
+          "Break-even uses the API price minus the local energy cost per request; it ignores maintenance, ops staff and model updates.")
     print(f"\nCost model: hardware ${a.hw_usd:,.0f} over {a.life_years:g} years at {a.utilization:.0%} utilization, "
           f"electricity ${a.elec_usd_kwh}/kWh, energy method as recorded in each result.")
     print("\nCaveat: the synthetic tasks are proxies for the business cases; local cost depends on --hw-usd, "
