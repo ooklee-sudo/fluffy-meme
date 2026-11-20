@@ -456,9 +456,9 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
     prof = {"layer_inputs_s": 0.0, "forward_and_gram_s": 0.0, "solves_s": 0.0, "advance_s": 0.0,
             "factor_s": 0.0, "n_factor": 0, "refine_iters": 0, "solve_fallbacks": 0, "lu_factors": 0}
 
-    def ridge_solve(Gtt, Gst, A_s, alpha, d):
+    def ridge_solve(Gtt, Gst, A_s, alpha, d, AsGst=None):
         lam = (alpha * torch.trace(Gtt) / d).item()
-        rhs = (A_s @ Gst + lam * A_s).T  # d x r
+        rhs = ((A_s @ Gst if AsGst is None else AsGst) + lam * A_s).T  # d x r
         if not refine:
             eye = torch.eye(d, dtype=torch.float64, device=Gtt.device)
             return torch.linalg.solve(Gtt + lam * eye, rhs).T
@@ -553,11 +553,21 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             B = m.lora_B["default"].weight.to(sd).double()
             BtB = B.T @ B
 
-            def val_err(A):
-                Gts = g["st_v"].T
-                return (torch.trace(BtB @ A @ g["tt_v"] @ A.T) - 2 * torch.trace(BtB @ A @ Gts @ A_s.T)
-                        + torch.trace(BtB @ A_s @ g["ss_v"] @ A_s.T)).item()
-            errs = [val_err(ridge_solve(g["tt_f"], g["st_f"], A_s, a, d)) for a in ALPHAS]
+            if refine:  # float64 d x d products are slow on consumer GPUs: compute the alpha-independent ones once
+                AsGst_f = A_s @ g["st_f"]
+                P_st = g["st_v"].T @ A_s.T                                        # d x r
+                c_ss = torch.trace(BtB @ (A_s @ g["ss_v"]) @ A_s.T)
+
+                def val_err(A):
+                    return (torch.trace(BtB @ (A @ g["tt_v"]) @ A.T) - 2 * torch.trace(BtB @ A @ P_st) + c_ss).item()
+                errs = [val_err(ridge_solve(g["tt_f"], g["st_f"], A_s, a, d, AsGst_f)) for a in ALPHAS]
+                del AsGst_f, P_st
+            else:
+                def val_err(A):
+                    Gts = g["st_v"].T
+                    return (torch.trace(BtB @ A @ g["tt_v"] @ A.T) - 2 * torch.trace(BtB @ A @ Gts @ A_s.T)
+                            + torch.trace(BtB @ A_s @ g["ss_v"] @ A_s.T)).item()
+                errs = [val_err(ridge_solve(g["tt_f"], g["st_f"], A_s, a, d)) for a in ALPHAS]
             best = ALPHAS[min(range(len(ALPHAS)), key=errs.__getitem__)]
             g["tt_f"] += g["tt_v"]; g["st_f"] += g["st_v"]  # full calibration set for the final solve
             A_new = ridge_solve(g["tt_f"], g["st_f"], A_s, best, d)
