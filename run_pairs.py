@@ -73,6 +73,11 @@ def slug(name):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):  # Windows consoles (cp949 etc.) cannot print every character
+        try:
+            stream.reconfigure(errors="replace")
+        except Exception:
+            pass
     if "--suite" in sys.argv and sys.argv[sys.argv.index("--suite") + 1] == "gpu8":
         return main_gpu8()
     argv = sys.argv[1:]
@@ -184,8 +189,8 @@ def summarize_gpu8(outdir):
                      "gain": m("R_A") - m("R_C"), "C_A_over_C_N": m("C"), "C_sd": sd("C"), "Gamma": G,
                      "v_star_copy": ro.v_star(R_C, p), "act_optimal": list(reg) if reg else None,
                      "gpu": runs[0]["gpu"], "peak_gb": max((x["peak_gb"] or 0) for x in runs)})
-    json.dump(rows, open(os.path.join(HERE, "results", "gpu8_summary.json"), "w"), indent=2, default=float)
-    f = lambda x: "—" if x != x else f"{x:.3f}"
+    json.dump(rows, open(os.path.join(HERE, "results", "gpu8_summary.json"), "w", encoding="utf-8"), indent=2, default=float)
+    f = lambda x: "-" if x != x else f"{x:.3f}"
     lines = ["| Task | Pair | Seeds | Drift | R_C (sd) | R_A (sd) | Gain | C_A/C_N | Γ | ACT optimal for |",
              "|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
@@ -193,7 +198,7 @@ def summarize_gpu8(outdir):
         lines.append(f"| {r['task']} | {r['pair']} | {r['n_seeds']} | {r['drift']:.2f} | {f(r['R_C'])} ({f(r['R_C_sd'])}) "
                      f"| {f(r['R_A'])} ({f(r['R_A_sd'])}) | {r['gain']:+.3f} | {r['C_A_over_C_N']:.2f} | {r['Gamma']:.2f} | {reg} |")
     md = os.path.join(HERE, "results", "gpu8_table.md")
-    open(md, "w").write("Baseline parameters ρ=0.10, μ=2, g=0.20, σ=0.40; Γ and v in multiples of C_N; "
+    open(md, "w", encoding="utf-8").write("Baseline parameters ρ=0.10, μ=2, g=0.20, σ=0.40; Γ and v in multiples of C_N; "
                         "C_A/C_N is compute time only (weight moves under --offload excluded).\n\n" + "\n".join(lines) + "\n")
     print("\n".join(lines) + f"\n\nsaved {md} and results/gpu8_summary.json")
 

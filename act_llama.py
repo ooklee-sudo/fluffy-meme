@@ -365,6 +365,7 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
     src_mods, tgt_mods = lora_modules(src_pm), lora_modules(tgt_pm)
     offload = getattr(args, "offload", False) and device.type == "cuda"
     cpu = torch.device("cpu")
+    sync(device); t_start = time.time()
     move_s = [0.0]
 
     def move(m, dev):
@@ -442,8 +443,51 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
     def solve_device(d):
         if acc.type != "cuda":
             return acc
+        if refine:  # needs the float64 Gram matrices plus one float32 LU factor
+            return acc
         free, _ = torch.cuda.mem_get_info()
         return acc if free > 10 * d * d * 8 else cpu  # ~10 float64 d x d matrices live during a solve
+
+    # On a GPU with mode != "double", ridge systems are solved by mixed-precision iterative refinement: LU factor in
+    # float32 (consumer GPUs run float64 at 1/64 of the float32 rate), residuals and updates in float64, iterated to a
+    # relative residual of 1e-12, with a plain float64 solve as fallback.  The solution matches the float64 solve to
+    # that tolerance.
+    refine = (acc.type == "cuda" or os.environ.get("ACT_FORCE_REFINE") == "1") and mode != "double"  # env: tests
+    n_fallback = [0]
+
+    def ridge_solve(Gtt, Gst, A_s, alpha, d):
+        lam = (alpha * torch.trace(Gtt) / d).item()
+        rhs = (A_s @ Gst + lam * A_s).T  # d x r
+        if not refine:
+            eye = torch.eye(d, dtype=torch.float64, device=Gtt.device)
+            return torch.linalg.solve(Gtt + lam * eye, rhs).T
+        diag = Gtt.diagonal().clone()
+        Gtt.diagonal().add_(lam)  # Gtt + lam I in place, restored exactly below
+        try:
+            LU, piv = torch.linalg.lu_factor(Gtt.float())
+            X = torch.linalg.lu_solve(LU, piv, rhs.float()).double()
+            nb = rhs.norm()
+            ok = False
+            for _ in range(20):
+                R = rhs - Gtt @ X
+                if R.norm() <= 1e-12 * nb:
+                    ok = True
+                    break
+                X += torch.linalg.lu_solve(LU, piv, R.float()).double()
+            del LU
+            if not ok:
+                n_fallback[0] += 1
+                X = torch.linalg.solve(Gtt, rhs)
+        finally:
+            Gtt.diagonal().copy_(diag)
+        return X.T
+
+    prof = {"layer_inputs_s": 0.0, "forward_and_gram_s": 0.0, "solves_s": 0.0, "advance_s": 0.0}
+
+    def tick():
+        sync(device)
+        return time.time()
+    prof["layer_inputs_s"] = tick() - t_start - move_s[0]  # caching the first-layer inputs (moves excluded)
 
     info = {}
     for l in layers:
@@ -452,6 +496,7 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             move(tgt_layers[l], device)
         lnames = [n for n in names if layer_index(n) == l]
         G = {n: {k: 0.0 for k in ("tt_f", "st_f", "tt_v", "st_v", "ss_v", "dn", "sn")} for n in lnames}
+        t0 = tick()
         for split in ("f", "v"):
             for ent in caches[split]:
                 xs, xt = {}, {}
@@ -472,6 +517,7 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
                     G[n]["dn"] += (t_ - s_).double().pow(2).sum().item()
                     G[n]["sn"] += s_.double().pow(2).sum().item()
                 del xs, xt
+        t1 = tick(); prof["forward_and_gram_s"] += t1 - t0
         for n in lnames:
             m = tgt_mods[n]
             g = G.pop(n)
@@ -482,35 +528,35 @@ def act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id):
             A_s = src_mods[n].lora_A["default"].weight.to(sd).double()
             B = m.lora_B["default"].weight.to(sd).double()
             BtB = B.T @ B
-            eye = torch.eye(d, dtype=torch.float64, device=sd)
-
-            def solve(Gtt, Gst, alpha):
-                lam = alpha * torch.trace(Gtt) / d
-                rhs = A_s @ (Gst + lam * eye)
-                return torch.linalg.solve(Gtt + lam * eye, rhs.T).T
 
             def val_err(A):
                 Gts = g["st_v"].T
                 return (torch.trace(BtB @ A @ g["tt_v"] @ A.T) - 2 * torch.trace(BtB @ A @ Gts @ A_s.T)
                         + torch.trace(BtB @ A_s @ g["ss_v"] @ A_s.T)).item()
-            errs = [val_err(solve(g["tt_f"], g["st_f"], a)) for a in ALPHAS]
+            errs = [val_err(ridge_solve(g["tt_f"], g["st_f"], A_s, a, d)) for a in ALPHAS]
             best = ALPHAS[min(range(len(ALPHAS)), key=errs.__getitem__)]
-            A_new = solve(g["tt_f"] + g["tt_v"], g["st_f"] + g["st_v"], best)
+            g["tt_f"] += g["tt_v"]; g["st_f"] += g["st_v"]  # full calibration set for the final solve
+            A_new = ridge_solve(g["tt_f"], g["st_f"], A_s, best, d)
             w = m.lora_A["default"].weight
             w.copy_(A_new.to(device=w.device, dtype=w.dtype))
             info[n] = {"alpha": best, "drift": math.sqrt(g["dn"] / max(g["sn"], 1e-12))}
-            del g, eye, A_new
+            del g, A_new
+        t2 = tick(); prof["solves_s"] += t2 - t1
         if l != layers[-1]:  # advance the cached inputs: source from this pass, target through the corrected layer
             for split in ("f", "v"):
                 for ent in caches[split]:
                     ent["s"]["h"] = ent.pop("s_next")
                     ent["t"]["h"] = run_layer(tgt_layers[l], ent["t"])
+        prof["advance_s"] += tick() - t2
         if offload:
             move(src_layers[l], cpu)
             move(tgt_layers[l], cpu)
             torch.cuda.empty_cache()
         print(f"  ACT(fast) layer {l}: alphas " + ", ".join(f"{info[n]['alpha']:.0e}" for n in lnames))
-    return info, move_s[0]
+    prof["solve_fallbacks"] = n_fallback[0]
+    prof["refined_solves"] = refine
+    prof["offload_moves_s"] = move_s[0]
+    return info, move_s[0], prof
 
 
 # ---------------------------------------------------------------- main
@@ -660,7 +706,9 @@ def main():
         if args.act_impl == "both":
             set_lora_state(tgt_pm, src_state)
         sync(device); t0 = time.time()
-        res["act_info_fast"], move_s = act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id)
+        res["act_info_fast"], move_s, res["act_profile"] = act_transfer_fast(src_pm, tgt_pm, calib, args, device, pad_id)
+        print("  ACT time profile: " + ", ".join(f"{k}={v:.1f}" if isinstance(v, float) else f"{k}={v}"
+                                                 for k, v in res["act_profile"].items()))
         sync(device)
         # C_A excludes the time spent moving weights between CPU and GPU under --offload (an artifact of a small GPU)
         res["time_act_fast_s"] = time.time() - t0 - move_s
