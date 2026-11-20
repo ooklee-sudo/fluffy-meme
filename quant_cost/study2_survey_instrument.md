@@ -1,7 +1,7 @@
 # Study 2 서베이 문안 (Prolific 배포용, 영어 원문 + 한국어 구현 메모)
 
-> 응답자에게 보이는 문안은 영어이고 `[구현]`은 연구자용 메모, `[REPLACE]`는 확정값으로 교체한다. 설계는 `study2_design.md`, 규범 값은 `normative_check_study2.py`. 소요 시간 약 18분.
-> 선별 문항(S1–S7)과 자격 규칙은 `screening_items.md`, 공변량·일관성·인구통계 블록(§5–§6)은 `survey_instrument.md`와 같다. 아래에는 Study 2에서 달라진 부분만 적는다.
+> 응답자에게 보이는 문안은 영어이고 `[구현]`은 연구자용 메모, `[REPLACE]`는 확정값으로 교체한다. 설계는 `study2_design.md`, 규범 값은 `normative_check_study2.py`. 소요 시간 약 19분.
+> 선별 문항(S1–S8)과 자격 규칙은 `screening_items.md`, 공변량·일관성·인구통계 블록(§5–§6)은 `survey_instrument.md`와 같다. 아래에는 Study 2에서 달라진 부분만 적는다.
 
 ---
 
@@ -9,12 +9,12 @@
 
 | 순서 | 블록 | 내용 |
 | --- | --- | --- |
-| 0 | 동의 | 연구 설명 (소요 18분) |
-| 1 | 선별 | `screening_items.md` |
+| 0 | 동의 | 연구 설명 (소요 19분) |
+| 1 | 선별 | `screening_items.md` (S8 정책 문항 포함, 무선 배정 전) |
 | 2 | 소개 | 역할, 두 선택지 설명, 위험중립 안내 |
 | 3 | **H2 조작** | 사고 사례 / 중립 보도 (무선 50:50) → 일반 노출 확률 추정 |
 | 4 | 시나리오 4개 | λ(낮음/높음) × 성능 제시(정확도만/병기). 각 시나리오: 본문 → 이해 점검 → 선택 → WTP → 추정 확률 → 지각된 품질 격차 |
-| 5 | 공변량 | `survey_instrument.md` §5 (수리능력, AI 경험, 프라이버시 우려, 위험 선호, 주의 점검 A1·A2) |
+| 5 | 공변량 | `survey_instrument.md` §5 (수리능력, AI 경험, 프라이버시 우려, 위험 선호, 주의 점검 A1·A2) + 아래 §5 추가 문항(재량, 요소 순위, 산업, 지식재산 중요도, 기밀 정보) |
 | 6 | 일관성·인구통계 | `survey_instrument.md` §6 |
 | 7 | 해설 | 아래 추가 문장 포함 |
 
@@ -28,7 +28,7 @@
 
 ## 0. 동의
 
-You are invited to take part in a research study about how professionals make technology sourcing decisions. The survey takes about 18 minutes. You will read a short news item and four business scenarios and answer questions about the choices you would make. All scenarios and figures are hypothetical.
+You are invited to take part in a research study about how professionals make technology sourcing decisions. The survey takes about 19 minutes. You will read a short news item and four business scenarios and answer questions about the choices you would make. All scenarios and figures are hypothetical.
 
 Your participation is voluntary, and you may stop at any time without penalty (return the study on Prolific). Your answers are anonymous and will be used only for research. We will not ask for your name or employer. This study has been reviewed and approved by the Hanyang University Institutional Review Board (approval no. HY-IRB-2026-11-033). If you have questions about the study, you may contact the researcher at ooklee@hanyang.ac.kr.
 
@@ -162,6 +162,35 @@ The figures above **already take into account** the performance difference shown
 | D | −48 / API / 48 | +48 / 로컬 / 144 | 1.099 |
 
 손익분기 λ* = 4%. 값은 `normative_check_study2.py`로 계산·검증한다.
+
+---
+
+## 5. 공변량 추가 문항 (Study 2, `survey_instrument.md` §5의 문항 뒤에)
+
+(S8 정책 문항은 선별 블록에서 이미 물었다: `screening_items.md`.)
+
+**P2. (재량)** Within your organization's current policy, how much discretion do you (or your team) have in choosing between a local model and a cloud AI service for a use case like those in this survey?
+1 = No discretion at all … 7 = Full discretion
+
+**P3. (요소 중요도, 선택·WTP 뒤에 둔다)** Which factors matter most when your organization decides how to source AI for sensitive data? Please select your **top three** and rank them (1 = most important).
+- Running cost
+- Accuracy and quality of the AI
+- Security and privacy policy
+- Regulatory and legal compliance
+- Dependence on an outside vendor
+- In-house expertise needed to operate it
+(항목 순서 무선)
+
+**I1. (산업)** Which best describes your organization's industry?
+○ Semiconductors / electronics hardware ○ Software / IT services ○ Finance / insurance ○ Healthcare / pharmaceuticals ○ Defense / aerospace / government ○ Manufacturing (other) ○ Retail / consumer ○ Telecom / media ○ Energy / utilities ○ Other
+
+**I2. (지식재산 중요도)** How valuable are trade secrets and intellectual property (for example designs, source code, research data) to your organization's competitive position?
+1 = Not at all valuable … 7 = Extremely valuable
+
+**I3. (기밀·통제 정보)** Does your organization handle classified, export-controlled or similarly regulated information?
+○ Yes ○ No ○ Not sure
+
+[구현] P3은 처치(사고 사례) 뒤에 묻는 **결과 변수**이기도 하다(사고 사례가 보안·프라이버시 순위를 올리는지, 탐색적). S8, I1–I3은 공변량이다.
 
 ---
 
