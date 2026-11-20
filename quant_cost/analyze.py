@@ -32,7 +32,9 @@ def load(dir_):
     out = []
     for p in sorted(glob.glob(os.path.join(dir_, "*.json"))):
         with open(p, encoding="utf-8") as f:
-            out.append(json.load(f))
+            d = json.load(f)
+        if isinstance(d, dict) and "meta" in d and "tasks" in d:  # skip derived files such as scenario_numbers.json
+            out.append(d)
     return out
 
 
