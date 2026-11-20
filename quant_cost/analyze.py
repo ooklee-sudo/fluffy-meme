@@ -53,7 +53,7 @@ def main():
     ap.add_argument("--elec-usd-kwh", type=float, default=0.12)
     ap.add_argument("--hw-usd", type=float, default=1500.0, help="laptop price")
     ap.add_argument("--life-years", type=float, default=3.0)
-    ap.add_argument("--utilization", type=float, default=0.25,
+    ap.add_argument("--utilization", type=float, default=0.5,
                     help="share of the laptop's lifetime available for this workload")
     ap.add_argument("--setup-usd", type=float, default=2000.0, help="fixed cost F of building the local pipeline")
     ap.add_argument("--value-usd", type=float, default=0.05, help="value v of one correct answer, USD")

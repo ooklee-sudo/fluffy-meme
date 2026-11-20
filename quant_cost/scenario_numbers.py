@@ -54,10 +54,12 @@ def main():
     ap.add_argument("--elec-usd-kwh", type=float, default=0.12)
     ap.add_argument("--hw-usd", type=float, default=1500.0)
     ap.add_argument("--life-years", type=float, default=3.0)
-    ap.add_argument("--utilization", type=float, default=0.25)
+    ap.add_argument("--utilization", type=float, default=0.5,
+                    help="share of the hardware lifetime available to this workload (default 0.5 = decided baseline; see --sensitivity)")
     ap.add_argument("--marginal-energy", action="store_true")
     ap.add_argument("--per", type=float, default=1_000_000,
                     help="show cost per this many correct answers (default 1,000,000; per-answer values are ~1e-5 dollars)")
+    ap.add_argument("--sensitivity", action="store_true", help="also print local cost at utilization 25%%, 50%%, 75%%")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -106,6 +108,25 @@ def main():
         print(f"\nWARNING: for case(s) {', '.join(cheaper)} the local model is NOT cheaper per correct answer than the API. "
               "The survey says the local model is cheaper to run, and the 'cost per correct answer' format would then "
               "favour the API (reversing the direction predicted for H3a). Use tasks/models where local is cheaper.")
+    if a.sensitivity:
+        import copy
+        print(f"\nSensitivity of the local cost per {a.per:,.0f} correct answers to utilization (API: unchanged):")
+        print("| case | task | util 25% | util 50% | util 75% | API |")
+        print("| --- | --- | --- | --- | --- | --- |")
+        for case, tk in cmap.items():
+            ts = [t for t in (tasks_both if tk == "*" else [tk]) if t in tasks_both]
+            if not ts:
+                continue
+            cells = []
+            for u in (0.25, 0.5, 0.75):
+                b = copy.copy(a)
+                b.utilization = u
+                cl = mean(local_cost(lr["tasks"][t], b)[0] for t in ts) / mean(lr["tasks"][t]["acc"] for t in ts)
+                cells.append("$" + usd(cl * a.per))
+            ca = mean(ar["tasks"][t]["cost_usd_per_req"] for t in ts) / mean(ar["tasks"][t]["acc"] for t in ts)
+            print(f"| {case} | {tk} | " + " | ".join(cells) + f" | ${usd(ca * a.per)} |")
+    print(f"\nCost model: hardware ${a.hw_usd:,.0f} over {a.life_years:g} years at {a.utilization:.0%} utilization, "
+          f"electricity ${a.elec_usd_kwh}/kWh, energy method as recorded in each result.")
     print("\nCaveat: the synthetic tasks are proxies for the business cases; local cost depends on --hw-usd, "
           "--utilization, electricity price and the energy method recorded in each result.")
 

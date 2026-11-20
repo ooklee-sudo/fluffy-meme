@@ -99,6 +99,8 @@ Thinking about companies in general, **what do you think is the chance, over the
 
 (성능 수치는 맥락일 뿐 B, E 수치는 성능과 무관하게 고정한 설계값이다. 측정값을 넣을 때 B, E, L은 건드리지 않는다.)
 
+정답당 비용의 비용 모형(확정): 장비 $1,500을 3년에 상각, **이용률 50%**, 전기 $0.12/kWh, 에너지와 지연은 측정값. 수치는 `python -m quant_cost.scenario_numbers --local-label <라벨> --sensitivity`로 만들고(기본 이용률이 0.5), 25%·75% 민감도는 부록에 보고한다.
+
 ### 4-3. 라틴 방격 (사례 → 셀)
 | 버전 | C1 | C2 | C3 | C4 |
 | --- | --- | --- | --- | --- |
