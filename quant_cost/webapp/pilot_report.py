@@ -26,7 +26,9 @@ def main():
     raw = []
     for p in sorted(glob.glob(os.path.join(a.data_dir, "participants", "*.json"))):
         with open(p, encoding="utf-8") as f:
-            raw.append(json.load(f))
+            d = json.load(f)
+        if not str(d.get("pid", "")).upper().startswith("TEST"):
+            raw.append(d)
     if not raw:
         print("no responses found in", a.data_dir)
         return

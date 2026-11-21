@@ -22,6 +22,8 @@ def main():
     for p in files:
         with open(p, encoding="utf-8") as f:
             d = json.load(f)
+        if str(d.get("pid", "")).upper().startswith("TEST"):
+            continue
         data.append((d, build_row(d)))
     durs = [r["duration_s"] for d, r in data if d.get("completed") and d.get("eligible") and r.get("duration_s")]
     med = statistics.median(durs) if durs else None

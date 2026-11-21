@@ -111,7 +111,10 @@ def main():
     rows = []
     for p in sorted(glob.glob(os.path.join(a.data_dir, "participants", "*.json"))):
         with open(p, encoding="utf-8") as f:
-            rows.append(build_row(json.load(f)))
+            d = json.load(f)
+        if str(d.get("pid", "")).upper().startswith("TEST"):
+            continue  # Prolific preview and test sessions are not participants
+        rows.append(build_row(d))
     kept = rows if a.all else [r for r in rows if r["completed"] and r["eligible"]]
     durs = [r["duration_s"] for r in kept if r["duration_s"] is not None]
     med = statistics.median(durs) if durs else None
