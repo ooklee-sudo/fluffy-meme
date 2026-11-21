@@ -1,0 +1,159 @@
+# Vivid Incidents and Flat Probability Responses: How Managers Weigh Privacy Risk When Choosing Between Cloud AI Services and Local Language Models
+
+> Draft manuscript. Not yet proofread by a native speaker. Items in [square brackets] need the authors' input or a check against the source. All references were written from memory and must be verified against the originals before submission. All statistical values come from the single preregistered analysis run (analysis code commit 3f9c6c0); verify them against `analysis_report.txt`.
+
+## Abstract
+
+Organizations that adopt generative AI must decide whether to send sensitive data to a cloud provider or to run a smaller language model on their own hardware. A risk-neutral manager would settle this by comparing the local model's net operating disadvantage with the expected loss from a data exposure, which is the product of the exposure probability and the loss. We ask whether two features that leave this calculation unchanged nonetheless move managers' choices: a vivid report of a data exposure at another firm, and the format in which model performance is reported. In a preregistered online experiment, 152 professionals involved in technology purchasing decisions made four scenario-based sourcing choices and stated how much they would pay each year to eliminate the cloud provider's exposure risk. Scenario figures were calibrated on our own measurements of a quantized open model on a laptop GPU and a cloud API. Participants who had read an incident report were willing to pay about 34% more (d = 0.42) and were less sensitive to the stated exposure probability than participants who read a neutral news item, although the second result was borderline (d = −0.33, 95% CI [−0.65, −0.01]). The incident report did not raise participants' general estimate of exposure probability, so the data do not support a simple availability account. Reporting accuracy together with cost per correct answer did not detectably change choices. The findings suggest that how a risk is conveyed can matter as much as how large it is, and they bear on how organizations report incidents internally and how vendors present performance.
+
+**Keywords:** generative AI sourcing; data privacy; salience; probability insensitivity; behavioral information systems; preregistered experiment
+
+## 1. Introduction
+
+When a company decides how to run a generative AI service, two questions arrive together. The first is economic. A cloud model is usually more accurate, but every request sends text to an outside party, and for some uses that text contains customers' or employees' personal data. A smaller model run on the company's own computers keeps the data in house, but it is less accurate and needs hardware and people to operate it. The second question is about risk. Data exposure is rare in any single year, but it is expensive when it happens, and managers must decide how much that possibility should count.
+
+Normative models of this choice are easy to write down. If the local model costs E more per year in errors and saves B in running costs, and the cloud provider exposes data with annual probability λ at a loss of L, the local model has the higher expected value when (B − E) + λL is positive. Under this model, the only inputs that matter are the four numbers. Which incident happened to make the news last month, and whether performance was reported as accuracy or as a cost per correct answer, should not matter, provided the numbers are the same.
+
+There are good reasons to doubt that managers decide this way. Research on judgment under uncertainty has long shown that people respond to how easily an event comes to mind (Tversky & Kahneman, 1973), and that they respond to the emotional content of an outcome more than to its probability when the outcome is vivid (Rottenstreich & Hsee, 2001; Loewenstein et al., 2001; Sunstein, 2003). Sourcing decisions about AI are an ideal setting for such effects. Privacy incidents are widely reported, they are easy to picture, and the probabilities attached to them are small and hard to judge. At the same time, vendors and internal evaluators report the performance of language models in many formats, and research on evaluability suggests that people weigh attributes more heavily when they are easy to compare (Hsee, 1996).
+
+This paper reports a preregistered experiment that tests whether two such features change managers' choices between a cloud AI service and a local language model, while holding the normatively relevant numbers constant. The first is a vivid account of a data exposure at another firm. The second is whether performance is reported as accuracy alone or together with the cost per correct answer. We measure two outcomes in each of four scenarios: the choice itself, and the amount the participant would pay each year to eliminate the cloud provider's exposure risk. The second outcome has a clean normative value (λL), which lets us ask not only whether the incident report shifts willingness to pay but also whether it changes how willingness to pay responds to the stated probability.
+
+The study makes three contributions. First, it brings a behavioral test to a question that the information systems literature has so far treated mainly in economic or technical terms: how organizations choose between outside and in-house sourcing for AI. Second, by manipulating the stated probability within participants, it separates two accounts of how a vivid incident might work. If the incident makes exposure easier to imagine, participants' subjective probability should rise. If the incident instead makes the outcome emotionally heavier, participants should respond less to the probability they are given. Third, the scenario numbers are not invented; they are calibrated on our own measurements of a quantized open model and a cloud API, and we release the code that computes the normative benchmark.
+
+[Closing sentence on findings. Complete once the discussion is final.]
+
+## 2. Theory and Hypotheses
+
+### 2.1 A normative benchmark
+
+We consider a one-year decision. Choosing the local model saves running costs of B relative to the cloud API but adds error costs of E, so its net operating advantage is B − E, which is negative in our scenarios. Choosing the API exposes personal data with probability λ in the year, and an exposure costs L. The expected privacy loss from the API is therefore λL, and the local model's total advantage is (B − E) + λL. The local model is optimal when this is positive, which happens when λ exceeds the break-even probability λ* = (E − B)/L. The amount a risk-neutral manager should be willing to pay to remove the exposure risk entirely is λL.
+
+We set B = 100m, E = 180m and L = 2,000m (in thousands of dollars per year), with a scenario scale m between 0.6 and 1.2. At λ = 2% the API is optimal and the normative willingness to pay is 40m; at λ = 6% the local model is optimal and the normative willingness to pay is 120m; the break-even is 4%. Dividing willingness to pay by L removes the scale, and the normative log difference between the two probabilities is ln 3 = 1.10. This is useful for our purposes because the normatively correct choice reverses between the two probability levels, so sensitivity to probability has a clear meaning.
+
+### 2.2 Vivid incidents
+
+A report of an exposure at another firm leaves λ and L unchanged. We nevertheless expect it to change decisions through at least two channels that make different predictions.
+
+*Availability.* A concrete incident is easy to recall and picture, which raises the subjective probability that a similar event will happen (Tversky & Kahneman, 1973). If this channel operates, participants who read the incident report should judge exposure to be more likely, and the effect of the report on willingness to pay should be explained by that higher judgment.
+
+*Affect and probability insensitivity.* Outcomes that are emotionally rich tend to be weighed with less regard to their probability. People respond to the presence of a frightening outcome more than to its likelihood (Rottenstreich & Hsee, 2001; Sunstein, 2003). If this channel operates, an incident report should raise willingness to pay at low probabilities and make willingness to pay less responsive to the stated probability, without necessarily changing the participant's own probability estimate.
+
+The second channel gives the sharpest prediction, because the two accounts differ in what they say about the slope of willingness to pay across probability levels. Our primary hypothesis is therefore about the slope.
+
+**H2c (primary).** Participants who read a (fictional) data-exposure incident report are less sensitive to the stated exposure probability than participants who read a neutral news item. Formally, S, the mean of ln(WTP/L) at λ = 6% minus the mean at λ = 2%, is smaller in the incident group.
+
+**H2a.** Participants in the incident group have a higher mean ln(WTP/L).
+
+The first two hypotheses concern the incident report; both are tested in the same experiment. We also planned a mediation analysis (H2b) in which the incident's effect operates through the excess of the participant's own probability estimate over the stated probability.
+
+### 2.3 Performance format
+
+Showing accuracy alone invites a comparison on the attribute that is easiest to evaluate. For a manager whose reference point is the cloud API, the local model's lower accuracy looks like a loss, and its cost advantage, which lives in different units, is harder to weigh (Kahneman & Tversky, 1979; Hsee, 1996). Reporting cost per correct answer combines the two attributes into one number and should make the trade-off easier to see. In our scenarios the savings figure already includes the effect of accuracy, so the two formats carry the same information.
+
+**H3a.** Presenting accuracy alone, rather than accuracy plus cost per correct answer, lowers the probability of choosing the local model.
+
+We planned a second mediation (H3b) through perceived quality disadvantage, and exploratory moderation by numeracy, AI experience and decision authority.
+
+### 2.4 Scope: where rules decide
+
+Some organizations do not choose at all. A security policy may forbid sending data outside the firm, and in that case the decision is governed by a rule, not by a weighing of costs and risks. We therefore asked about organizational policy before randomization, kept respondents whose organizations prohibit external AI services in all analyses, and treated policy strictness and personal discretion as exploratory moderators (H5): we expected the effects of the incident report to be weaker where policy is strict and discretion is low.
+
+## 3. Method
+
+### 3.1 Design
+
+The experiment used a mixed design. Participants were randomly assigned to read, before the scenarios, either a short fictional report of a data exposure or a neutral news item of equal length (between subjects). Every participant then saw four scenarios, formed by crossing the stated annual exposure probability (2% or 6%) with the performance format (accuracy only, or accuracy plus cost per correct answer). Four business cases (sorting customer inquiries, extracting fields from HR records, extracting key terms from contracts, and triaging insurance claims) were assigned to the four cells according to a Latin square, so that each case appeared in each cell equally often, and the order of the scenarios was randomized. A server assigned participants to the eight combinations of news condition and Latin-square version in a balanced way.
+
+The incident report described a mid-sized insurer whose customers' names, phone numbers and claim details were exposed after a failure at its external AI vendor, which led to customer notifications, an official investigation and months of elevated call volumes. The neutral item described mid-sized companies weighing cloud against on-premises AI. Both were labelled as fictional.
+
+### 3.2 Materials and calibration
+
+Each scenario described a company deciding how to handle one task for a year. Participants saw the running-cost saving B, the extra error cost E from the local model, and the loss L from an exposure, all in thousands of dollars per year, together with the stated exposure probability and a table of performance figures. The scenario text said that the probability was a risk-team estimate based on all reported incidents in the industry, and that the error cost already included the performance difference. Participants were asked to decide as a risk-neutral manager who cares only about expected total cost over the coming year. The product λL was never shown. The same B, E and L, scaled by the case (0.8, 0.6, 1.0, 1.2), were used in all conditions.
+
+The performance figures were calibrated on our own measurements. We ran a quantized open model [MODEL AND QUANTIZATION, e.g. Qwen2.5 at 4-bit, to be confirmed from the measurement logs] on a laptop GPU with 8 GB of memory and compared it with a hosted cloud model [MODEL, confirm] on synthetic tasks that served as proxies for the business cases: topic classification for the inquiry and insurance cases, and information extraction for the HR and contract cases [n items per task, to be confirmed]. For each task we recorded accuracy, latency, and energy use measured with the GPU's power interface. The local cost per correct answer combined measured electricity use at $0.12 per kWh with hardware amortization ($1,500 over three years at 50% utilization); the cloud cost was computed from token counts and the provider's price. In the scenarios, the local model reached 94% accuracy on the classification cases and 99% on the extraction cases, against 99% and 100% for the cloud model; the cost per million correct answers was $2.39 versus $29.52 for classification and $33.27 versus $73.09 for extraction. These costs deliberately count only electricity and hardware time. They exclude setup labor, maintenance, and staff, which would raise the local cost, and the amounts B, E and L were fixed by design and not derived from the measurements. Sensitivity to the utilization assumption is reported in the appendix.
+
+### 3.3 Measures
+
+*Outcomes.* After each scenario participants chose between the local model and the cloud API (binary). They then stated the amount they would pay per year to eliminate the API's exposure risk altogether, entered as a number in thousands of dollars between zero and L/4. Entries above L/4 were set to L/4 (35 of 748 entries, 4.7% [this count is from all completers; recompute for the analysable sample]), and zero was replaced by 0.001 L before taking logarithms. The primary outcome was S, computed per participant.
+
+*Mediators and checks.* On a following screen, and therefore after the choice and willingness to pay, participants gave their own estimate of the annual exposure probability in that scenario, and rated the local model's quality disadvantage on a seven-point scale. A comprehension check after each scenario asked for the stated exposure probability. Before the scenarios, and after the news item, participants estimated the general 12-month probability that a mid-sized company's personal data would be exposed through an external AI vendor.
+
+*Covariates.* Job function, seniority, decision and budget authority, AI experience, numeracy (three items), privacy concern, risk attitude, industry, the perceived value of trade secrets, whether the organization handles classified or export-controlled information, personal discretion in sourcing, and a ranking of the three most important sourcing factors. Organizational policy on sending sensitive data to external AI services (prohibited, approval required, allowed under guidelines, no formal policy, unsure) was asked before randomization.
+
+### 3.4 Participants and procedure
+
+We recruited professionals through Prolific, using employment and job-role filters where available and no country restriction. A screening block, applied to everyone, required that the participant work in IT, data, security, procurement, finance or general management; play a final, deciding, or recommending role in technology decisions; be a manager or above, or approve at least $10,000 of technology budget alone, or hold a final role; have taken part in a discussion about adopting an AI service in the past two years; and work for an organization with at least ten employees. The procedure was: consent, screening, assignment, news item, general probability estimate, four scenarios with two attention checks in the survey, covariates, a consistency check of job function and level, demographics, and a debriefing that disclosed that the news item was fictional. Median completion time was about 21 minutes, and participants received GBP 19.70 per hour (about GBP 7.2). The study was approved by the Institutional Review Board of Hanyang University (HY-IRB-2026-11-033).
+
+A pilot with ten participants from the same panel tested the survey. Pilot responses were not used in any test. After the pilot we relaxed one exclusion rule and changed the stated duration (Section 3.6).
+
+### 3.5 Preregistration and analysis
+
+The hypotheses, measures, exclusion rules, sample size and analyses were preregistered on AsPredicted before main data collection [registration number or link]. The primary test (H2c) was a Welch two-sample t-test of S between groups at α = .05. H2a and H3a formed a Holm-corrected family. H2a was tested with a Welch test of each participant's mean ln(WTP/L). H3a was tested with a mixed-effects logistic regression of the choice of the local model on format, probability level, incident condition, scenario position and business case, with a random intercept for participants. Mediation (H2b, H3b) used participant-level percentile bootstrap with 5,000 resamples. All other analyses are labelled exploratory. We excluded participants who failed either attention check, answered at least two of the four comprehension checks incorrectly, ended with a job function in a different group from screening (IT, data and security counted as one group) or a different level, finished in under one third of the median time, or gave identical willingness to pay and identical choices in all four scenarios. The analysis was run once, on the final data, with code frozen beforehand and tested on simulated data. The analysis code, the simulation, and the materials are available at [repository].
+
+### 3.6 Deviations from the preregistration
+
+Four departures should be noted. First, the sample was smaller than planned: 152 analysable participants instead of 200 (see Section 4.1). Second, after the pilot, we treated the three technical functions (IT, data, security) as one group in the consistency exclusion, because two pilot participants moved between adjacent technical functions between screening and the end, and we changed the stated duration from 19 to 22 minutes; no scenario, number or measure was changed. Third, a configuration error gave early participants a wrong completion code on Prolific; their submissions were approved manually and their responses were unaffected. Fourth, some implementation choices were not fixed in the preregistration and were set before analysis: the mixed logistic model was fitted by maximum likelihood with Gauss–Hermite quadrature, the covariate set for adjusted models was numeracy, privacy concern, risk attitude and discretion, and the format mediation (H3b) was estimated as a within-person mediation on difference scores.
+
+## 4. Results
+
+### 4.1 Sample
+
+The survey was opened by 279 participants, all of whom consented. Of these, 193 (69%) met the eligibility criteria and 86 were screened out. 188 eligible participants completed the survey. The exclusion rules removed 36 completers: 10 failed an attention check, 11 answered at least two comprehension checks incorrectly, 17 gave a different job-function group or level at the end, 3 finished in under one third of the median time, and 1 gave identical answers in all scenarios (some participants met more than one rule). The analysis sample comprised 152 participants, 77 in the incident condition and 75 in the neutral condition. This is 48 short of the planned 200. The study was powered at about .80 for d = 0.40 with 200 participants; at 152 the power for d = 0.40 is about .69 and for d = 0.35 about .57. Twenty-four analysable participants reported that their organizations prohibit sending such data to external AI services entirely, and they were retained.
+
+### 4.2 Confirmatory tests
+
+*Table 1. Preregistered tests.*
+
+| Hypothesis | Test | Result |
+| --- | --- | --- |
+| H2c (primary) | S, incident vs. neutral | 0.50 vs. 0.75; t = −2.05, p = .042; d = −0.33, 95% CI [−0.65, −0.01] |
+| H2c, mixed model | incident × probability interaction | −0.24 (SE 0.10), p = .014 |
+| H2a | mean ln(WTP/L) | −3.02 vs. −3.31; t = 2.61, p = .010; d = 0.42, 95% CI [0.10, 0.75]; Holm-adjusted p = .020 |
+| H3a | local choice, format effect | OR = 1.21, 95% CI [0.81, 1.78], p = .348; Holm-adjusted p = .348 |
+
+**H2c.** Participants who had read the incident report were less sensitive to the stated probability than those who read the neutral item: S was 0.50 in the incident condition and 0.75 in the neutral condition, against a normative value of 1.10. The mixed model that uses all scenarios and adjusts for position, format and business case gave the same direction, and so did the model with covariates (−0.26, SE 0.11, p = .022). Two points limit how much weight the result can bear. The confidence interval for d comes within 0.01 of zero, and when the 24 respondents whose organizations prohibit external AI services are excluded, the estimate is similar but less precise and the Welch test is no longer significant (d = −0.31, 95% CI [−0.66, 0.04], p = .080; mixed model p = .031).
+
+**H2a.** The incident report raised willingness to pay. The geometric-mean amount was about 34% higher in the incident condition. The result survives the Holm correction, the covariate-adjusted model (0.32, SE 0.11, p = .005), and the exclusion of respondents with prohibiting policies (d = 0.44, Holm-adjusted p = .031). The neutral group's overall level (−3.31) was close to the normative level (−3.36), so the incident effect is an upward shift from a roughly calibrated level rather than a correction of an earlier bias. Figure 2 shows willingness to pay by probability level and condition.
+
+**H3a.** Reporting accuracy together with cost per correct answer did not detectably change the choice of the local model. The confidence interval for the odds ratio is wide, and the result should be read as inconclusive rather than as evidence of no effect.
+
+### 4.3 Manipulation checks and mechanisms
+
+Participants chose the local model far more often when the stated probability was 6% than when it was 2% (odds ratio 10.8, p < .001), as the normative benchmark implies. The incident report did not raise the general probability estimate: it was 30.4% in the incident group and 36.6% in the neutral group (t = −1.75, p = .082, d = −0.28), the opposite direction from the availability account. Both averages are far above the stated scenario probabilities of 2% and 6%. In the planned mediation analyses, the indirect effect of the incident on willingness to pay through the excess of participants' own probability estimates over the stated probability was −0.005 (95% CI [−0.070, 0.012]), and the within-person indirect effect of format on choice through perceived quality disadvantage was −0.005 (95% CI [−0.018, 0.004]). Neither interval excludes zero.
+
+### 4.4 Exploratory analyses
+
+The effects of the incident report on S and on willingness to pay did not vary detectably with policy strictness (interaction on S −0.10, SE 0.20, p = .631; on mean ln(WTP/L) −0.19, SE 0.18, p = .317) or with personal discretion (S: 0.08, SE 0.12, p = .525; mean ln(WTP/L): −0.06, SE 0.11, p = .580). Participants in the incident condition were not detectably more likely to rank security and privacy policy among their three most important sourcing factors (91% vs. 85%, p = .292). The incident × format interaction (p = .948) and the format × numeracy interaction (p = .692) were not detectable. Respondents whose organizations prohibit external AI services entirely (n = 24) chose the local model in 47% of the scenarios, with S = 0.67. None of these analyses was corrected for multiple testing.
+
+## 5. Discussion
+
+The experiment asked whether features that do not change the economics of the choice change what managers are willing to pay to avoid privacy risk. For a vivid incident report, the answer is yes for the level of willingness to pay and, more tentatively, for its slope. After reading about an exposure at another firm, participants were willing to pay about a third more to eliminate the provider's exposure risk, and their willingness to pay moved less when the stated probability moved from 2% to 6%. Both groups responded to the probability less than a risk-neutral benchmark requires, but the incident group responded the least.
+
+The pattern that links these findings is informative, although it cannot settle the mechanism. The incident report lifted willingness to pay without lifting the general estimate of how likely exposure is, and participants' scenario-specific probability estimates did not mediate its effect. A simple availability account would have predicted that the report raises subjective probability and that this change carries the effect. What we observe fits better with an account in which the report makes the outcome heavier, so that participants pay more and attend less to how likely it is. We want to be careful here. We measured the probability estimates with single items, and the general estimate was high in both groups, which leaves little room for an upward shift. The test of the mechanism was also underpowered. We read the pattern as a reason to prefer the affect-based account as a working hypothesis, not as evidence against availability.
+
+For practice, the finding suggests that the way an organization communicates an incident can shift its sourcing decisions independently of the underlying risk. An internal write-up that dwells on the vivid consequences of one exposure may push managers toward paying more for protection and away from comparing probabilities and costs. This is not necessarily a bad thing. A manager's weight on rare, severe outcomes may reflect considerations beyond expected cost, and our participants were asked to decide as risk-neutral managers, which makes any extra weight a departure from the instructions. But it does imply that governance processes that rely on a numerical comparison should present the probabilities and the losses next to the narrative, not in place of it.
+
+The null result for performance format deserves a brief comment. We expected that reporting cost per correct answer would make the local model's economics easier to see and raise its choice. The data neither confirm nor rule out a moderate effect. A possible reason is that our scenarios already stated the net cost advantage and the error costs in dollars, which may have made the extra metric redundant. Another is that the study did not have the power to detect an effect of the size we assumed.
+
+### 5.1 Limitations and future research
+
+Several limitations should be kept in mind. The stakes were hypothetical, and job roles were self-reported, although the screening items and the consistency check were designed to reduce misreporting. The sample was smaller than planned, which limits power for effects of moderate size and for the Holm family as a whole, and the primary result crosses the .05 threshold only narrowly and depends on retaining respondents bound by prohibiting policies. The experiment varied one loss amount and two probabilities, so it cannot say how the effects depend on the size of the loss; organizations whose trade secrets are very valuable may be governed by rules rather than by the weighing we study. Our local model was a small quantized model run on one laptop GPU, and the cost figures exclude labor and maintenance, so they say little about server-grade deployments. Finally, because we manipulated a fictional incident, we cannot tell whether real incidents close to the participant's industry would have stronger effects.
+
+Future work should vary the size of the loss together with the incident, which would test whether the flatter probability response grows with the severity of the outcome, and should use real incidents and real sourcing decisions, for example through field data or interviews. A larger sample with a design that can separate the availability and affect accounts directly, for example by manipulating the vividness of the report while holding its informational content fixed, would address the mechanism that this study could not resolve.
+
+## 6. Conclusion
+
+When we hold the economics of a sourcing choice fixed, a vivid incident report still moves what managers are willing to pay to avoid privacy risk, and it appears to make their willingness to pay less responsive to the stated probability of exposure. Reporting performance as cost per correct answer did not change choices in our data. These results suggest that organizations should look not only at how large their privacy risk is but also at how it is told.
+
+## References
+
+All entries are from memory and need to be verified (authors, year, journal, volume and pages) before submission.
+
+- Gordon, L. A., & Loeb, M. P. (2002). The economics of information security investment. *ACM Transactions on Information and System Security*.
+- Hsee, C. K. (1996). The evaluability hypothesis: An explanation for preference reversals between joint and separate evaluations of alternatives. *Organizational Behavior and Human Decision Processes*.
+- Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*.
+- Loewenstein, G. F., Weber, E. U., Hsee, C. K., & Welch, N. (2001). Risk as feelings. *Psychological Bulletin*.
+- Rottenstreich, Y., & Hsee, C. K. (2001). Money, kisses, and electric shocks: On the affective psychology of risk. *Psychological Science*.
+- Sunstein, C. R. (2003). Terrorism and probability neglect. *Journal of Risk and Uncertainty*.
+- Tversky, A., & Kahneman, D. (1973). Availability: A heuristic for judging frequency and probability. *Cognitive Psychology*.
+- [Add the sources from the earlier literature search on real-options and sourcing costs, and any information-systems work on privacy-incident disclosure, after checking them.]
