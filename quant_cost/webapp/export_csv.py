@@ -132,7 +132,8 @@ def main():
         w.writeheader()
         w.writerows(kept)
     print(f"{len(rows)} files, {len(kept)} rows written to {a.out}; "
-          f"median duration {med:.0f}s; excluded by preregistered rules: {sum(r['excluded'] for r in kept)}" if med is not None
+          f"median duration {med:.0f}s; excluded by preregistered rules: {sum(r['excluded'] for r in kept)}"
+          f" (of which eligible completers: {sum(r['excluded'] for r in kept if r['completed'] and r['eligible'])})" if med is not None
           else f"{len(rows)} files, {len(kept)} rows written to {a.out}")
 
 
