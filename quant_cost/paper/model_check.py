@@ -117,5 +117,76 @@ def main():
               f"w'(2%) = {g * m * (0.02 / lam0) ** (g - 1):.2f}, w'(6%) = {g * m * (0.06 / lam0) ** (g - 1):.2f}")
 
 
+# ======================================================================================================
+# Extensions: competition among vendors (Proposition 3) and a mixture of calculators and non-calculators
+# (Proposition 4)
+# ======================================================================================================
+def extensions():
+    L, theta, k = 2000.0, 1.0, 400.0        # loss, effectiveness of effort, effort-cost coefficient
+    lam0 = 0.04
+
+    # ---- Proposition 3: symmetric equilibrium effort under Bertrand competition equals the take-it-or-leave-it effort
+    # A deviator with effort s facing rivals with effort s_c wins the buyer by undercutting the perceived cost; its
+    # payoff is  g(s) - g(s_c)  with  g(s) = -w(lam(s)) L - C(s).
+    print("\nProposition 3 (competition):")
+    for name, g_, m_ in (("neutral", 0.674, 1.006), ("incident", 0.455, 1.30)):
+        lam_b = 0.06
+        g = lambda s: -w(lam_b * math.exp(-theta * s), lam0, m_, g_) * L - k * s * s / 2
+        s_b = vendor_opt(lam_b, theta, k, L, lam0, m_, g_, behavioral=True)
+        # best deviation against rivals at s_c, for several s_c
+        rows = []
+        for s_c in (0.5 * s_b, 0.9 * s_b, s_b, 1.1 * s_b, 2.0 * s_b):
+            best = optimize.minimize_scalar(lambda s: -(g(s) - g(s_c)), bounds=(0, 200), method="bounded",
+                                            options={"xatol": 1e-10})
+            rows.append((s_c, best.x, -best.fun))
+        ok = all((abs(r[0] - s_b) < 1e-6 and abs(r[2]) < 1e-9) or (abs(r[0] - s_b) > 1e-6 and r[2] > 1e-9) for r in rows)
+        print(f"  {name:8s} s_b = {s_b:.4f}; best deviation always goes to s_b: "
+              f"{all(abs(r[1] - s_b) < 1e-4 for r in rows)}; profitable deviation exists iff s_c != s_b: {ok}")
+
+    # ---- Proposition 4: mixture of calculators (w = lam) and non-calculators (w_b)
+    print("\nProposition 4 (mixture of calculators and non-calculators), linear demand, common price:")
+    Dbar, c_m = 400.0, 0.0
+    gb, mb = 0.40, 1.0
+    def what(lam, pi):
+        return pi * lam + (1 - pi) * w(lam, lam0, mb, gb)
+    def profit(s, pi, lam_b=0.06):
+        lam = lam_b * math.exp(-theta * s)
+        x = Dbar - L * what(lam, pi) - c_m
+        return x * x / (4 * Dbar) - k * s * s / 2
+    # marginal-reward formula: d profit / d s (without cost) = Q* L what'(lam) |lam'(s)|
+    lam_b = 0.06
+    for pi in (0.0, 0.5, 1.0):
+        s = 0.1
+        lam = lam_b * math.exp(-theta * s)
+        h = 1e-6
+        num = ((Dbar - L * what(lam_b * math.exp(-theta * (s + h)), pi) - c_m) ** 2 -
+               (Dbar - L * what(lam_b * math.exp(-theta * s), pi) - c_m) ** 2) / (4 * Dbar) / h
+        q_star = (Dbar - L * what(lam, pi) - c_m) / (2 * Dbar)
+        wp_b = gb * mb * (lam / lam0) ** (gb - 1)
+        what_p = pi + (1 - pi) * wp_b
+        formula = q_star * L * what_p * theta * lam
+        assert abs(num - formula) / formula < 1e-4, (pi, num, formula)
+    print("  marginal reward = Q* L (pi + (1 - pi) w_b'(lam)) |lam'(s)| verified at pi = 0, 0.5, 1")
+    effs = []
+    for pi in (0.0, 0.25, 0.5, 0.75, 1.0):
+        s_opt = optimize.minimize_scalar(lambda s: -profit(s, pi), bounds=(0, 50), method="bounded",
+                                         options={"xatol": 1e-10}).x
+        effs.append((pi, s_opt))
+    print("  optimal effort by share of calculators:", ", ".join(f"pi={p:.2f}: {e:.3f}" for p, e in effs))
+
+    # ---- accounting decomposition of the difference in mean S (Table 2 values)
+    print("\nDecomposition of the difference in mean S between the conditions (accounting identity):")
+    ln3 = math.log(3)
+    S_N, S_I, pi_N, pi_I = 0.74, 0.50, 0.45, 0.35
+    nc_N = (S_N - pi_N * ln3) / (1 - pi_N)
+    nc_I = (S_I - pi_I * ln3) / (1 - pi_I)
+    comp = (pi_I - pi_N) * (ln3 - nc_N)
+    within = (1 - pi_I) * (nc_I - nc_N)
+    print(f"  mean S among the others: neutral {nc_N:.3f}, incident {nc_I:.3f}")
+    print(f"  total difference {S_I - S_N:.3f} = composition {comp:.3f} + within the others {within:.3f} "
+          f"(check {comp + within:.3f}); composition share {comp / (S_I - S_N):.0%}")
+
+
 if __name__ == "__main__":
     main()
+    extensions()
