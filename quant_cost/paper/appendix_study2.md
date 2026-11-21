@@ -98,7 +98,7 @@ Covariates: numeracy, mean privacy concern, risk attitude and personal discretio
 
 ## Appendix G. Materials and code
 
-The participant-facing text is in `study2_survey_english.md` and in the survey application's `content.js`. The preregistered plan as submitted is in `study2_preregistration_submitted.md`. Analysis code: `webapp/analysis_study2.py` (frozen at commit 3f9c6c0 before it was run on the data), simulation `webapp/simulate_study2.py`, figures `webapp/make_figures_study2.py`. [Repository link and archive DOI.]
+The participant-facing text is in `study2_survey_english.md` and in the survey application's `content.js`. The preregistered plan as submitted is in `study2_preregistration_submitted.md`. Analysis code: `webapp/analysis_study2.py` (frozen at commit 3f9c6c0 before it was run on the data), simulation `webapp/simulate_study2.py`, figures `webapp/make_figures_study2.py`. During review these files are available from the authors on request; a public repository and an archive DOI will be added if the paper is accepted.
 
 ## Appendix H. Proofs of the propositions in Section 2.6
 
