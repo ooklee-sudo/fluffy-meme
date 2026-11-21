@@ -120,3 +120,20 @@ For the comparative statics, ln w′(λ) = ln γ + ln m + (γ − 1) ln(λ/λ₀
 
 **Numerical check.** The file `model_check.py` verifies the closed form of Proposition 1 against a numerical root, the loss in Corollary 1 at the buyer's break-even, the formula for w′ and the threshold λ̄ in 2,000 random parameter sets, the effect of γ on w′, and the vendor example of Table 4. For Proposition 3 it checks that the best deviation always goes to s_b and is profitable exactly when the rivals' effort differs from s_b. For Proposition 4 it checks the marginal-reward formula against a finite difference, shows how the vendor's optimal effort changes with the share of calculators in an example, and reproduces the decomposition of the difference in mean S.
 
+## Appendix I. Descriptive check of the incident effect in subgroups
+
+*Table I1. Mean S and mean ln(WTP/L) by news condition within subgroups (analysis sample, n = 152). No tests were run; subgroup cells are small.*
+
+| Subgroup | n neutral / incident | S neutral | S incident | Difference in S | ln(WTP/L) neutral | ln(WTP/L) incident | Difference in ln(WTP/L) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| All analysable participants | 75 / 77 | 0.74 | 0.50 | −0.24 | −3.31 | −3.02 | 0.29 |
+| South Africa | 29 / 33 | 0.74 | 0.34 | −0.40 | −3.17 | −3.06 | 0.11 |
+| All other countries | 46 / 44 | 0.75 | 0.63 | −0.12 | −3.40 | −2.99 | 0.41 |
+| United Kingdom | 18 / 12 | 0.78 | 0.45 | −0.33 | −3.15 | −2.75 | 0.40 |
+| India | 7 / 9 | 0.62 | 0.82 | 0.19 | −3.99 | −3.00 | 0.99 |
+| Other countries (not South Africa, the United Kingdom or India) | 21 / 23 | 0.77 | 0.64 | −0.12 | −3.42 | −3.11 | 0.31 |
+| AI use every day or more often | 59 / 54 | 0.83 | 0.57 | −0.26 | −3.33 | −3.06 | 0.27 |
+| AI use less than daily | 16 / 23 | 0.41 | 0.35 | −0.07 | −3.26 | −2.94 | 0.32 |
+
+The hypothesized direction is a smaller S and a larger ln(WTP/L) in the incident condition. The direction holds for ln(WTP/L) in every row and for S in every row except India, whose cells have 7 and 9 participants. The sizes of the differences vary across rows, and the cells are too small for these variations to be interpreted. Country and frequency of AI use come from the participant's Prolific profile. The check was not preregistered and was made after the main analysis; it was computed with `webapp/subgroup_descriptives.py`.
+
