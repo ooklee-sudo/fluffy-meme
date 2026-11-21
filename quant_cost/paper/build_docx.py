@@ -8,7 +8,7 @@ s = re.sub(r"^> .*\n\n", "", s, count=1, flags=re.M)            # internal draft
 a = s.index("## References")
 s = s[:a] + re.sub(r"Reference style follows.*?before submission\.\n\n", "", s[a:], flags=re.S)
 open("/tmp/ms_review.md", "w", encoding="utf-8").write(s)
-subprocess.run(["pandoc", "/tmp/ms_review.md", "-f", "markdown", "-o", "/tmp/ms_raw.docx"], check=True)
+subprocess.run(["pandoc", "/tmp/ms_review.md", "-f", "markdown", "--resource-path=.", "-o", "/tmp/ms_raw.docx"], check=True)
 d = Document("/tmp/ms_raw.docx")
 for sec in d.sections:
     sec.left_margin = sec.right_margin = sec.top_margin = sec.bottom_margin = Inches(1)
@@ -37,5 +37,8 @@ for t in d.tables:
                 para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
                 for r in para.runs:
                     r.font.name = "Times New Roman"; r.font.size = Pt(10)
+cp = d.core_properties
+for attr in ("author", "last_modified_by", "title", "subject", "comments", "keywords"):
+    setattr(cp, attr, "")
 d.save("manuscript_study2_isr_review_copy.docx")
 print("saved")
