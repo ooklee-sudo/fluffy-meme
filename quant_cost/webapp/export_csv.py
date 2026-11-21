@@ -116,7 +116,8 @@ def main():
             continue  # Prolific preview and test sessions are not participants
         rows.append(build_row(d))
     kept = rows if a.all else [r for r in rows if r["completed"] and r["eligible"]]
-    durs = [r["duration_s"] for r in kept if r["duration_s"] is not None]
+    # the speed rule uses the median of eligible completers, whether or not --all keeps the other rows
+    durs = [r["duration_s"] for r in rows if r["completed"] and r["eligible"] and r["duration_s"] is not None]
     med = statistics.median(durs) if durs else None
     for r in rows:
         r["ex_speed"] = int(med is not None and r["duration_s"] is not None and r["duration_s"] < med / 3)
