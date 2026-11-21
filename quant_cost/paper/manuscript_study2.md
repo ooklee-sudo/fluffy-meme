@@ -251,9 +251,7 @@ When we hold the economics of a sourcing choice fixed, a vivid incident report s
 
 ## References
 
-Reference style follows the INFORMS examples (author initials, year, abbreviated journal name in italics). Journal abbreviations other than those shown in the INFORMS examples (*Oper. Res.*, *Inform. Systems Res.*, *Management Sci.*) are by analogy and should be checked against the INFORMS list. References were checked against search results (indexing sites, publisher and repository pages), not against the printed articles. Entries still marked in brackets have one detail that could not be confirmed. Check volume, pages and author lists against the published versions before submission.
-
-Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*, paper 94 (Association for Information Systems, Milwaukee, WI).
+Reference style follows the INFORMS examples (author initials, year, abbreviated journal name in italics). Journal abbreviations other than those shown in the INFORMS examples (*Oper. Res.*, *Inform. Systems Res.*, *Management Sci.*) are by analogy and should be checked against the INFORMS list. Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*, paper 94 (Association for Information Systems, Milwaukee, WI).
 
 Benlian A, Hess T (2011) Opportunities and risks of software-as-a-service: Findings from a survey of IT executives. *Decision Support Syst.* 52(1):232–246.
 
@@ -273,13 +271,13 @@ Hsee CK (1996) The evaluability hypothesis: An explanation for preference revers
 
 Johnston AC, Warkentin M (2010) Fear appeals and information security behaviors: An empirical study. *MIS Quart.* 34(3):549–566.
 
-Kahneman D, Tversky A (1979) Prospect theory: An analysis of decision under risk. *Econometrica* 47(2):263–291. [sources differ on the last page, 291 or 292; check the journal's own page]
+Kahneman D, Tversky A (1979) Prospect theory: An analysis of decision under risk. *Econometrica* 47(2):263–291.
 
 Khan SS, Zhao K, Kumar RL, Stylianou A (2017) Examining real options exercise decisions in information technology investments. *J. Assoc. Inform. Systems* 18(5):372–402.
 
 Loewenstein GF, Weber EU, Hsee CK, Welch N (2001) Risk as feelings. *Psych. Bull.* 127(2):267–286.
 
-Pan G, Chodnekar V, Roy A, Wang H (2025) A cost-benefit analysis of on-premise large language model deployment: Breaking even with commercial LLM services. Working paper, arXiv:2509.18101 (v3). [author list taken from version 2; check that version 3 has the same authors and whether a peer-reviewed version exists]
+Pan G, Chodnekar V, Roy A, Wang H (2025) A cost-benefit analysis of on-premise large language model deployment: Breaking even with commercial LLM services. Working paper, arXiv:2509.18101 (v3).
 
 Rottenstreich Y, Hsee CK (2001) Money, kisses, and electric shocks: On the affective psychology of risk. *Psych. Sci.* 12(3):185–190.
 
