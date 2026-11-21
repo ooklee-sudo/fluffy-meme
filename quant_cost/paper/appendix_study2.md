@@ -1,4 +1,4 @@
-# Online Appendix (draft)
+# Online Appendix
 
 > Items in [square brackets] need numbers from files that exist only on the authors' laptop (the local-model measurement results). Commands that produce them are given where needed. Everything else is computed from the repository.
 
@@ -56,9 +56,7 @@ With 100 items the intervals are wide, and accuracy does not fall monotonically 
 | Classification (cases A, D) | $29.52 | $4.58 | $2.39 | $1.66 |
 | Extraction (cases B, C) | $73.09 | $64.17 | $33.27 | $22.98 |
 
-```
-python -m quant_cost.scenario_numbers --local-label <local result label> --api-label api_qwen_qwen-2.5-72b-instruct-n500 --utilization 0.5 --sensitivity
-```
+The values in Table C1 were computed with the project's scenario_numbers script, using the NF4 measurements and the cloud measurements with 500 items per task.
 
 ## Appendix D. Marginal cost and fixed versus variable break-even
 
@@ -66,7 +64,7 @@ The cost shown to participants is deliberately the levelized cost, which is cons
 
 **Marginal cost.** For an organization that already owns suitable hardware, the cost of one more request is the electricity cost alone. This view favors the local option strongly and is the other extreme from the levelized view. On the NF4 measurements, the energy-only cost per million correct answers is $0.204 for classification and $2.38 for extraction, against $29.52 and $73.09 for the cloud model.
 
-**Fixed versus variable break-even.** Let F be the one-time setup cost of building the local pipeline, and c_api and c_local the variable cost per request. The break-even volume is n* = F / (c_api − c_local). With F = $2,000 as a placeholder for engineering time, break-even is reached after 51.6 million requests for classification and 21.2 million for extraction when only the hardware is counted, and after 120.3 million and 49.5 million requests when the $2,000 setup cost is added. These figures use the API price minus the local energy cost per request and contain no privacy term. One laptop at 50% utilization can serve about 733 million classification requests or about 49 million extraction requests over its three-year life, so for extraction the break-even volume with setup labor (49.5 million) exceeds what one machine can process. These figures exclude setup labor beyond F, maintenance, staff, and model updates, and they describe one laptop, so they should not be read as the cost of a server-grade deployment. They reinforce a point made in the main text: the local option's advantage depends strongly on volume and utilization.
+**Fixed versus variable break-even.** Let F be the one-time setup cost of building the local pipeline, and c_api and c_local the variable cost per request. The break-even volume is n* = F / (c_api − c_local). With F = $2,000 as an assumed engineering cost, break-even is reached after 51.6 million requests for classification and 21.2 million for extraction when only the hardware is counted, and after 120.3 million and 49.5 million requests when the $2,000 setup cost is added. These figures use the API price minus the local energy cost per request and contain no privacy term. One laptop at 50% utilization can serve about 733 million classification requests or about 49 million extraction requests over its three-year life, so for extraction the break-even volume with setup labor (49.5 million) exceeds what one machine can process. These figures exclude setup labor beyond F, maintenance, staff, and model updates, and they describe one laptop, so they should not be read as the cost of a server-grade deployment. They reinforce a point made in the main text: the local option's advantage depends strongly on volume and utilization.
 
 ## Appendix E. Exclusions
 
