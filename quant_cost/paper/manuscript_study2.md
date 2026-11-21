@@ -16,7 +16,7 @@ Normative models of this choice are easy to write down. If the local model costs
 
 There are good reasons to doubt that managers decide this way. Research on judgment under uncertainty has long shown that people respond to how easily an event comes to mind (Tversky and Kahneman 1973), and that they respond to the emotional content of an outcome more than to its probability when the outcome is vivid (Rottenstreich and Hsee 2001, Loewenstein et al. 2001, Sunstein 2003). AI sourcing decisions are a natural setting for such effects. Privacy incidents are widely reported, they are easy to picture, and the probabilities attached to them are small and hard to judge. At the same time, vendors and internal evaluators report the performance of language models in many formats, and research on evaluability suggests that people weigh attributes more heavily when they are easy to compare (Hsee 1996).
 
-Work in information systems has approached pieces of this problem from several directions. On the economic side, break-even analyses compare the total cost of running a language model on premises with the price of commercial services and find that on-premises deployment pays off mainly for high-volume users or for organizations with strict data-residency requirements (Pan et al. 2025). Real-options models treat AI adoption as a timing problem under technological progress, with a choice among deploying now, piloting and waiting (Tewari 2026), and experiments in the prospect-theory tradition show that managers' exercise of IT options departs from the normative rule in ways that depend on project size and option type (Khan et al. 2017). Models of security spending give a benchmark for how much to protect a given set of information, in which the optimal outlay is bounded by a fraction of the expected loss (Gordon and Loeb 2002). Behavioral work on that spending finds that decision makers favor prevention over detection and respond to threats too small to justify any investment (Safi et al. 2021), and that non-linear probability weighting is associated with suboptimal allocation of defenses (Woods et al. 2021). A separate stream studies individuals' privacy decisions as a calculus of risk against trust and benefit (Culnan and Armstrong 1999, Dinev and Hart 2006), and shows that fear appeals change intentions to comply with security recommendations, though not uniformly across users (Johnston and Warkentin 2010). Finally, event studies show that announcements of data breaches lower the market value of the affected firm, with effects that fade quickly or depend on competing news (Acquisti et al. 2006, Foerderer and Schuetz 2022).
+Work in information systems has approached pieces of this problem from several directions. Research on IT outsourcing treats sourcing as an organizational decision process (Dibbern et al. 2004), and surveys of IT executives find that security threats dominate their perception of the risk of cloud services while cost advantages drive the opportunities they see (Benlian and Hess 2011). On the economic side, break-even analyses compare the total cost of running a language model on premises with the price of commercial services and find that on-premises deployment pays off mainly for high-volume users or for organizations with strict data-residency requirements (Pan et al. 2025). Real-options models treat AI adoption as a timing problem under technological progress, with a choice among deploying now, piloting and waiting (Tewari 2026), and experiments in the prospect-theory tradition show that managers' exercise of IT options departs from the normative rule in ways that depend on project size and option type (Khan et al. 2017). Models of security spending give a benchmark for how much to protect a given set of information, in which the optimal outlay is bounded by a fraction of the expected loss (Gordon and Loeb 2002). Behavioral work on that spending finds that decision makers favor prevention over detection and respond to threats too small to justify any investment (Safi et al. 2021), and that non-linear probability weighting is associated with suboptimal allocation of defenses (Woods et al. 2021). A separate stream studies individuals' privacy decisions as a calculus of risk against trust and benefit (Culnan and Armstrong 1999, Dinev and Hart 2006), and shows that fear appeals change intentions to comply with security recommendations, though not uniformly across users (Johnston and Warkentin 2010). Finally, event studies show that announcements of data breaches lower the market value of the affected firm, with effects that fade quickly or depend on competing news (Acquisti et al. 2006, Foerderer and Schuetz 2022).
 
 What these streams leave open is how a manager's choice between outside and in-house sourcing for AI responds to the way a privacy risk is presented, as opposed to its size. In the searches we ran we did not find an experiment that tests this for AI sourcing, or one that manipulates the stated probability of exposure to separate a shift in subjective probability from a flatter response to probability. This is a statement about our searches, not a systematic review.
 
@@ -28,21 +28,39 @@ In brief, participants who read the incident report were willing to pay about a 
 
 ## 2. Theory and Hypotheses
 
-### 2.1 A normative benchmark
+### 2.1 AI sourcing as a sourcing and risk decision
+
+Information systems research has long treated sourcing as an organizational decision process: why to source externally, what to source, how to decide, and with what outcomes (Dibbern et al. 2004). Studies of cloud services show how that decision is experienced by managers. In a survey of IT executives, security threats dominated the overall perception of risk for adopters and non-adopters alike, while cost advantages were the strongest perceived opportunity (Benlian and Hess 2011). Generative AI brings the same decision back in a new form. A firm can send text, often containing personal data, to a model run by an outside provider, or it can keep the text in house and run a smaller model on its own hardware. Two features make this choice different from earlier sourcing decisions and suitable for a test of how risk is perceived. First, the in-house option carries an accuracy penalty, so the manager trades cost, quality and privacy at once. Second, the privacy risk is a rare and severe event: its yearly probability is small and hard to judge, and incidents at other firms are widely reported. Under these conditions, the way a risk is presented may carry more weight than its size.
+
+### 2.2 A normative benchmark
 
 We consider a one-year decision. Choosing the local model saves running costs of B relative to the cloud API but adds error costs of E, so its net operating advantage is B − E, which is negative in our scenarios. Choosing the API exposes personal data with probability λ in the year, and an exposure costs L. The expected privacy loss from the API is therefore λL, and the local model's total advantage is (B − E) + λL. The local model is optimal when this is positive, which happens when λ exceeds the break-even probability λ* = (E − B)/L. This follows the logic of economic models of security investment, in which protection is compared with the expected loss it averts (Gordon and Loeb 2002), and of break-even analyses of on-premises language models, which compare fixed and running costs with service prices (Pan et al. 2025). The amount a risk-neutral manager should be willing to pay to remove the exposure risk entirely is λL.
 
 We set B = 100m, E = 180m and L = 2,000m (in thousands of dollars per year), with a scenario scale m between 0.6 and 1.2. At λ = 2% the API is optimal and the normative willingness to pay is 40m; at λ = 6% the local model is optimal and the normative willingness to pay is 120m; the break-even is 4%. Dividing willingness to pay by L removes the scale, and the normative log difference between the two probabilities is ln 3 = 1.10. This matters for the design because the normatively correct choice reverses between the two probability levels, so sensitivity to probability has a clear meaning.
 
-### 2.2 Vivid incidents
+### 2.3 Salience, decision weights and two accounts of a vivid incident
 
-A report of an exposure at another firm leaves λ and L unchanged. We nevertheless expect it to change decisions through at least two channels that make different predictions.
+A report of an exposure at another firm leaves λ and L unchanged, so a risk-neutral manager would ignore it. Behavioral research suggests two ways in which it could nonetheless matter. To compare them, we describe a manager's stated willingness to pay as the perceived expected loss, w(λ)L, where w(λ) is the decision weight given to the stated probability and w(λ) = λ in the benchmark. As a stylized description, which is our own simplification and not a model estimated in the literature, we write the weight as a power function, w(λ) = κλ^γ, so that
 
-*Availability.* A concrete incident is easy to recall and picture, which raises the subjective probability that a similar event will happen (Tversky and Kahneman 1973). If this channel operates, participants who read the incident report should judge exposure to be more likely, and the effect of the report on willingness to pay should be explained by that higher judgment.
+ln(WTP/L) = ln κ + γ ln λ.
 
-*Affect and probability insensitivity.* Outcomes that are emotionally rich tend to be weighed with less regard to their probability, and salience theory formalizes a related idea, in which payoffs that stand out receive extra decision weight (Bordalo et al. 2012). People respond to the presence of a frightening outcome more than to its likelihood (Rottenstreich and Hsee 2001, Sunstein 2003). If this channel operates, an incident report should raise willingness to pay at low probabilities and make willingness to pay less responsive to the stated probability, without necessarily changing the participant's own probability estimate.
+The parameter κ is a level: it moves willingness to pay by the same proportion at every probability. The parameter γ is sensitivity to the stated probability: it governs how much willingness to pay rises when the probability rises. The benchmark is κ = 1 and γ = 1. With probabilities of 2% and 6%, the within-person difference S between the mean of ln(WTP/L) at 6% and at 2% equals γ ln 3, which is 1.10 in the benchmark and falls as γ falls.
 
-Related findings in the security literature point in the same direction. Experimental participants spend on defenses against threats too small to justify spending (Safi et al. 2021), and non-linear probability weighting is associated with how defenses are allocated (Woods et al. 2021). Neither study manipulates the vividness of a prior incident or measures how willingness to pay responds to a stated probability. The second channel gives the sharpest prediction, because the two accounts differ in what they say about the slope of willingness to pay across probability levels. Our primary hypothesis is therefore about the slope.
+*Availability.* A concrete incident is easy to recall and picture, which raises the subjective probability that a similar event will happen (Tversky and Kahneman 1973). If subjective probability is the stated probability scaled up by a constant factor, the incident raises κ and leaves γ unchanged. It raises willingness to pay by the same proportion at 2% and at 6%, leaves S unchanged, and works through the participant's own probability estimate.
+
+*Affect and probability insensitivity.* Outcomes that are emotionally rich tend to be weighed with less regard to their probability. People respond to the presence of a frightening outcome more than to its likelihood (Rottenstreich and Hsee 2001; Sunstein 2003), feelings about a risk can drive behavior independently of cognitive assessments of it (Loewenstein et al. 2001; Slovic et al. 2007), and salience theory formalizes a related idea in which payoffs that stand out receive extra decision weight (Bordalo et al. 2012). Related work in security finds that experimental participants spend on defenses against threats too small to justify spending (Safi et al. 2021) and that non-linear probability weighting is associated with how defenses are allocated (Woods et al. 2021); neither study manipulates the vividness of a prior incident or measures how willingness to pay responds to a stated probability. In the stylized description, an incident that makes the outcome affect-rich lowers γ. Because the probabilities are below 1, a lower γ raises willingness to pay more at 2% than at 6%, so the incident effect on ln(WTP/L) is larger at the lower probability, and S falls. This account does not require the participant's own probability estimate to change.
+
+The two accounts agree that the incident raises willingness to pay, and they differ in what else they predict (Table 1). Our primary hypothesis concerns the slope, because it is where they differ most clearly.
+
+*Table 1. Predictions of the two accounts of a vivid incident.*
+
+| Observable | Availability | Affect-based insensitivity |
+| --- | --- | --- |
+| Level of willingness to pay (H2) | Higher | Higher |
+| Sensitivity S to the stated probability (H1) | Unchanged | Lower |
+| Incident effect at 2% relative to 6% | Equal | Larger at 2% |
+| Participant's own probability estimate | Higher | Not necessarily changed |
+| Mediation through excess probability estimate (H4) | Yes | No |
 
 **H1 (primary).** Participants who read a (fictional) data-exposure incident report are less sensitive to the stated exposure probability than participants who read a neutral news item. Formally, S, the mean of ln(WTP/L) at λ = 6% minus the mean at λ = 2%, is smaller in the incident group.
 
@@ -50,15 +68,15 @@ Related findings in the security literature point in the same direction. Experim
 
 We also planned a mediation analysis (H4) in which the incident's effect operates through the excess of the participant's own probability estimate over the stated probability.
 
-### 2.3 Performance format
+### 2.4 Performance format
 
-Showing accuracy alone invites a comparison on the attribute that is easiest to evaluate. For a manager whose reference point is the cloud API, the local model's lower accuracy looks like a loss, and its cost advantage, which lives in different units, is harder to weigh (Kahneman and Tversky 1979, Hsee 1996). Reporting cost per correct answer combines the two attributes into one number and should make the trade-off easier to see. In our scenarios the savings figure already includes the effect of accuracy, so the two formats carry the same information.
+Showing accuracy alone invites a comparison on the attribute that is easiest to evaluate. For a manager whose reference point is the cloud API, the local model's lower accuracy looks like a loss, and its cost advantage, which lives in different units, is harder to weigh (Kahneman and Tversky 1979; Hsee 1996). Reporting cost per correct answer combines the two attributes into one number and should make the trade-off easier to see. Vendors and internal evaluators report model performance in many formats, so the question is practical as well as theoretical. In our scenarios the savings figure already includes the effect of accuracy, so the two formats carry the same information.
 
 **H3.** Presenting accuracy alone, rather than accuracy plus cost per correct answer, lowers the probability of choosing the local model.
 
 We planned a second mediation (H5) through perceived quality disadvantage, and exploratory moderation by numeracy, AI experience and decision authority.
 
-### 2.4 Scope: where rules decide
+### 2.5 Scope: where rules decide
 
 Some organizations do not choose at all. A security policy may forbid sending data outside the firm, and in that case the decision is governed by a rule, not by a weighing of costs and risks. We therefore asked about organizational policy before randomization, kept respondents whose organizations prohibit external AI services in all analyses, and treated policy strictness and personal discretion as exploratory moderators (H6): we expected the effects of the incident report to be weaker where policy is strict and discretion is low.
 
@@ -121,7 +139,7 @@ The normative values of ln(WTP/L) are −3.91 at 2% and −2.81 at 6%.
 
 ### 4.2 Confirmatory tests
 
-*Table 1. Preregistered tests.*
+*Table 3. Preregistered tests.*
 
 | Hypothesis | Test | Result |
 | --- | --- | --- |
@@ -184,9 +202,13 @@ Reference style follows the INFORMS examples (author initials, year, abbreviated
 
 Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*. [verify the exact title]
 
+Benlian A, Hess T (2011) Opportunities and risks of software-as-a-service: Findings from a survey of IT executives. *Decision Support Syst.* 52(1):232–246.
+
 Bordalo P, Gennaioli N, Shleifer A (2012) Salience theory of choice under risk. *Quart. J. Econom.* 127(3):1243–1285.
 
 Culnan MJ, Armstrong PK (1999) Information privacy concerns, procedural fairness, and impersonal trust: An empirical investigation. *Organ. Sci.* 10(1):104–115.
+
+Dibbern J, Goles T, Hirschheim R, Jayatilaka B (2004) Information systems outsourcing: A survey and analysis of the literature. *Data Base Adv. Inform. Systems* 35(4):6–102.
 
 Dinev T, Hart P (2006) An extended privacy calculus model for e-commerce transactions. *Inform. Systems Res.* 17(1):61–80.
 
@@ -209,6 +231,8 @@ Pan G, et al. (2025) A cost-benefit analysis of on-premise large language model 
 Rottenstreich Y, Hsee CK (2001) Money, kisses, and electric shocks: On the affective psychology of risk. *Psych. Sci.* 12(3):185–190.
 
 Safi R, Browne GJ, Naini AJ (2021) Mis-spending on information security measures: Theory and experimental evidence. *Internat. J. Inform. Management* 57. [verify article number]
+
+Slovic P, Finucane ML, Peters E, MacGregor DG (2007) The affect heuristic. *Eur. J. Oper. Res.* 177(3):1333–1352.
 
 Sunstein CR (2003) Terrorism and probability neglect. *J. Risk Uncertainty* 26(2–3):121–136.
 
