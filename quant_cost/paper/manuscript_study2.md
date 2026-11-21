@@ -251,9 +251,9 @@ When we hold the economics of a sourcing choice fixed, a vivid incident report s
 
 ## References
 
-Reference style follows the INFORMS examples (author initials, year, abbreviated journal name in italics). Journal abbreviations other than those shown in the INFORMS examples (*Oper. Res.*, *Inform. Systems Res.*, *Management Sci.*) are by analogy and should be checked against the INFORMS list. Entries marked [verify] were confirmed in searches only at the level of title, authors, venue and year; check volume, pages and the full author list against the published version before submission.
+Reference style follows the INFORMS examples (author initials, year, abbreviated journal name in italics). Journal abbreviations other than those shown in the INFORMS examples (*Oper. Res.*, *Inform. Systems Res.*, *Management Sci.*) are by analogy and should be checked against the INFORMS list. References were checked against search results (indexing sites, publisher and repository pages), not against the printed articles. Entries still marked in brackets have one detail that could not be confirmed. Check volume, pages and author lists against the published versions before submission.
 
-Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*. [verify the exact title]
+Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*, paper 94 (Association for Information Systems, Milwaukee, WI). [authors and proceedings entry confirmed; verify the exact title]
 
 Benlian A, Hess T (2011) Opportunities and risks of software-as-a-service: Findings from a survey of IT executives. *Decision Support Syst.* 52(1):232–246.
 
@@ -265,7 +265,7 @@ Dibbern J, Goles T, Hirschheim R, Jayatilaka B (2004) Information systems outsou
 
 Dinev T, Hart P (2006) An extended privacy calculus model for e-commerce transactions. *Inform. Systems Res.* 17(1):61–80.
 
-Foerderer J, Schuetz SW (2022) Data breach announcements and stock market reactions: A matter of timing? *Management Sci.* 68(10):7298–7322. [verify authors]
+Foerderer J, Schuetz SW (2022) Data breach announcements and stock market reactions: A matter of timing? *Management Sci.* 68(10):7298–7322.
 
 Gordon LA, Loeb MP (2002) The economics of information security investment. *ACM Trans. Inform. System Security* 5(4):438–457.
 
@@ -273,24 +273,24 @@ Hsee CK (1996) The evaluability hypothesis: An explanation for preference revers
 
 Johnston AC, Warkentin M (2010) Fear appeals and information security behaviors: An empirical study. *MIS Quart.* 34(3):549–566.
 
-Kahneman D, Tversky A (1979) Prospect theory: An analysis of decision under risk. *Econometrica* 47(2):263–291. [verify]
+Kahneman D, Tversky A (1979) Prospect theory: An analysis of decision under risk. *Econometrica* 47(2):263–291. [sources differ on the last page, 291 or 292; check the journal's own page]
 
-Khan S, Zhao K, Kumar RL, Stylianou AC (2017) Examining real options exercise decisions in information technology investments. *J. Assoc. Inform. Systems* 18(5):372–402. [verify author list]
+Khan SS, Zhao K, Kumar RL, Stylianou A (2017) Examining real options exercise decisions in information technology investments. *J. Assoc. Inform. Systems* 18(5):372–402.
 
 Loewenstein GF, Weber EU, Hsee CK, Welch N (2001) Risk as feelings. *Psych. Bull.* 127(2):267–286.
 
-Pan G, et al. (2025) A cost-benefit analysis of on-premise large language model deployment: Breaking even with commercial LLM services. Working paper, arXiv:2509.18101 (v3). [verify the full author list and whether a peer-reviewed version exists]
+Pan G, Chodnekar V, Roy A, Wang H (2025) A cost-benefit analysis of on-premise large language model deployment: Breaking even with commercial LLM services. Working paper, arXiv:2509.18101 (v3). [author list taken from version 2; check that version 3 has the same authors and whether a peer-reviewed version exists]
 
 Rottenstreich Y, Hsee CK (2001) Money, kisses, and electric shocks: On the affective psychology of risk. *Psych. Sci.* 12(3):185–190.
 
-Safi R, Browne GJ, Naini AJ (2021) Mis-spending on information security measures: Theory and experimental evidence. *Internat. J. Inform. Management* 57. [verify article number]
+Safi R, Browne GJ, Naini AJ (2021) Mis-spending on information security measures: Theory and experimental evidence. *Internat. J. Inform. Management* 57. [article number not found; add it from the journal page]
 
 Slovic P, Finucane ML, Peters E, MacGregor DG (2007) The affect heuristic. *Eur. J. Oper. Res.* 177(3):1333–1352.
 
 Sunstein CR (2003) Terrorism and probability neglect. *J. Risk Uncertainty* 26(2–3):121–136.
 
-Tewari G (2026) Pilot early, commit late: A real-options model of enterprise AI adoption under rapid technological progress. Working paper, arXiv:2609.15919. [verify the identifier and authorship]
+Tewari G (2026) Pilot early, commit late: A real-options model of enterprise AI adoption under rapid technological progress. Working paper, arXiv:2609.15919. [identifier and title confirmed; authorship comes from a mirror site and should be checked on the arXiv page]
 
-Tversky A, Kahneman D (1973) Availability: A heuristic for judging frequency and probability. *Cognitive Psych.* 5(2):207–232. [verify]
+Tversky A, Kahneman D (1973) Availability: A heuristic for judging frequency and probability. *Cognitive Psych.* 5(2):207–232.
 
 Woods D, Abdallah M, Bagchi S, Sundaram S, Cason T (2021) Network defense and behavioral biases: An experimental study. *Experiment. Econom.*, ePub ahead of print, https://doi.org/10.1007/s10683-021-09714-x.
