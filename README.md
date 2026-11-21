@@ -86,6 +86,7 @@ python run_pairs.py
 | --- | --- | --- |
 | Pythia-1B, 1.4B | step 133k / 103k / 83k / 73k → 143k | 논문의 drift 시리즈(70M–410M)를 규모 축으로 확장 |
 | Base → Instruct | Qwen2.5-0.5B, Qwen2.5-1.5B, SmolLM2-1.7B, OLMo-2-1B | SmolLM2-360M 예외가 instruction tuning 전반의 현상인지 확인 |
+| OLMo-2-1B post-training 단계 | base → SFT, DPO, RLVR1 (누적), SFT → DPO, DPO → RLVR1, RLVR1 → Instruct (한 단계씩) | 어느 post-training 단계가 copy한 adapter를 망가뜨리는지 분해 (`--only "olmo2-1b stage"`) |
 | OLMo-2-1B stage 1 | step 1.8M / 1.6M / 1.4M / 1.0M → 1.907M | 두 번째 모델 계열의 drift 시리즈 |
 
 8GB에 맞춘 설정: bf16(RTX 20xx는 fp16), 배치 4, 길이 256, gradient checkpointing, `--offload`(두 모델을 CPU에

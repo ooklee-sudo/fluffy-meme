@@ -51,6 +51,13 @@ GPU8_PAIRS = [
     ("qwen2.5-1.5b instr",   "Qwen/Qwen2.5-1.5B",          None, "Qwen/Qwen2.5-1.5B-Instruct",          None),
     ("smollm2-1.7b instr",   "HuggingFaceTB/SmolLM2-1.7B", None, "HuggingFaceTB/SmolLM2-1.7B-Instruct", None),
     ("olmo2-1b instr",       O,                            None, O + "-Instruct",                       None),
+    # OLMo-2-1B post-training stages (base -> SFT -> DPO -> RLVR1 -> Instruct): which step breaks a copied adapter?
+    ("olmo2-1b stage base>sft",      O,            None, O + "-SFT",      None),
+    ("olmo2-1b stage base>dpo",      O,            None, O + "-DPO",      None),
+    ("olmo2-1b stage base>rlvr1",    O,            None, O + "-RLVR1",    None),
+    ("olmo2-1b stage sft>dpo",       O + "-SFT",   None, O + "-DPO",      None),
+    ("olmo2-1b stage dpo>rlvr1",     O + "-DPO",   None, O + "-RLVR1",    None),
+    ("olmo2-1b stage rlvr1>instr",   O + "-RLVR1", None, O + "-Instruct", None),
     ("qwen2.5-0.5b instr",   "Qwen/Qwen2.5-0.5B",          None, "Qwen/Qwen2.5-0.5B-Instruct",          None),
     ("olmo2-1b +907k",       O, "stage1-step1000000-tokens2098B", O, OLMO_END),
     ("olmo2-1b +107k",       O, "stage1-step1800000-tokens3775B", O, OLMO_END),
