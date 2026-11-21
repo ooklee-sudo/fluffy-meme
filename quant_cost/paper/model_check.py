@@ -69,6 +69,26 @@ def main():
         assert all(x > y for x, y in zip(vals, vals[1:]))
     print("  for m > 1 the break-even falls as gamma falls (checked at m = 1.1, 1.3, 2.0)")
 
+
+    # ---- Corollary 1: loss from over-adoption of the local model
+    cnt = 0
+    for _ in range(2000):
+        lam0 = random.uniform(0.005, 0.2); g = random.uniform(0.1, 1.0); m = random.uniform(1.01, 3.0)
+        be = breakeven_closed(lam0, m, g)
+        if be >= lam0:
+            continue
+        L = 1000.0; D = lam0 * L
+        # buyer chooses local for every lam > be; the cloud is optimal for lam < lam0
+        for lam in np.linspace(be * 1.0001, lam0 * 0.9999, 7):
+            assert w(lam, lam0, m, g) * L > D                      # the behavioral buyer goes local
+            loss = D - lam * L                                      # extra cost of local relative to cloud
+            assert loss >= -1e-9 and loss <= D * (1 - m ** (-1 / g)) + 1e-6
+        assert abs(L * (lam0 - be) - D * (1 - m ** (-1 / g))) < 1e-6
+        cnt += 1
+    print(f"Corollary 1: loss L(lam0 - lam) is largest at lam_tilde and equals D (1 - m^(-1/gamma)) ({cnt} random cases)")
+    for name, g_, m_ in (("neutral", 0.674, 1.006), ("incident", 0.455, 1.303)):
+        print(f"  {name:8s} largest over-adoption loss as a share of D: {1 - m_ ** (-1 / g_):.3f}")
+
     # ---- Proposition 2: derivative and threshold
     bad = 0
     for _ in range(2000):
@@ -95,7 +115,7 @@ def main():
 
     # ---- vendor example: under-investment when the efficient residual risk is above lam_bar
     L, theta, c = 2000.0, 1.0, 400.0
-    print("\nVendor example (L = 2000, theta = 1, c = 400, lam0 = 4%):")
+    print("\nVendor example (L = 2000, theta = 1, k = 400, lam0 = 4%):")
     for name, g, m in (("neutral", 0.674, 1.006), ("incident", 0.455, 1.30)):
         for lam_b in (0.02, 0.06, 0.12):
             se = vendor_opt(lam_b, theta, c, L, 0.04, m, g, behavioral=False)
