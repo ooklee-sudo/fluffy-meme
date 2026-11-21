@@ -104,7 +104,18 @@ Five departures should be noted. First, the sample was smaller than planned: 152
 
 The survey was opened by 279 participants, all of whom consented. Of these, 193 (69%) met the eligibility criteria and 86 were screened out. 188 eligible participants completed the survey. The exclusion rules removed 36 completers: 10 failed an attention check, 11 answered at least two comprehension checks incorrectly, 17 gave a different job-function group or level at the end, 3 finished in under one third of the median time, and 1 gave identical answers in all scenarios (some participants met more than one rule). The analysis sample comprised 152 participants, 77 in the incident condition and 75 in the neutral condition. This is 48 short of the planned 200. The study was powered at about .80 for d = 0.40 with 200 participants; at 152 the power for d = 0.40 is about .69 and for d = 0.35 about .57. Twenty-four analysable participants reported that their organizations prohibit sending such data to external AI services entirely, and they were retained.
 
-*Table 2. Descriptive statistics by condition.* [Insert the table from `figures/descriptives_study2.md`: S, mean ln(WTP/L) overall and at each probability level, share choosing the local model, and the general probability estimate, by news condition.]
+*Table 2. Descriptive statistics by condition (mean, SD, 95% CI).*
+
+| Measure | Neutral news (n = 75) | Incident report (n = 77) |
+| --- | --- | --- |
+| S (ln(WTP/L) at 6% minus at 2%) | 0.74 (0.72) [0.58, 0.91] | 0.50 (0.74) [0.34, 0.67] |
+| Mean ln(WTP/L), all four scenarios | −3.31 (0.72) [−3.48, −3.14] | −3.02 (0.64) [−3.17, −2.88] |
+| Mean ln(WTP/L), stated probability 2% | −3.68 (0.89) [−3.89, −3.48] | −3.27 (0.78) [−3.45, −3.10] |
+| Mean ln(WTP/L), stated probability 6% | −2.94 (0.71) [−3.10, −2.77] | −2.77 (0.70) [−2.93, −2.61] |
+| Share choosing the local model | 0.53 (0.27) [0.47, 0.59] | 0.51 (0.27) [0.45, 0.57] |
+| General 12-month exposure estimate (%) | 36.6 (22.0) [31.5, 41.7] | 30.4 (21.4) [25.6, 35.3] |
+
+The normative values of ln(WTP/L) are −3.91 at 2% and −2.81 at 6%.
 
 ### 4.2 Confirmatory tests
 
@@ -119,7 +130,7 @@ The survey was opened by 279 participants, all of whom consented. Of these, 193 
 
 **H2c.** [Insert Figure 1 here: `fig1_S_by_group`, individual values, group means with 95% intervals, and the normative value ln 3.] Participants who had read the incident report were less sensitive to the stated probability than those who read the neutral item: S was 0.50 in the incident condition and 0.75 in the neutral condition, against a normative value of 1.10. The mixed model that uses all scenarios and adjusts for position, format and business case gave the same direction, and so did the model with covariates (−0.26, SE 0.11, p = .022). Two points limit how much weight the result can bear. The confidence interval for d comes within 0.01 of zero, and when the 24 respondents whose organizations prohibit external AI services are excluded, the estimate is similar but less precise and the Welch test is no longer significant (d = −0.31, 95% CI [−0.66, 0.04], p = .080; mixed model p = .031).
 
-**H2a.** The incident report raised willingness to pay. The geometric-mean amount was about 34% higher in the incident condition. The result survives the Holm correction, the covariate-adjusted model (0.32, SE 0.11, p = .005), and the exclusion of respondents with prohibiting policies (d = 0.44, Holm-adjusted p = .031). The neutral group's overall level (−3.31) was close to the normative level (−3.36), so the incident effect is an upward shift from a roughly calibrated level rather than a correction of an earlier bias. [Insert Figure 2 here: `fig2_wtp_by_lambda`.] Figure 2 shows willingness to pay by probability level and condition, with the normative values marked.
+**H2a.** The incident report raised willingness to pay. The geometric-mean amount was about 34% higher in the incident condition. The result survives the Holm correction, the covariate-adjusted model (0.32, SE 0.11, p = .005), and the exclusion of respondents with prohibiting policies (d = 0.44, Holm-adjusted p = .031). The neutral group's overall level (−3.31) was close to the normative level (−3.36), so the incident effect is an upward shift from a roughly calibrated level rather than a correction of an earlier bias. The difference between conditions was concentrated at the low stated probability (−3.27 vs. −3.68 at 2%, a difference of 0.41; −2.77 vs. −2.94 at 6%, a difference of 0.17). Relative to the normative values, the neutral group paid more than the benchmark at 2% (−3.68 vs. −3.91) and less at 6% (−2.94 vs. −2.81), while the incident group paid well above the benchmark at 2% (−3.27) and about the benchmark at 6% (−2.77). These comparisons are descriptive. [Insert Figure 2 here: `fig2_wtp_by_lambda`.] Figure 2 shows willingness to pay by probability level and condition, with the normative values marked.
 
 **H3a.** [Insert Figure 3 here: `fig3_choice_by_format`.] Reporting accuracy together with cost per correct answer did not detectably change the choice of the local model. The confidence interval for the odds ratio is wide, and the result should be read as inconclusive rather than as evidence of no effect.
 
