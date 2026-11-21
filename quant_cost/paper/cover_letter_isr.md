@@ -14,7 +14,7 @@ We submit the manuscript "Vivid Incidents and Flat Probability Responses: How Ma
 
 ## Paper provenance
 
-The manuscript has not been published and is not under review elsewhere. [State any related work, working papers or conference versions.] The study was preregistered before main data collection [add anonymized link for the review copy]. A 10-person pilot was run to test the survey and was not used in any test. [State whether an earlier version was submitted elsewhere.]
+The manuscript has not been published and is not under review elsewhere. [State any related work, working papers or conference versions.] The study was preregistered on AsPredicted (#326168, registered 20 November 2026, before main data collection began on 21 November 2026): https://aspredicted.org/ak3v2a.pdf. The registration page is anonymous but its answer to question 8 names the authors' university and IRB number, so the link is given here and not in the manuscript. A 10-person pilot was run to test the survey and was not used in any test. [State whether an earlier version was submitted elsewhere.]
 
 ## Data provenance and ethics
 

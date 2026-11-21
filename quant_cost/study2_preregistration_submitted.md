@@ -1,5 +1,6 @@
 # Study 2: AsPredicted 제출본 (실제 제출한 짧은 문안)
 
+> **등록 정보: AsPredicted #326168, 2026-11-20 09:29(PT)에 등록. 본 수집 시작(2026-11-21 09:35 UTC)보다 앞섬. 주소 https://aspredicted.org/ak3v2a.pdf (익명 페이지이지만 항목 8에 소속과 IRB 번호가 있음).**
 > 이 파일이 AsPredicted에 제출·승인된 문안이다. 긴 설명판은 `study2_preregistration_aspredicted.md`에 있고, 둘이 다르면 **이 파일이 기준**이다. 제출 후 설문·수치·제외 규칙을 바꾸지 않는다.
 
 ## 1. Data collection
