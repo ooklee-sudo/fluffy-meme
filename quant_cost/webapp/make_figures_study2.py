@@ -98,6 +98,8 @@ def fig2(df, L, outdir):
     ax.set_xticklabels(["Stated probability 2%", "Stated probability 6%"])
     ax.set_xlim(-0.5, 1.75)
     ax.set_ylabel("Mean ln(WTP/L)")
+    lo_, hi_ = ax.get_ylim()
+    ax.set_ylim(min(lo_, NORM[2] - 0.12), max(hi_, NORM[6] + 0.12))
     ax.set_title("Willingness to pay by stated probability and news", loc="left", fontsize=11, color=INK)
     save(fig, outdir, "fig2_wtp_by_lambda")
 
@@ -132,6 +134,8 @@ def table(df, L, outdir):
         row = {"measure": label}
         for name, g in series_by_group.items():
             m, lo, hi, n = mean_ci(g)
+            if label.startswith("Share"):
+                lo, hi = max(lo, 0.0), min(hi, 1.0)
             sd = np.nanstd(np.asarray(g, float), ddof=1)
             row[name] = f"{fmt.format(m)} (SD {fmt.format(sd)}; 95% CI {fmt.format(lo)} to {fmt.format(hi)}; n = {n})"
         rows.append(row)
@@ -143,6 +147,13 @@ def table(df, L, outdir):
         add(f"Mean ln(WTP/L), stated probability {lam}%", {k: L[(L.incident == (k == "Incident report")) & (L.lam6 == int(lam == 6))].groupby("pid")["lnw"].mean().values for k in grp})
     add("Share choosing local (all scenarios)", {k: (v["n_local"] / 4).values for k, v in grp.items()})
     add("General 12-month exposure estimate, % (GP)", {k: v["GP"].values for k, v in grp.items()}, "{:.1f}")
+    # Share of participants whose answers sit at the normative value (descriptive, not a test)
+    norm_s = {k: (abs(v["S"] - math.log(3)) <= 0.02).astype(float).values for k, v in grp.items()}
+    add("Share with S within 0.02 of ln 3 (exactly the normative ratio)", norm_s)
+    Lq = L.assign(norm=lambda d: np.where(d["lam6"] == 1, math.log(0.06), math.log(0.02)))
+    Lq["at_norm"] = (abs(Lq["lnw"] - Lq["norm"]) <= 0.02).astype(float)
+    per = Lq.groupby("pid")["at_norm"].mean()
+    add("Share of own scenarios answered exactly at lambda times L", {k: per.reindex(v["pid"]).values for k, v in grp.items()})
     t = pd.DataFrame(rows)
     t.to_csv(os.path.join(outdir, "descriptives_study2.csv"), index=False)
     with open(os.path.join(outdir, "descriptives_study2.md"), "w", encoding="utf-8") as f:
