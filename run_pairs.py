@@ -187,13 +187,15 @@ def summarize_gpu8(outdir):
     for (task, pair), runs in sorted(groups.items(), key=lambda kv: (kv[0][0], order.get(kv[0][1], 99))):
         m = lambda k: statistics.mean(x[k] for x in runs)
         sd = lambda k: statistics.stdev(x[k] for x in runs) if len(runs) > 1 else float("nan")
-        R_C, R_A, C = (min(m(k), 0.999) for k in ("R_C", "R_A", "C"))
+        # cost ratio: median over seeds, because a single run's timing can be disturbed by other load on the machine
+        R_C, R_A = min(m("R_C"), 0.999), min(m("R_A"), 0.999)
+        C = statistics.median(x["C"] for x in runs)
         p = replace(ro.Params(), C_A=C)
         G = ro.gamma(R_A, R_C, p)
         reg = ro.act_region(R_C, R_A, p)
         rows.append({"task": task, "pair": pair, "n_seeds": len(runs), "drift": m("drift"),
                      "R_C": m("R_C"), "R_C_sd": sd("R_C"), "R_A": m("R_A"), "R_A_sd": sd("R_A"),
-                     "gain": m("R_A") - m("R_C"), "C_A_over_C_N": m("C"), "C_sd": sd("C"), "Gamma": G,
+                     "gain": m("R_A") - m("R_C"), "C_A_over_C_N": C, "C_mean": m("C"), "C_sd": sd("C"), "Gamma": G,
                      "v_star_copy": ro.v_star(R_C, p), "act_optimal": list(reg) if reg else None,
                      "gpu": runs[0]["gpu"], "peak_gb": max((x["peak_gb"] or 0) for x in runs)})
     json.dump(rows, open(os.path.join(HERE, "results", "gpu8_summary.json"), "w", encoding="utf-8"), indent=2, default=float)
@@ -206,7 +208,7 @@ def summarize_gpu8(outdir):
                      f"| {f(r['R_A'])} ({f(r['R_A_sd'])}) | {r['gain']:+.3f} | {r['C_A_over_C_N']:.2f} | {r['Gamma']:.2f} | {reg} |")
     md = os.path.join(HERE, "results", "gpu8_table.md")
     open(md, "w", encoding="utf-8").write("Baseline parameters ρ=0.10, μ=2, g=0.20, σ=0.40; Γ and v in multiples of C_N; "
-                        "C_A/C_N is compute time only (weight moves under --offload excluded).\n\n" + "\n".join(lines) + "\n")
+                        "C_A/C_N is the median over seeds of compute time only (weight moves under --offload excluded).\n\n" + "\n".join(lines) + "\n")
     print("\n".join(lines) + f"\n\nsaved {md} and results/gpu8_summary.json")
 
 
