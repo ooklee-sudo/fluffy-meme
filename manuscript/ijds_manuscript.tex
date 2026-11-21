@@ -40,7 +40,7 @@
 }
 
 \ABSTRACT{%
-Firms increasingly adapt licensed foundation models to their own tasks with small fine-tuned adapters. When the provider releases a new model version, each adapter has to be retrained, reused as it is, or repaired by some cheaper transfer procedure, and the firm needs to know which. We formulate this choice as an optimal stopping problem with stochastic releases and a stochastic value at stake. The model gives a closed-form retraining threshold and a price ceiling for any transfer method, both driven by a single measurable quantity: the share of the retraining benefit that the cheaper option recovers. We then measure that quantity on 16 upgrades of open models with 0.5 to 1.7 billion parameters from four families, together with earlier runs on smaller models. Two kinds of upgrade behave very differently. After continued pre-training, a copied adapter keeps 87\% to 99\% of the retraining benefit, so retraining pays only for adapters whose annual value exceeds roughly 19 to 270 times the retraining cost. After post-training into an instruction-following model, the copied adapter kept anywhere from nothing to 97\% of the benefit, so no rule of thumb is safe. Within a model family, a label-free measure of how much the model's internal activations moved orders the upgrades exactly by how much of the adapter survives, and, once calibrated on one upgrade, predicts recovery on the others with a mean absolute error of 0.03; it does not carry over between families or to post-training upgrades. Release histories of six open model families put the release rate at about 1.8 new versions per year, with intervals more regular than the Poisson baseline assumes, and the model's recommendations hold under the estimated rates. Finally, we use the price ceiling to evaluate a closed-form, label-free transfer method. It improved on copying by at most 1.3 points at this scale, far less than its cost requires.
+Firms increasingly adapt licensed foundation models to their own tasks with small fine-tuned adapters. When the provider releases a new model version, each adapter has to be retrained, reused as it is, or repaired by some cheaper transfer procedure, and the firm needs to know which. We formulate this choice as an optimal stopping problem with stochastic releases and a stochastic value at stake. The model gives a closed-form retraining threshold and a price ceiling for any transfer method, both driven by a single measurable quantity: the share of the retraining benefit that the cheaper option recovers. We then measure that quantity on 16 upgrades of open models with 0.5 to 1.7 billion parameters from four families, together with earlier runs on smaller models. Two kinds of upgrade behave very differently. After continued pre-training, a copied adapter keeps 88\% to nearly 100\% of the retraining benefit, so retraining pays only for adapters whose annual value exceeds about 20 times the retraining cost after the largest of these upgrades, and several hundred times after the smallest. After post-training into an instruction-following model, the copied adapter kept anywhere from nothing to 94\% of the benefit, so no rule of thumb is safe. Within a model family, a label-free measure of how much the model's internal activations moved orders the upgrades exactly by how much of the adapter survives, and, once calibrated on one upgrade, predicts recovery on the others with a mean absolute error of 0.02; it does not carry over between families or to post-training upgrades. Release histories of six open model families put the release rate at about 1.8 new versions per year, with intervals more regular than the Poisson baseline assumes, and the model's recommendations hold under the estimated rates. Finally, we use the price ceiling to evaluate a closed-form, label-free transfer method. It improved on copying by at most 0.7 points at this scale, far less than its cost requires.
 }
 
 \KEYWORDS{foundation models, parameter-efficient fine-tuning, model maintenance, optimal stopping, representation drift, AI asset management}
@@ -59,13 +59,13 @@ This paper treats that choice as a data-driven decision problem and asks two que
 
 For the first question we build a stylized but explicit model (Sections~\ref{sec:model} and~\ref{sec:analysis}). Releases arrive as a Poisson process, the annual value at stake follows a geometric Brownian motion, and the old adapter, or any cheaper repair, retains a fraction $R$ of the retraining benefit. We call $R$ the recovery of the option. The model yields a closed-form threshold: retrain once the value at stake exceeds a multiple of the retraining cost that grows like $1/(1-R)$. It also yields a price ceiling $\Gamma$ for a transfer method. A method that recovers $R_A$ where copying recovers $R_C$ is worth buying for some adapter if and only if its cost is below $\Gamma(R_A,R_C)$, and for a given cost this defines a break-even recovery that a vendor or an internal team must beat. Everything a manager needs reduces to four inputs that a firm can estimate: the release rate, the volatility and growth of the value at stake, the full cost of retraining, and the recovery of the cheaper option.
 
-For the second question we measure recovery on 16 upgrades of open models (Sections~\ref{sec:design} and~\ref{sec:results}). Twelve are continued pre-training upgrades within a family, built from intermediate checkpoints of Pythia-1B, Pythia-1.4B \citep{biderman2023pythia}, and OLMo-2-1B \citep{olmo2024olmo2}. Four are post-training upgrades in which a base model is replaced by its instruction-tuned release (Qwen2.5-0.5B and 1.5B, \citealt{qwen2024qwen25}; SmolLM2-1.7B, \citealt{allal2025smollm2}; OLMo-2-1B). We add earlier runs on Pythia models with 70 to 410 million parameters. The results separate the two kinds of upgrade sharply. Continued pre-training leaves most of an adapter intact at this scale: a copied adapter kept 87\% to 99\% of the retraining benefit, and the implied retraining thresholds lie between about 19 and 270 times the retraining cost per year. Post-training is unpredictable. The copied adapter retained 97\% and 90\% on the two Qwen models, 15\% on SmolLM2, and nothing on OLMo-2, where it was slightly worse than using no adapter at all.
+For the second question we measure recovery on 16 upgrades of open models (Sections~\ref{sec:design} and~\ref{sec:results}). Twelve are continued pre-training upgrades within a family, built from intermediate checkpoints of Pythia-1B, Pythia-1.4B \citep{biderman2023pythia}, and OLMo-2-1B \citep{olmo2024olmo2}. Four are post-training upgrades in which a base model is replaced by its instruction-tuned release (Qwen2.5-0.5B and 1.5B, \citealt{qwen2024qwen25}; SmolLM2-1.7B, \citealt{allal2025smollm2}; OLMo-2-1B). We add earlier runs on Pythia models with 70 to 410 million parameters. The results separate the two kinds of upgrade sharply. Continued pre-training leaves most of an adapter intact at this scale: a copied adapter kept 88\% to nearly 100\% of the retraining benefit (means over three seeds), and the implied retraining thresholds lie between about 20 and several hundred times the retraining cost per year. Post-training is unpredictable. The copied adapter retained 94\% and 87\% on the two Qwen models, 16\% on SmolLM2, and nothing on OLMo-2, where it was slightly worse than using no adapter at all.
 
 To calibrate the economic side of the model, we collect the release dates of six open model families (Llama, Qwen, OLMo, Gemma, Phi, and Mistral) from their public repositories. Counting only new version numbers, providers released 1.3 to 2.4 new versions per year, about 1.8 on average, and the intervals between releases were more regular than exponential. The thresholds implied by these rates differ by less than a factor of two across families and leave the policy conclusions unchanged.
 
-We also ask whether recovery can be anticipated without retraining. We measure activation drift, the median relative change in the inputs to the adapter's modules between the old and new model on unlabeled task prompts. Within each of five model families and sizes, drift orders the upgrades exactly by recovery (Spearman correlation $-1$ in every family). A per-family curve calibrated on one upgrade predicts recovery on the remaining upgrades of that family with a mean absolute error of 0.028. The signal has clear limits, which we document: a curve fitted to one family does not transfer to another, extrapolation beyond the calibrated drift range fails, and post-training upgrades fall off the curve entirely.
+We also ask whether recovery can be anticipated without retraining. We measure activation drift, the median relative change in the inputs to the adapter's modules between the old and new model on unlabeled task prompts. Within each of five model families and sizes, drift orders the upgrades exactly by recovery (Spearman correlation $-1$ in every family). A per-family curve calibrated on one upgrade predicts recovery on the remaining upgrades of that family with a mean absolute error of 0.017. The signal has clear limits, which we document: a curve fitted to one family does not transfer to another, extrapolation beyond the calibrated drift range fails, and post-training upgrades fall off the curve entirely.
 
-Finally, we use the price ceiling to evaluate a concrete repair: Anchored Calibration Transfer (ACT), a closed-form, label-free correction of a LoRA adapter that we developed for this setting. In earlier experiments on models below half a billion parameters, ACT recovered a substantial part of what copying lost after large upgrades. At one to two billion parameters the picture is different. ACT improved on copying by at most 1.3 points and made things slightly worse on all four OLMo-2 continued pre-training upgrades, while its compute time was 32\% to 84\% of a retraining run. The price ceiling never exceeded 0.16 of the retraining cost, so ACT was never the cost-minimizing policy. We report this negative result in some detail because it illustrates what the decision model is for: a transfer method has to be judged by the gain it delivers at the price it costs and at the scale at which it will be used, and accuracy tables alone do not show that.
+Finally, we use the price ceiling to evaluate a concrete repair: Anchored Calibration Transfer (ACT), a closed-form, label-free correction of a LoRA adapter that we developed for this setting. In earlier experiments on models below half a billion parameters, ACT recovered a substantial part of what copying lost after large upgrades. At one to two billion parameters the picture is different. ACT improved on copying by at most 0.7 points and made things slightly worse on all five OLMo-2 upgrades, while its compute time was 32\% to 84\% of a retraining run. The price ceiling stayed below its measured cost on every pair, so ACT was never the cost-minimizing policy. We report this negative result in some detail because it illustrates what the decision model is for: a transfer method has to be judged by the gain it delivers at the price it costs and at the scale at which it will be used, and accuracy tables alone do not show that.
 
 The paper contributes to the literature on the economics of information technology maintenance a model of a maintenance decision that is specific to AI assets built on external foundation models, and it contributes to the data science literature evidence on how a widely used class of model components degrades under upgrades, together with a label-free diagnostic and an account of where it fails. Section~\ref{sec:lit} reviews related work. Section~\ref{sec:practice} turns the results into a procedure, and Section~\ref{sec:conclusion} discusses limitations.
 
@@ -132,7 +132,7 @@ Unless noted otherwise we use $\rho=0.10$, $\mu=2$ releases per year, $g=0.20$, 
 
 \paragraph{Upgrades.} Each upgrade is a pair of models that share a tokenizer, a source that the adapter is trained on and a target that replaces it. Table~\ref{tab:pairs} lists the 16 pairs in the main experiment. The continued pre-training upgrades replace an intermediate checkpoint with a later one from the same training run, which gives upgrades of increasing size with everything else fixed: for Pythia-1B and Pythia-1.4B the target is the final checkpoint (step 143{,}000) and the sources are steps 133{,}000, 103{,}000, 83{,}000, and 73{,}000; for OLMo-2-1B the target is the end of the first pre-training stage (step 1{,}907{,}359) and the sources are steps 1.8, 1.6, 1.4, and 1.0 million. The post-training upgrades replace a base model with its instruction-tuned release, which is the upgrade a firm experiences when a provider moves its offering to a chat-tuned model. These four releases differ in how they were produced, from supervised fine-tuning to several rounds of preference and reinforcement learning, and we do not try to separate those steps.
 
-\paragraph{Adapters and tasks.} On each source model we train a rank-8 LoRA adapter (scaling 16) on every linear layer of every decoder block. The main task is GSM8K \citep{cobbe2021gsm8k}, with 2{,}000 training examples, 600 steps, batch size 4, learning rate $3\times10^{-4}$, and a maximum length of 256 tokens. The same configuration, started from the same initialization, is retrained on the target model; this is both the upper benchmark in~\eqref{eq:recovery} and the basis of the retraining cost. Loss is the mean negative log-likelihood of the reference answer tokens on 500 held-out test examples. \pending{Results on SAMSum dialogue summarization \citep{gliwa2019samsum} and BoolQ yes/no question answering \citep{clark2019boolq}, and three-seed means, are being computed and will be added.}
+\paragraph{Adapters and tasks.} On each source model we train a rank-8 LoRA adapter (scaling 16) on every linear layer of every decoder block. The main task is GSM8K \citep{cobbe2021gsm8k}, with 2{,}000 training examples, 600 steps, batch size 4, learning rate $3\times10^{-4}$, and a maximum length of 256 tokens. The same configuration, started from the same initialization, is retrained on the target model; this is both the upper benchmark in~\eqref{eq:recovery} and the basis of the retraining cost. Loss is the mean negative log-likelihood of the reference answer tokens on 500 held-out test examples. Each pair is run with three seeds, which change the training, evaluation, and calibration samples, the adapter initialization, and the batch order; we report means and standard deviations. \pending{Results on SAMSum dialogue summarization \citep{gliwa2019samsum} and BoolQ yes/no question answering \citep{clark2019boolq} are being computed and will be added.}
 
 \paragraph{Activation drift.} For each adapter module we compare the module's inputs in the source and target models on the same 256 unlabeled task prompts, $X_s$ and $X_t$, and compute $\|X_t-X_s\|_F/\|X_s\|_F$; the drift of an upgrade is the median over modules. The computation needs no labels and no training, only forward passes. In our implementation it is computed in the same pass as ACT, so for a given module the earlier layers of the target model already carry ACT's correction; a version computed on the plain copied adapter would differ slightly.
 
@@ -140,7 +140,7 @@ Unless noted otherwise we use $\rho=0.10$, $\mu=2$ releases per year, $g=0.20$, 
 
 \paragraph{Smaller models.} Earlier runs on Pythia models with 70, 160, and 410 million parameters used a smaller configuration on a CPU (500 training examples, 300 steps, learning rate $5\times10^{-4}$, 200 evaluation and 128 calibration examples). We use them to show how recovery depends on model size, keeping in mind that the training budget differs as well. Appendix~\ref{app:small} reports them in full.
 
-\paragraph{Replication.} Training on a GPU is not bit-for-bit reproducible. Four repeated runs of the same configuration on the largest Pythia-1B upgrade gave copy recoveries between 0.909 and 0.914. The adapter initialization is seeded explicitly; in an earlier version of our code it was not, so the small-model runs in Appendix~\ref{app:small} also contain variation from initialization.
+\paragraph{Replication.} Training on a GPU is not bit-for-bit reproducible. Four repeated runs with the same seed on the largest Pythia-1B upgrade gave copy recoveries between 0.909 and 0.914, smaller than the variation across seeds. The adapter initialization is seeded explicitly; in an earlier version of our code it was not, so the small-model runs in Appendix~\ref{app:small} also contain variation from initialization.
 
 %=====================================================================================================================
 \section{Results}\label{sec:results}
@@ -149,47 +149,47 @@ Unless noted otherwise we use $\rho=0.10$, $\mu=2$ releases per year, $g=0.20$, 
 
 \begin{table}[t]
 \centering
-\caption{Held-out loss, recovery, and drift on 16 upgrades (GSM8K, 500 test examples, seed 0). Loss is the negative log-likelihood of answer tokens. \pending{Three-seed means and standard deviations to replace single-seed values.}}\label{tab:pairs}
+\caption{Copy and ACT recovery on 16 upgrades (GSM8K, 500 test examples; mean and, in parentheses, standard deviation over three seeds). Recovery uses the negative log-likelihood of answer tokens, eq.~\eqref{eq:recovery}. Drift is the median relative change in module inputs (seed mean).}\label{tab:pairs}
 \small
-\begin{tabular}{llccccccc}
+\begin{tabular}{llcccc}
 \toprule
-Model & Upgrade & Drift & None & Retrain & Copy & ACT & $R_C$ & $R_A$\\
+Model & Upgrade & Drift & $R_C$ & $R_A$ & Gain\\
 \midrule
-\multicolumn{9}{l}{\emph{Continued pre-training}}\\
-Pythia-1B & step 133k $\to$ 143k & 0.13 & 2.216 & 0.874 & 0.896 & 0.895 & 0.984 & 0.984\\
- & step 103k $\to$ 143k & 0.21 & 2.216 & 0.871 & 0.914 & 0.910 & 0.968 & 0.971\\
- & step 83k $\to$ 143k & 0.31 & 2.216 & 0.872 & 0.959 & 0.945 & 0.935 & 0.946\\
- & step 73k $\to$ 143k & 0.37 & 2.216 & 0.876 & 0.992 & 0.975 & 0.914 & 0.926\\
-Pythia-1.4B & step 133k $\to$ 143k & 0.15 & 2.085 & 0.830 & 0.841 & 0.840 & 0.991 & 0.992\\
- & step 103k $\to$ 143k & 0.24 & 2.085 & 0.821 & 0.854 & 0.850 & 0.974 & 0.977\\
- & step 83k $\to$ 143k & 0.35 & 2.085 & 0.820 & 0.908 & 0.899 & 0.931 & 0.938\\
- & step 73k $\to$ 143k & 0.42 & 2.085 & 0.825 & 0.925 & 0.920 & 0.920 & 0.924\\
-OLMo-2-1B & step 1.8M $\to$ 1.91M & 0.29 & 1.712 & 0.685 & 0.715 & 0.715 & 0.971 & 0.970\\
- & step 1.6M $\to$ 1.91M & 0.36 & 1.712 & 0.685 & 0.745 & 0.748 & 0.942 & 0.939\\
- & step 1.4M $\to$ 1.91M & 0.45 & 1.712 & 0.684 & 0.778 & 0.779 & 0.909 & 0.907\\
- & step 1.0M $\to$ 1.91M & 0.68 & 1.712 & 0.686 & 0.819 & 0.826 & 0.870 & 0.864\\
-\multicolumn{9}{l}{\emph{Post-training (base $\to$ instruction-tuned)}}\\
-Qwen2.5-0.5B & base $\to$ instruct & 0.26 & 0.996 & 0.546 & 0.560 & 0.557 & 0.969 & 0.976\\
-Qwen2.5-1.5B & base $\to$ instruct & 0.21 & 0.887 & 0.487 & 0.528 & 0.527 & 0.897 & 0.899\\
-SmolLM2-1.7B & base $\to$ instruct & 0.38 & 0.695 & 0.476 & 0.662 & 0.663 & 0.147 & 0.145\\
-OLMo-2-1B & base $\to$ instruct & 1.45 & 1.392 & 0.603 & 1.413 & 1.409 & $-0.026$ & $-0.022$\\
+\multicolumn{6}{l}{\emph{Continued pre-training}}\\
+Pythia-1B & step 133k $\to$ 143k & 0.13 & 0.990 (0.006) & 0.990 (0.006) & $+0.000$\\
+ & step 103k $\to$ 143k & 0.21 & 0.974 (0.007) & 0.976 (0.006) & $+0.002$\\
+ & step 83k $\to$ 143k & 0.31 & 0.950 (0.013) & 0.954 (0.008) & $+0.004$\\
+ & step 73k $\to$ 143k & 0.37 & 0.925 (0.013) & 0.930 (0.009) & $+0.005$\\
+Pythia-1.4B & step 133k $\to$ 143k & 0.15 & 0.997 (0.008) & 0.998 (0.008) & $+0.001$\\
+ & step 103k $\to$ 143k & 0.24 & 0.981 (0.007) & 0.984 (0.007) & $+0.003$\\
+ & step 83k $\to$ 143k & 0.35 & 0.943 (0.011) & 0.946 (0.007) & $+0.002$\\
+ & step 73k $\to$ 143k & 0.41 & 0.928 (0.006) & 0.931 (0.007) & $+0.003$\\
+OLMo-2-1B & step 1.8M $\to$ 1.91M & 0.29 & 0.974 (0.005) & 0.973 (0.004) & $-0.001$\\
+ & step 1.6M $\to$ 1.91M & 0.36 & 0.953 (0.009) & 0.948 (0.011) & $-0.004$\\
+ & step 1.4M $\to$ 1.91M & 0.45 & 0.933 (0.022) & 0.929 (0.020) & $-0.004$\\
+ & step 1.0M $\to$ 1.91M & 0.68 & 0.877 (0.013) & 0.856 (0.021) & $-0.021$\\
+\multicolumn{6}{l}{\emph{Post-training (base $\to$ instruction-tuned)}}\\
+Qwen2.5-0.5B & base $\to$ instruct & 0.27 & 0.939 (0.026) & 0.946 (0.026) & $+0.007$\\
+Qwen2.5-1.5B & base $\to$ instruct & 0.20 & 0.872 (0.024) & 0.872 (0.025) & $+0.001$\\
+SmolLM2-1.7B & base $\to$ instruct & 0.39 & 0.159 (0.018) & 0.157 (0.018) & $-0.003$\\
+OLMo-2-1B & base $\to$ instruct & 1.45 & $-0.010$ (0.014) & $-0.049$ (0.032) & $-0.039$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Table~\ref{tab:pairs} reports the results. Two observations stand out.
 
-The first is that continued pre-training does little damage at this scale. Across the twelve upgrades a copied adapter kept between 87\% and 99\% of the retraining benefit. Recovery fell steadily as the gap between checkpoints widened, but even replacing a checkpoint taken halfway through Pythia's training with the final one left more than 91\% of the benefit in place. The retraining loss, by contrast, hardly depended on the source: retraining on the same target reached the same loss within 0.01 whichever checkpoint the adapter came from, which is what one would expect and a useful check that the benchmark in~\eqref{eq:recovery} is stable.
+The first is that continued pre-training does little damage at this scale. Across the twelve upgrades a copied adapter kept between 88\% and nearly 100\% of the retraining benefit, and the standard deviation across seeds was between 0.005 and 0.022. Recovery fell steadily as the gap between checkpoints widened, but even replacing a checkpoint taken halfway through Pythia's training with the final one left about 93\% of the benefit in place. The retraining loss, by contrast, hardly depended on the source: in the seed-0 runs, retraining on the same target reached the same loss within 0.01 whichever checkpoint the adapter came from, which is what one would expect and a useful check that the benchmark in~\eqref{eq:recovery} is stable.
 
-Model size matters. The same pair of Pythia checkpoints, step 73{,}000 to step 143{,}000, left a copied adapter with 32\% to 36\% of the benefit at 160 million parameters (two seeds), 47\% at 410 million, 91\% at one billion, and 92\% at 1.4 billion (Appendix~\ref{app:small}). Part of this is visible in the drift: the same checkpoint gap moved the activations of larger models less (0.61 at 160 million, 0.37 at one billion parameters). The comparison is confounded by the smaller training budget of the small-model runs, and we do not attempt to separate the two.
+Model size matters. The same pair of Pythia checkpoints, step 73{,}000 to step 143{,}000, left a copied adapter with 32\% to 36\% of the benefit at 160 million parameters (two seeds), 47\% at 410 million, and 93\% at both one and 1.4 billion (Appendix~\ref{app:small}). Part of this is visible in the drift: the same checkpoint gap moved the activations of larger models less (0.61 at 160 million, 0.37 at one billion parameters). The comparison is confounded by the smaller training budget of the small-model runs, and we do not attempt to separate the two.
 
-The second observation is that post-training upgrades are a different matter. On the two Qwen models a copied adapter kept 97\% and 90\% of the benefit, comparable with a moderate continued pre-training upgrade. On SmolLM2-1.7B it kept 15\%. On OLMo-2-1B it kept nothing: the adapter copied onto the instruction-tuned model gave a slightly higher loss than the instruction-tuned model without any adapter. These are not artifacts of a small denominator. The retraining benefit on OLMo-2 is 0.79 nats per token, larger than for any Qwen model, and on SmolLM2 the gap between the copied and retrained adapter is 0.19 nats. Instruction-tuned models are already better at GSM8K-style answers without an adapter, which shrinks the room an adapter has to add value, but it does not explain why the copy captures so little of that room in two cases and nearly all of it in the other two.
+The second observation is that post-training upgrades are a different matter. On the two Qwen models a copied adapter kept 94\% and 87\% of the benefit, comparable with a large continued pre-training upgrade. On SmolLM2-1.7B it kept 16\%. On OLMo-2-1B it kept nothing: the adapter copied onto the instruction-tuned model gave a slightly higher loss than the instruction-tuned model without any adapter. These are not artifacts of a small denominator or of seed noise; for these two models the standard deviations across seeds are below 0.02. In the seed-0 run the retraining benefit on OLMo-2 was 0.79 nats per token, larger than for any Qwen model, and on SmolLM2 the gap between the copied and retrained adapter is 0.19 nats. Instruction-tuned models are already better at GSM8K-style answers without an adapter, which shrinks the room an adapter has to add value, but it does not explain why the copy captures so little of that room in two cases and nearly all of it in the other two.
 
 \subsection{Drift as a Label-Free Signal}\label{sec:drift}
 
 Recovery can be measured only after retraining, which is the expense the firm hopes to avoid. Activation drift requires only unlabeled prompts and forward passes through the two models. We examine whether it can stand in.
 
-Within a family it ranks upgrades without error. In each of the five continued pre-training series (Pythia at 70 million, 160 million, one billion, and 1.4 billion parameters, and OLMo-2-1B) recovery decreases strictly as drift increases, a Spearman correlation of $-1$ in every series. To turn the ranking into a prediction, we fit $\log(1-R_C)=a_f+b\,d$, where $d$ is drift, $a_f$ is specific to the family, and the slope $b$ is estimated from the other families. We calibrate $a_f$ on the largest upgrade of the family, the one a firm is most likely to have retrained, and predict the others. The 15 predictions obtained in this way have a mean absolute error of 0.028 and a largest error of 0.071 (Table~\ref{tab:drift}).
+Within a family it ranks upgrades without error. In each of the five continued pre-training series (Pythia at 70 million, 160 million, one billion, and 1.4 billion parameters, and OLMo-2-1B) recovery decreases strictly as drift increases, a Spearman correlation of $-1$ in every series. To turn the ranking into a prediction, we fit $\log(1-R_C)=a_f+b\,d$, where $d$ is drift, $a_f$ is specific to the family, and the slope $b$ is estimated from the other families. We calibrate $a_f$ on the largest upgrade of the family, the one a firm is most likely to have retrained, and predict the others. The 15 predictions obtained in this way have a mean absolute error of 0.017 and a largest error of 0.051 (Table~\ref{tab:drift}), comparable with the seed-to-seed standard deviation of recovery itself.
 
 \begin{table}[t]
 \centering
@@ -199,14 +199,14 @@ Within a family it ranks upgrades without error. In each of the five continued p
 \toprule
 Prediction & $n$ & Mean abs.\ error & Largest error\\
 \midrule
-Within family, calibrated on the largest upgrade & 15 & 0.028 & 0.071\\
-Within family, calibrated on the smallest upgrade & 15 & 0.088 & 0.535\\
-Pooled across families, family left out & 22 & 0.111 & 1.018\\
+Within family, calibrated on the largest upgrade & 15 & 0.017 & 0.051\\
+Within family, calibrated on the smallest upgrade & 15 & 0.081 & 0.732\\
+Pooled across families, family left out & 22 & 0.100 & 0.993\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The signal has three limits. First, it does not extrapolate. Calibrated instead on the smallest upgrade of each family, the same model overpredicts the damage of large upgrades badly; on OLMo-2 it predicts a recovery of 0.34 for the largest upgrade, which in fact recovered 0.87. Recovery declined more slowly at high drift than the log-linear form allows. Second, it does not carry over between families. A pooled model with drift and model size explains 84\% of the variation in $\log(1-R_C)$ within the sample, but when each family is left out in turn and predicted from the others, the errors are large: 0.38 for the 410-million-parameter upgrade and more than 1.0 for the largest OLMo-2 upgrade. Third, post-training upgrades fall outside the relationship altogether. The SmolLM2 upgrade had nearly the same drift as the largest Pythia-1B upgrade (0.38 against 0.37) but a recovery of 0.15 against 0.91. Whatever instruction tuning does to these models, the median change in module inputs does not capture it.
+The signal has three limits. First, it does not extrapolate. Calibrated instead on the smallest upgrade of each family, the same model overpredicts the damage of large upgrades badly; on OLMo-2 it predicts a recovery of 0.15 for the largest upgrade, which in fact recovered 0.88. Recovery declined more slowly at high drift than the log-linear form allows. Second, it does not carry over between families. A pooled model with drift and model size explains 85\% of the variation in $\log(1-R_C)$ within the sample, but when each family is left out in turn and predicted from the others, the errors are large: 0.39 for the 410-million-parameter upgrade and 0.99 for the largest OLMo-2 upgrade. Third, post-training upgrades fall outside the relationship altogether. The SmolLM2 upgrade had nearly the same drift as the largest Pythia-1B upgrade (0.39 against 0.37) but a recovery of 0.16 against 0.93. Whatever instruction tuning does to these models, the median change in module inputs does not capture it.
 
 The practical reading is narrow but useful. A firm that receives regular continued pre-training updates from the same provider and has retrained once after a large update can use drift to judge later updates of no greater size without retraining again. It cannot use drift to judge a move to an instruction-tuned model, or to a model from a different family.
 
@@ -220,29 +220,29 @@ The practical reading is narrow but useful. A firm that receives regular continu
 \toprule
 Model & Upgrade & $R_C$ & $v^*_C$ & $C_A/C_N$ & $\Gamma$ & Break-even $R_A$ & ACT optimal for\\
 \midrule
-Pythia-1B & 133k $\to$ 143k & 0.984 & 153 & 0.52 & 0.00 & 0.994 & never\\
- & 103k $\to$ 143k & 0.968 & 76.7 & 0.52 & 0.06 & 0.987 & never\\
- & 83k $\to$ 143k & 0.935 & 37.8 & 0.51 & 0.12 & 0.973 & never\\
- & 73k $\to$ 143k & 0.914 & 28.5 & 0.53 & 0.10 & 0.966 & never\\
-Pythia-1.4B & 133k $\to$ 143k & 0.991 & 273 & 0.53 & 0.08 & 0.996 & never\\
- & 103k $\to$ 143k & 0.974 & 94.4 & 0.52 & 0.08 & 0.990 & never\\
- & 83k $\to$ 143k & 0.931 & 35.6 & 0.52 & 0.07 & 0.972 & never\\
- & 73k $\to$ 143k & 0.920 & 30.7 & 0.53 & 0.03 & 0.969 & never\\
-OLMo-2-1B & 1.8M $\to$ 1.91M & 0.971 & 84.6 & 0.41 & 0.00 & 0.985 & never\\
- & 1.6M $\to$ 1.91M & 0.942 & 42.3 & 0.41 & 0.00 & 0.971 & never\\
- & 1.4M $\to$ 1.91M & 0.909 & 27.0 & 0.41 & 0.00 & 0.954 & never\\
- & 1.0M $\to$ 1.91M & 0.870 & 18.9 & 0.42 & 0.00 & 0.936 & never\\
-Qwen2.5-0.5B & base $\to$ instruct & 0.969 & 79.2 & 0.32 & 0.16 & 0.982 & never\\
-Qwen2.5-1.5B & base $\to$ instruct & 0.897 & 23.8 & 0.84 & 0.01 & 0.987 & never\\
-SmolLM2-1.7B & base $\to$ instruct & 0.147 & 2.88 & 0.59 & 0.00 & 0.713 & never\\
-OLMo-2-1B & base $\to$ instruct & $<0$ & 2.45$^\dagger$ & 0.42 & 0.00 & 0.506$^\dagger$ & never\\
+Pythia-1B & 133k $\to$ 143k & 0.990 & 245 & 0.51 & 0.00 & 0.996 & never\\
+ & 103k $\to$ 143k & 0.974 & 94.4 & 0.51 & 0.05 & 0.989 & never\\
+ & 83k $\to$ 143k & 0.950 & 49.1 & 0.51 & 0.05 & 0.980 & never\\
+ & 73k $\to$ 143k & 0.925 & 32.7 & 0.51 & 0.05 & 0.969 & never\\
+Pythia-1.4B & 133k $\to$ 143k & 0.997 & 818 & 0.51 & 0.26 & 0.999 & never\\
+ & 103k $\to$ 143k & 0.981 & 129 & 0.51 & 0.11 & 0.992 & never\\
+ & 83k $\to$ 143k & 0.943 & 43.1 & 0.51 & 0.04 & 0.977 & never\\
+ & 73k $\to$ 143k & 0.928 & 34.1 & 0.52 & 0.03 & 0.971 & never\\
+OLMo-2-1B & 1.8M $\to$ 1.91M & 0.974 & 94.4 & 0.40 & 0.00 & 0.987 & never\\
+ & 1.6M $\to$ 1.91M & 0.953 & 52.2 & 0.84$^\ast$ & 0.00 & 0.994 & never\\
+ & 1.4M $\to$ 1.91M & 0.933 & 36.6 & 0.40 & 0.00 & 0.966 & never\\
+ & 1.0M $\to$ 1.91M & 0.877 & 20.0 & 0.83$^\ast$ & 0.00 & 0.983 & never\\
+Qwen2.5-0.5B & base $\to$ instruct & 0.939 & 40.2 & 0.32 & 0.08 & 0.964 & never\\
+Qwen2.5-1.5B & base $\to$ instruct & 0.872 & 19.2 & 0.77 & 0.00 & 0.977 & never\\
+SmolLM2-1.7B & base $\to$ instruct & 0.159 & 2.92 & 0.55 & 0.00 & 0.687 & never\\
+OLMo-2-1B & base $\to$ instruct & $<0$ & 2.45$^\dagger$ & 0.40 & 0.00 & 0.486$^\dagger$ & never\\
 \bottomrule
 \end{tabular}
 
-\smallskip\footnotesize $^\dagger$ Computed with $R_C=0$.
+\smallskip\footnotesize $^\dagger$ Computed with $R_C=0$. $^\ast$ Mean over seeds includes runs with unusually long ACT times. \pending{Check per-seed timings; the median is likely near 0.40.}
 \end{table}
 
-Table~\ref{tab:policy} feeds the measured recoveries into Proposition~\ref{prop:thr}. After a continued pre-training upgrade, the threshold for retraining a copied adapter ranges from 19 to 273 times the retraining cost per year. In other words, an adapter would have to be worth at least about twenty retraining runs a year before it is worth retraining after even the largest of these upgrades, and well over a hundred after a small one. Most adapters in practice are not worth that much relative to the cost of retraining them, so the rule says to keep the copy. After the SmolLM2 and OLMo-2 post-training upgrades the threshold falls to 2.9 and 2.5 times the retraining cost, and almost any adapter that was worth training in the first place should be retrained at once.
+Table~\ref{tab:policy} feeds the mean recoveries into Proposition~\ref{prop:thr}. After a continued pre-training upgrade, the threshold for retraining a copied adapter ranges from 20 to more than 800 times the retraining cost per year. In other words, an adapter would have to be worth at least about twenty retraining runs a year before it is worth retraining after even the largest of these upgrades, and well over a hundred after a small one. Most adapters in practice are not worth that much relative to the cost of retraining them, so the rule says to keep the copy. After the SmolLM2 and OLMo-2 post-training upgrades the threshold falls to 2.9 and 2.5 times the retraining cost, and almost any adapter that was worth training in the first place should be retrained at once.
 
 Because $v^*$ is proportional to $1/(1-R_C)$, the threshold is most sensitive exactly where continued pre-training puts recovery. An error of 0.03 in $R_C$, the typical error of the drift-based prediction in Section~\ref{sec:drift}, moves the threshold for an upgrade with $R_C=0.93$ anywhere between about 25 and 61 times the retraining cost. For adapters worth far less than that, the decision does not change; for an adapter close to the threshold, it is worth measuring recovery directly.
 
@@ -252,22 +252,22 @@ The release rate $\mu$ is the economic input that a firm can estimate most direc
 
 \begin{table}[t]
 \centering
-\caption{Release rates of six open model families (first Hugging Face repository of each release, through November 2026). $\mu$ is completed intervals per year of observation with an exact Poisson 95\% interval; CV is the coefficient of variation of completed intervals; the open gap is the time since the last release. Thresholds use $R_C=0.914$ (largest Pythia-1B upgrade) and $R_C=0.147$ (SmolLM2 post-training upgrade) with the family's strict $\mu$ and the other baseline parameters.}\label{tab:releases}
+\caption{Release rates of six open model families (first Hugging Face repository of each release, through November 2026). $\mu$ is completed intervals per year of observation with an exact Poisson 95\% interval; CV is the coefficient of variation of completed intervals; the open gap is the time since the last release. Thresholds use $R_C=0.925$ (largest Pythia-1B upgrade) and $R_C=0.159$ (SmolLM2 post-training upgrade) with the family's strict $\mu$ and the other baseline parameters.}\label{tab:releases}
 \small
 \begin{tabular}{lcccccccc}
 \toprule
  & \multicolumn{4}{c}{Strict (new versions)} & Broad & & \multicolumn{2}{c}{$v^*_C/C_N$ at strict $\mu$}\\
 \cmidrule(lr){2-5}\cmidrule(lr){8-9}
-Family & Releases & $\mu$ & 95\% CI & CV & $\mu$ & Open gap (months) & $R_C=0.914$ & $R_C=0.147$\\
+Family & Releases & $\mu$ & 95\% CI & CV & $\mu$ & Open gap (months) & $R_C=0.925$ & $R_C=0.159$\\
 \midrule
-Llama & 6 & 1.48 & [0.48, 3.46] & 0.72 & 1.48 & 19.7 & 21.9 & 2.21\\
-Qwen & 9 & 2.42 & [1.05, 4.77] & 0.43 & 4.54 & 3.5 & 33.9 & 3.42\\
-OLMo & 6 & 1.74 & [0.57, 4.07] & 0.78 & 2.79 & 12.1 & 25.3 & 2.55\\
-Gemma & 5 & 1.44 & [0.39, 3.68] & 0.80 & 2.87 & 8.7 & 21.3 & 2.15\\
-Phi & 5 & 1.25 & [0.34, 3.20] & 0.13 & 1.88 & 23.3 & 18.9 & 1.91\\
-Mistral & 8 & 2.21 & [0.89, 4.55] & 0.46 & 3.78 & 9.9 & 31.2 & 3.14\\
+Llama & 6 & 1.48 & [0.48, 3.46] & 0.72 & 1.48 & 19.7 & 25.1 & 2.24\\
+Qwen & 9 & 2.42 & [1.05, 4.77] & 0.43 & 4.54 & 3.5 & 38.8 & 3.46\\
+OLMo & 6 & 1.74 & [0.57, 4.07] & 0.78 & 2.79 & 12.1 & 28.9 & 2.58\\
+Gemma & 5 & 1.44 & [0.39, 3.68] & 0.80 & 2.87 & 8.7 & 24.5 & 2.18\\
+Phi & 5 & 1.25 & [0.34, 3.20] & 0.13 & 1.88 & 23.3 & 21.7 & 1.93\\
+Mistral & 8 & 2.21 & [0.89, 4.55] & 0.46 & 3.78 & 9.9 & 35.8 & 3.19\\
 \midrule
-Pooled & 39 & 1.77 & [1.22, 2.48] & & 2.89 & & 25.6$^\ddagger$ & 2.58$^\ddagger$\\
+Pooled & 39 & 1.77 & [1.22, 2.48] & & 2.89 & & 29.4$^\ddagger$ & 2.62$^\ddagger$\\
 \bottomrule
 \end{tabular}
 
@@ -276,7 +276,7 @@ Pooled & 39 & 1.77 & [1.22, 2.48] & & 2.89 & & 25.6$^\ddagger$ & 2.58$^\ddagger$
 
 Table~\ref{tab:releases} summarizes the estimates. Under the strict definition the families released between 1.3 and 2.4 new versions per year, 1.77 on average (95\% interval 1.22 to 2.48); counting new sizes and variants as well raises the pooled rate to 2.9. The baseline value $\mu=2$ used elsewhere in the paper lies inside the strict interval. Two features of the data matter for the model. First, the intervals are more regular than exponential. Scaling each family's intervals by its estimated mean and fitting a gamma distribution with the open intervals treated as censored gives a shape parameter of 1.9 (coefficient of variation 0.72), and a likelihood ratio test rejects the exponential case of shape one ($\chi^2_1=7.3$, $p=0.007$; under the broad definition the shape is 2.1). Second, the pace is not constant. Llama and Phi had gone 20 and 23 months without a new version by the end of the window, after releasing every four months on average before, so a firm should re-estimate $\mu$ for its own provider rather than rely on a pooled figure.
 
-For the decision, the variation across families is modest. At the strict rates, the threshold for retraining after the largest Pythia-1B upgrade ranges from 19 to 34 times the retraining cost per year, and after the SmolLM2 post-training upgrade from 1.9 to 3.4 times. A faster release pace raises both thresholds, because a retrained adapter has less time to pay back, but neither range comes close to reversing the recommendations of Section~\ref{sec:policy}. The more regular intervals also bear on the robustness analysis of Section~\ref{sec:robust}: the observed coefficient of variation of about 0.7 lies between the Poisson case and the Erlang scenario simulated there, in which using the Poisson-calibrated threshold cost at most 0.4\% of expected cost.
+For the decision, the variation across families is modest. At the strict rates, the threshold for retraining after the largest Pythia-1B upgrade ranges from 22 to 39 times the retraining cost per year, and after the SmolLM2 post-training upgrade from 1.9 to 3.5 times. A faster release pace raises both thresholds, because a retrained adapter has less time to pay back, but neither range comes close to reversing the recommendations of Section~\ref{sec:policy}. The more regular intervals also bear on the robustness analysis of Section~\ref{sec:robust}: the observed coefficient of variation of about 0.7 lies between the Poisson case and the Erlang scenario simulated there, in which using the Poisson-calibrated threshold cost at most 0.4\% of expected cost.
 
 \subsection{Pricing a Transfer Method}\label{sec:act-results}
 
@@ -286,9 +286,9 @@ Between copying and retraining lies the possibility of a cheaper repair. We eval
 \end{equation}
 which asks the corrected module to reproduce, on the new model's activations, the low-rank projection that the old adapter produced on the old model's activations, while staying close to the old $A_s$. Layers are corrected in order from the input, the anchoring strength $\lambda$ is chosen per module on a held-out part of the unlabeled prompts, and no labels or gradient steps are needed.
 
-At this scale ACT does not pay (Tables~\ref{tab:pairs} and~\ref{tab:policy}). Its gain over copying was between $-0.006$ and $+0.013$: zero or positive on the Pythia and Qwen upgrades, and slightly negative on SmolLM2 and on all four OLMo-2 continued pre-training upgrades. Its compute time was between 32\% and 84\% of a retraining run. The price ceiling $\Gamma$ never exceeded 0.16 of the retraining cost, below the measured cost on every pair, so ACT was never the cost-minimizing option for any adapter value.
+At this scale ACT does not pay (Tables~\ref{tab:pairs} and~\ref{tab:policy}). Its mean gain over copying was between $-0.039$ and $+0.007$: zero or slightly positive on the Pythia and Qwen upgrades, and negative on SmolLM2 and on all five OLMo-2 upgrades, where it reached $-0.039$ on the instruction-tuned model. The gains are mostly smaller than the seed-to-seed standard deviation of recovery. Its compute time was between 32\% and 84\% of a retraining run. The price ceiling $\Gamma$ was below the measured cost on every pair, so ACT was never the cost-minimizing option for any adapter value.
 
-The break-even column shows how far it would have had to go. After the largest continued pre-training upgrades, a method costing half a retraining run had to add 4 to 7 points of recovery to the copy; ACT added at most 1.3. The comparison also cuts the other way: the ceiling is not zero. A method that costs 5\% of a retraining run and delivers ACT's gains would have been worth buying for some adapters on 7 of the 16 pairs. Whether a transfer method pays is a matter of both its gain and its cost, and at high recovery the required gain is small, so the cost has to be small too.
+The break-even column shows how far it would have had to go. After the largest Pythia upgrades, a method costing half a retraining run had to add about 4 points of recovery to the copy; ACT added at most half a point. The comparison also cuts the other way: the ceiling is not zero. A method that costs 5\% of a retraining run and delivers ACT's gains would have been worth buying for some adapters on 5 of the 16 pairs. Whether a transfer method pays is a matter of both its gain and its cost, and at high recovery the required gain is small, so the cost has to be small too.
 
 This conclusion differs from what we found on smaller models. After the largest Pythia upgrade at 160 million parameters, where a copy kept only a third of the benefit, ACT raised recovery to about 0.7 and was the cost-minimizing option for adapters worth between 1.8 and 4.4 times the retraining cost (Appendix~\ref{app:small}). As models grow, copies keep more, so there is less for any repair to recover, and the break-even gain shrinks only slowly relative to the cost.
 
@@ -297,7 +297,7 @@ ACT's measured cost also illustrates how strongly such numbers depend on impleme
 %=====================================================================================================================
 \section{Robustness}\label{sec:robust}
 
-\paragraph{Seeds and tasks.} \pending{Three-seed results on GSM8K and single-seed results on SAMSum and BoolQ for all 16 pairs. To report: whether the ranking of upgrades by recovery, the split between continued pre-training and post-training, and the policy conclusions in Table~\ref{tab:policy} hold across seeds and tasks.}
+\paragraph{Seeds and tasks.} The results in Section~\ref{sec:results} are means over three seeds. Compared with the single-seed first pass, the means moved by at most 0.03 (Qwen2.5-0.5B), and no conclusion changed: recovery still decreased strictly with drift in every family, the two kinds of upgrade stayed apart, and ACT was never the cost-minimizing option. \pending{Results on SAMSum and BoolQ for all 16 pairs, and whether the same conclusions hold on those tasks.}
 
 \paragraph{Release process and value dynamics.} The closed forms assume exponential release intervals and a diffusion for value. We simulated the threshold policy with 40{,}000 paths (time step $1/200$ year, with the barrier correction of \citealt{broadie1997continuity}) under alternative release processes with the same mean interval: a two-phase hyperexponential distribution with coefficients of variation of 2 and 3, which produces clustered releases; an Erlang distribution with a coefficient of variation of 0.5; and deterministic intervals. We also added compound Poisson jumps to $\log v$ (one and three per year, normal log-sizes with mean 0.2 and standard deviation 0.3), compensating the drift so that expected value still grows at rate $g$. The simulations use the recoveries and cost ratio of the largest 160-million-parameter Pythia upgrade, the one case in which a transfer method was optimal, because it exercises all three options.
 
@@ -333,7 +333,7 @@ The model is meant to be used with information a team largely has already. A wor
 \item \emph{Estimate the economic inputs once.} The release rate comes from the provider's release history (Section~\ref{sec:releases} shows how; for the families we examined it was between about 1.3 and 2.4 new versions a year), the discount rate from the firm's hurdle rate, and the growth and volatility of the value at stake from the business metric the adapter supports. The retraining cost should be the full cost of the last retraining, including data collection and revalidation, not compute alone. A team that counts only compute will retrain too early.
 \item \emph{Classify the upgrade.} A continued pre-training update of a model family the firm already uses is the benign case. A move to an instruction-tuned or otherwise post-trained model, or to a different family, should be treated as potentially severe until measured.
 \item \emph{Estimate recovery.} After a benign upgrade, compute the drift on a few hundred unlabeled task prompts. If the firm has retrained after an earlier upgrade of at least this size in the same family, the calibrated drift curve gives an estimate of $R_C$. Otherwise, or after a post-training upgrade, evaluate the new model with and without the copied adapter on a small labeled sample and retrain once to obtain $L_{\text{retrain}}$.
-\item \emph{Apply the threshold.} Retrain if the annual value at stake exceeds $v^*(R_C)$ in~\eqref{eq:vstar}; otherwise keep the copy and revisit the decision as the value at stake changes. With our baseline parameters, the largest Pythia-1B upgrade ($R_C=0.91$) gives $v^*=28.5\,C_N$, and the SmolLM2 post-training upgrade ($R_C=0.15$) gives $v^*=2.9\,C_N$.
+\item \emph{Apply the threshold.} Retrain if the annual value at stake exceeds $v^*(R_C)$ in~\eqref{eq:vstar}; otherwise keep the copy and revisit the decision as the value at stake changes. With our baseline parameters, the largest Pythia-1B upgrade ($R_C=0.93$) gives $v^*=32.7\,C_N$, and the SmolLM2 post-training upgrade ($R_C=0.16$) gives $v^*=2.9\,C_N$.
 \item \emph{Price any repair.} Before buying or building a transfer method, compute its break-even recovery at its cost (Proposition~\ref{prop:act}). If copies already keep 90\% or more, a method that costs a sizable fraction of retraining needs to add several points of recovery, which is a demanding requirement.
 \end{enumerate}
 

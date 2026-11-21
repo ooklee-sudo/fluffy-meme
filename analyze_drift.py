@@ -24,7 +24,10 @@ def median_drift(r):
 
 
 def load():
-    rows = list(csv.DictReader(open("results/gpu8_gsm8k_seed0_firstpass.csv")))
+    import sys
+    path = sys.argv[1] if len(sys.argv) > 1 else "results/gpu8_gsm8k_3seed_summary.csv"
+    rows = list(csv.DictReader(open(path)))
+    print("input:", path)
     cp = []  # (family, pair, params_b, drift, R_C)
     for r in rows:
         if r["upgrade_type"] == "continued_pretraining":
