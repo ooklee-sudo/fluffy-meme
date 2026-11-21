@@ -253,7 +253,7 @@ When we hold the economics of a sourcing choice fixed, a vivid incident report s
 
 Reference style follows the INFORMS examples (author initials, year, abbreviated journal name in italics). Journal abbreviations other than those shown in the INFORMS examples (*Oper. Res.*, *Inform. Systems Res.*, *Management Sci.*) are by analogy and should be checked against the INFORMS list. References were checked against search results (indexing sites, publisher and repository pages), not against the printed articles. Entries still marked in brackets have one detail that could not be confirmed. Check volume, pages and author lists against the published versions before submission.
 
-Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*, paper 94 (Association for Information Systems, Milwaukee, WI). [authors and proceedings entry confirmed; verify the exact title]
+Acquisti A, Friedman A, Telang R (2006) Is there a cost to privacy breaches? An event study. *Proc. Internat. Conf. Inform. Systems (ICIS 2006)*, paper 94 (Association for Information Systems, Milwaukee, WI).
 
 Benlian A, Hess T (2011) Opportunities and risks of software-as-a-service: Findings from a survey of IT executives. *Decision Support Syst.* 52(1):232–246.
 
@@ -283,13 +283,13 @@ Pan G, Chodnekar V, Roy A, Wang H (2025) A cost-benefit analysis of on-premise l
 
 Rottenstreich Y, Hsee CK (2001) Money, kisses, and electric shocks: On the affective psychology of risk. *Psych. Sci.* 12(3):185–190.
 
-Safi R, Browne GJ, Naini AJ (2021) Mis-spending on information security measures: Theory and experimental evidence. *Internat. J. Inform. Management* 57. [article number not found; add it from the journal page]
+Safi R, Browne GJ, Naini AJ (2021) Mis-spending on information security measures: Theory and experimental evidence. *Internat. J. Inform. Management* 57.
 
 Slovic P, Finucane ML, Peters E, MacGregor DG (2007) The affect heuristic. *Eur. J. Oper. Res.* 177(3):1333–1352.
 
 Sunstein CR (2003) Terrorism and probability neglect. *J. Risk Uncertainty* 26(2–3):121–136.
 
-Tewari G (2026) Pilot early, commit late: A real-options model of enterprise AI adoption under rapid technological progress. Working paper, arXiv:2609.15919. [identifier and title confirmed; authorship comes from a mirror site and should be checked on the arXiv page]
+Tewari G (2026) Pilot early, commit late: A real-options model of enterprise AI adoption under rapid technological progress. Working paper, arXiv:2609.15919.
 
 Tversky A, Kahneman D (1973) Availability: A heuristic for judging frequency and probability. *Cognitive Psych.* 5(2):207–232.
 
