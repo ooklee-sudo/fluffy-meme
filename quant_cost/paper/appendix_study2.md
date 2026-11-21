@@ -89,10 +89,10 @@ The cost shown to participants is deliberately the levelized cost, which is cons
 
 | Test | Main | With covariates | Excluding S8 = 1 respondents |
 | --- | --- | --- | --- |
-| H2c, Welch test of S | p = .042, d = −0.33 | p = .022 (coefficient −0.26) | p = .080, d = −0.31 |
-| H2c, mixed model interaction | −0.24, p = .014 | not estimated | −0.23, p = .031 |
-| H2a, Welch test of mean ln(WTP/L) | p = .010, d = 0.42 (Holm .020) | 0.32, p = .005 | p = .016, d = 0.44 (Holm .031) |
-| H3a, format effect | OR = 1.21, p = .348 | p = .348 | p = .361 |
+| H1, Welch test of S | p = .042, d = −0.33 | p = .022 (coefficient −0.26) | p = .080, d = −0.31 |
+| H1, mixed model interaction | −0.24, p = .014 | not estimated | −0.23, p = .031 |
+| H2, Welch test of mean ln(WTP/L) | p = .010, d = 0.42 (Holm .020) | 0.32, p = .005 | p = .016, d = 0.44 (Holm .031) |
+| H3, format effect | OR = 1.21, p = .348 | p = .348 | p = .361 |
 
 Covariates: numeracy, mean privacy concern, risk attitude and personal discretion.
 
