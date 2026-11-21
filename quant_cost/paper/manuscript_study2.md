@@ -124,7 +124,7 @@ The performance figures were calibrated on our own measurements. We ran Qwen2.5-
 
 ### 3.3 Measures
 
-*Outcomes.* After each scenario participants chose between the local model and the cloud API (binary). They then stated the amount they would pay per year to eliminate the API's exposure risk altogether, entered as a number in thousands of dollars between zero and L/4. Entries above L/4 were set to L/4 (35 of 748 entries, 4.7% [this count is from all completers; recompute for the analysable sample]), and zero was replaced by 0.001 L before taking logarithms. The primary outcome was S, computed per participant.
+*Outcomes.* After each scenario participants chose between the local model and the cloud API (binary). They then stated the amount they would pay per year to eliminate the API's exposure risk altogether, entered as a number in thousands of dollars between zero and L/4. Entries above L/4 were set to L/4 (26 of 608 entries in the analysis sample, 4.3%), and zero was replaced by 0.001 L before taking logarithms. The primary outcome was S, computed per participant.
 
 *Mediators and checks.* On a following screen, and therefore after the choice and willingness to pay, participants gave their own estimate of the annual exposure probability in that scenario, and rated the local model's quality disadvantage on a seven-point scale. A comprehension check after each scenario asked for the stated exposure probability. Before the scenarios, and after the news item, participants estimated the general 12-month probability that a mid-sized company's personal data would be exposed through an external AI vendor.
 
