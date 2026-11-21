@@ -1,0 +1,8 @@
+pair,source,target,comparison,n_seeds,drift,R_C,R_A,C_A_over_C_N,note
+olmo2-1b stage base>sft,allenai/OLMo-2-0425-1B,allenai/OLMo-2-0425-1B-SFT,cumulative,3,1.45,-0.033,0.015,0.34,seeds 0-2; R_C sd 0.021; C median
+olmo2-1b stage base>dpo,allenai/OLMo-2-0425-1B,allenai/OLMo-2-0425-1B-DPO,cumulative,3,1.45,-0.014,-0.047,0.34,seeds 0-2; R_C sd 0.014; C median
+olmo2-1b stage base>rlvr1,allenai/OLMo-2-0425-1B,allenai/OLMo-2-0425-1B-RLVR1,cumulative,3,1.45,-0.014,-0.055,0.34,seeds 0-2; R_C sd 0.015; C median
+olmo2-1b instr,allenai/OLMo-2-0425-1B,allenai/OLMo-2-0425-1B-Instruct,cumulative,3,1.45,-0.010,-0.049,0.39,seeds 0-2
+olmo2-1b stage sft>dpo,allenai/OLMo-2-0425-1B-SFT,allenai/OLMo-2-0425-1B-DPO,one_step,3,0.07,0.833,0.823,0.33,seeds 0-2; R_C sd 0.004; C median
+olmo2-1b stage dpo>rlvr1,allenai/OLMo-2-0425-1B-DPO,allenai/OLMo-2-0425-1B-RLVR1,one_step,3,0.06,0.972,0.970,0.33,seeds 0-2; R_C sd 0.005; C median
+olmo2-1b stage rlvr1>instr,allenai/OLMo-2-0425-1B-RLVR1,allenai/OLMo-2-0425-1B-Instruct,one_step,3,0.03,0.989,0.986,0.33,seeds 0-2; R_C sd 0.008; C median
