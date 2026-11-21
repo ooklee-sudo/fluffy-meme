@@ -99,3 +99,18 @@ Covariates: numeracy, mean privacy concern, risk attitude and personal discretio
 ## Appendix G. Materials and code
 
 The participant-facing text is in `study2_survey_english.md` and in the survey application's `content.js`. The preregistered plan as submitted is in `study2_preregistration_submitted.md`. Analysis code: `webapp/analysis_study2.py` (frozen at commit 3f9c6c0 before it was run on the data), simulation `webapp/simulate_study2.py`, figures `webapp/make_figures_study2.py`. [Repository link and archive DOI.]
+
+## Appendix H. Proofs of the propositions in Section 2.6
+
+**Setting.** The decision weight is w(λ) = λ₀ m (λ/λ₀)^γ with 0 < γ ≤ 1 and m > 0, where λ₀ = D/L. The buyer chooses the local model if and only if w(λ)L > D. The vendor makes a take-it-or-leave-it offer, so its price equals the buyer's cost of the local option minus w(λ(s))L; it chooses effort s ≥ 0 with λ(s) = λ_b e^(−θs) and cost C(s) = cs²/2, and maximizes price minus cost. These are assumptions of the stylized analysis.
+
+**Proof of Proposition 1.** The weight w is strictly increasing, so the buyer chooses the local model if and only if λ exceeds the probability λ̃ at which w(λ̃)L = D. Since D = λ₀L, this means λ₀ m (λ̃/λ₀)^γ = λ₀, so (λ̃/λ₀)^γ = 1/m and λ̃ = λ₀ m^(−1/γ). Therefore λ̃ < λ₀ if and only if m^(−1/γ) < 1, that is, m > 1. Finally ln(λ₀/λ̃) = (ln m)/γ. For m > 1 this is positive and strictly decreasing in γ, so a lower γ widens the gap. ∎
+
+**Proof of Proposition 2.** Maximizing price minus cost is the same as minimizing w(λ(s))L + C(s), because the price is the buyer's cost of the local option minus w(λ(s))L. For a rational buyer (m = γ = 1) the objective is R(s) = λ_b e^(−θs)L + cs²/2, which is strictly convex, so it has a unique minimizer s_e. Its first-order condition is θλ(s_e)L = cs_e. For a behavioral buyer the objective is B(s) = A e^(−γθs)L + cs²/2 with A = w(λ_b), which is also strictly convex, so it has a unique minimizer s_b. Its first-order condition is h(s_b) = 0, where h(s) = γθ w(λ(s))L − cs is strictly decreasing in s.
+
+Evaluate h at the efficient effort. Using cs_e = θλ_eL, where λ_e = λ(s_e), we get h(s_e) = θL(γ w(λ_e) − λ_e) = θLλ_e (w′(λ_e) − 1), because w′(λ) = γ w(λ)/λ. If w′(λ_e) < 1, then h(s_e) < 0 = h(s_b), and since h is strictly decreasing, s_b < s_e. If w′(λ_e) > 1, then s_b > s_e. Finally w′(λ) = γm(λ/λ₀)^(γ−1) < 1 if and only if (λ/λ₀)^(1−γ) > γm, which for γ < 1 is the same as λ > λ̄ = λ₀(γm)^(1/(1−γ)). This proves the first statement.
+
+For the comparative statics, ln w′(λ) = ln γ + ln m + (γ − 1) ln(λ/λ₀). Its derivative with respect to ln m is 1, so a higher m raises w′. Its derivative with respect to γ is 1/γ + ln(λ/λ₀), which is non-negative if and only if λ ≥ λ₀e^(−1/γ). If this holds at the larger of two values of γ, it holds at all values between them (because e^(−1/γ) increases in γ), so a decrease in γ lowers w′. ∎
+
+**Numerical check.** The file `model_check.py` verifies the closed form of Proposition 1 against a numerical root, the formula for w′ and the threshold λ̄ in 2,000 random parameter sets, the effect of γ on w′, and the vendor example of Table 4.
+
