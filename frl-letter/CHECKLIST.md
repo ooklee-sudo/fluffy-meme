@@ -11,7 +11,7 @@
 | `cover_letter.md` → 투고 시 붙여넣기 또는 Word 변환 | 커버 레터 |
 
 ## 이미 맞춘 규정
-- 본문 2,327단어 (Word 기준, 한도 2,500; 초록·참고문헌·표·그림·캡션·선언·부록 제외). 제목 페이지에 단어 수 표시
+- 본문 2,339단어 (Word 기준, 한도 2,500; 초록·참고문헌·표·그림·캡션·선언·부록 제외). 제목 페이지에 단어 수 표시
 - 초록 약 125단어 (한도 250), 키워드 7개 (한도 7), JEL 코드
 - 절 번호 1–7, 소절 2.1–2.4. 초록은 번호 없음
 - 표·그림은 본문 끝에 두고 본문에 "[Insert Table 1 about here]" 표시
@@ -21,6 +21,7 @@
 - 인용: 저자-연도 "(Tetlock, 2007)" 형식, 참고문헌은 Elsevier Harvard 스타일
 - DOI 21개 추가 (Crossref로 확인). Holm (1979), MacKinlay (1997)은 DOI 없음
 - Lopez-Lira & Tang: working paper → *Journal of Financial Economics* 184 (2026), 104335로 갱신
+- 최근 FRL 논문 2편 인용: Ali et al. (2025) 생성형 AI 금융 연구 리뷰, García-Llorente & Olmeda (2026) LLM 코딩 신뢰도 평가
 - 부록 번호 A–G, 표 Table B.1 형식
 - 영국식 철자로 통일되어 있음 (labelled, analysed 등)
 - 선언 문단 순서: Data availability, 생성형 AI, Ethics, 이해상충, Funding, CRediT → Acknowledgements → References

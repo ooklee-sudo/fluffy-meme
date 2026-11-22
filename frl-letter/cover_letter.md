@@ -17,7 +17,7 @@ The paper speaks to a methodological problem in empirical finance and to the rep
 
 The paper ends with four reporting practices for event studies that use LLM labels. We are explicit about its limitations: it covers one episode and one market, rests on ten human-labelled escalation events, and makes no causal claim about posts and prices.
 
-The main text contains 2,327 words, excluding the abstract, references, tables, figure, notes, declarations, and the Online Appendix. The submission includes one figure, two tables, Highlights, and an Online Appendix. [Research data and code are deposited at: link.]
+The main text contains 2,339 words, excluding the abstract, references, tables, figure, notes, declarations, and the Online Appendix. The submission includes one figure, two tables, Highlights, and an Online Appendix. [Research data and code are deposited at: link.]
 
 This manuscript is original, has not been published, and is not under review elsewhere. [No preprint or conference version exists. / A preprint is available at: link.]
 
