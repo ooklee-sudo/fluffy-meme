@@ -1,23 +1,36 @@
 # FRL 투고 전 확인 목록
 
-Political Analysis 버전(`../pa-letter/`)에서 복사해 FRL용으로 고친 버전입니다. 본문 2–7절, 표, 그림, SI 내용은 PA 버전과 같습니다.
+## 투고 파일
 
-## 바뀐 것
-- 제목: "Do LLM Labels Mislead Event Studies? Presidential Posts and Oil Prices"
-- 초록: 약 100단어, 금융 이벤트 스터디 틀로 다시 씀
-- 키워드, JEL 코드(G14, C55, C81, Q41) 추가
-- 서론: 금융 텍스트 분석 문헌으로 다시 씀
-- 참고문헌: Tetlock (2007), Loughran & McDonald (2011, 2016), Gentzkow et al. (2019), Caldara & Iacoviello (2022), Lopez-Lira & Tang (2023), MacKinlay (1997), Born et al. (2017), Ge et al. (2019) 추가. Political Analysis 전용 인용(Fong & Tyler, Knox et al., TeBlunthuis et al., Ziems et al.)은 서론에서 뺌
-- Highlights 5개 (`highlights.md`, 각 85자 이하)
-- Elsevier 필수 선언 문단 자리: 데이터 공개, 생성형 AI 사용, 이해상충, 연구비, CRediT
+| 파일 | 용도 |
+|---|---|
+| `manuscript.docx` (원본 `letter.tex`) | 본문. 제목 페이지, 초록, 키워드, JEL, 본문 1–7절, 선언 문단, 감사의 글, 참고문헌, 끝에 표·그림 |
+| `highlights.docx` | Highlights 5개, 각 85자 이하. 파일명에 "highlights" 포함 |
+| `Figure_1.pdf` (벡터), `Figure_1.png` (300dpi, 2,369px) | 그림 별도 파일 |
+| `Online_Appendix.docx` (원본 `si.tex`) | 보충 자료. Appendix A–G, Table B.1–G.2 |
+| `cover_letter.md` → 투고 시 붙여넣기 또는 Word 변환 | 커버 레터 |
 
-## 확인할 것
+## 이미 맞춘 규정
+- 본문 2,010단어 (한도 2,500; 초록·참고문헌·표·그림·캡션·선언·부록 제외, 인용 포함)
+- 초록 103단어 (한도 250), 키워드 7개 (한도 7), JEL 코드
+- 절 번호 1–7, 소절 2.1–2.4. 초록은 번호 없음
+- 표·그림은 본문 끝에 두고 본문에 "[Insert Table 1 about here]" 표시
+- 표·그림 주석만으로 이해되도록 용어 정의 추가 (model 1, v2, v2 majority)
+- 그림 캡션에 생성형 AI 사용 고지 (그래프 코드 작성 보조)
+- 수식 번호 (1), (2), 변수 기울임
+- 인용: 저자-연도 "(Tetlock, 2007)" 형식, 참고문헌은 Elsevier Harvard 스타일
+- DOI 21개 추가 (Crossref로 확인). Holm (1979), MacKinlay (1997)은 DOI 없음
+- Lopez-Lira & Tang: working paper → *Journal of Financial Economics* 184 (2026), 104335로 갱신
+- 부록 번호 A–G, 표 Table B.1 형식
+- 영국식 철자로 통일되어 있음 (labelled, analysed 등)
+- 선언 문단 순서: Data availability, 생성형 AI, Ethics, 이해상충, Funding, CRediT → Acknowledgements → References
+
+## 투고 전에 하실 일
 | # | 내용 |
 |---|---|
-| 1 | FRL 최신 투고 규정: 본문 단어 한도, 초록 길이, Highlights 규정, 표·그림 개수 |
-| 2 | 현재 분량: 본문 약 1,930단어(선언 문단 제외), 선언 문단 포함 약 2,020단어, 표·캡션까지 약 2,500단어 |
-| 3 | Lopez-Lira & Tang (2023): 학술지에 출판된 버전이 있는지 확인 후 서지 갱신 |
-| 4 | 빨간 `[ ]` 선언 문단 5개 채우기 |
-| 5 | Elsevier 인용 스타일로 바꾸기 (현재 `apalike` 임시) |
-| 6 | SI의 남은 확인 표시(DSL 실행 구성 등)는 `../pa-letter/CHECKLIST.md` B 항목과 같음 |
-| 7 | 본문 2–7절이 정치학 독자를 염두에 두고 쓰였으니, 금융 독자에게 맞게 용어를 한 번 더 다듬을지 결정 |
+| 1 | **빨간 `[ ]` 모두 채우고 빨간 글씨 없애기.** FRL은 글자색이 전부 검정이어야 합니다. 저자, 소속, 이메일, 선언 문단, 감사의 글 |
+| 2 | **연구 데이터 저장소에 올리고 링크 준비.** FRL은 Option C: 투고할 때 데이터 링크를 내거나, 공유할 수 없는 이유를 적어야 합니다 (`../pa-letter/replication.zip` 참고) |
+| 3 | 교신저자 기관 이메일, 모든 저자 ORCID 인증 |
+| 4 | 투고료 USD 200 |
+| 5 | Online Appendix의 남은 확인 표시: DSL 실행 구성, API 재실행 여부, 분석 계획 공개 여부 |
+| 6 | 맞춤법·문법 최종 점검 |

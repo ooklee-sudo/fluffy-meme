@@ -81,5 +81,5 @@ axes[0].set_ylim(-0.6, len(labels) - 0.4)
 
 fig.tight_layout(w_pad=1.2)
 for ext in ("pdf", "png"):
-    fig.savefig(f"figure1.{ext}", dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig(f"../Figure_1.{ext}", dpi=300, bbox_inches="tight", facecolor="white")
 print("saved")
