@@ -124,6 +124,21 @@ def polish(path):
                 tcw = tc.get_or_add_tcPr().get_or_add_tcW()
                 tcw.set(qn("w:type"), "dxa"); tcw.set(qn("w:w"), str(int(Emu(sum(widths[j:j + n])).inches * 1440)))
                 j += n
+    # schema order of table properties (pandoc writes jc after tblLook) and complete page-margin attributes
+    order = ["tblStyle", "tblpPr", "tblOverlap", "bidiVisual", "tblStyleRowBandSize", "tblStyleColBandSize", "tblW", "jc",
+             "tblCellSpacing", "tblInd", "tblBorders", "shd", "tblLayout", "tblCellMar", "tblLook", "tblCaption", "tblDescription"]
+    rank = {qn("w:" + n): i for i, n in enumerate(order)}
+    for t in doc.tables:
+        tblPr = t._tbl.tblPr
+        kids = list(tblPr)
+        for k in kids:
+            tblPr.remove(k)
+        for k in sorted(kids, key=lambda e: rank.get(e.tag, 99)):
+            tblPr.append(k)
+    for pgMar in doc.element.body.iter(qn("w:pgMar")):
+        for attr, val in (("w:header", "720"), ("w:footer", "720"), ("w:gutter", "0")):
+            if pgMar.get(qn(attr)) is None:
+                pgMar.set(qn(attr), val)
     doc.save(path)
 
 

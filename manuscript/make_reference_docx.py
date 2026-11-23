@@ -70,7 +70,8 @@ def main():
         b = OxmlElement(f"w:{edge}"); b.set(qn("w:val"), "single"); b.set(qn("w:sz"), str(sz)); b.set(qn("w:color"), "000000"); borders.append(b)
     old = tblPr.find(qn("w:tblBorders"))
     if old is not None: tblPr.remove(old)
-    tblPr.append(borders)
+    anchor = next((tblPr.find(qn(t)) for t in ("w:shd", "w:tblLayout", "w:tblCellMar", "w:tblLook") if tblPr.find(qn(t)) is not None), None)
+    (anchor.addprevious(borders) if anchor is not None else tblPr.append(borders))  # schema order inside tblPr
     # page setup: Letter-agnostic margins, page number footer, continuous line numbers
     sec = doc.sections[0]
     sec.left_margin = sec.right_margin = sec.top_margin = sec.bottom_margin = Inches(1)
