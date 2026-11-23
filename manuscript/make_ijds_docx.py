@@ -242,8 +242,32 @@ def convert(src, bib):
     return front + body + tail, ref_md
 
 
-def main(tex=os.path.join(HERE, "ijds_manuscript.tex"), out=os.path.join(HERE, "ijds_manuscript.docx")):
-    src = open(tex, encoding="utf-8").read()
+def textify(src):
+    """In Word, signed numbers and footnote marks read better as plain text than as equations."""
+    src = re.sub(r"\$([+-])(\d[\d.]*)\$", lambda m: ("\u2212" if m.group(1) == "-" else "+") + m.group(2), src)
+    for mark, ch in (("\\dagger", "\u2020"), ("\\ddagger", "\u2021"), ("\\ast", "*")):
+        src = src.replace("$^" + mark + "$", "\\textsuperscript{" + ch + "}")
+    return src.replace("$<0$", "<0")
+
+
+def anonymize(src):
+    """Review copy: no author, affiliation or repository owner."""
+    src = re.sub(r"\\AUTHOR\{[^}]*\}", r"\\AUTHOR{[Author name withheld for review]}", src)
+    i = src.index("\\AFF{") + 4
+    src = src[:i] + "{Affiliation withheld for review}" + src[find_close(src, i) + 1:]
+    src = re.sub(r"https://github\.com/[^\s)]+( \(branch [^)]*\))?", "[repository link withheld for review]", src)
+    src = src.replace("the author used Claude", "the author(s) used Claude").replace("The author reviewed", "The author(s) reviewed")
+    return src
+
+
+def main(*argv):
+    anon = "--anon" in argv
+    rest = [a for a in argv if a != "--anon"]
+    tex = rest[0] if rest else os.path.join(HERE, "ijds_manuscript.tex")
+    out = rest[1] if len(rest) > 1 else os.path.join(HERE, "ijds_manuscript_anonymized.docx" if anon else "ijds_manuscript.docx")
+    src = textify(open(tex, encoding="utf-8").read())
+    if anon:
+        src = anonymize(src)
     bib = parse_bib(os.path.join(HERE, "ijds_refs.bib"))
     body, refs = convert(src, bib)
     refs_tex = re.sub(r"\*([^*]+)\*", r"\\emph{\1}", refs).replace("&", "\\&")
@@ -251,7 +275,10 @@ def main(tex=os.path.join(HERE, "ijds_manuscript.tex"), out=os.path.join(HERE, "
         bt = os.path.join(td, "body.tex")
         open(bt, "w", encoding="utf-8").write("\\documentclass{article}\\begin{document}\n" + body
                                               + "\n\\section*{References}\n\n" + refs_tex + "\n\\end{document}\n")
-        subprocess.run(["pandoc", bt, "-f", "latex", "-o", out], check=True)
+        subprocess.run(["pandoc", bt, "-f", "latex", "--reference-doc", os.path.join(HERE, "submission_reference.docx"),
+                        "-o", out], check=True)
+    import make_dss_docx
+    make_dss_docx.polish(out)  # title block, table widths and spacing, schema order
     print("saved", out)
 
 

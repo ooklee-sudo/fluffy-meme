@@ -86,15 +86,22 @@ def polish(path):
         ncol = len(t.columns)
         need = [0.5] * ncol  # inches needed to keep each column's data cells on one line (headers may wrap)
         for ri, tr in enumerate(t._tbl.tr_lst):
-            if ri == 0:
-                continue
             tcs = tr.tc_lst
             if len(tcs) != ncol:  # merged section-label row
                 continue
             for jj, tc in enumerate(tcs):
+                if ri == 0 and tc.find(".//" + qn("m:oMath")) is None:
+                    continue  # header text may wrap; header equations may not
                 L = len(" ".join("".join(tc.itertext()).split()))
                 inch = 0.18 + 0.068 * L * (1.3 if tc.find(".//" + qn("m:oMath")) is not None else 1.0)
                 need[jj] = max(need[jj], inch)
+        for ri, tr in enumerate(t._tbl.tr_lst[:2]):  # header words must not break mid-word
+            if len(tr.tc_lst) != ncol:
+                continue
+            for jj, tc in enumerate(tr.tc_lst):
+                words = "".join(tc.itertext()).split()
+                if words:
+                    need[jj] = max(need[jj], 0.2 + 0.075 * max(len(w) for w in words))
         if sum(need) > 6.5:
             need = [x * 6.5 / sum(need) for x in need]
         else:  # spread the spare width in proportion to need

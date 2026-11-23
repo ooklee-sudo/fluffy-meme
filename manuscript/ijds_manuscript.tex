@@ -1,4 +1,6 @@
 % Manuscript for the INFORMS Journal on Data Science (IJDS), INFORMS "informs4" template.
+% For an anonymized review copy, change the class option nonblindrev to blindrev and remove the repository link
+% in the Data and Software Availability section (make_ijds_docx.py --anon produces an anonymized Word copy).
 % Before submission: check the current IJDS template option and author instructions (including whether an
 % anonymized version is required), and the journal's code and data disclosure policy.
 % Items marked \pending{...} are author actions that must be completed or removed before submission.
@@ -39,7 +41,7 @@
 }
 
 \ABSTRACT{%
-Firms increasingly adapt licensed foundation models to their own tasks with small fine-tuned adapters. When the provider releases a new model version, each adapter has to be retrained, reused as it is, or repaired by some cheaper transfer procedure, and the firm needs to know which. We formulate this choice as an optimal stopping problem with stochastic releases and a stochastic value at stake. The model gives a closed-form retraining threshold and a price ceiling for any transfer method, both driven by a single measurable quantity: the share of the retraining benefit that the cheaper option recovers. We then measure that quantity on 16 upgrades of open models with 0.5 to 1.7 billion parameters from four families and on three tasks, together with earlier runs on smaller models. Two kinds of upgrade behave very differently. After continued pre-training, a copied adapter keeps 88\% to nearly 100\% of the retraining benefit, so retraining pays only for adapters whose annual value exceeds about 20 times the retraining cost after the largest of these upgrades, and several hundred times after the smallest. After post-training into an instruction-following model, the copied adapter kept anywhere from nothing to 94\% of the benefit. Following one model through its published post-training stages locates the damage in supervised fine-tuning: the adapter lost everything at that step and kept 83\% to 99\% across each later preference-tuning and reinforcement-learning step. Within a model family, a label-free measure of how much the model's internal activations moved orders the upgrades exactly by how much of the adapter survives, and, once calibrated on one upgrade, predicts recovery on the others with a mean absolute error of 0.02; it does not carry over between families or to post-training upgrades. Release histories of six open model families put the release rate at about 1.8 new versions per year, with intervals more regular than the Poisson baseline assumes, and the model's recommendations hold under the estimated rates. Finally, we use the price ceiling to evaluate a closed-form, label-free transfer method. It improved on copying by at most 0.7 points at this scale, far less than its cost requires.
+Firms increasingly adapt licensed foundation models to their own tasks with small fine-tuned adapters. Each new model release forces a choice: retrain an adapter, keep using it as it is, or pay for a cheaper repair. We model this choice as an optimal stopping problem with stochastic releases and a stochastic value at stake. The model yields a closed-form retraining threshold and a price ceiling for any transfer method, both driven by one measurable quantity, the share of the retraining benefit that the cheaper option recovers. We measure that quantity on 22 upgrades of open models with 0.5 to 1.7 billion parameters and on three tasks, and we estimate release rates from the histories of six model families, which put them at about 1.8 new versions per year at intervals more regular than Poisson. Continued pre-training left copied adapters with 70\% to nearly 100\% of their benefit, so retraining paid only for very valuable adapters. Moving from a base model to an instruction-tuned one often destroyed the adapter. Following one family through its published post-training stages places the damage in supervised fine-tuning, while the later preference and reinforcement-learning updates left most of the adapter intact. The same release also affected adapters for different tasks very differently. Within a family, a label-free measure of activation drift ranked upgrades without error and, calibrated on one upgrade, predicted recovery on the others with a mean absolute error of 0.02, but it did not transfer across families. A closed-form, label-free transfer method never paid for itself at this scale.
 }
 
 \KEYWORDS{foundation models, parameter-efficient fine-tuning, model maintenance, optimal stopping, representation drift, AI asset management}
@@ -284,9 +286,9 @@ The release rate $\mu$ is the economic input that a firm can estimate most direc
 \small
 \begin{tabular}{lcccccccc}
 \toprule
- & \multicolumn{4}{c}{Strict (new versions)} & Broad & & \multicolumn{2}{c}{$v^*_C/C_N$ at strict $\mu$}\\
+ & \multicolumn{4}{c}{Strict (new versions)} & Broad & & \multicolumn{2}{c}{$v^*_C/C_N$ at strict $\mu$, by $R_C$}\\
 \cmidrule(lr){2-5}\cmidrule(lr){8-9}
-Family & Releases & $\mu$ & 95\% CI & CV & $\mu$ & Open gap (months) & $R_C=0.925$ & $R_C=0.159$\\
+Family & Releases & $\mu$ & 95\% CI & CV & $\mu$ & Open gap (months) & 0.925 & 0.159\\
 \midrule
 Llama & 6 & 1.48 & [0.48, 3.46] & 0.72 & 1.48 & 19.7 & 25.1 & 2.24\\
 Qwen & 9 & 2.42 & [1.05, 4.77] & 0.43 & 4.54 & 3.5 & 38.8 & 3.46\\
