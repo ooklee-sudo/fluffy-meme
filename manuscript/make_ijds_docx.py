@@ -232,6 +232,7 @@ def convert(src, bib):
     body = strip_macro(body, "pending", lambda a: f"[PENDING: {a}]")
     body = body.replace("\\E", "\\mathbb{E}").replace("\\small\n", "\n").replace("\\smallskip\\footnotesize", "")
     body = re.sub(r"\\begin\{table\}\[[^\]]*\]", r"\\begin{table}", body)
+    body = re.sub(r"\\cmidrule(\([^)]*\))?\{[^}]*\}", "", body)
 
     refs = sorted(used, key=lambda k: (last(authors(bib[k])[0]).lower(), bib[k]["year"]))
     ref_md = "\n\n".join(ref_entry(bib[k]) for k in refs)
