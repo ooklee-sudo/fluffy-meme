@@ -279,6 +279,11 @@ def main(*argv):
                         "-o", out], check=True)
     import make_dss_docx
     make_dss_docx.polish(out)  # title block, table widths and spacing, schema order
+    if anon:  # file properties must not identify the author either
+        from docx import Document
+        d = Document(out)
+        d.core_properties.author = d.core_properties.last_modified_by = ""
+        d.save(out)
     print("saved", out)
 
 
