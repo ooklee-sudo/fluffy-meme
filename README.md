@@ -82,3 +82,7 @@ python run_pairs.py
 - Recovery is `R = (L_none − L_method) / (L_none − L_retrain)`, where L is test MSE (toy) or held-out response NLL (LLM), and `none` is the target model without an adapter.
 - `act_llama.py` reports `C_A/C_N` from compute time only. The paper argues C_N should also include data acquisition and revalidation labor. Add those before drawing conclusions.
 - In `act_llama.py`, calibration inputs are task prompts without answers (Appendix A.4). α is chosen per module from 13 values in [1e-3, 1e3] on an 80/20 split, using a Gram-only validation error. Decoder layers are corrected sequentially from the input side.
+
+## Other projects in this repository
+
+- [`hbm_misinfo/`](hbm_misinfo/README.md): prototype of an HBM-guided health misinformation triage system for online health communities.

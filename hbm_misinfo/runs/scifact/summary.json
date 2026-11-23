@@ -1,0 +1,41 @@
+{
+  "dataset": "scifact",
+  "model": "qwen/qwen3.5-9b",
+  "n": 150,
+  "kb": "data/kb_scifact.jsonl",
+  "pubmed": false,
+  "gold_counts": {
+    "refuted": 50,
+    "supported": 50,
+    "unsupported": 50
+  },
+  "no_retrieval": {
+    "macro_f1": 0.408,
+    "accuracy": 0.48,
+    "f1_per_label": {
+      "refuted": 0.6,
+      "supported": 0.554,
+      "unsupported": 0.069
+    },
+    "pred_counts": {
+      "refuted": 90,
+      "supported": 51,
+      "unsupported": 8,
+      "contested": 1
+    }
+  },
+  "retrieval": {
+    "macro_f1": 0.669,
+    "accuracy": 0.7,
+    "f1_per_label": {
+      "refuted": 0.706,
+      "supported": 0.832,
+      "unsupported": 0.471
+    },
+    "pred_counts": {
+      "refuted": 69,
+      "supported": 63,
+      "unsupported": 18
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "model": "qwen/qwen3.5-9b",
+  "n": 195,
+  "kb": "data/kb_medlineplus.jsonl",
+  "pubmed": false,
+  "no_retrieval": {
+    "macro_f1": 0.237,
+    "accuracy": 0.287,
+    "f1_per_label": {
+      "supported": 0.256,
+      "contested": 0.036,
+      "unsupported": 0.175,
+      "refuted": 0.479
+    },
+    "pred_counts": {
+      "refuted": 96,
+      "unsupported": 58,
+      "supported": 36,
+      "contested": 5
+    }
+  },
+  "retrieval": {
+    "macro_f1": 0.183,
+    "accuracy": 0.262,
+    "f1_per_label": {
+      "supported": 0.036,
+      "contested": 0.0,
+      "unsupported": 0.362,
+      "refuted": 0.336
+    },
+    "pred_counts": {
+      "refuted": 57,
+      "unsupported": 132,
+      "supported": 6
+    }
+  }
+}
