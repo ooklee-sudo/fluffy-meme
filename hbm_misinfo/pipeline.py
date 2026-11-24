@@ -43,7 +43,8 @@ HEALTH_TERMS = re.compile(
     r"inject\w*|needles?|mg|mcg|dexcom|cgm|libre|itch\w*|rash\w*|bumps?|lumps?|conditions?|"
     r"\w*olog(y|ist|ists)|lion'?s mane|nootropic\w*)\b"
     # Compounds such as "multivitamin" or "bulksupplements" have no word boundary before the stem.
-    r"|\w*(vitamin|supplement)\w*", re.I)
+    r"|\w*(vitamin|supplement)\w*"
+    r"|\d+\s?(mg|mcg|iu|ml)\b", re.I)  # doses written as "1000mg" or "5 mcg"
 
 SHEET_COLS = ["unit_id", "subreddit", "unit_type", "parent_id", "coder_id", "A1_health_claim", "claim_id",
               "A2_claim_type", "A3_target_behavior", "A3_category", "A4_recommended_care", "A5_personal_experience"]
