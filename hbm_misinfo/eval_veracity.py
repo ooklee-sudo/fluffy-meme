@@ -101,19 +101,21 @@ def main():
         def run(r):
             try:
                 return judge.judge(r["claim"], use_retrieval=use_ret)["label"]
-            except Exception:  # noqa: BLE001 - count failures as 'unsupported' and keep going
-                return "unsupported"
+            except Exception:  # noqa: BLE001 - keep going; failures are reported and scored as 'unsupported'
+                return "ERROR"
         with ThreadPoolExecutor(a.workers) as ex:
             preds = list(ex.map(run, rows))
         gold = [r["gold"] for r in rows]
+        n_err = preds.count("ERROR")
+        preds = ["unsupported" if p == "ERROR" else p for p in preds]
         m, per_f1 = macro_f1(gold, preds, labels)
         acc = sum(g == p for g, p in zip(gold, preds)) / len(gold)
         summary[cond] = {"macro_f1": round(m, 3), "accuracy": round(acc, 3),
                          "f1_per_label": {k: round(v, 3) for k, v in per_f1.items()},
-                         "pred_counts": dict(Counter(preds))}
+                         "pred_counts": dict(Counter(preds)), "errors": n_err}
         pd.DataFrame({"claim_id": [r["claim_id"] for r in rows], "claim": [r["claim"] for r in rows],
                       "gold": gold, "pred": preds}).to_csv(out / f"preds_{cond}.csv", index=False)
-        print(f"{cond:<13} macro-F1={m:.3f} acc={acc:.3f} {summary[cond]['f1_per_label']}")
+        print(f"{cond:<13} macro-F1={m:.3f} acc={acc:.3f} errors={n_err} {summary[cond]['f1_per_label']}")
     (out / "summary.json").write_text(json.dumps(summary, indent=2))
     print(f"wrote {out}/summary.json")
 

@@ -26,6 +26,7 @@ post ──► [1] keyword screen ──► [2] HBM coding (Layers A–C) ──
 | `pipeline.py` | End to end on a JSONL of posts → `results.jsonl`, `coding_sheet.csv`, `triage.csv` |
 | `eval_veracity.py` | Veracity on SciFact or PUBHEALTH, with vs. without retrieval |
 | `reliability.py` | Krippendorff's alpha per code between two coding sheets (human–human or human–LLM) |
+| `collect_reddit.py` | Downloads subreddit posts/comments (Arctic Shift archive), draws a stratified pilot sample, writes pipeline input and a blank coding sheet |
 | `examples/sample_posts.jsonl` | Eight constructed posts (not real users) for a smoke test |
 
 ## Setup
@@ -56,7 +57,8 @@ export LLM_BASE_URL=http://localhost:11434/v1 LLM_MODEL=qwen2.5:7b-instruct
 
 ```bash
 export LLM_BASE_URL=https://openrouter.ai/api/v1 LLM_MODEL=qwen/qwen3.5-9b LLM_API_KEY=<key>
-export LLM_EXTRA_BODY='{"reasoning": {"enabled": false}}'   # turn off thinking mode
+export LLM_EXTRA_BODY='{"reasoning": {"enabled": false}, "provider": {"ignore": ["PrimeIntellect"]}}'
+# turns off thinking mode; that provider ignored the switch and returned empty replies (Nov 2026)
 ```
 
 ## Run
@@ -71,13 +73,35 @@ Input JSONL fields: `unit_id`, `subreddit`, `unit_type` (submission/comment), `p
 `parent_text` (context for comments), `text`. `coding_sheet.csv` uses the codebook's column
 layout, so LLM codes can be compared directly with human codes.
 
+## Pilot sample from Reddit
+
+```bash
+python collect_reddit.py --subreddits AskDocs cancer diabetes Supplements AlternativeHealth \
+    --after 2024-01-01 --before 2025-01-01 --n 200 --out-dir data/reddit
+python pipeline.py data/reddit/sample.jsonl --out-dir runs/pilot
+```
+
+* Source: the [Arctic Shift](https://arctic-shift.photon-reddit.com) Reddit archive API. Check your IRB
+  protocol and Reddit's terms first. Usernames are never written to disk.
+* Pool: up to `--per-month` posts and comments per subreddit and month, taken after `--starts` random
+  times in each month so the pool is not concentrated at the start of the month.
+* Strata: subreddit × unit type × claim-likely (health term plus an advice or claim cue).
+  `--enrich-share 0.5` draws half of each cell from claim-likely units; `0` gives a simple random
+  sample. Every unit carries `weight` = stratum pool / stratum sample for re-weighting.
+* Rounds: units alternate between `pilot1` and `pilot2` within each stratum (codebook Section 8).
+* `coding_sheet_blank.csv` has one `C1` row per unit plus `round`, `permalink`, `text` and
+  `parent_text`; coders add `C2`/`C3` rows when a unit holds more claims. It is UTF-8 with BOM, so
+  Excel shows it correctly. Give each coder a copy and compare with `reliability.py`.
+* Five subreddits over one year with the defaults download about 24,000 items and take roughly
+  15–20 minutes; raw files are cached in `data/reddit/raw/`.
+
 ## First results (`qwen/qwen3.5-9b`, temperature 0, Nov 2026)
 
 Veracity, stratified samples, macro-F1 over the gold labels present:
 
 | Dataset (KB) | n | No retrieval | Retrieval |
 | --- | --- | --- | --- |
-| SciFact dev (5,183 abstracts) | 150 | 0.493 | **0.691** |
+| SciFact dev (5,183 abstracts) | 150 | 0.460 | **0.688** |
 | PUBHEALTH test (MedlinePlus)* | 195 | 0.237 | 0.183 |
 
 \* PUBHEALTH was run before the claim-extraction and judging rules were tightened (see below).
@@ -96,6 +120,9 @@ Urgent case (H = 0.39), false-but-weak claims are Review, and accurate advice is
   supported from a passage on breathing exercise. Claim extraction now states the general claim
   ("a breathing method can replace a prescribed asthma inhaler"), and the judge no longer counts an
   on-topic passage as support. Keep checking extracted claims when you change models.
+* **"refuted" vs "unsupported".** On real Reddit posts the judge first marked claims "refuted" whenever
+  the passages did not support them (e.g. a correct note on epidermoid cysts after abscesses). The
+  prompt now requires contradicting evidence for "refuted"; absent evidence is "unsupported".
 * **Hosted providers can ignore the thinking switch** and return empty replies; such units are marked
   `error`, placed in Review, and the run continues.
 * **Screening (stage 1)** is a keyword regex standing in for the fine-tuned classifier.

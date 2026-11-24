@@ -21,6 +21,9 @@ Labels:
 Rules:
 - Use the passages first; you may use well-established medical knowledge when the passages are silent, but say so.
 - A passage that is only on the same topic is NOT support. "supported" needs evidence for the claim itself.
+- "refuted" needs evidence or established knowledge that CONTRADICTS the claim. If the passages simply do not
+  address it and you know of no contradicting evidence, the label is "unsupported" (or "supported" if it is
+  well-established medical knowledge), never "refuted".
 - If the claim implies stopping, delaying or substituting a recommended treatment, judge whether doing that is safe and effective, not whether the alternative has any benefit.
 
 CLAIM: {claim}
