@@ -27,6 +27,7 @@ post ──► [1] keyword screen ──► [2] HBM coding (Layers A–C) ──
 | `eval_veracity.py` | Veracity on SciFact or PUBHEALTH, with vs. without retrieval |
 | `reliability.py` | Krippendorff's alpha per code between two coding sheets (human–human or human–LLM) |
 | `collect_reddit.py` | Downloads subreddit posts/comments (Arctic Shift archive), draws a stratified pilot sample, writes pipeline input and a blank coding sheet |
+| `power_sim.py` | Simulation power analysis for the within-subjects warning-label experiment |
 | `examples/sample_posts.jsonl` | Eight constructed posts (not real users) for a smoke test |
 
 ## Setup
@@ -94,6 +95,30 @@ python pipeline.py data/reddit/sample.jsonl --out-dir runs/pilot
   Excel shows it correctly. Give each coder a copy and compare with `reliability.py`.
 * Five subreddits over one year with the defaults download about 24,000 items and take roughly
   15–20 minutes; raw files are cached in `data/reddit/raw/`.
+
+## Power analysis for the user experiment
+
+`power_sim.py` simulates the within-subjects design (each participant rates K posts, half
+misinformation; half of each type carries the warning; two counterbalanced lists) with participant
+and post random effects, and reports power for three tests: by-participant paired t, min-F'
+(generalizes over posts) and, with `--method mixed`, a mixed model (needs `statsmodels`).
+
+```bash
+python power_sim.py --d-mis -0.3 --posts 16 24 --participants 60 80 100 120 150
+```
+
+Smallest N with min-F' power ≥ 0.80 (one-sided α = .05, 1,000 simulations, default variance
+components: participant 0.5, slope 0.2, post 0.4, residual 0.75):
+
+| Warning effect on misinformation belief | 8 posts | 16 posts | 24 posts |
+| --- | --- | --- | --- |
+| d = −0.30 | 120 | 60 | 40 |
+| d = −0.20 | – | 120 | 80 |
+
+With 16 posts and d = −0.30, 100 participants give power 0.99 (min-F') and 0.98 on a 1–7 scale.
+The variance components and effect size are assumptions: replace them with estimates from a
+20–30 person pilot before fixing N. The tests are slightly conservative (type I error 0.03 by
+participant, 0.01 min-F' at α = .05).
 
 ## First results (`qwen/qwen3.5-9b`, temperature 0, Nov 2026)
 
