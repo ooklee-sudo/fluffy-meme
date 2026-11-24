@@ -15,6 +15,7 @@ import html
 import io
 import json
 import re
+import sys
 import threading
 import time
 import urllib.parse
@@ -55,7 +56,7 @@ def build_medlineplus(out: Path, words_per_chunk: int = 120) -> int:
     root = ET.fromstring(zf.read([n for n in zf.namelist() if n.endswith(".xml")][0]))
     out.parent.mkdir(parents=True, exist_ok=True)
     n = 0
-    with out.open("w") as f:
+    with out.open("w", encoding="utf-8") as f:
         for t in root.findall("health-topic"):
             if t.get("language") != "English":
                 continue
@@ -79,7 +80,7 @@ def build_scifact(corpus_parquet: Path, out: Path) -> int:
 
     df = pd.read_parquet(corpus_parquet)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with out.open("w") as f:
+    with out.open("w", encoding="utf-8") as f:
         for r in df.itertuples():
             sents = ast.literal_eval(r.abstract) if isinstance(r.abstract, str) else list(r.abstract)
             f.write(json.dumps({"id": f"scifact-{r.doc_id}", "source": "SciFact corpus (PubMed)", "title": r.title,
@@ -90,7 +91,7 @@ def build_scifact(corpus_parquet: Path, out: Path) -> int:
 
 class LocalKB:
     def __init__(self, path: str | Path):
-        self.docs = [json.loads(l) for l in Path(path).read_text().splitlines() if l.strip()]
+        self.docs = [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
         self.bm25 = BM25Okapi([tokenize(d["text"]) for d in self.docs])
 
     def search(self, query: str, k: int = 4) -> list[dict]:
@@ -149,6 +150,8 @@ def pubmed_search(query: str, k: int = 3) -> list[dict]:
 
 
 if __name__ == "__main__":
+    # Windows consoles (cp949 etc.) cannot show every character in Reddit text; never crash on print.
+    sys.stdout.reconfigure(errors="replace")
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")

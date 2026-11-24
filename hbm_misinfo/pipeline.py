@@ -19,6 +19,7 @@ import argparse
 import csv
 import json
 import re
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -93,6 +94,8 @@ def sheet_rows(rec: dict, coder_id: str) -> list[dict]:
 
 
 def main():
+    # Windows consoles (cp949 etc.) cannot show every character in Reddit text; never crash on print.
+    sys.stdout.reconfigure(errors="replace")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("input")
     ap.add_argument("--kb", default="data/kb_medlineplus.jsonl")
@@ -102,23 +105,23 @@ def main():
     ap.add_argument("--workers", type=int, default=2, help="parallel units (keep 1-2 for a local 8 GB GPU)")
     a = ap.parse_args()
 
-    units = [json.loads(l) for l in Path(a.input).read_text().splitlines() if l.strip()]
+    units = [json.loads(l) for l in Path(a.input).read_text(encoding="utf-8").splitlines() if l.strip()]
     judge = VeracityJudge(None if a.no_retrieval else a.kb, use_pubmed=a.pubmed)
     with ThreadPoolExecutor(a.workers) as ex:
         recs = list(ex.map(lambda u: process_unit(u, judge, not a.no_retrieval), units))
 
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    with (out / "results.jsonl").open("w") as f:
+    with (out / "results.jsonl").open("w", encoding="utf-8") as f:
         for r in recs:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    with (out / "coding_sheet.csv").open("w", newline="") as f:
+    with (out / "coding_sheet.csv").open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=SHEET_COLS, extrasaction="ignore")
         w.writeheader()
         for r in recs:
             w.writerows(sheet_rows(r, f"llm:{llm.MODEL}"))
     ranked = sorted(recs, key=lambda r: (r["tier"], -r["H"], -r["P"]))
-    with (out / "triage.csv").open("w", newline="") as f:
+    with (out / "triage.csv").open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f)
         w.writerow(["rank", "tier", "unit_id", "H", "P", "veracity", "text"])
         for i, r in enumerate(ranked, 1):

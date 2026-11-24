@@ -174,7 +174,7 @@ def main():
         msg = f"N = {minimum[K]}" if K in minimum else f"more than {max(a.participants)}"
         print(f"posts={K:<3} smallest N in grid with {crit.replace('power_', '')} power >= {a.target:.2f}: {msg}")
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(a.out).write_text(json.dumps({"params": vars(a), "grid": rows, "minimum_n": minimum}, indent=2))
+    Path(a.out).write_text(json.dumps({"params": vars(a), "grid": rows, "minimum_n": minimum}, indent=2), encoding="utf-8")
     print(f"\nwrote {a.out}")
 
 

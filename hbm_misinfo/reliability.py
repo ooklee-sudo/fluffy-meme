@@ -46,12 +46,22 @@ def kripp_alpha(a, b, level: str = "nominal") -> float:
     return 1.0 - d_o / d_e if d_e else 1.0
 
 
+def read_sheet(path: str) -> pd.DataFrame:
+    """Read a coding sheet saved as UTF-8 (with or without BOM) or, after Excel on Korean Windows, CP949."""
+    for enc in ("utf-8-sig", "cp949"):
+        try:
+            return pd.read_csv(path, encoding=enc)
+        except UnicodeDecodeError:
+            continue
+    raise SystemExit(f"cannot decode {path}: save it as 'CSV UTF-8' in Excel")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sheet_a")
     ap.add_argument("sheet_b")
     a = ap.parse_args()
-    A, B = pd.read_csv(a.sheet_a), pd.read_csv(a.sheet_b)
+    A, B = read_sheet(a.sheet_a), read_sheet(a.sheet_b)
     for d in (A, B):
         d["claim_id"] = d["claim_id"].fillna("none")
     m = A.merge(B, on=["unit_id", "claim_id"], suffixes=("_a", "_b"))

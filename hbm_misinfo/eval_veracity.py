@@ -114,9 +114,9 @@ def main():
                          "f1_per_label": {k: round(v, 3) for k, v in per_f1.items()},
                          "pred_counts": dict(Counter(preds)), "errors": n_err}
         pd.DataFrame({"claim_id": [r["claim_id"] for r in rows], "claim": [r["claim"] for r in rows],
-                      "gold": gold, "pred": preds}).to_csv(out / f"preds_{cond}.csv", index=False)
+                      "gold": gold, "pred": preds}).to_csv(out / f"preds_{cond}.csv", index=False, encoding="utf-8")
         print(f"{cond:<13} macro-F1={m:.3f} acc={acc:.3f} errors={n_err} {summary[cond]['f1_per_label']}")
-    (out / "summary.json").write_text(json.dumps(summary, indent=2))
+    (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"wrote {out}/summary.json")
 
 
