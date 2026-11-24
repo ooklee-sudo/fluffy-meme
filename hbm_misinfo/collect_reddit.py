@@ -41,7 +41,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pipeline import HEALTH_TERMS, SHEET_COLS
+from pipeline import SHEET_COLS
 
 API = "https://arctic-shift.photon-reddit.com/api"
 UA = {"User-Agent": "hbm-misinfo-research/0.1"}
@@ -49,6 +49,16 @@ POST_FIELDS = "id,author,title,selftext,created_utc,score,num_comments,link_flai
 COMMENT_FIELDS = "id,author,body,created_utc,score,link_id,parent_id,author_flair_text"
 BOTS = {"automoderator", "[deleted]", "remindmebot", "sneakpeekbot"}
 DROPPED = {"", "[removed]", "[deleted]", "[removed by reddit]"}
+
+# Health terms that define the claim-likely stratum. Frozen on purpose: the pipeline's screening regex
+# (pipeline.HEALTH_TERMS) keeps improving, but a sampling definition must not change after a sample has
+# been drawn, or the same command would draw a different sample. Add a new version instead of editing.
+STRATUM_HEALTH_TERMS = {
+    "v1": re.compile(
+        r"\b(cure|cured|treat|treatment|therapy|chemo|vaccine|vax|drug|medication|meds|dose|pill|supplement|"
+        r"vitamin|doctor|oncologist|symptom|cancer|diabetes|insulin|metformin|statin|blood|pressure|infection|"
+        r"antibiotic|virus|disease|diet|fasting|detox|heal|side effect|immune|pain|surgery|inhaler|asthma)\b", re.I),
+}
 
 # Advice and claim cues that, together with a health term, make a unit likely to hold a coded claim.
 CLAIM_CUES = re.compile(
@@ -82,14 +92,19 @@ def _months(after: str, before: str):
         d = nxt
 
 
-def download(sub: str, kind: str, after: str, before: str, per_month: int, starts: int,
-             rng: random.Random) -> list[dict]:
-    """Pool for one subreddit and kind ('posts' or 'comments'), spread over random start times."""
+def start_plan(after: str, before: str, starts: int, rng: random.Random) -> list[tuple[int, int, list[int]]]:
+    """Random start times per month. Always drawn, even when the pool is cached, so the generator is
+    in the same state when the sample is drawn and the same command always gives the same sample."""
+    return [(lo, hi, sorted(rng.randrange(lo, hi) for _ in range(starts))) for lo, hi in _months(after, before)]
+
+
+def download(sub: str, kind: str, plan: list, per_month: int, starts: int) -> list[dict]:
+    """Pool for one subreddit and kind ('posts' or 'comments'), spread over the planned start times."""
     fields = POST_FIELDS if kind == "posts" else COMMENT_FIELDS
     per_req = max(1, min(100, per_month // starts))
     seen, out = set(), []
-    for lo, hi in _months(after, before):
-        for t in sorted(rng.randrange(lo, hi) for _ in range(starts)):
+    for lo, hi, times in plan:
+        for t in times:
             q = urllib.parse.urlencode({"subreddit": sub, "after": t, "before": hi, "limit": per_req,
                                         "sort": "asc", "fields": fields})
             for item in _get(f"{API}/{kind}/search?{q}").get("data", []):
@@ -141,7 +156,7 @@ def fetch_parents(comments: list[dict]) -> dict[str, str]:
     return texts
 
 
-def to_unit(rec: dict, kind: str, sub: str) -> dict:
+def to_unit(rec: dict, kind: str, sub: str, health_terms: re.Pattern) -> dict:
     if kind == "posts":
         uid, link, parent = f"t3_{rec['id']}", rec["id"], ""
         permalink = f"https://www.reddit.com/r/{sub}/comments/{rec['id']}/"
@@ -151,7 +166,7 @@ def to_unit(rec: dict, kind: str, sub: str) -> dict:
     return {"unit_id": uid, "subreddit": sub, "unit_type": "submission" if kind == "posts" else "comment",
             "parent_id": parent, "parent_text": "", "text": rec["text"], "created_utc": rec["created_utc"],
             "author_flair": rec.get("author_flair_text") or "", "permalink": permalink,
-            "claim_likely": int(bool(HEALTH_TERMS.search(rec["text"]) and CLAIM_CUES.search(rec["text"])))}
+            "claim_likely": int(bool(health_terms.search(rec["text"]) and CLAIM_CUES.search(rec["text"])))}
 
 
 def allocate(total: int, keys: list) -> dict:
@@ -176,6 +191,8 @@ def main():
     ap.add_argument("--max-chars", type=int, default=4000)
     ap.add_argument("--out-dir", default="data/reddit")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--strata-version", choices=sorted(STRATUM_HEALTH_TERMS), default="v1",
+                    help="frozen definition of the claim-likely stratum (recorded in manifest.json)")
     ap.add_argument("--refresh", action="store_true", help="re-download even if raw files exist")
     a = ap.parse_args()
 
@@ -189,14 +206,15 @@ def main():
     for sub in a.subreddits:
         for kind in ("posts", "comments"):
             raw = out / "raw" / f"{sub}_{kind}.jsonl"
+            plan = start_plan(a.after, a.before, a.starts, rng)
             if raw.exists() and not a.refresh:
                 items = [json.loads(l) for l in raw.read_text(encoding="utf-8").splitlines() if l.strip()]
             else:
                 print(f"downloading r/{sub} {kind} {a.after}..{a.before}")
-                items = [c for it in download(sub, kind, a.after, a.before, a.per_month, a.starts, rng)
+                items = [c for it in download(sub, kind, plan, a.per_month, a.starts)
                          if (c := clean(it, kind, a.min_chars, a.max_chars))]
                 raw.write_text("".join(json.dumps(i, ensure_ascii=False) + "\n" for i in items), encoding="utf-8")
-            units = [to_unit(i, kind, sub) for i in items]
+            units = [to_unit(i, kind, sub, STRATUM_HEALTH_TERMS[a.strata_version]) for i in items]
             for u in units:
                 pool[(sub, u["unit_type"], u["claim_likely"])].append(u)
             pool_counts[f"{sub}/{kind}"] = len(units)
