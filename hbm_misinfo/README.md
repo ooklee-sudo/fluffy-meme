@@ -29,6 +29,7 @@ post ──► [1] keyword screen ──► [2] HBM coding (Layers A–C) ──
 | `collect_reddit.py` | Downloads subreddit posts/comments (Arctic Shift archive), draws a stratified pilot sample, writes pipeline input and a blank coding sheet |
 | `power_sim.py` | Simulation power analysis for the within-subjects warning-label experiment |
 | `coding_form.py` | Excel form for human coders (drop-downs, consistency check) and export to a coding-sheet CSV |
+| `compare_runs.py` | Compares two pipeline runs on the same units (status/tier cross-tabs, agreement, largest disagreements) |
 | `examples/sample_posts.jsonl` | Eight constructed posts (not real users) for a smoke test |
 
 ## Setup
