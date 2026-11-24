@@ -39,7 +39,11 @@ HEALTH_TERMS = re.compile(
     r"virus\w*|viral|bacteri\w*|parasit\w*|diseases?|diet\w*|fasting|detox\w*|side effects?|immun\w*|"
     r"pain\w*|surg\w*|inhalers?|asthma|tooth|teeth|gums?|dental|oils?|herb\w*|remed\w*|natural\w*|"
     r"holistic|homeopath\w*|ivermectin|probiotic\w*|hormon\w*|thyroid|liver|kidneys?|heart|cholesterol|"
-    r"a1c|glucose|sugar|cbd)\b", re.I)
+    r"a1c|glucose|sugar|cbd|"
+    r"inject\w*|needles?|mg|mcg|dexcom|cgm|libre|itch\w*|rash\w*|bumps?|lumps?|conditions?|"
+    r"\w*olog(y|ist|ists)|lion'?s mane|nootropic\w*)\b"
+    # Compounds such as "multivitamin" or "bulksupplements" have no word boundary before the stem.
+    r"|\w*(vitamin|supplement)\w*", re.I)
 
 SHEET_COLS = ["unit_id", "subreddit", "unit_type", "parent_id", "coder_id", "A1_health_claim", "claim_id",
               "A2_claim_type", "A3_target_behavior", "A3_category", "A4_recommended_care", "A5_personal_experience"]
