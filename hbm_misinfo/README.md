@@ -77,8 +77,10 @@ Veracity, stratified samples, macro-F1 over the gold labels present:
 
 | Dataset (KB) | n | No retrieval | Retrieval |
 | --- | --- | --- | --- |
-| SciFact dev (5,183 abstracts) | 150 | 0.408 | **0.669** |
-| PUBHEALTH test (MedlinePlus) | 195 | 0.237 | 0.183 |
+| SciFact dev (5,183 abstracts) | 150 | 0.493 | **0.691** |
+| PUBHEALTH test (MedlinePlus)* | 195 | 0.237 | 0.183 |
+
+\* PUBHEALTH was run before the claim-extraction and judging rules were tightened (see below).
 
 Retrieval helps when the knowledge base covers the claims (SciFact). PUBHEALTH is mostly news and
 political fact-checks (e.g. "Obama Administration legalized bump stocks"), which no medical KB can
@@ -89,6 +91,13 @@ Urgent case (H = 0.39), false-but-weak claims are Review, and accurate advice is
 
 ## Known limitations and next steps
 
+* **Claims must state the implied behavior.** A local 7B run turned "I threw out my inhaler and use a
+  breathing method" into the anecdote "haven't needed my inhaler since", which the judge then marked
+  supported from a passage on breathing exercise. Claim extraction now states the general claim
+  ("a breathing method can replace a prescribed asthma inhaler"), and the judge no longer counts an
+  on-topic passage as support. Keep checking extracted claims when you change models.
+* **Hosted providers can ignore the thinking switch** and return empty replies; such units are marked
+  `error`, placed in Review, and the run continues.
 * **Screening (stage 1)** is a keyword regex standing in for the fine-tuned classifier.
 * **HBM coding is unvalidated.** The codes must be checked against human coding
   (`reliability.py`, codebook Section 8) before H is used for anything. An earlier prompt that asked

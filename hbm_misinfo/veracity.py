@@ -18,7 +18,10 @@ Labels:
 - contested: evidence is mixed, or the claim is partly true and partly false
 - unsupported: no credible evidence either way (not enough to confirm or refute)
 - refuted: contradicts current guidance or strong evidence
-Use the passages first; you may use well-established medical knowledge when the passages are silent, but say so.
+Rules:
+- Use the passages first; you may use well-established medical knowledge when the passages are silent, but say so.
+- A passage that is only on the same topic is NOT support. "supported" needs evidence for the claim itself.
+- If the claim implies stopping, delaying or substituting a recommended treatment, judge whether doing that is safe and effective, not whether the alternative has any benefit.
 
 CLAIM: {claim}
 
@@ -29,6 +32,7 @@ Return: {{"label": "...", "evidence_ids": ["..."], "confidence": 0.0-1.0, "expla
 
 NO_EVIDENCE = """Judge the health claim using well-established medical knowledge.
 Labels: supported (consistent with guidance/evidence), contested (mixed or partly true), unsupported (no credible evidence either way), refuted (contradicts guidance or strong evidence).
+If the claim implies stopping, delaying or substituting a recommended treatment, judge whether doing that is safe and effective.
 
 CLAIM: {claim}
 

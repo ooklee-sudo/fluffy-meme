@@ -47,13 +47,19 @@ def process_unit(unit: dict, judge: VeracityJudge, use_retrieval: bool) -> dict:
     if not HEALTH_TERMS.search(unit["text"] + " " + unit.get("parent_text", "")):
         rec.update(stage="screened_out", coded={"A1_health_claim": 0, "claims": []}, tier=3, H=0.0, P=0.0)
         return rec
-    coded = codebook.validate(llm.chat_json(codebook.SYSTEM,
-                                            codebook.build_prompt(unit["text"], unit.get("parent_text") or None)))
-    for cl in coded["claims"]:
-        cl["H"] = round(claim_harm(cl), 3)
-        v = judge.judge(cl["claim_text"], use_retrieval=use_retrieval)
-        cl["veracity"] = v
-        cl["tier"] = tier(v["label"], cl["H"])
+    try:
+        coded = codebook.validate(llm.chat_json(codebook.SYSTEM,
+                                                codebook.build_prompt(unit["text"], unit.get("parent_text") or None),
+                                                max_tokens=3000))
+        for cl in coded["claims"]:
+            cl["H"] = round(claim_harm(cl), 3)
+            v = judge.judge(cl["claim_text"], use_retrieval=use_retrieval)
+            cl["veracity"] = v
+            cl["tier"] = tier(v["label"], cl["H"])
+    except Exception as e:  # noqa: BLE001 - one bad reply should not stop a long run
+        # Failed units go to Review so a person looks at them; the error is kept in the memo.
+        rec.update(stage=f"error: {e}"[:300], coded={"A1_health_claim": 0, "claims": []}, tier=2, H=0.0, P=0.0)
+        return rec
     rec["stage"] = "coded"
     rec["coded"] = coded
     rec["H"] = max([c["H"] for c in coded["claims"]], default=0.0)
@@ -120,7 +126,7 @@ def main():
             w.writerow([i, TIER_NAMES[r["tier"]], r["unit_id"], f"{r['H']:.2f}", f"{r['P']:.2f}", ver,
                         r["text"][:160]])
     for i, r in enumerate(ranked, 1):
-        ver = ",".join(c["veracity"]["label"] for c in r["coded"]["claims"]) or "-"
+        ver = ",".join(c["veracity"]["label"] for c in r["coded"]["claims"]) or ("ERROR" if r["stage"].startswith("error") else "-")
         print(f"{i:>2}. [{TIER_NAMES[r['tier']]:<7}] H={r['H']:.2f} P={r['P']:.2f} {ver:<22} {r['unit_id']}: {r['text'][:70]}")
     print(f"\nwrote {out}/results.jsonl, coding_sheet.csv, triage.csv")
 

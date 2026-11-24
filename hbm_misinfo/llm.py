@@ -57,7 +57,10 @@ def chat_json(system: str, user: str, temperature: float = 0.0, max_tokens: int 
             if EXTRA_BODY:
                 kwargs["extra_body"] = EXTRA_BODY
             resp = client().chat.completions.create(**kwargs)
-            return _extract_json(resp.choices[0].message.content or "")
+            choice = resp.choices[0]
+            if not choice.message.content and choice.finish_reason == "length":
+                raise ValueError("empty reply cut off by max_tokens (model may be spending tokens on hidden reasoning)")
+            return _extract_json(choice.message.content or "")
         except Exception as e:  # noqa: BLE001 - surface the last error after retries
             last_err = e
             time.sleep(1.5 * (attempt + 1))
