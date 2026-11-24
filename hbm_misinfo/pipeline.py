@@ -32,9 +32,14 @@ from veracity import VeracityJudge
 # Stage 1 of the cascade. A cheap keyword screen stands in for the fine-tuned
 # classifier planned for the full system; it only drops obviously non-medical units.
 HEALTH_TERMS = re.compile(
-    r"\b(cure|cured|treat|treatment|therapy|chemo|vaccine|vax|drug|medication|meds|dose|pill|supplement|"
-    r"vitamin|doctor|oncologist|symptom|cancer|diabetes|insulin|metformin|statin|blood|pressure|infection|"
-    r"antibiotic|virus|disease|diet|fasting|detox|heal|side effect|immune|pain|surgery|inhaler|asthma)\b", re.I)
+    # Stems end in \w* so plurals and inflections match ("infections", "cured", "supplements").
+    r"\b(cur\w*|heal\w*|treat\w*|therap\w*|chemo\w*|radiation|vaccin\w*|vax\w*|drugs?|medic\w*|meds|"
+    r"dos(e|es|ing|age)|pills?|supplement\w*|vitamin\w*|mineral\w*|doctors?|oncolog\w*|symptom\w*|"
+    r"cancer\w*|tumou?rs?|diabet\w*|insulin|metformin|statins?|blood|pressure|infect\w*|antibiotic\w*|"
+    r"virus\w*|viral|bacteri\w*|parasit\w*|diseases?|diet\w*|fasting|detox\w*|side effects?|immun\w*|"
+    r"pain\w*|surg\w*|inhalers?|asthma|tooth|teeth|gums?|dental|oils?|herb\w*|remed\w*|natural\w*|"
+    r"holistic|homeopath\w*|ivermectin|probiotic\w*|hormon\w*|thyroid|liver|kidneys?|heart|cholesterol|"
+    r"a1c|glucose|sugar|cbd)\b", re.I)
 
 SHEET_COLS = ["unit_id", "subreddit", "unit_type", "parent_id", "coder_id", "A1_health_claim", "claim_id",
               "A2_claim_type", "A3_target_behavior", "A3_category", "A4_recommended_care", "A5_personal_experience"]
@@ -43,10 +48,10 @@ for _b in codebook.CONSTRUCTS:
 SHEET_COLS += codebook.CUES + ["more_claims", "rule_applied", "memo"]
 
 
-def process_unit(unit: dict, judge: VeracityJudge, use_retrieval: bool) -> dict:
+def process_unit(unit: dict, judge: VeracityJudge, use_retrieval: bool, screen: bool = True) -> dict:
     rec = {k: unit.get(k, "") for k in ("unit_id", "subreddit", "unit_type", "parent_id")}
     rec["text"] = unit["text"]
-    if not HEALTH_TERMS.search(unit["text"] + " " + unit.get("parent_text", "")):
+    if screen and not HEALTH_TERMS.search(unit["text"] + " " + unit.get("parent_text", "")):
         rec.update(stage="screened_out", coded={"A1_health_claim": 0, "claims": []}, tier=3, H=0.0, P=0.0)
         return rec
     try:
@@ -102,6 +107,8 @@ def main():
     ap.add_argument("--kb", default="data/kb_medlineplus.jsonl")
     ap.add_argument("--pubmed", action="store_true", help="also retrieve PubMed abstracts (needs internet)")
     ap.add_argument("--no-retrieval", action="store_true", help="ablation: veracity without evidence")
+    ap.add_argument("--no-screen", action="store_true",
+                    help="send every unit to the LLM (recommended for pilots; the keyword screen can miss claims)")
     ap.add_argument("--out-dir", default="runs/latest")
     ap.add_argument("--workers", type=int, default=2, help="parallel units (keep 1-2 for a local 8 GB GPU)")
     a = ap.parse_args()
@@ -109,7 +116,7 @@ def main():
     units = [json.loads(l) for l in Path(a.input).read_text(encoding="utf-8").splitlines() if l.strip()]
     judge = VeracityJudge(None if a.no_retrieval else a.kb, use_pubmed=a.pubmed)
     with ThreadPoolExecutor(a.workers) as ex:
-        recs = list(ex.map(lambda u: process_unit(u, judge, not a.no_retrieval), units))
+        recs = list(ex.map(lambda u: process_unit(u, judge, not a.no_retrieval, not a.no_screen), units))
 
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)

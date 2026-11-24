@@ -150,7 +150,11 @@ Urgent case (H = 0.39), false-but-weak claims are Review, and accurate advice is
   prompt now requires contradicting evidence for "refuted"; absent evidence is "unsupported".
 * **Hosted providers can ignore the thinking switch** and return empty replies; such units are marked
   `error`, placed in Review, and the run continues.
-* **Screening (stage 1)** is a keyword regex standing in for the fine-tuned classifier.
+* **Screening (stage 1)** is a keyword regex standing in for the fine-tuned classifier. Its first
+  version matched exact words only and dropped e.g. "essential oils to fight tooth infections"; it now
+  matches stems. For pilots use `--no-screen` so every unit reaches the LLM. The same regex defines the
+  `claim_likely` stratum in `collect_reddit.py`; samples drawn before this change keep their original
+  strata and weights (see their `manifest.json`).
 * **HBM coding is unvalidated.** The codes must be checked against human coding
   (`reliability.py`, codebook Section 8) before H is used for anything. An earlier prompt that asked
   the model for direction (+1/−1) directly got the sign wrong; the model now only names which
