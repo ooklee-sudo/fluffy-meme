@@ -28,6 +28,7 @@ post ──► [1] keyword screen ──► [2] HBM coding (Layers A–C) ──
 | `reliability.py` | Krippendorff's alpha per code between two coding sheets (human–human or human–LLM) |
 | `collect_reddit.py` | Downloads subreddit posts/comments (Arctic Shift archive), draws a stratified pilot sample, writes pipeline input and a blank coding sheet |
 | `power_sim.py` | Simulation power analysis for the within-subjects warning-label experiment |
+| `coding_form.py` | Excel form for human coders (drop-downs, consistency check) and export to a coding-sheet CSV |
 | `examples/sample_posts.jsonl` | Eight constructed posts (not real users) for a smoke test |
 
 ## Setup
@@ -95,6 +96,21 @@ python pipeline.py data/reddit/sample.jsonl --out-dir runs/pilot
   Excel shows it correctly. Give each coder a copy and compare with `reliability.py`.
 * Five subreddits over one year with the defaults download about 24,000 items and take roughly
   15–20 minutes; raw files are cached in `data/reddit/raw/`.
+
+## Human coding form
+
+```bash
+python coding_form.py create data/reddit/coding_sheet_blank.csv --round pilot1 --out coding/pilot1_coder1.xlsx
+python coding_form.py export coding/pilot1_coder1.xlsx --coder coder1 --out coding/pilot1_coder1.csv
+python reliability.py coding/pilot1_coder1.csv coding/pilot1_coder2.csv      # human vs human
+python reliability.py coding/pilot1_coder1.csv runs/pilot/coding_sheet.csv   # human vs LLM
+```
+
+Each unit has three claim rows (C1–C3); unit-level codes (A1, C1–C6, more_claims, shaded yellow) go on
+the C1 row. Every code is a drop-down, the `check` column turns red on inconsistent rows, and the
+second sheet is a one-page codebook reference. Export drops unused claim rows, copies unit-level codes
+to each claim row and reports out-of-range values by cell. Keep each coder's file separate and do not
+show coders the LLM codes before they finish (codebook Section 8).
 
 ## Power analysis for the user experiment
 
