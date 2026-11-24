@@ -20,6 +20,7 @@ import csv
 import json
 import re
 import sys
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -125,13 +126,24 @@ def main():
         w = csv.writer(f)
         w.writerow(["rank", "tier", "unit_id", "H", "P", "veracity", "text"])
         for i, r in enumerate(ranked, 1):
-            ver = "; ".join(c["veracity"]["label"] for c in r["coded"]["claims"])
+            ver = status(r)
             w.writerow([i, TIER_NAMES[r["tier"]], r["unit_id"], f"{r['H']:.2f}", f"{r['P']:.2f}", ver,
                         r["text"][:160]])
     for i, r in enumerate(ranked, 1):
-        ver = ",".join(c["veracity"]["label"] for c in r["coded"]["claims"]) or ("ERROR" if r["stage"].startswith("error") else "-")
-        print(f"{i:>2}. [{TIER_NAMES[r['tier']]:<7}] H={r['H']:.2f} P={r['P']:.2f} {ver:<22} {r['unit_id']}: {r['text'][:70]}")
-    print(f"\nwrote {out}/results.jsonl, coding_sheet.csv, triage.csv")
+        print(f"{i:>3}. [{TIER_NAMES[r['tier']]:<7}] H={r['H']:.2f} P={r['P']:.2f} {status(r):<22} "
+              f"{r['unit_id']}: {' '.join(r['text'].split())[:70]}")
+    print(f"\ntiers: {dict(Counter(TIER_NAMES[r['tier']] for r in recs))}  "
+          f"status: {dict(Counter(status(r).split(',')[0] if r['coded']['claims'] else status(r) for r in recs))}")
+    print(f"wrote {out}/results.jsonl, coding_sheet.csv, triage.csv")
+
+
+def status(r: dict) -> str:
+    """Veracity labels of the claims, or why there are none."""
+    if r["coded"]["claims"]:
+        return ",".join(c["veracity"]["label"] for c in r["coded"]["claims"])
+    if r["stage"].startswith("error"):
+        return "ERROR"
+    return "screened-out" if r["stage"] == "screened_out" else "no-claim"
 
 
 if __name__ == "__main__":
