@@ -1,0 +1,40 @@
+order reversal rate by attribute: {'cleanliness': 0.34, 'spaciousness': 0.083, 'brightness': 0.135, 'furnishing_condition': 0.143, 'photographic_quality': 0.172}
+analysis N 3802 bookable 2531 | listings with E: 3802
+O: mean 0.00 sd(before rescale n/a); share >1 SD: 0.135
+corr(O, accuracy) = -0.341 | corr(zP,zE) = 0.102
+Col1 ln(price) ~ zP + zE + zQ
+    zP                       b=  -0.003  se= 0.015  p=0.863
+    zE                       b=   0.048  se= 0.011  p=2.15e-05
+    zQ                       b=   0.131  se= 0.017  p=8.41e-15
+    n = 2527
+Col2 + interactions with ln(reviews)
+    zP                       b=  -0.051  se= 0.037  p=0.161
+    zE                       b=   0.094  se= 0.034  p=0.00597
+    zP:ln_reviews            b=   0.012  se= 0.008  p=0.145
+    zE:ln_reviews            b=  -0.013  se= 0.009  p=0.13
+    n = 2527
+    implied premium at 5 reviews: -3.1%
+    implied premium at 120 reviews: 0.7%
+Col3 accuracy ~ O
+    O                        b=  -0.001  se= 0.004  p=0.786
+    zE                       b=   0.089  se= 0.005  p=2.55e-72
+    zQ                       b=   0.005  se= 0.004  p=0.137
+    n = 3798
+Col4 logit accuracy<4.8
+    OR O = 1.093  (95% CI 0.947-1.263)  n=3798
+Complaints
+    O                        b=   0.001  se= 0.000  p=0.00869
+    n = 3798
+Col5 O ~ ln competitor density
+    ln_comp_density_500m     b=   0.042  se= 0.016  p=0.00725
+    zQ                       b=   0.427  se= 0.016  p=5.7e-156
+    n = 3798
+O by city/room type:
+                 mean    std  count
+city                              
+Amsterdam     -0.001  1.039    850
+London         0.017  1.005    970
+New York City  0.016  0.998   1031
+Tokyo         -0.034  0.962    951
+multi-listing host diff in O: 0.351
+share of listings with each E attribute (>=3 mentions): {'clean': 0.647, 'space': 0.436, 'bright': 0.032, 'furn': 0.446}

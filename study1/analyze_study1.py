@@ -93,9 +93,9 @@ def main(work, pairs_path, rev_path, rev_csv):
     print("corr(O, accuracy) =", round(d[["O", "acc"]].corr().iloc[0, 1], 3), "| corr(zP,zE) =", round(d[["zP", "zE"]].corr().iloc[0, 1], 3))
     ctl = "C(room_type)+accommodates+bedrooms+superhost+multi_listing_host+host_tenure_yrs"
     def fit(f, df, logit=False):
-        df = df.dropna(subset=[c for c in re.findall(r"[A-Za-z_]+", f.split("~")[0]) if c in df.columns]); 
-        m = (smf.logit if logit else smf.ols)(f, df).fit(cov_type="cluster", cov_kwds={"groups": pd.factorize(df.neighbourhood_cleansed)[0]}, disp=0)
-        return m
+        mod = (smf.logit if logit else smf.ols)(f, df)
+        grp = pd.factorize(df.loc[mod.data.row_labels, "neighbourhood_cleansed"])[0]
+        return mod.fit(cov_type="cluster", cov_kwds={"groups": grp}, disp=0)
     def show(m, names):
         for n in names: print(f"    {n:24s} b={m.params[n]:8.3f}  se={m.bse[n]:6.3f}  p={m.pvalues[n]:.3g}")
         print("    n =", int(m.nobs))
