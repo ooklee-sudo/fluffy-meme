@@ -30,8 +30,8 @@ def call(model, pa, pb):
                 {"type": "image_url", "image_url": {"url": b64(pb)}}]}]}
     for attempt in range(5):
         try:
-            r = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                              headers={"Authorization": "Bearer dummy"}, json=body, timeout=120)
+            r = requests.post(os.environ.get("VLM_URL", "https://openrouter.ai/api/v1/chat/completions"),
+                              headers={"Authorization": "Bearer dummy"}, json=body, timeout=180)
             if r.status_code in (429, 500, 502, 503, 504):
                 time.sleep(2 ** attempt); continue
             j = r.json()
@@ -58,6 +58,7 @@ def main(sample_csv, photo_dir, out, model, K=10, limit=0, workers=24):
         for l in open(out):
             r = json.loads(l); done.add((r["a"], r["b"], r["order"]))
     jobs = [(a, b, o) for a, b in pairs for o in ("AB", "BA") if (a, b, o) not in done]
+    if os.environ.get("REVERSE"): jobs = jobs[::-1]
     print(len(pairs), "pairs;", len(jobs), "calls to run", flush=True)
     lock = threading.Lock(); f = open(out, "a"); stats = {"n": 0, "tok_in": 0, "tok_out": 0, "cost": 0.0, "fail": 0}
     def run(job):
