@@ -71,7 +71,10 @@ def main(work, pairs, rev_path, rev_sel):
         print(" H3b' accuracy ~ zP + zE + zQ (same test, no O):"); show(fit(f"acc~zP+zE+zQ+{ctl}+C(neighbourhood_cleansed)", d), ["zP", "zE"])
         print(" H4   O ~ ln comp density"); d = d.assign(ct=d.gid); show(fit(f"O~ln_comp_density_500m+zQ+{ctl}+C(ct)", d), ["ln_comp_density_500m"])
         print("      multi-listing host difference in O: %.3f" % (d[d.multi_listing_host == 1].O.mean() - d[d.multi_listing_host == 0].O.mean()))
-    dA, dB = build("A"), build("B"); run(dA, "Spec A (primary)"); run(dB, "Spec B (cleanliness + platform subscore)")
+    dA, dB = build("A"), build("B"); dA.to_csv(f"{work}/frame_specA.csv", index=False); dB.to_csv(f"{work}/frame_specB.csv", index=False)
+    import os
+    run(dA, "Spec A (primary)"); run(dB, "Spec B (cleanliness + platform subscore)")
+    if os.environ.get("NOBOOT"): return
     # Spec C: regression calibration for zE
     def calib(d):
         X = f"zP+zQ+{ctl}+C(neighbourhood_cleansed)"; m = smf.ols(f"zE~{X}", d).fit()
