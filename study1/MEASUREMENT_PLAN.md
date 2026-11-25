@@ -18,3 +18,13 @@ Planned changes:
 4. Errors-in-variables sensitivity: disattenuate regression coefficients using the measured reliabilities (report as sensitivity only).
 5. Human validation: an annotation kit (blind, randomized) is produced; PPI correction is run only if human labels are supplied.
 No outcome-based tuning of prompts, thresholds or model choice will be done after seeing regressions.
+
+## Amendments (2026-11-25, before the improved regressions were run)
+Diagnostics after the review extension (reliability / cross-model, see results/): photo scores are reliable (0.96-0.97) and agree
+across models (r = 0.79-0.91 on the 2,000-listing subset). The weak link is experienced quality: even with up to 50 reviews, split-half
+reliability of text-based cleanliness sentiment is 0.56 (near-ceiling sentiment, little variance). Pre-specified before running:
+- Spec A (primary): text-based E from up to 50 reviews; composite over attributes mentioned for >= 10% of listings
+  (cleanliness, spaciousness, furnishing condition; brightness excluded).
+- Spec B (sensitivity): for cleanliness, average z(text E) with z(platform cleanliness subscore).
+- Spec C (sensitivity): regression calibration for measurement error in E, with error variance estimated from review split halves
+  (bootstrap SEs, 100 draws, resampling listings).

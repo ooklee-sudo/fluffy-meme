@@ -1,0 +1,43 @@
+# Improved measurement run (Spec A/B), see MEASUREMENT_PLAN.md
+share of listings with each text-based E attribute (>=3 mentions): {'clean': 0.737, 'space': 0.612, 'bright': 0.099, 'furn': 0.645}
+attributes in composite: ['clean', 'space', 'furn']
+composite text-E split-half r=0.469, Spearman-Brown reliability=0.638, n=3280
+
+== Spec A (primary): N=3901, bookable=2612; share O>1SD=0.135; corr(zP,zE)=0.111
+ H1b  ln(price)~zP+zE+zQ
+   zP: 0.001 (0.015, p=0.946)  zE: 0.052 (0.011, p=6.19e-06)  zQ: 0.128 (0.016, p=2.7e-15)  n=2607
+ H2b  interactions
+   zP: -0.045 (0.034, p=0.195)  zP:ln_reviews: 0.011 (0.008, p=0.141)  zE:ln_reviews: -0.006 (0.010, p=0.581)  n=2607
+      premium at 5 / 120 reviews: -2.6% / 1.0%
+ H3b  accuracy~O+zE+zQ
+   O: -0.001 (0.004, p=0.734)  zE: 0.102 (0.004, p=6.84e-127)  zQ: 0.001 (0.003, p=0.838)  n=3896
+      logit accuracy<4.8: OR(O)=1.131  95% CI 0.965-1.326
+ H3b' accuracy ~ zP + zE + zQ (same test, no O):
+   zP: 0.001 (0.003, p=0.763)  zE: 0.102 (0.003, p=2.69e-229)  n=3896
+ H4   O ~ ln comp density
+   ln_comp_density_500m: 0.051 (0.015, p=0.000738)  n=3896
+      multi-listing host difference in O: 0.382
+
+== Spec B (cleanliness + platform subscore): N=4747, bookable=3161; share O>1SD=0.128; corr(zP,zE)=0.123
+ H1b  ln(price)~zP+zE+zQ
+   zP: -0.005 (0.014, p=0.737)  zE: 0.072 (0.010, p=2.85e-13)  zQ: 0.132 (0.017, p=1.92e-15)  n=3156
+ H2b  interactions
+   zP: -0.033 (0.029, p=0.261)  zP:ln_reviews: 0.007 (0.007, p=0.273)  zE:ln_reviews: 0.000 (0.007, p=0.983)  n=3156
+      premium at 5 / 120 reviews: -2.1% / 0.2%
+ H3b  accuracy~O+zE+zQ
+   O: -0.004 (0.004, p=0.283)  zE: 0.127 (0.006, p=4.7e-100)  zQ: -0.003 (0.004, p=0.467)  n=4741
+      logit accuracy<4.8: OR(O)=1.072  95% CI 0.935-1.227
+ H3b' accuracy ~ zP + zE + zQ (same test, no O):
+   zP: 0.001 (0.003, p=0.62)  zE: 0.130 (0.005, p=1.94e-167)  n=4741
+ H4   O ~ ln comp density
+   ln_comp_density_500m: 0.047 (0.015, p=0.00205)  n=4741
+      multi-listing host difference in O: 0.335
+
+Spec C calibration factor (conditional reliability) = 0.786
+ H1b with calibrated E (point estimates; SEs by bootstrap below)
+
+# Spec C (regression calibration)
+Spec C calibration factor (conditional reliability) = 0.786
+ H1b with calibrated E (point estimates; SEs by bootstrap below)
+   zP: 0.000 (boot se 0.014)   zE: 0.066 (boot se 0.014)  [boot draws=100]
+ H3b' with calibrated E: zP coefficient on accuracy -0.0009 (boot se 0.0031)
