@@ -102,8 +102,12 @@ def _mc(qid: str, text: str, choices: list, horizontal: bool = False) -> str:
 def qualtrics(a):
     items = list(csv.DictReader(open(a.items, encoding="utf-8-sig")))
     blocks = sorted({int(i["block"]) for i in items})
+    consent = Path(a.consent_file).read_text(encoding="utf-8").strip() if a.consent_file else a.consent_text
+    if "[" in consent and "]" in consent:
+        print("warning: the consent text still contains [placeholders]; use --consent-file with the IRB-approved text\n")
+    consent_html = "<br><br>".join(html.escape(p.strip()) for p in consent.split("\n\n") if p.strip())
     out = ["[[AdvancedFormat]]", "", "[[Block:Consent]]",
-           "[[Question:Text]]\n[[ID:info]]\n" + html.escape(a.consent_text) + "\n",
+           "[[Question:Text]]\n[[ID:info]]\n" + consent_html.replace("\n", " ") + "\n",
            _mc("consent", "Do you agree to take part?", ["I agree", "I do not agree"]),
            "[[Question:TE:SingleLine]]\n[[ID:pid]]\nPlease enter your Prolific ID.\n",
            "[[Block:Instructions]]",
@@ -277,6 +281,7 @@ def main():
     q = sub.add_parser("qualtrics")
     q.add_argument("items")
     q.add_argument("--out", default="survey/qualtrics_survey.txt")
+    q.add_argument("--consent-file", help="text file with the IRB-approved consent wording (paragraphs separated by blank lines)")
     q.add_argument("--consent-text", default=(
         "This study is run by researchers at [institution]. You will read about 20 short public posts from online "
         "health communities and answer questions about them. It takes about 20 minutes. Some posts mention illness "
