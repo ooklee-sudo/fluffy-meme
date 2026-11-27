@@ -30,6 +30,7 @@ post ──► [1] keyword screen ──► [2] HBM coding (Layers A–C) ──
 | `power_sim.py` | Simulation power analysis for the within-subjects warning-label experiment |
 | `coding_form.py` | Excel form for human coders (drop-downs, consistency check) and export to a coding-sheet CSV |
 | `compare_runs.py` | Compares two pipeline runs on the same units (status/tier cross-tabs, agreement, largest disagreements) |
+| `prolific_survey.py` | Crowd validation of H on Prolific: post selection, Qualtrics survey file, analysis |
 | `examples/sample_posts.jsonl` | Eight constructed posts (not real users) for a smoke test |
 
 ## Setup
@@ -112,6 +113,26 @@ the C1 row. Every code is a drop-down, the `check` column turns red on inconsist
 second sheet is a one-page codebook reference. Export drops unused claim rows, copies unit-level codes
 to each claim row and reports out-of-range values by cell. Keep each coder's file separate and do not
 show coders the LLM codes before they finish (codebook Section 8).
+
+## Crowd validation of H (Prolific)
+
+Instead of (or before) full expert coding, crowd raters judge each post's direction and strength of push
+relative to recommended care, its persuasiveness and their intention to follow it. The signed crowd
+score is the human counterpart of H.
+
+```bash
+python prolific_survey.py select data/runs/pilot_large/results.jsonl --n 100 --per-person 20 --out survey/items.csv
+python prolific_survey.py qualtrics survey/items.csv --out survey/qualtrics_survey.txt
+# run on Prolific, export responses from Qualtrics as CSV, then:
+python prolific_survey.py analyze survey/export.csv survey/items.csv \
+    --runs 7b=runs/pilot_v2/results.jsonl large=data/runs/pilot_large/results.jsonl
+```
+
+Each participant rates one block of 20 posts (Qualtrics Randomizer, evenly presented); 75 participants
+give 15 ratings per post. `analyze` drops failed attention checks and reports Krippendorff's alpha across
+raters and, for each run, the correlation of H with the crowd push score and with intention to follow.
+Posts are shown without usernames or links; fill in the consent text placeholders and get IRB approval
+before launching.
 
 ## Power analysis for the user experiment
 
