@@ -1,6 +1,9 @@
 """Convert the IEEE TAI version of "Combining Detectors That Fail Differently..." to the MDPI Electronics layout.
 
-Usage: python build_mdpi.py SOURCE_TAI.docx MDPI_BASE.docx OUT.docx "AFFILIATION; EMAIL"
+Usage: python build_mdpi.py SOURCE_TAI.docx MDPI_BASE.docx OUT.docx "AFFILIATION LINE" [CORR_EMAIL COAUTHOR]
+With a co-author, the corresponding author (first author) is starred, a Correspondence line is added, the back matter
+uses plural wording, and an Author Contributions statement is added (with a highlighted part to complete).
+Contact details are passed in at run time so that none are stored in the repository.
 SOURCE is nmi_screening/TAI_Manuscript.docx (branch claude/ecstatic-fermi-i6ec13); BASE is any Word file built on the
 MDPI Electronics template (its MDPI_* styles, header and footer are reused; its body is replaced).
 """
@@ -16,6 +19,9 @@ from docx.shared import Cm
 
 SRC, BASE, OUT = sys.argv[1:4]
 AFFILIATION = sys.argv[4] if len(sys.argv) > 4 else "Department, University, City, Country; e-mail"
+CORR_EMAIL = sys.argv[5] if len(sys.argv) > 5 else ""
+COAUTHOR = sys.argv[6] if len(sys.argv) > 6 else ""
+PLURAL = bool(COAUTHOR)
 src, out = docx.Document(SRC), docx.Document(BASE)
 
 TITLE = "Combining Detectors That Fail Differently Defends Screens for Machine-Written Scholarly Text Against Adaptive Authors"
@@ -81,7 +87,10 @@ REFS = [
     "Gritsai, G.; Voznyuk, A.; Grabovoy, A.; Chekhovich, Y. Are AI detectors good enough? A survey on quality of datasets with machine-generated texts. *arXiv* **2024**, arXiv:2410.14677.",
     "Cameron, A.C.; Trivedi, P.K. *Regression Analysis of Count Data*, 2nd ed.; Cambridge University Press: Cambridge, UK, 2013.",
 ]
-BACK = [
+BACK = ([("Author Contributions: ", "Conceptualization, O.L.; methodology, O.L.; software, O.L.; formal analysis, O.L.; "
+          "writing—original draft preparation, O.L.; writing—review and editing, O.L. and Y.N.; "
+          "[[add Y.N.'s other roles, e.g., data curation, validation, investigation]]. "
+          "All authors have read and agreed to the published version of the manuscript.")] if PLURAL else []) + [
     ("Funding: ", "This research received no external funding."),
     ("Institutional Review Board Statement: ", "Not applicable."),
     ("Informed Consent Statement: ", "Not applicable."),
@@ -90,10 +99,10 @@ BACK = [
      "re-collected from the identifier lists provided."),
     ("Acknowledgments: ", "The machine-written papers studied here were produced by GPT-4o, Claude Sonnet 5.5, Llama 3.3 70B "
      "Instruct and DeepSeek V4.1 Flash, and Gemini 2.5 Pro served as a judge. During the preparation of this manuscript, the "
-     "author used an AI coding assistant (Claude Code) to write and run the analysis code and to draft and edit the "
-     "manuscript text. The author has reviewed and edited the output and takes full responsibility for the content of this "
-     "publication."),
-    ("Conflicts of Interest: ", "The author declares no conflicts of interest."),
+     + ("authors" if PLURAL else "author") + " used an AI coding assistant (Claude Code) to write and run the analysis code "
+     "and to draft and edit the manuscript text. The " + ("authors have" if PLURAL else "author has") + " reviewed and "
+     "edited the output and " + ("take" if PLURAL else "takes") + " full responsibility for the content of this publication."),
+    ("Conflicts of Interest: ", "The " + ("authors declare" if PLURAL else "author declares") + " no conflicts of interest."),
 ]
 ABBREV = [("AUC", "area under the receiver operating characteristic curve"), ("FPR", "false-positive rate"),
           ("LLM", "large language model"), ("MAD", "median absolute deviation"),
@@ -240,15 +249,23 @@ for el in kids[keep:]:
         body.remove(el)
 P = out.paragraphs
 set_runs(P[1], (TITLE, None))
-set_runs(P[2], ("Ook Lee", None))
+if PLURAL:
+    set_runs(P[2], ("Ook Lee", None), ("*", None), (" and ", None), (COAUTHOR, None))
+    P[2].runs[1].font.superscript = True
+else:
+    set_runs(P[2], ("Ook Lee", None))
 # The affiliation line (with e-mail) is passed in so that no contact details live in the repository.
 set_runs(P[3], (AFFILIATION, None))
-P[4]._p.getparent().remove(P[4]._p)  # single author: no separate correspondence line
+if PLURAL:
+    set_runs(P[4], ("*", True), (f"\tCorrespondence: {CORR_EMAIL}", None))
+else:
+    P[4]._p.getparent().remove(P[4]._p)  # single author: no separate correspondence line
 src_par = src.paragraphs
 abstract = src_par[2].text.split("—", 1)[1].strip()
 P = out.paragraphs
-set_runs(P[4], ("Abstract: ", True), (abstract, None))
-set_runs(P[5], ("Keywords: ", True), (KEYWORDS, None))
+k = 5 if PLURAL else 4
+set_runs(P[k], ("Abstract: ", True), (abstract, None))
+set_runs(P[k + 1], ("Keywords: ", True), (KEYWORDS, None))
 out.add_paragraph(style="MDPI_1.9_line")
 
 # ---------------------------------------------------------------- body
@@ -309,10 +326,15 @@ for el in src.element.body.iterchildren():
     add_par(style, list(p.runs))
 
 # ---------------------------------------------------------------- back matter
+from docx.enum.text import WD_COLOR_INDEX
 for label, text in BACK:
     q = out.add_paragraph(style="MDPI_6.2_back_matter")
     q.add_run(label).bold = True
-    q.add_run(text)
+    for tok in re.split(r"(\[\[[^\]]+\]\])", text):
+        if tok.startswith("[["):
+            q.add_run(tok[2:-2]).font.highlight_color = WD_COLOR_INDEX.YELLOW  # to be completed by the authors
+        elif tok:
+            q.add_run(tok)
 q = out.add_paragraph(style="MDPI_6.2_back_matter"); q.add_run("Abbreviations").bold = True
 add_par("MDPI_6.2_back_matter", text="The following abbreviations are used in this manuscript:")
 for a, b in ABBREV:
